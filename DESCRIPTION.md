@@ -109,21 +109,21 @@ The algorithm fetches the initial and current `State` of every node to further a
 
 ### Happens before rules
 
-- `*y* includedBy *x*          -> *x* includes *y*`
-- `*y* excludedBy *x*          -> *x* excludes *y*`
-- `*y* setPendingBy *x*        -> *x* setsPending *y*`
-- `*y* ConditionChecked *x*    -> *x* ConditionChecks *y*`
-- `*y* LockedBy *x*            -> *x* Lock *y*`
-- `*y* UnlockedBy *x*          -> *x* Unlock *y*`
-- `*x* Execution begins        -> *x* Execution fails / *x* Execution succes`
-- `*x* Execute Start           -> *x* Locks *y*`
-- `*x* Locks *y*               -> *x* Include *y*`
-- `*x* Locks *y*               -> *x* Exclude *y*`
-- `*x* Locks *y*               -> *x* setPending *y*`
-- `*x* Locks *y*               -> *x* ConditionChecks *y*`
-- `*x* Locks *y*               -> *x* Unlock *y*`
-- `*x* Locks *y*               -> *x* Unlock *y* -> *x* Execute Fail / Execute Succes`
-- `*y* Lockby *x*              -> *y* UnlockBy *x* -> *y* LockBy *z*`
+    *y* includedBy *x*          -> *x* includes *y*
+    *y* excludedBy *x*          -> *x* excludes *y*
+    *y* setPendingBy *x*        -> *x* setsPending *y*
+    *y* ConditionChecked *x*    -> *x* ConditionChecks *y*
+    *y* LockedBy *x*            -> *x* Lock *y*
+    *y* UnlockedBy *x*          -> *x* Unlock *y*
+    *x* Execution begins        -> *x* Execution fails / Success
+    *x* Execute Start           -> *x* Locks *y*
+    *x* Locks *y*               -> *x* Include *y*
+    *x* Locks *y*               -> *x* Exclude *y*
+    *x* Locks *y*               -> *x* setPending *y*
+    *x* Locks *y*               -> *x* ConditionChecks *y*
+    *x* Locks *y*               -> *x* Unlock *y*
+    *x* Locks *y*               -> *x* Unlock *y*                   -> *x* Execute Fail / Success
+    *y* Lockby *x*              -> *y* UnlockBy *x*                 -> *y* LockBy *z*
 
 
 ## Algorithms
