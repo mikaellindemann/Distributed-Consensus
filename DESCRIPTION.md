@@ -67,23 +67,17 @@ The algorithm fetches the initial and current `State` of every node to further a
 | Event 1 includes Event 2 | (#1, Event 1, includes, Event 2)   | (#1, Event 2, includedBy, Event 1) |
 | Event 2 includes Event 1 | (#1, Event 1, includedBy, Event 2) | (#3, Event 2, includes, Event 1)   |
 
-Happens Before Rule: *x* includedBy *y* -> *y* includes *x*
-
 ### Exclusion
 | Exclusion Relation       | Event 1: history                   | Event 2: history                   |
 |--------------------------|------------------------------------|------------------------------------|
 | Event 1 excludes Event 2 | (#1, Event 1, excludes, Event 2)   | (#1, Event 2, excludedBy, Event 1) |
 | Event 2 excludes Event 1 | (#1, Event 1, excludedBy, Event 2) | (#3, Event 2, excludes, Event 1)   |
 
-Happens Before Rule: *x* excludedBy *y* -> *y* excludes *x*
-
 ### Pending
 | Pending Relation             | Event 1: history                     | Event 2: history                     |
 |------------------------------|--------------------------------------|--------------------------------------|
 | Event 1 sets Pending Event 2 | (#1, Event 1, setsPending, Event 2)  | (#1, Event 2, setPendingBy, Event 1) |
 | Event 2 sets Pending Event 1 | (#1, Event 1, setPendingBy, Event 2) | (#3, Event 2, setsPending, Event 1)  |
-
-Happens Before Rule: *x* setPendingBy *y* -> *y* setsPending *x*
 
 ### Conditions
 | Condition Relation                         | Event 1: history                               | Event 2: history                               |
@@ -93,8 +87,6 @@ Happens Before Rule: *x* setPendingBy *y* -> *y* setsPending *x*
 | Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked true, Event 2)  | (#3, Event 2, ConditionChecks true, Event 1)   |
 | Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked false, Event 2) | (#3, Event 2, ConditionChecks false, Event 1)  |
 
-Happens Before Rule: *x* ConditionChecked *y* -> *y* ConditionChecks *x*
-
 ### Execution
 | Execution                | Event 1: history     |
 |--------------------------|----------------------|
@@ -102,15 +94,11 @@ Happens Before Rule: *x* ConditionChecked *y* -> *y* ConditionChecks *x*
 | Event 1 Execution fails  | (#1, Event 1, false) |
 | Event 1 Execution succes | (#1, Event 1, true)  |
 
-Happens Before Rule: *x* Execution begins -> *x* Execution fails / *x* Execution succes
-
 ### Lock
 | Lock                  | Event 1 History              | Event 2 History                  |
 |-----------------------|------------------------------|----------------------------------|
 | Event 1 Locks Event 2 | #1, Event 1, Lock, Event 2   | (#1, Event 2, lockedBy, Event 1) |
 | Event 2 Locks Event 1 | #1, Event 1, LockBy, Event 2 | (#1, Event 2, lock, Event 1)     |
-
-Happens Before Rule: *x* LockedBy *y* -> Unlock *x*
 
 ### Unlock
 | Unlock                 | Event 1 History                | Event 2 History                  |
@@ -118,18 +106,24 @@ Happens Before Rule: *x* LockedBy *y* -> Unlock *x*
 | Event 1 Unlock Event 2 | #1, Event 1, Unlock, Event 2   | (#1, Event 2, UnlockBy, Event 1) |
 | Event 2 Unlock Event 1 | #1, Event 1, UnlockBy, Event 2 | (#1, Event 2, Unlock, Event 1)   |
 
-Happens Before Rule: *x* UnlockedBy *y* -> *y* Unlock *x*
 
+### Happens before rules
 
-### Rules across scenarios
+*y* includedBy *x*          -> *x* includes *y*
+*y* excludedBy *x*          -> *x* excludes *y*
+*y* setPendingBy *x*        -> *x* setsPending *y*
+*y* ConditionChecked *x*    -> *x* ConditionChecks *y*
+*y* LockedBy *x*            -> *x* Lock *y*
+*y* UnlockedBy *x*          -> *x* Unlock *y*
 
-*x* Execute Start -> *x* Locks *y*
-*x* Locks *y*  -> *x* Include *y*
-*x* Locks *y*  -> *x* Exclude *y*
-*x* Locks *y*  -> *x* setPending *y*
-*x* Locks *y*  -> *x* ConditionChecks *y*
-*x* Locks *y*  -> *x* Unlock *y*
-*x* Locks *y* -> *x* Unlock *y* -> *x* Execute Fail / Execute Succes
+*x* Execution begins        -> *x* Execution fails / *x* Execution succes
+*x* Execute Start           -> *x* Locks *y*
+*x* Locks *y*               -> *x* Include *y*
+*x* Locks *y*               -> *x* Exclude *y*
+*x* Locks *y*               -> *x* setPending *y*
+*x* Locks *y*               -> *x* ConditionChecks *y*
+*x* Locks *y*               -> *x* Unlock *y*
+*x* Locks *y*               -> *x* Unlock *y* -> *x* Execute Fail / Execute Succes
 
 *y* Lockby *x* -> *y* UnlockBy *x* -> *y* LockBy *z*
 
