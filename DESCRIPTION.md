@@ -91,11 +91,12 @@ Algorithm:
     - Set CreatingHistory to true
     - Ask all neighbors for history.
         - If neighbors return nothing
-            - Return own history
+            - Create own history
+            - Return history to Caller X
         - If neighbors return something
             - Create own history
             - Stich together
-            - Return to caller
+            - Return to Caller X
     - Set CreatingHistory to false
  - If CreatingHistory is True
     - Return none
