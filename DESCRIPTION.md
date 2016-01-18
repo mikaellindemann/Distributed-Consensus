@@ -55,17 +55,23 @@ The algorithm fetches the initial and current `State` of every node to further a
 | Event 1 includes Event 2 | (#1, Event 1, includes, Event 2)   | (#1, Event 2, includedBy, Event 1) |
 | Event 2 includes Event 1 | (#1, Event 1, includedBy, Event 2) | (#3, Event 2, includes, Event 1)   |
 
+Happens Before Rule: includedBy -> includes
+
 ### Exclusion
 | Exclusion Relation       | Event 1: history                   | Event 2: history                   |
 |--------------------------|------------------------------------|------------------------------------|
 | Event 1 excludes Event 2 | (#1, Event 1, excludes, Event 2)   | (#1, Event 2, excludedBy, Event 1) |
 | Event 2 excludes Event 1 | (#1, Event 1, excludedBy, Event 2) | (#3, Event 2, excludes, Event 1)   |
 
+Happens Before Rule: excludedBy -> excludes
+
 ### Pending
 | Pending Relation             | Event 1: history                     | Event 2: history                     |
 |------------------------------|--------------------------------------|--------------------------------------|
 | Event 1 sets Pending Event 2 | (#1, Event 1, setsPending, Event 2)  | (#1, Event 2, setPendingBy, Event 1) |
 | Event 2 sets Pending Event 1 | (#1, Event 1, setPendingBy, Event 2) | (#3, Event 2, setsPending, Event 1)  |
+
+Happens Before Rule: setPendingBy -> setsPending
 
 ### Conditions
 | Condition Relation                         | Event 1: history                               | Event 2: history                               |
@@ -75,6 +81,8 @@ The algorithm fetches the initial and current `State` of every node to further a
 | Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked true, Event 2)  | (#3, Event 2, ConditionChecks true, Event 1)   |
 | Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked false, Event 2) | (#3, Event 2, ConditionChecks false, Event 1)  |
 
+Happens Before Rule: ConditionChecked -> ConditionChecks
+
 ### Execution
 | Execution                | Event 1: history     |
 |--------------------------|----------------------|
@@ -82,6 +90,36 @@ The algorithm fetches the initial and current `State` of every node to further a
 | Event 1 Execution fails  | (#1, Event 1, false) |
 | Event 1 Execution succes | (#1, Event 1, true)  |
 
+Happens Before Rule: Execution begins -> Execution fails / Execution succes
+
+### Lock
+| Lock                  | Event 1 History              | Event 2 History                  |
+|-----------------------|------------------------------|----------------------------------|
+| Event 1 Locks Event 2 | #1, Event 1, Lock, Event 2   | (#1, Event 2, lockedBy, Event 1) |
+| Event 2 Locks Event 1 | #1, Event 1, LockBy, Event 2 | (#1, Event 2, lock, Event 1)     |
+
+Happens Before Rule: LockedBy -> Unlock
+
+### Unlock
+| Unlock                 | Event 1 History                | Event 2 History                  |
+|------------------------|--------------------------------|----------------------------------|
+| Event 1 Unlock Event 2 | #1, Event 1, Unlock, Event 2   | (#1, Event 2, UnlockBy, Event 1) |
+| Event 2 Unlock Event 1 | #1, Event 1, UnlockBy, Event 2 | (#1, Event 2, Unlock, Event 1)   |
+
+Happens Before Rule: UnlockedBy -> Unlock
+
+
+### Rules across scenarios
+
+Execute Start -> Lock
+Lock -> Include
+Lock -> Exclude
+Lock -> setPending
+Lock -> ConditionChecks
+Lock -> Unlock
+Unlock -> Execute Fail / Execute Succes
+
+Lockby x -> UnlockBy x -> LockBy y
 
 ## Algorithms
 
@@ -103,7 +141,7 @@ Each node has a boolean CreatingHistory
  - If `CreatingHistory` of node is `false` 
     - Set `CreatingHistory` of node to `true`
     - Ask all relations for their history
-        - If all neighbours return None
+        - If all relations return None
             - Create history of self
             - Return history to `X`
         - If any history is returned from relations
@@ -208,6 +246,7 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
     
 ### Stitch History Algorithm
 #### Overview
+
 
 #### Walkthrough
 
