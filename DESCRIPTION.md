@@ -65,7 +65,7 @@ The algorithm fetches the initial and current `State` of every node to further a
 | Event 1 includes Event 2 | (#1, Event 1, includes, Event 2)   | (#1, Event 2, includedBy, Event 1) |
 | Event 2 includes Event 1 | (#1, Event 1, includedBy, Event 2) | (#3, Event 2, includes, Event 1)   |
 
-Happens Before Rule: includedBy -> includes
+Happens Before Rule: *x* includedBy *y* -> *y* includes *x*
 
 ### Exclusion
 | Exclusion Relation       | Event 1: history                   | Event 2: history                   |
@@ -73,7 +73,7 @@ Happens Before Rule: includedBy -> includes
 | Event 1 excludes Event 2 | (#1, Event 1, excludes, Event 2)   | (#1, Event 2, excludedBy, Event 1) |
 | Event 2 excludes Event 1 | (#1, Event 1, excludedBy, Event 2) | (#3, Event 2, excludes, Event 1)   |
 
-Happens Before Rule: excludedBy -> excludes
+Happens Before Rule: *x* excludedBy *y* -> *y* excludes *x*
 
 ### Pending
 | Pending Relation             | Event 1: history                     | Event 2: history                     |
@@ -81,7 +81,7 @@ Happens Before Rule: excludedBy -> excludes
 | Event 1 sets Pending Event 2 | (#1, Event 1, setsPending, Event 2)  | (#1, Event 2, setPendingBy, Event 1) |
 | Event 2 sets Pending Event 1 | (#1, Event 1, setPendingBy, Event 2) | (#3, Event 2, setsPending, Event 1)  |
 
-Happens Before Rule: setPendingBy -> setsPending
+Happens Before Rule: *x* setPendingBy *y* -> *y* setsPending *x*
 
 ### Conditions
 | Condition Relation                         | Event 1: history                               | Event 2: history                               |
@@ -91,7 +91,7 @@ Happens Before Rule: setPendingBy -> setsPending
 | Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked true, Event 2)  | (#3, Event 2, ConditionChecks true, Event 1)   |
 | Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked false, Event 2) | (#3, Event 2, ConditionChecks false, Event 1)  |
 
-Happens Before Rule: ConditionChecked -> ConditionChecks
+Happens Before Rule: *x* ConditionChecked *y* -> *y* ConditionChecks *x*
 
 ### Execution
 | Execution                | Event 1: history     |
@@ -100,7 +100,7 @@ Happens Before Rule: ConditionChecked -> ConditionChecks
 | Event 1 Execution fails  | (#1, Event 1, false) |
 | Event 1 Execution succes | (#1, Event 1, true)  |
 
-Happens Before Rule: Execution begins -> Execution fails / Execution succes
+Happens Before Rule: *x* Execution begins -> *x* Execution fails / *x* Execution succes
 
 ### Lock
 | Lock                  | Event 1 History              | Event 2 History                  |
@@ -108,7 +108,7 @@ Happens Before Rule: Execution begins -> Execution fails / Execution succes
 | Event 1 Locks Event 2 | #1, Event 1, Lock, Event 2   | (#1, Event 2, lockedBy, Event 1) |
 | Event 2 Locks Event 1 | #1, Event 1, LockBy, Event 2 | (#1, Event 2, lock, Event 1)     |
 
-Happens Before Rule: LockedBy -> Unlock
+Happens Before Rule: *x* LockedBy *y* -> Unlock *x*
 
 ### Unlock
 | Unlock                 | Event 1 History                | Event 2 History                  |
@@ -116,7 +116,7 @@ Happens Before Rule: LockedBy -> Unlock
 | Event 1 Unlock Event 2 | #1, Event 1, Unlock, Event 2   | (#1, Event 2, UnlockBy, Event 1) |
 | Event 2 Unlock Event 1 | #1, Event 1, UnlockBy, Event 2 | (#1, Event 2, Unlock, Event 1)   |
 
-Happens Before Rule: UnlockedBy -> Unlock
+Happens Before Rule: *x* UnlockedBy *y* -> *y* Unlock *x*
 
 
 ### Rules across scenarios
