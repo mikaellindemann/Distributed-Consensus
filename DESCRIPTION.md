@@ -52,3 +52,75 @@ The algorithm is implemented using the following F# data types:
 | Event 1 Execution fails  | (#1, Event 1, false) |
 | Event 1 Execution succes | (#1, Event 1, true)  |
 
+
+
+## Distribution algorithm
+
+Algorithm:
+ - Get asked by X for history
+ - If CreatingHistory is false 
+    - Set CreatingHistory to true
+    - Ask all neighbors for history.
+        - If neighbors return nothing
+            - Return own history
+        - If neighbors return something
+            - Create own history
+            - Stich together
+            - Return to caller
+    - Set CreatingHistory to false
+ - If CreatingHistory is True
+    - Return none
+
+Consider the following graph:
+
+<img src='http://g.gravizo.com/g?
+ digraph G {
+   | "Event 5" -> "Event 3"
+   | "Event 5" -> "Event 2"
+   | "Event 3" -> "Event 5"
+   | "Event 3" -> "Event 1"
+   | "Event 2" -> "Event 1"
+   | "Event 2" -> "Event 3"
+   | "Event 1" -> "Event 4"
+   | "Event 1" -> "Event 6"
+   | "Event 6" -> "Event 1"
+ }
+'/>
+
+- Event 5 gets asked by *Client* for its history. 
+    - It sets its CreatingHistory boolean to true. 
+    - Asks all its neighbors (Event 2 and Event 5) for their history.
+- Event 2 gets asked by Event 5 of their history
+    - It sets its CreatingHistory boolean to true. 
+    - Asks all its neighbors (Event 3 and Event 1) for their history.
+- Event 3 gets asked by Event 5 of their history
+    - It sets its CreatingHistory boolean to true. 
+    - Asks all its neighbors (Event 5 and Event 1) for their history.
+- Event 3 gets asked by Event 2 of their history
+    - return is already creating history
+- Event 1 gets asked by Event 2 of their history
+    - It sets its CreatingHistory boolean to true. 
+    - Asks all its neighbors (Event 4) for their history.
+- Event 4 gets asked by Event 1 of their history
+    - It sets its CreatingHistory boolean to true. 
+    - Asks all its neighbors (None) for their history. (has none)
+    - Since No neighbors return a history to Caller (Event 1)
+- Event 1 gets asked by Event 3 of their history
+    - return is already creating history
+- Event 6 gets asked by Event 1 of their history
+    - It sets its CreatingHistory boolean to true. 
+    - Asks all its neighbors (Event 1) for their history.
+    - Since No neighbors return a history (6 is already working) to Caller (Event 1)
+- Event 1 gets asked by Event 6 of their history
+    - return is already creating history
+- Event 1 gets history from Event 4 and Event 6
+    - Get own history
+    - Stitch together history of neighbors and self
+    - return history to Caller (Event 2)
+- Event 2 gets history from 6 and empty from 3
+    - Get own history
+    - Stitch together history of neighbors and self
+    - return history to Caller (Event 5)
+- Event 3 gets no history from neighbors
+    - Get own history
+    - return history to Caller (Event 5)
