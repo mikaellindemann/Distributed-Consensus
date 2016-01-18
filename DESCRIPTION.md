@@ -123,15 +123,16 @@ Happens Before Rule: *x* UnlockedBy *y* -> *y* Unlock *x*
 
 ### Rules across scenarios
 
-Execute Start -> Lock
-Lock -> Include
-Lock -> Exclude
-Lock -> setPending
-Lock -> ConditionChecks
-Lock -> Unlock
-Unlock -> Execute Fail / Execute Succes
+*x* Execute Start -> *x* Locks *y*
+*x* Locks *y*  -> *x* Include *y*
+*x* Locks *y*  -> *x* Exclude *y*
+*x* Locks *y*  -> *x* setPending *y*
+*x* Locks *y*  -> *x* ConditionChecks *y*
+*x* Locks *y*  -> *x* Unlock *y*
+*x* Locks *y* -> *x* Unlock *y* -> *x* Execute Fail / Execute Succes
 
-Lockby x -> UnlockBy x -> LockBy y
+*y* Lockby *x* -> *y* UnlockBy *x* -> *y* LockBy *z*
+
 
 ## Algorithms
 
