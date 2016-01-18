@@ -102,11 +102,11 @@ Each node has a boolean CreatingHistory
         - Return lookup history for `HID`
  - If `CreatingHistory` of node is `false` 
     - Set `CreatingHistory` of node to `true`
-    - Ask all neighbouring nodes for their history
+    - Ask all relations for their history
         - If all neighbours return None
             - Create history of self
             - Return history to `X`
-        - If any history is returned from neighbouring nodes
+        - If any history is returned from relations
             - Create history of self
             - Stich all histories together
             - Return "new" history to `X`
@@ -178,9 +178,9 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
     - If (Lookup history for `HID`) is not empty
         - Return lookup history for `HID`
     - `X` gets added to `requesters`
-    - Add all neighbouring nodes to `wait for`
+    - Add all relations to `wait for`
     - If `wait for` is empty
-        - Create history 
+        - Create history
         - Return 
     - For each node `n` in `T`
         - if `n` is in `wait for`
@@ -189,7 +189,7 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
     - If `wait for` is empty
         Deadlock case: Return empty set 
     - Ask all nodes in `wait for` for their history with `T'`
-    - Create neighbour history from `wait for` answers
+    - Create relations' from `wait for` answers
     - Stitch own history with answers
     - Return "new" history to all nodes in `requesters`
   
