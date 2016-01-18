@@ -29,6 +29,8 @@ The algorithm is implemented using the following F# data types:
         | SetPendingBy
         | CheckedConditon of bool
         | ChecksConditon of bool
+        | Locks
+        | LockedBy
     }
     
     ///The "log entry" in the built history. Every node stores one StateChange for every event that occurs related involving a Relation. The final history is then built from all StateChanges of all nodes.
@@ -36,6 +38,14 @@ The algorithm is implemented using the following F# data types:
         Author: Age;
         Relation: Relation;
         Counterpart: string option
+    }
+    
+    ///A node in the graph. A Node contains WaitFor, a list of neightbours it is waiting for a response from, and a RequestTrace, which is an incoming trace of every request that occured before reaching this node appended by the ID of the Node. 
+    type Node = {
+        Id: string;
+        WaitFor : string list; 
+        RequestTrace : string list;
+        Current
     }
 
 The algorithm works by collecting every StateChange from all nodes in the system and determining what the history of execution was in the system. 
