@@ -87,8 +87,19 @@ The algorithm fetches the initial and current `State` of every node to further a
 
 ### Fetching Algorithm
 
-#### Overview
- - History is requested by `X`
+A request for a history has an ID, initially set to `None`.
+The first node that recieves a history request sets the ID of that history to its `Age: (local timestamp, event ID)`.
+All subsequent requestsfor generating the history include this ID. 
+Whenever a Node in the graph generate a history, it persists it with the corrosponding history ID.
+Whenever a Node is asked for a history, it checks if any history matches the ID, and returns it if it exists.
+
+#### Overview -> with little redudancy
+
+Each node has a boolean CreatingHistory
+
+ - History is requested by `X` with history ID: `HID`
+    - If (Lookup history for `HID`) is not empty
+        - Return lookup history for `HID`
  - If `CreatingHistory` of node is `false` 
     - Set `CreatingHistory` of node to `true`
     - Ask all neighbouring nodes for their history
@@ -158,6 +169,42 @@ Consider the following graph:
     - Get own history
     - return history to Caller (Event 5)
 
+
+#### Overview -> with redudancy for safety
+
+Each node has two lists: `request trace` and `wait for` as well as a queue: `requesters`
+
+ - History is requested by `X` with `request trace` `T` and history ID: `HID`
+    - If (Lookup history for `HID`) is not empty
+        - Return lookup history for `HID`
+    - `X` gets added to `requesters`
+    - Add all neighbouring nodes to `wait for`
+    - If `wait for` is empty
+        - Create history 
+        - Return 
+    - For each node `n` in `T`
+        - if `n` is in `wait for`
+            - remove `n` from `wait for`
+    - Create `T'` by appending own ID to `T`
+    - If `wait for` is empty
+        Deadlock case: Return empty set 
+    - Ask all nodes in `wait for` for their history with `T'`
+    - Create neighbour history from `wait for` answers
+    - Stitch own history with answers
+    - Return "new" history to all nodes in `requesters`
+  
+#### Walkthrough   
+    
+| Execution          	| Trace        	| Wait for     	| Trace'          	| Action                                        	|
+|--------------------	|--------------	|--------------	|-----------------	|--------------------------------------------------	|
+| C -> Event 5       	| []           	| [3; 2]       	| [5]             	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
+| Event 5 -> Event 3 	| [5]          	| [6; 1]       	| [5;3]           	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
+| Event 5 -> Event 2 	| [5]          	| [3;1]        	| [5; 2]          	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
+| Event 2 -> Event 1 	| [5; 2]       	| [6; 4]       	| [5; 2; 1]       	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
+| Event 1 -> Event 6 	| [5; 2; 1]    	| [1;3] => [3] 	| [5; 2; 1; 6]    	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
+| Event 6 -> Event 3 	| [5; 2; 1; 6] 	| [1; 6] => [] 	| [5; 2; 1; 6; 3] 	| Deadlock: RETURN EMPTY                           	|
+| Event 3 -> Event 6 	| [5; 3]       	| [1; 6]       	| [5; 3; 6]       	| LOOKUP, RETURN                                   	|
+| Event 1 -> Event 4 	| [5; 2; 1]    	| []           	| [5; 2; 1; 4]    	| LOOKUP, CREATE, PERSIST, RETURN                 	|
     
 ### Stitch History Algorithm
 #### Overview
