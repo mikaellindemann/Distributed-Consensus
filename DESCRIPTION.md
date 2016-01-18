@@ -83,27 +83,31 @@ The algorithm fetches the initial and current `State` of every node to further a
 | Event 1 Execution succes | (#1, Event 1, true)  |
 
 
-## Distribution algorithm
+## Algorithms
 
-Algorithm:
- - Get asked by X for history
- - If CreatingHistory is false 
-    - Set CreatingHistory to true
-    - Ask all neighbors for history.
-        - If neighbors return nothing
-            - Create own history
-            - Return history to Caller X
-        - If neighbors return something
-            - Create own history
-            - Stich together
-            - Return to Caller X
-    - Set CreatingHistory to false
- - If CreatingHistory is True
-    - Return none
+### Fetching Algorithm
+
+#### Overview
+ - History is requested by `X`
+ - If `CreatingHistory` of node is `false` 
+    - Set `CreatingHistory` of node to `true`
+    - Ask all neighbouring nodes for their history
+        - If all neighbours return None
+            - Create history of self
+            - Return history to `X`
+        - If any history is returned from neighbouring nodes
+            - Create history of self
+            - Stich all histories together
+            - Return "new" history to `X`
+    - Set `CreatingHistory` to `false`
+ - If `CreatingHistory` is `true`
+    - Return `None`
+
+#### Walkthrough 
 
 Consider the following graph:
 
-<img src='http://g.gravizo.com/g?
+![](http://g.gravizo.com/g?
  digraph G {
    | "Event 5" -> "Event 3"
    | "Event 5" -> "Event 2"
@@ -114,8 +118,7 @@ Consider the following graph:
    | "Event 1" -> "Event 4"
    | "Event 1" -> "Event 6"
    | "Event 6" -> "Event 1"
- }
-'/>
+ })
 
 - Event 5 gets asked by *Client* for its history. 
     - It sets its CreatingHistory boolean to true. 
@@ -154,3 +157,16 @@ Consider the following graph:
 - Event 3 gets no history from neighbors
     - Get own history
     - return history to Caller (Event 5)
+
+    
+### Stitch History Algorithm
+#### Overview
+
+#### Walkthrough
+
+
+### Check-Consistency Algorithm
+#### Overview
+
+#### Walkthrough
+
