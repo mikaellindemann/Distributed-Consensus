@@ -31,6 +31,8 @@ The algorithm is implemented using the following F# data types:
         | ChecksConditon of bool
         | Locks
         | LockedBy
+        | Unlocks
+        | UnlockedBy
     }
     
     ///The "log entry" in the built history. Every node stores one StateChange for every event that occurs related involving a Relation. The final history is then built from all StateChanges of all nodes.
