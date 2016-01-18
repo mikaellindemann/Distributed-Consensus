@@ -52,7 +52,7 @@ The algorithm is implemented using the following F# data types:
 
 The algorithm works by collecting every StateChange from all nodes in the system and determining what the history of execution was in the system. 
 
-Using the `LocalTimestamp` and `Id` of `Age`s we can build a _happens-before_ relation of the system up to the current point in time and determine what/if any nodes are faulty. 
+Using the `Age` and history of the nodes in the system we can build a _happens-before_ relation up to the current point in time and determine what/if any nodes are faulty. 
 
 The algorithm fetches the initial and current `State` of every node to further assist in creating the history.
 
@@ -62,61 +62,61 @@ The algorithm fetches the initial and current `State` of every node to further a
 `#number` is the local timestamp, note that because it is local, the *included* can have a lower timestamp than the *includer*.
 
 ### Inclusion
-| Inclusion Relation       | Event 1: history                   | Event 2: history                   |
-|--------------------------|------------------------------------|------------------------------------|
-| Event 1 includes Event 2 | (#1, Event 1, includes, Event 2)   | (#1, Event 2, includedBy, Event 1) |
-| Event 2 includes Event 1 | (#1, Event 1, includedBy, Event 2) | (#3, Event 2, includes, Event 1)   |
+| Inclusion Relation         | Event 1: history                     | Event 2: history                     |
+|----------------------------|--------------------------------------|--------------------------------------|
+| `Event 1 includes Event 2` | `(#1, Event 1, includes, Event 2)`   | `(#1, Event 2, includedBy, Event 1)` |
+| `Event 2 includes Event 1` | `(#1, Event 1, includedBy, Event 2)` | `(#3, Event 2, includes, Event 1)`   |
 
 Happens Before Rule: *x* includedBy *y* -> *y* includes *x*
 
 ### Exclusion
-| Exclusion Relation       | Event 1: history                   | Event 2: history                   |
-|--------------------------|------------------------------------|------------------------------------|
-| Event 1 excludes Event 2 | (#1, Event 1, excludes, Event 2)   | (#1, Event 2, excludedBy, Event 1) |
-| Event 2 excludes Event 1 | (#1, Event 1, excludedBy, Event 2) | (#3, Event 2, excludes, Event 1)   |
+| Exclusion Relation         | Event 1: history                     | Event 2: history                     |
+|----------------------------|--------------------------------------|--------------------------------------|
+| `Event 1 excludes Event 2` | `(#1, Event 1, excludes, Event 2)`   | `(#1, Event 2, excludedBy, Event 1)` |
+| `Event 2 excludes Event 1` | `(#1, Event 1, excludedBy, Event 2)` | `(#3, Event 2, excludes, Event 1)`   |
 
 Happens Before Rule: *x* excludedBy *y* -> *y* excludes *x*
 
 ### Pending
-| Pending Relation             | Event 1: history                     | Event 2: history                     |
-|------------------------------|--------------------------------------|--------------------------------------|
-| Event 1 sets Pending Event 2 | (#1, Event 1, setsPending, Event 2)  | (#1, Event 2, setPendingBy, Event 1) |
-| Event 2 sets Pending Event 1 | (#1, Event 1, setPendingBy, Event 2) | (#3, Event 2, setsPending, Event 1)  |
+| Pending Relation               | Event 1: history                       | Event 2: history                       |
+|--------------------------------|----------------------------------------|----------------------------------------|
+| `Event 1 sets Pending Event 2` | `(#1, Event 1, setsPending, Event 2)`  | `(#1, Event 2, setPendingBy, Event 1)` |
+| `Event 2 sets Pending Event 1` | `(#1, Event 1, setPendingBy, Event 2)` | `(#3, Event 2, setsPending, Event 1)`  |
 
 Happens Before Rule: *x* setPendingBy *y* -> *y* setsPending *x*
 
 ### Conditions
-| Condition Relation                         | Event 1: history                               | Event 2: history                               |
-|--------------------------------------------|------------------------------------------------|------------------------------------------------|
-| Event 1 checks Event 2 which is executable | (#1, Event 1, ConditionChecks true, Event 2)   | (#1, Event 2, ConditionChecked true, Event 1)  |
-| Event 1 checks Event 2 which is executable | (#1, Event 1, ConditionChecks false, Event 2)  | (#1, Event 2, ConditionChecked false, Event 1) |
-| Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked true, Event 2)  | (#3, Event 2, ConditionChecks true, Event 1)   |
-| Event 2 checks Event 1 which is executable | (#1, Event 1, ConditionChecked false, Event 2) | (#3, Event 2, ConditionChecks false, Event 1)  |
+| Condition Relation                           | Event 1: history                                 | Event 2: history                                 |
+|----------------------------------------------|--------------------------------------------------|--------------------------------------------------|
+| `Event 1 checks Event 2 which is executable` | `(#1, Event 1, ConditionChecks true, Event 2)`   | `(#1, Event 2, ConditionChecked true, Event 1)`  |
+| `Event 1 checks Event 2 which is executable` | `(#1, Event 1, ConditionChecks false, Event 2)`  | `(#1, Event 2, ConditionChecked false, Event 1)` |
+| `Event 2 checks Event 1 which is executable` | `(#1, Event 1, ConditionChecked true, Event 2)`  | `(#3, Event 2, ConditionChecks true, Event 1)`   |
+| `Event 2 checks Event 1 which is executable` | `(#1, Event 1, ConditionChecked false, Event 2)` | `(#3, Event 2, ConditionChecks false, Event 1)`  |
 
 Happens Before Rule: *x* ConditionChecked *y* -> *y* ConditionChecks *x*
 
 ### Execution
-| Execution                | Event 1: history     |
-|--------------------------|----------------------|
-| Event 1 Execution begins | (#1, Event 1)        |
-| Event 1 Execution fails  | (#1, Event 1, false) |
-| Event 1 Execution succes | (#1, Event 1, true)  |
+| Execution                  | Event 1: history       |
+|----------------------------|------------------------|
+| `Event 1 Execution begins` | `(#1, Event 1)`        |
+| `Event 1 Execution fails`  | `(#1, Event 1, false)` |
+| `Event 1 Execution succes` | `(#1, Event 1, true)`  |
 
 Happens Before Rule: *x* Execution begins -> *x* Execution fails / *x* Execution succes
 
 ### Lock
-| Lock                  | Event 1 History              | Event 2 History                  |
-|-----------------------|------------------------------|----------------------------------|
-| Event 1 Locks Event 2 | #1, Event 1, Lock, Event 2   | (#1, Event 2, lockedBy, Event 1) |
-| Event 2 Locks Event 1 | #1, Event 1, LockBy, Event 2 | (#1, Event 2, lock, Event 1)     |
+| Lock                    | Event 1 History                | Event 2 History                    |
+|-------------------------|--------------------------------|------------------------------------|
+| `Event 1 Locks Event 2` | `#1, Event 1, Lock, Event 2`   | `(#1, Event 2, lockedBy, Event 1)` |
+| `Event 2 Locks Event 1` | `#1, Event 1, LockBy, Event 2` | `(#1, Event 2, lock, Event 1)`     |
 
 Happens Before Rule: *x* LockedBy *y* -> Unlock *x*
 
 ### Unlock
-| Unlock                 | Event 1 History                | Event 2 History                  |
-|------------------------|--------------------------------|----------------------------------|
-| Event 1 Unlock Event 2 | #1, Event 1, Unlock, Event 2   | (#1, Event 2, UnlockBy, Event 1) |
-| Event 2 Unlock Event 1 | #1, Event 1, UnlockBy, Event 2 | (#1, Event 2, Unlock, Event 1)   |
+| Unlock                   | Event 1 History                  | Event 2 History                    |
+|--------------------------|----------------------------------|------------------------------------|
+| `Event 1 Unlock Event 2` | `#1, Event 1, Unlock, Event 2`   | `(#1, Event 2, UnlockBy, Event 1)` |
+| `Event 2 Unlock Event 1` | `#1, Event 1, UnlockBy, Event 2` | `(#1, Event 2, Unlock, Event 1)`   |
 
 Happens Before Rule: *x* UnlockedBy *y* -> *y* Unlock *x*
 
@@ -135,7 +135,7 @@ Lockby x -> UnlockBy x -> LockBy y
 
 ## Algorithms
 
-### Fetching Algorithm
+### Fetching Algorithm - Simple
 
 #### Overview
  - History is requested by `X`
@@ -209,6 +209,7 @@ Consider the following graph:
     - return history to Caller (Event 5)
 
 
+### Fetching Algorithm - Deadlock (and Attack) Secure
 
 #### Overview - with redundancy for safety
 
@@ -235,53 +236,17 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
   
 #### Walkthrough   
     
-| Execution          	| Trace        	| Wait for     	| Trace'          	| Action                                        	|
-|--------------------	|--------------	|--------------	|-----------------	|--------------------------------------------------	|
-| C -> Event 5       	| []           	| [3; 2]       	| [5]             	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 5 -> Event 3 	| [5]          	| [6; 1]       	| [5;3]           	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 5 -> Event 2 	| [5]          	| [3;1]        	| [5; 2]          	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 2 -> Event 1 	| [5; 2]       	| [6; 4]       	| [5; 2; 1]       	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 1 -> Event 6 	| [5; 2; 1]    	| [1;3] => [3] 	| [5; 2; 1; 6]    	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 6 -> Event 3 	| [5; 2; 1; 6] 	| [1; 6] => [] 	| [5; 2; 1; 6; 3] 	| Deadlock: RETURN EMPTY                           	|
-| Event 3 -> Event 6 	| [5; 3]       	| [1; 6]       	| [5; 3; 6]       	| LOOKUP, RETURN                                   	|
-| Event 1 -> Event 4 	| [5; 2; 1]    	| []           	| [5; 2; 1; 4]    	| LOOKUP, CREATE, PERSIST, RETURN                 	|
+| Execution          	| Trace         	| Wait for      	| Trace'            	| Action                                            	|
+|--------------------	|---------------	|---------------	|-------------------	|---------------------------------------------------	|
+| `C -> Event 5`       	| `[]`           	| `[3; 2]`       	| `[5]`             	| `LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN`   	|
+| `Event 5 -> Event 3` 	| `[5]`          	| `[6; 1]`       	| `[5;3]`           	| `LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN`   	|
+| `Event 5 -> Event 2` 	| `[5]`          	| `[3;1]`        	| `[5; 2]`          	| `LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN`   	|
+| `Event 2 -> Event 1` 	| `[5; 2]`       	| `[6; 4]`       	| `[5; 2; 1]`       	| `LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN`   	|
+| `Event 1 -> Event 6` 	| `[5; 2; 1]`    	| `[1;3] => [3]` 	| `[5; 2; 1; 6]`    	| `LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN`   	|
+| `Event 6 -> Event 3` 	| `[5; 2; 1; 6]` 	| `[1; 6] => []` 	| `[5; 2; 1; 6; 3]` 	| `Deadlock: RETURN EMPTY`                           	|
+| `Event 3 -> Event 6` 	| `[5; 3]`       	| `[1; 6]`       	| `[5; 3; 6]`       	| `LOOKUP, RETURN`                                   	|
+| `Event 1 -> Event 4` 	| `[5; 2; 1]`    	| `[]`           	| `[5; 2; 1; 4]`    	| `LOOKUP, CREATE, PERSIST, RETURN`                 	|
 
-
-#### Overview -> with redudancy for safety
-
-Each node has two lists: `request trace` and `wait for` as well as a queue: `requesters`
-
- - History is requested by `X` with `request trace` `T` and history ID: `HID`
-    - If (Lookup history for `HID`) is not empty
-        - Return lookup history for `HID`
-    - `X` gets added to `requesters`
-    - Add all relations to `wait for`
-    - If `wait for` is empty
-        - Create history
-        - Return 
-    - For each node `n` in `T`
-        - if `n` is in `wait for`
-            - remove `n` from `wait for`
-    - Create `T'` by appending own ID to `T`
-    - If `wait for` is empty
-        Deadlock case: Return empty set 
-    - Ask all nodes in `wait for` for their history with `T'`
-    - Create relations' from `wait for` answers
-    - Stitch own history with answers
-    - Return "new" history to all nodes in `requesters`
-  
-#### Walkthrough   
-    
-| Execution          	| Trace        	| Wait for     	| Trace'          	| Action                                        	|
-|--------------------	|--------------	|--------------	|-----------------	|--------------------------------------------------	|
-| C -> Event 5       	| []           	| [3; 2]       	| [5]             	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 5 -> Event 3 	| [5]          	| [6; 1]       	| [5;3]           	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 5 -> Event 2 	| [5]          	| [3;1]        	| [5; 2]          	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 2 -> Event 1 	| [5; 2]       	| [6; 4]       	| [5; 2; 1]       	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 1 -> Event 6 	| [5; 2; 1]    	| [1;3] => [3] 	| [5; 2; 1; 6]    	| LOOKUP, WAIT, CREATE, STITCH, PERSIST, RETURN 	|
-| Event 6 -> Event 3 	| [5; 2; 1; 6] 	| [1; 6] => [] 	| [5; 2; 1; 6; 3] 	| Deadlock: RETURN EMPTY                           	|
-| Event 3 -> Event 6 	| [5; 3]       	| [1; 6]       	| [5; 3; 6]       	| LOOKUP, RETURN                                   	|
-| Event 1 -> Event 4 	| [5; 2; 1]    	| []           	| [5; 2; 1; 4]    	| LOOKUP, CREATE, PERSIST, RETURN                 	|
     
 ### Stitch History Algorithm
 The stiching algorithm should determine in what order Events have been executed, given a partial or full history. 
