@@ -154,7 +154,7 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
             - remove `n` from `wait for`
     - Create `T'` by appending own ID to `T`
     - If `wait for` is empty
-        Deadlock case: Return empty set
+        - Cyclic case: Return empty set
     - Ask all nodes in `wait for` for their history with `T'`
     - Create relations' from `wait for` answers
     - Stitch own history with answers
@@ -266,6 +266,9 @@ Consider the following graph:
 ### Stitch Algorithm
 The stiching algorithm should determine in what order Events have been executed, given a partial or full history based on DCR Graph-specific and common happens-before relations.
 
+Maybe this algorithm should just create an order of the logs according to the happen before relation rules. And send back the ordered list.
+While creating the order the Validate-History algorithm should be used.
+
 #### Overview
 
 
@@ -274,5 +277,16 @@ The stiching algorithm should determine in what order Events have been executed,
 
 ### Validate-History Algorithm
 #### Overview
+Check for:
+Inconsistent data
+
 
 #### Walkthrough
+
+### Create Execution Tree
+#### Overview
+Create a tree with the known execution order.
+
+         (Event 1)
+    /        |         \
+Event 2    Event 3    Event 4
