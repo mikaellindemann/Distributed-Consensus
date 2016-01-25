@@ -1,0 +1,16 @@
+Afsnit 3 i projektbeskrivelsen bør bruge ordet "Consensus".
+
+De 3 løsningsmuligheder, bør ændres til en række af aktiviteter der skal udføres. (bør komme ned under metoder)
+
+Udførsel af et litteraturstudie i starten af projektet - ifht hvilke metoder man kan bruge og som allerede eksisterer (consensus).
+
+Man skal skrive hvad vi aflevere (rapport + noget kode).
+
+
+Møde 1 gang i ugen: Vi skal have en vanskelig ting med hver gang. Enten noget teknisk, eller noget vi har haft svært ved at udtrykke.
+
+Til næste gang:
+Problembeskrivelse.
+Hvad gør vores fetch-algoritme - hvorfor er den rigtig. Hvad betyder "rigtig"? Hvad betyder at blive "snydt" og hvornår kan man opdage det, og hvornår kan man korrigere for det? - Husk at angive antagelser. (Antag at de kan snyde lige så snedigt som de vil "Han snyder på en vilkårlig måde").
+Paxos -> næste gang. - Fokusér på de første par sider af teksten (til og uden 2.3 i paxos made simple). Bunden af side 3 kan springes over/vi gennemgår det sammen. Fokuser på de krav (P1 ...) der skal være dækket og hvorfor.
+Hvis tid: Stitching.

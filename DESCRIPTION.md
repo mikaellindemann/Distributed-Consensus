@@ -22,12 +22,12 @@
 | `Event 2 sets Pending Event 1` | `(#1, Event 1, setPendingBy, Event 2)` | `(#3, Event 2, setsPending, Event 1)`  |
 
 ### Conditions
-| Condition Relation                           | Event 1: history                                 | Event 2: history                                 |
-|----------------------------------------------|--------------------------------------------------|--------------------------------------------------|
-| `Event 1 checks Event 2 which is executable` | `(#1, Event 1, ConditionChecks true, Event 2)`   | `(#1, Event 2, ConditionChecked true, Event 1)`  |
-| `Event 1 checks Event 2 which is executable` | `(#1, Event 1, ConditionChecks false, Event 2)`  | `(#1, Event 2, ConditionChecked false, Event 1)` |
-| `Event 2 checks Event 1 which is executable` | `(#1, Event 1, ConditionChecked true, Event 2)`  | `(#3, Event 2, ConditionChecks true, Event 1)`   |
-| `Event 2 checks Event 1 which is executable` | `(#1, Event 1, ConditionChecked false, Event 2)` | `(#3, Event 2, ConditionChecks false, Event 1)`  |
+| Condition Relation                               | Event 1: history                                 | Event 2: history                                 |
+|--------------------------------------------------|--------------------------------------------------|--------------------------------------------------|
+| `Event 1 checks Event 2 which is executable`     | `(#1, Event 1, ConditionChecks true, Event 2)`   | `(#1, Event 2, ConditionChecked true, Event 1)`  |
+| `Event 1 checks Event 2 which is not executable` | `(#1, Event 1, ConditionChecks false, Event 2)`  | `(#1, Event 2, ConditionChecked false, Event 1)` |
+| `Event 2 checks Event 1 which is executable`     | `(#1, Event 1, ConditionChecked true, Event 2)`  | `(#3, Event 2, ConditionChecks true, Event 1)`   |
+| `Event 2 checks Event 1 which is not executable` | `(#1, Event 1, ConditionChecked false, Event 2)` | `(#3, Event 2, ConditionChecks false, Event 1)`  |
 
 ### Execution
 | Execution                  | Event 1: history       |
@@ -74,23 +74,24 @@
 
 The algorithms use the following F# data types:
 
+```fsharp
     ///A unique identifier type of the local timestamp and ID of a given node.
     type Age = {
         LocalTimestamp: int;
         Id: string
     }
-    
+
     ///A state of a node.
     type State = {
         Pending: bool;
         Excluded: bool
     }
-    
+
     ///The beginning and end of an execution of a Node. The bool signifies whether the execution was succesful. The Age is an identifier for when the Execution started and when it ended.
-    type Execution = 
+    type Execution =
         | Begin of Age
         | Finish of bool * Age
-    
+
     ///A type for the different kinds of edges between nodes in the graph.
     type Relation = {
         | Includes
@@ -106,25 +107,26 @@ The algorithms use the following F# data types:
         | Unlocks
         | UnlockedBy
     }
-    
+
     ///The "log entry" in the built history. Every node stores one StateChange for every event that occurs related involving a Relation. The final history is then built from all StateChanges of all nodes.
     type StateChange = {
         Author: Age;
         Relation: Relation;
         Counterpart: string option
     }
-    
-    ///A node in the graph. A Node contains WaitFor, a list of neightbours it is waiting for a response from, and a RequestTrace, which is an incoming trace of every request that occured before reaching this node appended by the ID of the Node. 
+
+    ///A node in the graph. A Node contains WaitFor, a list of neightbours it is waiting for a response from, and a RequestTrace, which is an incoming trace of every request that occured before reaching this node appended by the ID of the Node.
     type Node = {
         Id: string;
-        WaitFor : string list; 
+        WaitFor : string list;
         RequestTrace : string list;
         Current
     }
+```
 
-History will be created by fetching every StateChange from all nodes in the system and determining what the history of execution was in the system. 
+History will be created by fetching every StateChange from all nodes in the system and determining what the history of execution was in the system.
 
-Using the `Age` and `StateChange`s of the nodes in the system we can build a _happens-before_ relation up to the current point in time and determine what/if any nodes are faulty. 
+Using the `Age` and `StateChange`s of the nodes in the system we can build a _happens-before_ relation up to the current point in time and determine what/if any nodes are faulty.
 
 The algorithm fetches the initial and current `State` of every node to further assist in creating the history.
 
@@ -146,18 +148,18 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
     - Add all relations to `wait for`
     - If `wait for` is empty
         - Create history
-        - Return 
+        - Return
     - For each node `n` in `T`
         - if `n` is in `wait for`
             - remove `n` from `wait for`
     - Create `T'` by appending own ID to `T`
     - If `wait for` is empty
-        Deadlock case: Return empty set 
+        Deadlock case: Return empty set
     - Ask all nodes in `wait for` for their history with `T'`
     - Create relations' from `wait for` answers
     - Stitch own history with answers
     - Return "new" history to all nodes in `requesters`
-  
+
 #### Walkthrough   
 
 Consider the following graph:
@@ -186,12 +188,12 @@ Consider the following graph:
 | `Event 3 -> Event 6` 	| `[5; 3]`       	| `[1; 6]`       	| `[5; 3; 6]`       	| `LOOKUP, RETURN`                                   	|
 | `Event 1 -> Event 4` 	| `[5; 2; 1]`    	| `[]`           	| `[5; 2; 1; 4]`    	| `LOOKUP, CREATE, PERSIST, RETURN`                 	|
 
-    
+
 ### Fetch Algorithm - Simple (No Redundancy)
 
 #### Overview
  - History is requested by `X`
- - If `CreatingHistory` of node is `false` 
+ - If `CreatingHistory` of node is `false`
     - Set `CreatingHistory` of node to `true`
     - Ask all relations for their history
         - If all relations return None
@@ -205,7 +207,7 @@ Consider the following graph:
  - If `CreatingHistory` is `true`
     - Return `None`
 
-#### Walkthrough 
+#### Walkthrough
 
 Consider the following graph:
 
@@ -222,28 +224,28 @@ Consider the following graph:
    | "Event 6" -> "Event 1"
  })
 
-- Event 5 gets asked by *Client* for its history. 
-    - It sets its CreatingHistory boolean to true. 
-    - Asks all its neighbors (Event 2 and Event 5) for their history.
+- Event 5 gets asked by *Client* for its history.
+    - It sets its CreatingHistory boolean to true.
+    - Asks all its neighbors (Event 2 and Event 3) for their history.
 - Event 2 gets asked by Event 5 of their history
-    - It sets its CreatingHistory boolean to true. 
+    - It sets its CreatingHistory boolean to true.
     - Asks all its neighbors (Event 3 and Event 1) for their history.
 - Event 3 gets asked by Event 5 of their history
-    - It sets its CreatingHistory boolean to true. 
+    - It sets its CreatingHistory boolean to true.
     - Asks all its neighbors (Event 5 and Event 1) for their history.
 - Event 3 gets asked by Event 2 of their history
     - return is already creating history
 - Event 1 gets asked by Event 2 of their history
-    - It sets its CreatingHistory boolean to true. 
+    - It sets its CreatingHistory boolean to true.
     - Asks all its neighbors (Event 4) for their history.
 - Event 4 gets asked by Event 1 of their history
-    - It sets its CreatingHistory boolean to true. 
+    - It sets its CreatingHistory boolean to true.
     - Asks all its neighbors (None) for their history. (has none)
     - Since No neighbors return a history to Caller (Event 1)
 - Event 1 gets asked by Event 3 of their history
     - return is already creating history
 - Event 6 gets asked by Event 1 of their history
-    - It sets its CreatingHistory boolean to true. 
+    - It sets its CreatingHistory boolean to true.
     - Asks all its neighbors (Event 1) for their history.
     - Since No neighbors return a history (6 is already working) to Caller (Event 1)
 - Event 1 gets asked by Event 6 of their history
@@ -274,4 +276,3 @@ The stiching algorithm should determine in what order Events have been executed,
 #### Overview
 
 #### Walkthrough
-
