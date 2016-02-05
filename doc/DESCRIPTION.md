@@ -141,8 +141,8 @@ History is created by using Fetch-and-Stitch with validation in the stitching ph
 
 Each node has two lists: `request trace` and `wait for` as well as a queue: `requesters`
 
- - History is requested by `X` with `request trace` `T` and history ID: `HID`
-    - If (Lookup history for `HID`) is not empty
+ 1. History is requested by `X` with `request trace` `T` and history ID: `HID`
+    1. If (Lookup history for `HID`) is not empty
         - Return lookup history for `HID`
     - `X` gets added to `requesters`
     - Add all relations to `wait for`
@@ -154,11 +154,13 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
             - remove `n` from `wait for`
     - Create `T'` by appending own ID to `T`
     - If `wait for` is empty
-        - Cyclic case: Return empty set
+        - Cyclic case: Return empty set -> maybe return local set
     - Ask all nodes in `wait for` for their history with `T'`
     - Create relations' from `wait for` answers
     - Stitch own history with answers
     - Return "new" history to all nodes in `requesters`
+
+In case of cyclic it could be smart to return the local set of history since it can be used for checking with the rest of the trace.
 
 #### Walkthrough   
 
@@ -188,6 +190,18 @@ Consider the following graph:
 | `Event 3 -> Event 6` 	| `[5; 3]`       	| `[1; 6]`       	| `[5; 3; 6]`       	| `LOOKUP, RETURN`                                   	|
 | `Event 1 -> Event 4` 	| `[5; 2; 1]`    	| `[]`           	| `[5; 2; 1; 4]`    	| `LOOKUP, CREATE, PERSIST, RETURN`                 	|
 
+
+#### Limitations
+There can be cases with conditional relations where we wont have information about nodes.
+
+![](http://g.gravizo.com/g?
+ digraph G {
+   | "Event 1" -> "Event 2"
+   | "Event 2" -> "Event 1"
+   | "Event 3" -> "Event 1"
+ })
+ 
+ In this case if `event 1` gets asked about its history `event 3`'s history will never be known if the relation from `event 3` to `even 1` is a conditional relation.
 
 ### Fetch Algorithm - Simple (No Redundancy)
 
