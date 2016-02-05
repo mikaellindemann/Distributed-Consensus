@@ -134,6 +134,17 @@ The algorithm fetches the initial and current `State` of every node to further a
 ## Algorithms
 History is created by using Fetch-and-Stitch with validation in the stitching phase.
 
+The receiver of the first create history call should
+
+- create history ID
+- fetch history from neighbours
+    - each of these should:
+        - fetch
+        - stitch
+        - return
+- stitch
+- Call for a vote
+- Clousure of event graph to an execution graph.
 
 ### Fetching Algorithm - Deadlock (and Attack) Secure
 
@@ -142,7 +153,7 @@ The goal of the algorithm is to fetch the history of all the events in the workf
 Correcness should be based on:
 - How many nodes' history gets fetched in the workflow (higher is better).
 - How rendundant the data is (higher redundancy is better).
-- How 
+- How well it handles cycles in the graph
 
 
 #### Overview
