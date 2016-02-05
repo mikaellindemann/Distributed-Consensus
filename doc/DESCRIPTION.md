@@ -137,6 +137,14 @@ History is created by using Fetch-and-Stitch with validation in the stitching ph
 
 ### Fetching Algorithm - Deadlock (and Attack) Secure
 
+#### Corectness / Goal of the algorithm
+The goal of the algorithm is to fetch the history of all the events in the workflow.
+Correcness should be based on:
+- How many nodes' history gets fetched in the workflow (higher is better).
+- How rendundant the data is (higher redundancy is better).
+- How 
+
+
 #### Overview
 
 Each node has two lists: `request trace` and `wait for` as well as a queue: `requesters`
