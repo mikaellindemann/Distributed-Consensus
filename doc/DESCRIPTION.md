@@ -159,12 +159,11 @@ Correcness should be based on:
 
 #### Overview
 
-Each node has two lists: `request trace` and `wait for` as well as a queue: `requesters`
+Each node has two lists: `request trace` and `wait for`.
 
  1. History is requested by `X` with `request trace` `T` and history ID: `HID`
     1. If (Lookup history for `HID`) is not empty
         - Return lookup history for `HID`
-    - `X` gets added to `requesters`
     - Add all relations to `wait for`
     - If `wait for` is empty
         - Create history
@@ -176,9 +175,8 @@ Each node has two lists: `request trace` and `wait for` as well as a queue: `req
     - If `wait for` is empty
         - Cyclic case: Return empty set -> maybe return local set
     - Ask all nodes in `wait for` for their history with `T'`
-    - Create relations' from `wait for` answers
     - Stitch own history with answers
-    - Return "new" history to all nodes in `requesters`
+    - Return "new" history
 
 In case of cyclic it could be smart to return the local set of history since it can be used for checking with the rest of the trace.
 

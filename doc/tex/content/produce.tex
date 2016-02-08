@@ -1,0 +1,34 @@
+% !TeX root = ../DCR-Consensus.tex
+\section{Produce}
+\subsection{Analysis} % Hvad er problemet
+The goal of the algorithm is to fetch the history of all the events in the workflow.
+
+Correcness should be based on:
+\begin{itemize}
+    \item How many nodes' history gets fetched in the workflow (higher is better).
+    \item How rendundant the data is (higher redundancy is better).
+    \item How well it handles cycles in the graph
+\end{itemize}
+
+\subsection{Implementation} % hvordan løses det
+The implementation of this algorithm starts in a single event in the workflow and is called recoursively to the rest of the reachable parts of the workflow.
+
+ 1. History is requested by `X` with `request trace` `T` and history ID: `HID`
+    1. If (Lookup history for `HID`) is not empty
+        - Return lookup history for `HID`
+    - Add all relations to `wait for`
+    - If `wait for` is empty
+        - Create history
+        - Return
+    - For each node `n` in `T`
+        - if `n` is in `wait for`
+            - remove `n` from `wait for`
+    - Create `T'` by appending own ID to `T`
+    - If `wait for` is empty
+        - Cyclic case: Return empty set -> maybe return local set
+    - Ask all nodes in `wait for` for their history with `T'`
+    - Stitch own history with answers
+    - Return "new" history
+
+\subsection{Discussion} % bliver problemet løst
+\subsection{Performance} % hvor godt løses det

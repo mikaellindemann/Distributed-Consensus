@@ -1,20 +1,36 @@
 % !TeX root = ../DCR-Consensus.tex
 \chapter{Algorithms}
-Her skal der være en lille nuttet tekst.
+The overall problem is: given a dcrgraph with possible malicious nodes, try to create a execution only history which the workflow has consensus of.
 
-History is created by using Fetch-and-Stitch with validation in the stitching phase.
+The algorithm consists of the following subalgorithms executed in that order:
+\begin{itemize}
+    \item Produce - which gathers the history.
+    \item Elect - which checks if the majority of the workflow can accept the proposed history
+    \item Simplify - which takes the history and creates an execution only history.
+\end{itemize}
 
-The receiver of the first create history call should
+Correcness should be based on:
+\begin{itemize}
+    \item How many events can be corrupted.
+    \item How well the algorithm can determine which events are corrupted.
+    \item how well the algorithm can determine if any and how many events are corrupted.
+\end{itemize}
 
-- create history ID
-- fetch history from neighbours
-    - each of these should:
-        - fetch
-        - stitch
-        - return
-- stitch
-- Call for a vote
-- Clousure of event graph to an execution graph.
+%History is created by using Fetch-and-Stitch with validation in the stitching phase.
+
+%The receiver of the first create history call should
+
+%- create history ID
+%- fetch history from neighbours
+%    - each of these should:
+%        - fetch
+%        - stitch
+%        - return
+%- stitch
+%- Call for a vote
+%- Clousure of event graph to an execution graph.
 
 \include{content/stitch}
-\include{content/fetch}
+\include{content/produce}
+\include{content/elect}
+\include{content/simplify}
