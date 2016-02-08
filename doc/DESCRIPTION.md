@@ -154,6 +154,7 @@ Correcness should be based on:
 - How many nodes' history gets fetched in the workflow (higher is better).
 - How rendundant the data is (higher redundancy is better).
 - How well it handles cycles in the graph
+- That it finishes.
 
 
 #### Overview
