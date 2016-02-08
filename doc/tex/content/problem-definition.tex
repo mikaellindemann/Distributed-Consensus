@@ -1,2 +1,8 @@
 % !TeX root = ../DCR-Consensus.tex
 \chapter{Problem Definition}
+
+Finding the order of execution in a distributed DCR graph raises several problems.
+Consensus should be reached between nodes in the graph about the order of execution in the graph.
+
+Finding a history or log of a given order of execution can be difficult in distributed DCR graphs, due to the fact that no single node has the overview of the entire workflow in the graph.
+Logs can be split among several nodes, timestamps of logs do not necessarily correspond among nodes and nodes can emit erroneous logs. These challenges must be overcome in order to reach consensus on the order of execution.
