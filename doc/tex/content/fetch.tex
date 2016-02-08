@@ -1,6 +1,15 @@
 % !TeX root = ../DCR-Consensus.tex
 \section{Fetch}
 \subsection{Analysis} % Hvad er problemet
+The goal of the algorithm is to fetch the history of all the events in the workflow.
+
+Correcness should be based on:
+\begin{enumerate}
+    \item How many nodes' history gets fetched in the workflow (higher is better).
+    \item How rendundant the data is (higher redundancy is better).
+    \item How well it handles cycles in the graph
+\end{enumerate}
+
 \subsection{Implementation} % hvordan løses det
 \subsection{Discussion} % bliver problemet løst
 \subsection{Performance} % hvor godt løses det

@@ -1,5 +1,20 @@
 % !TeX root = ../DCR-Consensus.tex
 \chapter{Algorithms}
 Her skal der være en lille nuttet tekst.
+
+History is created by using Fetch-and-Stitch with validation in the stitching phase.
+
+The receiver of the first create history call should
+
+- create history ID
+- fetch history from neighbours
+    - each of these should:
+        - fetch
+        - stitch
+        - return
+- stitch
+- Call for a vote
+- Clousure of event graph to an execution graph.
+
 \include{content/fetch}
 \include{content/stitch}
