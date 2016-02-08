@@ -1,15 +1,19 @@
 % !TeX root = ../DCR-Consensus.tex
 \section{Fetch}
 \subsection{Analysis} % Hvad er problemet
-The goal of the algorithm is to fetch the history of all the events in the workflow.
+Given a workflow, the fetching algorithm results in an accumulation of partially ordered histories of the events in the workflow.
 
-Correcness should be based on:
+Given an event in a workflow, the fetching algorithm results in an accumulation of partially ordered histories of every event that can be reached via relations from the given event. %TODO Der kan godt være en undtagelse mht. "between". Er det begge veje?
+
+
+\subsection{Implementation} % hvordan løses det
+
+\subsection{Discussion} % bliver problemet løst
+Correctness should be based on:
 \begin{enumerate}
     \item How many nodes' history gets fetched in the workflow (higher is better).
     \item How rendundant the data is (higher redundancy is better).
     \item How well it handles cycles in the graph
 \end{enumerate}
 
-\subsection{Implementation} % hvordan løses det
-\subsection{Discussion} % bliver problemet løst
-\subsection{Performance} % hvor godt løses det
+\subsection{Performance} % Hvor godt løses det
