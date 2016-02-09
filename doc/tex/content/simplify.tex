@@ -5,6 +5,47 @@ The goal of the algorithm is, given a partially ordered history, to create an or
 \todo{maybe do the problemdescription polymorphic}
 
 \subsection{Implementation} % hvordan løses det
+test
+\begin{algorithmic}
+	\State \Comment{Find start nodes}
+	\ForAll{foreach node in graph}
+	    \If{node has no incoming edge}
+		    \State add to startFromSet
+		\EndIf
+	\EndFor
+	
+	\State \Comment{Create transitive clousures}
+	\ForAll{node in startFromSet}
+	    \ForAll{foreach edge to node2}
+	        \If {node2 is execution event}
+	            \State add edge from node to node2
+	            \State add node2 to startFromSet
+	            \State break
+	        \EndIf
+	    \EndFor
+	\EndFor
+	
+	\State \Comment{Remove all non executions}
+	\ForAll{foreach node in graph}
+	    \If {not execution}
+	        \State remove from graph
+	    \EndIf
+	\EndFor
+	      
+	\State \Comment{Transitive reduction}
+	\ForAll{foreach node1 in graph}
+	  \ForAll{foreach node2 in graph}
+	    \If{edge between node1 and node2 exists}
+	      \ForAll{foreach node3 in graph}
+	        \If{edge between node1 and node3 exists}
+	          \State remove node from node1 to node3
+	        \EndIf
+	      \EndFor
+	    \EndIf
+	  \EndFor
+	\EndFor
+\end{algorithmic}
+test
 \subsection{Discussion} % bliver problemet løst
 \subsection{Performance} % hvor godt løses det
 
