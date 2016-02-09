@@ -9,28 +9,41 @@ The goal of the algortithm is, given a collection of partially ordered histories
 \subsection{Implementation} % hvordan løses det
 To solve the problem a datastructure which represents the partial ordered history has to be introduced. Such a datastructure requires the following functions:
 
-\begin{lstlisting}[breaklines=true]
-Add graph node:
-    if exists graph node
-        union matching node edge sets.
-    else
-        Add node to list of nodes.
+\begin{algorithmic}
+\Function{Add} {graph node}
+	\If {EXISTS graph node}
+	    \State union matching node edge sets.
+	\Else
+	    \State Add node to list of nodes.
+	\EndIf
+\EndFunction
 
+\State\State
 
-Add graph edge:
-	Add edge to source node.
+\Function{Add}{graph edge}
+	\State add edge to source node.
+\EndFunction
 
-Stitch Algorithm:
-	foreach graph in list of graphs
-		foreach node in graph
-			add node to local graph
-	for each node1 in localgraph
-		foreach node2 in localgraph
-			If node1 and node2 does not have an edge 
-				if node1 and node2 has a happen before relation
-					create edge from node1 to node2
-	Cyclecheck
-\end{lstlisting}
+\State\State
+
+\Function{stitch}{localgraph graphlist}
+\ForAll{graph in graphlist}
+	\ForAll{node in graph}
+		\State\Call{Add}{localgraph node}
+	\EndFor
+\EndFor
+\ForAll{node1 in localgraph}
+	\ForAll{node2 in localgraph}
+		\If{node1 and node2 does not have an edge}
+			\If{node1 and node2 has a happen before relation}
+				\State create edge from node1 to node2
+			\EndIf
+		\EndIf
+	\EndFor
+\EndFor
+\State cyclecheck
+\EndFunction
+\end{algorithmic}
 
 \subsection{Discussion} % bliver problemet løst
 \subsection{Performance} % hvor godt løses det
