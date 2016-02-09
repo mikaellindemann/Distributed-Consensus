@@ -13,6 +13,7 @@ Correcness should be based on:
 \subsection{Implementation} % hvordan løses det
 The implementation of this algorithm starts in a single event in the workflow and is called recoursively to the rest of the reachable parts of the workflow.
 
+\begin{lstlisting}
  1. History is requested by `X` with `request trace` `T` and history ID: `HID`
     1. If (Lookup history for `HID`) is not empty
         - Return lookup history for `HID`
@@ -29,6 +30,7 @@ The implementation of this algorithm starts in a single event in the workflow an
     - Ask all nodes in `wait for` for their history with `T'`
     - Stitch own history with answers
     - Return "new" history
+\end{lstlisting}
 
 \subsection{Discussion} % bliver problemet løst
 \subsection{Performance} % hvor godt løses det
