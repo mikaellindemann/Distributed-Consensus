@@ -342,3 +342,4 @@ fabric.properties
 ### VisualStudioCode ###
 .vscode
 .vscodeLog
+doc/tex/DCR-Consensus.vscodeLog
