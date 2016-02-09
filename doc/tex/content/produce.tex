@@ -11,23 +11,48 @@ The goal of the algortithm is, given a DCR graph, to fetch and merge the histori
 %\end{itemize}
 
 \subsection{Implementation} % hvordan løses det
-The implementation of the algorithm starts at a single event in the workflow and is called recursively on the reachable events in the workflow. A reachable event in the workflow constitutes any event that has a relation from the current event in scope. \todo[inline]{Udvid beskrivelse til at inkludere løsning hvis event peger på nuværende event. Dette event er p.t. ikke "synligt".}
+The implementation of the algorithm starts at a single event in the workflow and is called recursively on the reachable events in the workflow. A reachable event in the workflow constitutes any event that has a relation from the current event in scope. \todo[inline]{Udvid beskrivelse til at inkludere løsning hvis event peger på nuværende event. Dette event er p.t. ikke "synligt".} \bigskip
+
+The implemented solution uses two main lists, called \texttt{request trace} and \texttt{wait for}. The current history has been assigned a unique ID, called \texttt{history ID}.
+
+The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. \bigskip
+
+When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}, and sends requests to these events for history. The request for history includes a \texttt{request trace}, which is initially empty. Outgoing history requests from an event include the received \texttt{request trace}, with the ID of the event appended. This enables events to do cycle detection. \bigskip
+
+When an event receives a history request, it checks any event ID in the received \texttt{request trace} exists in its own \texttt{wait for}. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. 
+Cycles are therefore avoided, since a chain of events are unable to wait for any event in the chain. \bigskip 
 
 
+\subsubsection*{Pseudocode}
+\begin{algorithmic}
+	\State Event receives request for history with a \texttt{request trace}, $T$ and a \texttt{history id}, $HID$. 
+	\State Event has internal \texttt{wait for}, $W$.
+	\State
+	\State $W\gets W::$ reachable events.
+	\If {$W=\emptyset$}
+	\Return own history
+	\Else
+	\State $W\gets W-T$
+	\State $T\gets T::HID$
+	\State
+	\ForAll {$w$ in $W$} request history from $w$ with $T$ \EndFor
+	\State wait for received histories.
+	\State stitch and return histories. 
+	\EndIf
+\end{algorithmic}
+
+\subsubsection*{Old version of pseudocode}
 \begin{lstlisting}[breaklines=true]
  1. History is requested by `X` with `request trace` `T` and history ID: `HID`
     1. If (Lookup history for `HID`) is not empty
         - Return lookup history for `HID`
     - Add all relations to `wait for`
-    - If `wait for` is empty
-        - Create history
-        - Return
     - For each node `n` in `T`
         - if `n` is in `wait for`
             - remove `n` from `wait for`
     - Create `T'` by appending own ID to `T`
     - If `wait for` is empty
-        - Cyclic case: Return empty set -> maybe return local set
+        - Return local history
     - Ask all nodes in `wait for` for their history with `T'`
     - Stitch own history with answers
     - Return "new" history
