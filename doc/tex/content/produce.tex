@@ -13,7 +13,7 @@ The goal of the algortithm is, given a DCR graph, to fetch and merge the histori
 \subsection{Implementation} % hvordan løses det
 The implementation of this algorithm starts in a single event in the workflow and is called recoursively to the rest of the reachable parts of the workflow.
 
-\begin{lstlisting}
+\begin{lstlisting}[breaklines=true]
  1. History is requested by `X` with `request trace` `T` and history ID: `HID`
     1. If (Lookup history for `HID`) is not empty
         - Return lookup history for `HID`
