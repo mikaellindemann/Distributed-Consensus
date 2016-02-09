@@ -15,7 +15,7 @@ The goal of the algorithm is, given a partially ordered history, to create an or
 	
 	\State \Comment{Create transitive clousures}
 	\ForAll{node1 in startFromSet}
-	    \ForAll{edge to node2}
+	    \ForAll{node2 in edgeset from node1}
 	        \If {node2 is execution log}
 	            \State add edge from node1 to node2
 	            \State add node2 to startFromSet
@@ -36,7 +36,7 @@ The goal of the algorithm is, given a partially ordered history, to create an or
 	  \ForAll{node2 in graph}
 	    \If{edge between node1 and node2 exists}
 	      \ForAll{node3 in graph}
-	        \If{edge between node1 and node3 exists}
+	        \If{edge between node2 and node3 exists AND edge between node1 and node3 exists}
 	          \State remove node from node1 to node3
 	        \EndIf
 	      \EndFor
