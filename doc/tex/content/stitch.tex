@@ -1,20 +1,13 @@
 % !TeX root = ../DCR-Consensus.tex
 \section{Stitch}
-\subsection{Analysis} % Hvad er problemet
-The goal of the algortithm is to: given a list of graphs representing partial order of logs and a local graph representing the partial order of logs - stitch the graphs of logs into the local graph such that the graph still fulfills that it represents the partial order of the union of logs from input graphs.\\
+\subsection{Goal} % Hvad er problemet
+The goal of the algortithm is, given a collection of partially ordered histories, to merge the histories into one history which includes all of the logs of the histories, such that the resulting history remains partially ordered in accordance to the ruleset described in \ref{chap:domainanalysis}.
 
-Correctness should be based on:
-\begin{enumerate}
-    \item That it creates a partial ordered graph
-    \item How well it handles faulty logs
-    \item How well it handles faulty graphs
-\end{enumerate}
-
-Logs should not be understood as executions only but all the different kinds of logs, see log description.
-A partially ordered graph should not contain cycles.
+%Logs should not be understood as executions only but all the different kinds of logs, see log description.
+%A partially ordered graph should not contain cycles.
 
 \subsection{Implementation} % hvordan løses det
-To solve the problem a datastructure which represents the partial order of logs has to be introduced. Such a datastructure must implement the following methods:
+To solve the problem a datastructure which represents the partial ordered history has to be introduced. Such a datastructure must implement the following methods:
 
 Add graph node:
     if exists(graph, node) {

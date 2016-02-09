@@ -1,14 +1,14 @@
 % !TeX root = ../DCR-Consensus.tex
 \section{Produce}
-\subsection{Analysis} % Hvad er problemet
-The goal of the algorithm is to fetch the history of all the events in the workflow.
+\subsection{Goal} % Hvad er problemet
+The goal of the algortithm is, given a DCR graph, to fetch and merge the histories of each event in the graph into one history, such that the resulting history is partially ordered in accordance to the ruleset described in \ref{chap:domainanalysis}. 
 
-Correcness should be based on:
-\begin{itemize}
-    \item How many nodes' history gets fetched in the workflow (higher is better).
-    \item How rendundant the data is (higher redundancy is better).
-    \item How well it handles cycles in the graph
-\end{itemize}
+%Correcness should be based on:
+%\begin{itemize}
+%    \item How many nodes' history gets fetched in the workflow (higher is better).
+%    \item How rendundant the data is (higher redundancy is better).
+%    \item How well it handles cycles in the graph
+%\end{itemize}
 
 \subsection{Implementation} % hvordan løses det
 The implementation of this algorithm starts in a single event in the workflow and is called recoursively to the rest of the reachable parts of the workflow.
