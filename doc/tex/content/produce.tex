@@ -11,7 +11,8 @@ The goal of the algortithm is, given a DCR graph, to fetch and merge the histori
 %\end{itemize}
 
 \subsection{Implementation} % hvordan løses det
-The implementation of this algorithm starts in a single event in the workflow and is called recoursively to the rest of the reachable parts of the workflow.
+The implementation of the algorithm starts at a single event in the workflow and is called recursively on the reachable events in the workflow. A reachable event in the workflow constitutes any event that has a relation from the current event in scope. \todo[inline]{Udvid beskrivelse til at inkludere løsning hvis event peger på nuværende event. Dette event er p.t. ikke "synligt".}
+
 
 \begin{lstlisting}
  1. History is requested by `X` with `request trace` `T` and history ID: `HID`
