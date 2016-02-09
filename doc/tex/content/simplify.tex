@@ -2,9 +2,48 @@
 \section{Simplify}
 \subsection{Goal} % Hvad er problemet
 The goal of the algorithm is, given a partially ordered history, to create an order of execution, where execution is a particular form of log.
-\todo{maybe do the problemdescription polymorphic}
+\todo{maybe do the problem description polymorphic}
 
 \subsection{Implementation} % hvordan løses det
+\begin{algorithmic}
+	\State \Comment{Find start nodes}
+	\ForAll{node in graph}
+	    \If{node has no incoming edge}
+		    \State add to startFromSet
+		\EndIf
+	\EndFor
+	
+	\State \Comment{Create transitive clousures}
+	\ForAll{node1 in startFromSet}
+	    \ForAll{edge to node2}
+	        \If {node2 is execution log}
+	            \State add edge from node1 to node2
+	            \State add node2 to startFromSet
+	            \State break
+	        \EndIf
+	    \EndFor
+	\EndFor
+	
+	\State \Comment{Remove all non execution logs}
+	\ForAll{node in graph}
+	    \If {not execution log}
+	        \State remove node from graph
+	    \EndIf
+	\EndFor
+	      
+	\State \Comment{Transitive reduction}
+	\ForAll{node1 in graph}
+	  \ForAll{node2 in graph}
+	    \If{edge between node1 and node2 exists}
+	      \ForAll{node3 in graph}
+	        \If{edge between node1 and node3 exists}
+	          \State remove node from node1 to node3
+	        \EndIf
+	      \EndFor
+	    \EndIf
+	  \EndFor
+	\EndFor
+\end{algorithmic}
 \subsection{Discussion} % bliver problemet løst
 \subsection{Performance} % hvor godt løses det
 
