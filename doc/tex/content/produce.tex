@@ -25,19 +25,23 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 
 \subsubsection*{Pseudocode}
 \begin{algorithmic}
-	\State Event receives request for history with a \texttt{request trace}, $T$ and a \texttt{history id}, $HID$. 
-	\State Event has internal \texttt{wait for}, $W$.
+	\State Event receives request for history with a \texttt{request trace}, $T$ and a \texttt{history id}, $HID$
+	\State Event has internal \texttt{wait for}, $W$
 	\State
-	\State $W\gets W::$ reachable events.
+	\State $W\gets W::$ reachable events \Comment Add all reachable events to \texttt{wait for}.
 	\If {$W=\emptyset$}
 	\Return own history
 	\Else
-	\State $W\gets W-T$
-	\State $T\gets T::HID$
+	\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$.
+	\State $T\gets T::HID$ \Comment Append own \texttt{HID} to $T$.
 	\State
-	\ForAll {$w$ in $W$} request history from $w$ with $T$ \EndFor
-	\State wait for received histories.
-	\State stitch and return histories. 
+	\ForAll {$w$ in $W$} 
+	\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
+	\EndFor
+	\State wait for receiving histories
+	\State stitch received histories with own history
+	\State
+	\Return stitched histories
 	\EndIf
 \end{algorithmic}
 
