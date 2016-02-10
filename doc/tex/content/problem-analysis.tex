@@ -4,7 +4,7 @@
 \section{ Relations between logs}
 All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \subsection{Inclusion}
-\begin{tabular}{ | l | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | X | }
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -12,11 +12,11 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 2 includes Event 1 & (\#1, Event 1, includedBy, Event 2) & (\#3, Event 2, includes, Event 1) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Exclusion}
 
-\begin{tabular}{ | l | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | X | }
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -24,10 +24,10 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 2 excludes Event 1 & (\#1, Event 1, excludedBy, Event 2) & (\#3, Event 2, excludes, Event 1) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Pending}
-\begin{tabular}{ | l | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | X | }
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -35,10 +35,10 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 2 sets Pending Event 1 & (\#1, Event 1, setPendingBy, Event 2) & (\#3, Event 2, setsPending, Event 1) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Conditions}
-\begin{tabular}{ | l | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | X | }
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -50,10 +50,10 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 2 checks Event 1 which is not executable & (\#1, Event 1, ConditionChecked false, Event 2) & (\#3, Event 2, ConditionChecks false, Event 1) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Execution}
-\begin{tabular}{ | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | }
   \hline
   Relation & Event1 Log \\
   \hline
@@ -63,10 +63,10 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 1 Execution success & (\#2, Event 1, executionSuccess, ClientID) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Lock}
-\begin{tabular}{ | l | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | X | }
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -74,10 +74,10 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 2 Locks Event 1 & (\#1, Event 1, lockBy, Event 2) & (\#3, Event 2, lock, Event 1) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Unlock}
-\begin{tabular}{ | l | l | l | }
+\begin{tabularx}{\linewidth}{ | X | X | X | }
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -85,7 +85,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
   \hline
   Event 2 Locks Event 1 & (\#1, Event 1, unlockBy, Event 2) & (\#3, Event 2, unlock, Event 1) \\
   \hline
-\end{tabular}
+\end{tabularx}
 
 \section{Happens Before Relations}
 
