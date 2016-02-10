@@ -1,7 +1,111 @@
 % !TeX root = ../DCR-Consensus.tex
 \chapter{Domain Analysis}
 \label{chap:domainanalysis}
-\todo[inline]{Indholdet skal som minimum indeholde en beskrivelse af de happens-before regler vi benytter i Stich-algoritmen.}
+\section{ Relations between logs}
+All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
+\subsection{Inclusion}
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Relation & Event1 Log & Event2 Log \\
+  \hline
+  Event 1 includes Event 2 & (\#1, Event 1, includes, Event 2) & (\#1, Event 2, includedBy, Event 1) \\
+  \hline
+  Event 2 includes Event 1 & (\#1, Event 1, includedBy, Event 2) & (\#3, Event 2, includes, Event 1) \\
+  \hline
+\end{tabular}
+
+\subsection{Exclusion}
+
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Relation & Event1 Log & Event2 Log \\
+  \hline
+  Event 1 excludes Event 2 & (\#1, Event 1, excludes, Event 2) & (\#1, Event 2, excludedBy, Event 1) \\
+  \hline
+  Event 2 excludes Event 1 & (\#1, Event 1, excludedBy, Event 2) & (\#3, Event 2, excludes, Event 1) \\
+  \hline
+\end{tabular}
+
+\subsection{Pending}
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Relation & Event1 Log & Event2 Log \\
+  \hline
+  Event 1 sets Pending Event 2 & (\#1, Event 1, setsPending, Event 2) & (\#1, Event 2, setPendingBy, Event 1) \\
+  \hline
+  Event 2 sets Pending Event 1 & (\#1, Event 1, setPendingBy, Event 2) & (\#3, Event 2, setsPending, Event 1) \\
+  \hline
+\end{tabular}
+
+\subsection{Conditions}
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Relation & Event1 Log & Event2 Log \\
+  \hline
+  Event 1 checks Event 2 which is executable & (\#1, Event 1, ConditionChecks true, Event 2) & (\#1, Event 2, ConditionChecked true, Event 1) \\
+  \hline
+  Event 1 checks Event 2 which is not executable & (\#1, Event 1, ConditionChecks false, Event 2) & (\#3, Event 2, ConditionChecked false, Event 1) \\
+  \hline
+  Event 2 checks Event 1 which is executable & (\#1, Event 1, ConditionChecked true, Event 2) & (\#1, Event 2, ConditionChecks true, Event 1) \\
+  \hline
+  Event 2 checks Event 1 which is not executable & (\#1, Event 1, ConditionChecked false, Event 2) & (\#3, Event 2, ConditionChecks false, Event 1) \\
+  \hline
+\end{tabular}
+
+\subsection{Execution}
+\begin{tabular}{ | l | l | }
+  \hline
+  Relation & Event1 Log \\
+  \hline
+  Event 1 Execution begins & (\#1, Event 1, executionStart, ClientID) \\
+  \hline
+  Event 1 Execution fails & (\#2, Event 1, executionFail, ClientID) \\
+  \hline
+  Event 1 Execution success & (\#2, Event 1, executionSuccess, ClientID) \\
+  \hline
+\end{tabular}
+
+\subsection{Lock}
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Relation & Event1 Log & Event2 Log \\
+  \hline
+  Event 1 Locks Event 2 & (\#1, Event 1, lock, Event 2) & (\#1, Event 2, lockedBy, Event 1) \\
+  \hline
+  Event 2 Locks Event 1 & (\#1, Event 1, lockBy, Event 2) & (\#3, Event 2, lock, Event 1) \\
+  \hline
+\end{tabular}
+
+\subsection{Unlock}
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Relation & Event1 Log & Event2 Log \\
+  \hline
+  Event 1 Locks Event 2 & (\#1, Event 1, unlock, Event 2) & (\#1, Event 2, unlockedBy, Event 1) \\
+  \hline
+  Event 2 Locks Event 1 & (\#1, Event 1, unlockBy, Event 2) & (\#3, Event 2, unlock, Event 1) \\
+  \hline
+\end{tabular}
+
+\section{Happens Before Relations}
+
+\begin{lstlisting}
+    Y includedBy X       ->    X includes Y
+    Y excludedBy X       ->    X excludes Y
+    Y setPendingBy X     ->    X setsPending Y
+    Y ConditionChecked X ->    X ConditionChecks Y
+    Y LockedBy X         ->    X Lock Y
+    Y UnlockedBy X       ->    X Unlock Y
+    X Execution begins   ->    X Execution fails / Success
+    X Execute Start      ->    X Locks Y
+    X Locks Y            ->    X Include Y
+    X Locks Y            ->    X Exclude Y
+    X Locks Y            ->    X setPending Y
+    X Locks Y            ->    X ConditionChecks Y
+    X Locks Y            ->    X Unlock Y
+    X Locks Y            ->    X Unlock Y     ->    X Execute Fail / Success
+    Y Lockby X           ->    Y UnlockBy X   ->    Y LockBy "z"
+\end{lstlisting}
 
 \chapter{Algorithms}
 The overall problem is: given a DCR graph with possible malicious nodes, for the events of the graph to reach consensus of a partial order of execution that has happened in that graph.
