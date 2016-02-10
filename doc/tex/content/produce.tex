@@ -11,18 +11,17 @@ Given a DCR graph, the algorithm should fetch and merge the histories of each ev
 %\end{itemize}
 
 \subsection{Implementation} % hvordan løses det
-To create the partially ordered history, all reachable events from a single event must be included. Reachable events are events where a path of relations from event to event exists, starting from the first event. This is accomplished by recursively contacting neighbouring events and asking them for their history while stiching the neighbours' history with its own history. \bigskip
+To create the partially ordered history, all reachable events from a single event must be included. Reachable events are events where a path of relations from event to event exists, starting from the first event. This is accomplished by recursively contacting neighbouring events and asking them for their history while stiching the neighbours' history with its own history. 
 
-DCR graphs can form graphs with cycles, and thefore a mechanism for handling these needs to be implemented. This is done by using a trace of previously contacted events and stopping \todo{bedre ord end "stopping".} when a cycle is detected.
+\newpar DCR graphs can form graphs with cycles, and thefore a mechanism for handling these needs to be implemented. This is done by using a trace of previously contacted events and stopping \todo{bedre ord end "stopping".} when a cycle is detected.
 
-The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
+\newpar The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
+The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests.
 
-The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. \bigskip
+\newpar When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}, and sends requests to these events for history. The request for history includes a \texttt{request trace}, which is initially empty. Outgoing history requests from an event include the received \texttt{request trace}, with the ID of the event appended. This enables events to do cycle detection.
 
-When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}, and sends requests to these events for history. The request for history includes a \texttt{request trace}, which is initially empty. Outgoing history requests from an event include the received \texttt{request trace}, with the ID of the event appended. This enables events to do cycle detection. \bigskip
-
-When an event receives a history request, it checks any event ID in the received \texttt{request trace} exists in its own \texttt{wait for}. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. 
-Cycles are therefore avoided, since a chain of events are unable to wait for any event in the chain. \bigskip 
+\newpar When an event receives a history request, it checks any event ID in the received \texttt{request trace} exists in its own \texttt{wait for}. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. 
+Cycles are therefore avoided, since a chain of events are unable to wait for any event in the chain.
 
 
 \subsubsection*{Pseudocode}
