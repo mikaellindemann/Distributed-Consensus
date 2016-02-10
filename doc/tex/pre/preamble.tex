@@ -17,7 +17,7 @@
 \usepackage{pdfpages}
 \usepackage[justification=centering]{caption}
 \usepackage[hidelinks]{hyperref}
-%\usepackage{tabularx}
+\usepackage{tabularx}
 %\usepackage{xfrac}
 %\usepackage{float}
 \usepackage{listings}
@@ -32,6 +32,10 @@
 	\cleardoublepage
 	% \@mainmattertrue
 	\pagenumbering{arabic}}
+
+\addto\extrasenglish{%
+	\renewcommand{\chapterautorefname}{Chapter}%
+}
 
 \author{Anders Fischer-Nielsen \\ Anders Wind Steffensen \\ Mikael Lindemann Jepsen}
 \title{Consensus of History in Distributed DCR Graphs}
