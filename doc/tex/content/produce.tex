@@ -33,7 +33,7 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 	\Return own history
 	\Else
 	\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$.
-	\State $T\gets T::HID$ \Comment Append own \texttt{HID} to $T$.
+	\State $T\gets T::ownID$ \Comment Append own \texttt{HID} to $T$.
 	\State
 	\ForAll {$w$ in $W$} 
 	\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
@@ -44,23 +44,6 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 	\Return stitched histories
 	\EndIf
 \end{algorithmic}
-
-\subsubsection*{Old version of pseudocode}
-\begin{lstlisting}[breaklines=true]
- 1. History is requested by `X` with `request trace` `T` and history ID: `HID`
-    1. If (Lookup history for `HID`) is not empty
-        - Return lookup history for `HID`
-    - Add all relations to `wait for`
-    - For each node `n` in `T`
-        - if `n` is in `wait for`
-            - remove `n` from `wait for`
-    - Create `T'` by appending own ID to `T`
-    - If `wait for` is empty
-        - Return local history
-    - Ask all nodes in `wait for` for their history with `T'`
-    - Stitch own history with answers
-    - Return "new" history
-\end{lstlisting}
 
 \subsection{Discussion} % bliver problemet løst
 \subsection{Performance} % hvor godt løses det
