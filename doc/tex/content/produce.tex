@@ -11,11 +11,11 @@ Given a DCR graph, the algorithm should fetch and merge the histories of each ev
 %\end{itemize}
 
 \subsection{Implementation} % hvordan løses det
-To create the partially ordered history, all reachable events from a single event must be included. Reachable events are events where a path of relations from event to event exists starting from the first event. This is accomplished by recursively contacting neighbouring events and asking them for their history while stiching the neighbour's history together with their own. \bigskip
+To create the partially ordered history, all reachable events from a single event must be included. Reachable events are events where a path of relations from event to event exists, starting from the first event. This is accomplished by recursively contacting neighbouring events and asking them for their history while stiching the neighbours' history with its own history. \bigskip
 
-DCR graphs can form graphs with cycles, and thefore a mechanism for handeling such needs to be implemented. This is done by using a trace of previously contacted events, and stopping when a cycle is detected. 
+DCR graphs can form graphs with cycles, and thefore a mechanism for handling these needs to be implemented. This is done by using a trace of previously contacted events and stopping \todo{bedre ord end "stopping".} when a cycle is detected.
 
-The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}. The current history has been assigned a unique ID, called \texttt{history ID}.
+The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
 
 The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. \bigskip
 
@@ -27,7 +27,7 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 
 \subsubsection*{Pseudocode}
 \begin{algorithmic}
-	\State Event receives request for history with a \texttt{request trace}, $T$ and a \texttt{history id}, $HID$
+	\State Event receives request for history with a \texttt{request trace}, $T$.
 	\State Event has internal \texttt{wait for}, $W$
 	\State
 	\State $W\gets W::$ reachable events \Comment Add all reachable events to \texttt{wait for}.
@@ -35,7 +35,7 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 	\Return own history
 	\Else
 	\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$.
-	\State $T\gets T::ownID$ \Comment Append own \texttt{HID} to $T$.
+	\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
 	\State
 	\ForAll {$w$ in $W$} 
 	\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
