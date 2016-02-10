@@ -11,9 +11,11 @@ Given a DCR graph, the algorithm should fetch and merge the histories of each ev
 %\end{itemize}
 
 \subsection{Implementation} % hvordan løses det
-The implementation of the algorithm starts at a single event in the workflow and is called recursively on the reachable events in the workflow. A reachable event in the workflow constitutes any event that has a relation from the current event in scope. \todo[inline]{Udvid beskrivelse til at inkludere løsning hvis event peger på nuværende event. Dette event er p.t. ikke "synligt".} \bigskip
+To create the partially ordered history, all reachable events from a single event must be included. Reachable events are events where a path of relations from event to event exists starting from the first event. This is accomplished by recursively contacting neighbouring events and asking them for their history while stiching the neighbour's history together with their own. \bigskip
 
-The implemented solution uses two main lists, called \texttt{request trace} and \texttt{wait for}. The current history has been assigned a unique ID, called \texttt{history ID}.
+DCR graphs can form graphs with cycles, and thefore a mechanism for handeling such needs to be implemented. This is done by using a trace of previously contacted events, and stopping when a cycle is detected. 
+
+The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}. The current history has been assigned a unique ID, called \texttt{history ID}.
 
 The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. \bigskip
 
