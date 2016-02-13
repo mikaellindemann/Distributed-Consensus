@@ -46,5 +46,8 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 	\EndIf
 \end{algorithmic}
 
+
 \subsection{Discussion} % bliver problemet løst
+
 \subsection{Performance} % hvor godt løses det
+This algorithm has a worst case message performance of O(2*N^2) where N is the number of events in the system. This situation occurs when all events have relations to all other events in the graph. Realistically though this situation will rarely occur.

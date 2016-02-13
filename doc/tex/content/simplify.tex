@@ -45,5 +45,8 @@ The goal of the algorithm is, given a partially ordered history, to create an or
 	\EndFor
 \end{algorithmic}
 \subsection{Discussion} % bliver problemet løst
+Since the partial order of execution is a subset of the partially ordered history, it should be possible to create the same ordering of exeuctions logs as for all logs. By first making tranisitive clousures which ensures that partial order is explicit for all logs, and afterwards removing all unnecesary logs, we have kept the same ordering as before. Then in the end by making transitive reduction we create the minimal graph to represent the partial order, which only makes it easier to traverse the graph and visually represent the order of execution.
+
 \subsection{Performance} % hvor godt løses det
+This solution runs in \texttt{O(N^3)} where in is the number of logs of the history. This is due to the transitive reduction part of the algorithm. Luckily a big part of the events are cut of in this part, since only execution logs are left, if as expected, a proportionally majority part of the logs are non exectution logs, the complexity will be between \texttt{O(N^2)} and \texttt{O(N^2)}.
 
