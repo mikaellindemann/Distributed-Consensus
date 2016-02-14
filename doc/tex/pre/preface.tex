@@ -4,9 +4,10 @@
 \chapter{Introduction}
 
 \chapter{Dictionary}
-\begin{table}
+\begin{table}[H]
 	\begin{tabularx}{\linewidth}{l X}
 		Event & A single node in a DCR Graph. Denotes an activity in the workflow.\\\hline
+		Relation & A relation is the connection between events. These can have different meanings based on which relation is used. Different kinds of relations are described in \autoref{sec:relations}. A relation is directed. This means that its purpose is only accomplished from the first event to the second.\todo[inline]{Skal det stå her?}\\\hline
 		History & A partially ordered set of logs that represents an event's state transitions. Histories can be stitched together to represent the history of a workflow instead.\\\hline
 		Log & A single entry in a History. Represents an action that has happened between two events in the workflow. For further details have a look at \autoref{chap:domainanalysis}.\\
 	\end{tabularx}

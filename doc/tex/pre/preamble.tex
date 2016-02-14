@@ -1,35 +1,34 @@
 % !TeX root = DCR-Consensus.tex
 \documentclass[a4paper]{report}
 
-\usepackage[utf8]{inputenc}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage[english]{babel}
 \usepackage{babelbib}
-\usepackage[T1]{fontenc}
-\usepackage[colorinlistoftodos]{todonotes}
-%\usepackage{multirow}
+%\usepackage[justification=centering]{caption}
+\usepackage{cite}
 \usepackage{fancyhdr}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+%\usepackage{footmisc}
+\usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+%\usepackage{multirow}
+\usepackage{pdfpages}
+\usepackage{tabularx}
 \usepackage{titlesec}
 \usepackage{tocbibind}
-\usepackage{cite}
-%\usepackage{footmisc}
-\usepackage{pdfpages}
-\usepackage[justification=centering]{caption}
-\usepackage[hidelinks]{hyperref}
-\usepackage{tabularx}
-%\usepackage{xfrac}
-%\usepackage{float}
-\usepackage{listings}
-\usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+\usepackage[colorinlistoftodos]{todonotes}
 
 \newcommand\frontmatter{%
-	\cleardoublepage
+	\clearpage
 	%\@mainmatterfalse
 	\pagenumbering{roman}}
 
 \newcommand\mainmatter{%
-	\cleardoublepage
+	\clearpage
 	% \@mainmattertrue
 	\pagenumbering{arabic}}
 
@@ -37,6 +36,7 @@
 
 \addto\extrasenglish{%
 	\renewcommand{\chapterautorefname}{Chapter}%
+	\renewcommand{\sectionautorefname}{Section}%
 }
 
 \author{Anders Fischer-Nielsen \\ Anders Wind Steffensen \\ Mikael Lindemann Jepsen}

@@ -1,10 +1,11 @@
 % !TeX root = ../DCR-Consensus.tex
 \chapter{Domain Analysis}
 \label{chap:domainanalysis}
-\section{ Relations between logs}
+\section{Relations between logs}
+\label{sec:relations}
 All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \subsection{Inclusion}
-\begin{tabularx}{\linewidth}{ | X | X | X | }
+\begin{tabularx}{\textwidth}{|*{3}{>{\raggedright\arraybackslash}X|}}
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -16,7 +17,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 
 \subsection{Exclusion}
 
-\begin{tabularx}{\linewidth}{ | X | X | X | }
+\begin{tabularx}{\textwidth}{|*{3}{>{\raggedright\arraybackslash}X|}}
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -27,7 +28,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{tabularx}
 
 \subsection{Pending}
-\begin{tabularx}{\linewidth}{ | X | X | X | }
+\begin{tabularx}{\textwidth}{|*{3}{>{\raggedright\arraybackslash}X|}}
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -38,22 +39,16 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{tabularx}
 
 \subsection{Conditions}
-\begin{tabularx}{\linewidth}{ | X | X | X | }
-  \hline
-  Relation & Event1 Log & Event2 Log \\
-  \hline
-  Event 1 checks Event 2 which is executable & (\#1, Event 1, ConditionChecks true, Event 2) & (\#1, Event 2, ConditionChecked true, Event 1) \\
-  \hline
-  Event 1 checks Event 2 which is not executable & (\#1, Event 1, ConditionChecks false, Event 2) & (\#3, Event 2, ConditionChecked false, Event 1) \\
-  \hline
-  Event 2 checks Event 1 which is executable & (\#1, Event 1, ConditionChecked true, Event 2) & (\#1, Event 2, ConditionChecks true, Event 1) \\
-  \hline
-  Event 2 checks Event 1 which is not executable & (\#1, Event 1, ConditionChecked false, Event 2) & (\#3, Event 2, ConditionChecks false, Event 1) \\
-  \hline
+\begin{tabularx}{\textwidth}{|*{3}{>{\raggedright\arraybackslash}X|}}\hline
+	Relation & Event1 Log & Event2 Log \\\hline
+	Event 1 checks Event 2 which is executable & (\#1, Event 1, ConditionChecks true, Event 2) & (\#1, Event 2, ConditionChecked true, Event 1) \\\hline
+	Event 1 checks Event 2 which is not executable & (\#1, Event 1, ConditionChecks false, Event 2) & (\#3, Event 2, ConditionChecked false, Event 1) \\\hline
+	Event 2 checks Event 1 which is executable & (\#1, Event 1, ConditionChecked true, Event 2) & (\#1, Event 2, ConditionChecks true, Event 1) \\\hline
+	Event 2 checks Event 1 which is not executable & (\#1, Event 1, ConditionChecked false, Event 2) & (\#3, Event 2, ConditionChecks false, Event 1) \\\hline
 \end{tabularx}
 
 \subsection{Execution}
-\begin{tabularx}{\linewidth}{ | X | X | }
+\begin{tabularx}{\textwidth}{ | X | X | }
   \hline
   Relation & Event1 Log \\
   \hline
@@ -66,7 +61,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{tabularx}
 
 \subsection{Lock}
-\begin{tabularx}{\linewidth}{ | X | X | X | }
+\begin{tabularx}{\textwidth}{|*{3}{>{\raggedright\arraybackslash}X|}}
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -77,7 +72,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{tabularx}
 
 \subsection{Unlock}
-\begin{tabularx}{\linewidth}{ | X | X | X | }
+\begin{tabularx}{\textwidth}{|*{3}{>{\raggedright\arraybackslash}X|}}
   \hline
   Relation & Event1 Log & Event2 Log \\
   \hline
@@ -89,7 +84,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 
 \section{Happens Before Relations}
 
-\begin{lstlisting}
+\begin{lstlisting}[breaklines=true]
     Y includedBy X       ->    X includes Y
     Y excludedBy X       ->    X excludes Y
     Y setPendingBy X     ->    X setsPending Y
