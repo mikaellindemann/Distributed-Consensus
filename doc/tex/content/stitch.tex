@@ -3,13 +3,13 @@
 
 \section{Stitch}
 \subsection{Goal} % Hvad er problemet
-The goal of the algorithm is, given a collection of partially ordered histories, to merge the histories into one history which includes all of the logs of the histories, such that the resulting history remains partially ordered in accordance to the ruleset described in \autoref{chap:domainanalysis}.
+The goal of the algorithm is, given a collection of partially ordered histories, to merge the histories into one history which includes all of the actions of the histories, such that the resulting history remains partially ordered in accordance to the ruleset described in \autoref{chap:domainanalysis}.
 
-%Logs should not be understood as executions only but all the different kinds of logs, see log description.
+%actions should not be understood as executions only but all the different kinds of actions, see action description.
 %A partially ordered graph should not contain cycles.
 
 \subsection{Implementation} % hvordan løses det
-To solve the problem a data structure, which represents the partial ordered history, has to be introduced. This structure can be \todo{måske skriv det her om når vi har implementeret skidtet.} a directed graph where the \texttt{nodes} represent \texttt{log entries} and the \texttt{edges} represent the order in which these entries were made. Because a log entry can have multiple preceding entries a tree structure is not feasible. It is important to note, though, that the graph cannot contain cycles, as this would imply that a single log entry should happen both before and after another log entry.
+To solve the problem a data structure, which represents the partial ordered history, has to be introduced. This structure can be \todo{måske skriv det her om når vi har implementeret skidtet.} a directed graph where the \texttt{nodes} represent \texttt{actions} and the \texttt{edges} represent the order in which these actions were made. Because a action can have multiple preceding actions a tree structure is not feasible. It is important to note, though, that the graph cannot contain cycles, as this would imply that a single action should happen both before and after another action.
 
 \newpar Such a data structure requires the following functions:
 \begin{algorithm}
@@ -58,14 +58,14 @@ To solve the problem a data structure, which represents the partial ordered hist
 \newpar Either after each history has been stitched or when all histories has been stitched, a graph cycle check can be initiated. Because it does not make sense to have cycles in the history, something must have gone wrong if one appears. This case probably appears if one of the external histories has been tampered with, and therefore it makes sense to find the source(s) of the cycle, to see if a corrupt \texttt{Event} can be found.\todo[inline]{Beslut hvordan vi håndterer disse. Skal vi fortsætte som før, eller skal historikkaldet afbrydes?}
 
 \subsection{Discussion} % bliver problemet løst
-Since the a local history of an event must be in a total order since we have a strict time line on an event, we know that we at least have some ordering in place. Then these histories can be put in the same data structure. Then since the ruleset described in \autoref{chap:domainanalysis}, explain explicit rules about which logs must occur before others if their IDs and log types correspond we can add edges between the total orderings and by doing so creating a partial order between parts of the different graphs. Over the course of the algorithm more and more explicity should appear as more and more of the ordering should be creating.\todo{<- what?} Even in the case that some logs cannot be used, it may be possible to later on since these logs are still kept in the graph. % this is so much bullshat.
+Since the a local history of an event must be in a total order since we have a strict time line on an event, we know that we at least have some ordering in place. Then these histories can be put in the same data structure. Then since the ruleset described in \autoref{chap:domainanalysis}, explain explicit rules about which actions must occur before others if their IDs and action types correspond we can add edges between the total orderings and by doing so creating a partial order between parts of the different graphs. Over the course of the algorithm more and more explicity should appear as more and more of the ordering should be creating.\todo{<- what?} Even in the case that some actions cannot be used, it may be possible to later on since these actions are still kept in the graph. % this is so much bullshat.
 
-\newpar If two logs on the same event happen, an edge from the first occuring log to the second is created and therefore we know the order of the two. 
-If two logs on different events happen, and they do not correspond, each of the logs are placed in the graph but without a edge, showing that we have no knowledge about which event occurred first.
-If two logs on different events happen, and a happen-before rule apply, meaning that fromID and ToID correspond as well as the type of the log correspond, an edge is created between the two indicating which one happened first. 
-By transitive closure we know that if log A happened before log B, and log B happened before log C, log A happened before log C, and therefore we can follow the edges of the graph and see which happen before which.
-If no cycles exist in the workflow then we cannot have situations where log A happened before log B, and log B happened before log C and log C happened before log A - resulting in a disruption of the order. % maybe less bullshit.
+\newpar If two actions on the same event happen, an edge from the first occuring action to the second is created and therefore we know the order of the two. 
+If two actions on different events happen, and they do not correspond, each of the actions are placed in the graph but without a edge, showing that we have no knowledge about which event occurred first.
+If two actions on different events happen, and a happen-before rule apply, meaning that fromID and ToID correspond as well as the type of the action correspond, an edge is created between the two indicating which one happened first. 
+By transitive closure we know that if action A happened before action B, and action B happened before action C, action A happened before action C, and therefore we can follow the edges of the graph and see which happen before which.
+If no cycles exist in the workflow then we cannot have situations where action A happened before action B, and action B happened before action C and action C happened before action A - resulting in a disruption of the order. % maybe less bullshit.
 
 \subsection{Performance} % hvor godt løses det
-This algorithm runs in \texttt{O(N$^2$)} where N is the number of logs in the combined graphs.
+This algorithm runs in \texttt{O(N$^2$)} where N is the number of actions in the combined graphs.
 
