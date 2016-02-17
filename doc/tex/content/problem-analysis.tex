@@ -4,7 +4,41 @@
 \label{chap:domainanalysis}
 
 \section{What is a History}
-\todo[inline]{Why is a history necessarily partially ordered in distributed system}
+\begin{definition}
+	An \textit{\textbf{Action}}\index{Action|(} contains the following information:
+	\begin{itemize}
+		\item The Id of the source Event, this is the Event that has logged the action.
+		\item The time stamp of the action local to the source Event.
+		\item The Id of the participating Event, this is the Event that are being contacted, or the Event who has initiated the action.
+		\item The type of the Action, i.e. \texttt{IncludedBy}.
+	\end{itemize}
+	
+	The reason that an Action is not called Event\index{Event}, is because this term is used for an Event in the DCR Graph workflow.
+	\index{Action|)}
+\end{definition}
+
+\begin{definition}\label{definition:historya}
+	A \textit{\textbf{History}}\index{History} is a set of Actions.\index{Action}
+\end{definition}
+
+\begin{lemma}\label{lemma:partialorder}
+	Locally, a history is totally ordered.\todo[inline]{Find et sted hvor total order matematisk defineres - Jeg synes \url{https://en.wikipedia.org/wiki/Total_order} er lidt for slap. - Mikael.} This is because the source Event knows the timestamps of all Actions and can order them by this. 
+	
+	In a workflow these local histories are put together. This creates the possibility of having histories that cannot be totally ordered, because there haven't been exchanged messages between the source Events between the actions. This means that it is not possible to decide between all pairs of actions, which action happened first.
+	
+	There is one limitation on the order of the actions that must be fulfilled by any history, locally or globally. That is, that the history cannot contain cycles as this would imply that two (or more) actions would have to happen before the other.
+	
+	\todo[inline]{Lav et argument, eller find nogle andre der har defineret at en total order også er en partial order. (I forhold til Wiki-definitionen ovenfor, er det er en partial order ikke har den 3. begrænsning, men at det ellers er det samme, og derfor er partial order en svagere definition af total order.)}
+	
+	This creates the need for a history of partial order.
+\end{lemma}
+
+\newpar Because of \autoref{lemma:partialorder} we can update \autoref{definition:historya} to the following definition:
+
+\begin{definition}
+	A \textit{\textbf{History}}\index{History} is a \textit{partially ordered} set of Actions.\index{Action}
+	\label{definition:historyb}
+\end{definition}
 
 \section{Relations between logs}
 \label{sec:relations}
@@ -136,7 +170,7 @@ Correcness should be based on:
 %        - return
 %- stitch
 %- Call for a vote
-%- Clousure of event graph to an execution graph.
+%- Closure of event graph to an execution graph.
 \include{content/datastructure}
 \include{content/stitch}
 \include{content/produce}

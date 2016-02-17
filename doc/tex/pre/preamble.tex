@@ -12,16 +12,24 @@
 \usepackage[T1]{fontenc}
 %\usepackage{footmisc}
 \usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
-\usepackage[hidelinks]{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
-\usepackage{imakeidx}
 %\usepackage{multirow}
 \usepackage{pdfpages}
 \usepackage{tabularx}
 \usepackage{titlesec}
-\usepackage{tocbibind}
 \usepackage[colorinlistoftodos]{todonotes}
+\usepackage{tocbibind}
+\usepackage{imakeidx}
+\usepackage{hyperref}
+\usepackage[totoc]{idxlayout}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}
 
 \newcommand\frontmatter{%
 	\clearpage
@@ -34,6 +42,9 @@
 	\pagenumbering{arabic}}
 
 \newcommand{\newpar}{\bigskip\noindent}
+
+\newcommand{\definitionautorefname}{Definition}
+\newcommand{\lemmaautorefname}{Lemma}
 
 \addto\extrasenglish{%
 	\renewcommand{\chapterautorefname}{Chapter}%
