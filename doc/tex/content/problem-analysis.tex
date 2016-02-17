@@ -141,6 +141,37 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
     Y Lockby X           ->    Y UnlockBy X   ->    Y LockBy "z"
 \end{lstlisting}
 
+\section{Malicious Nodes}
+We must assume that the first contacted event is not malicious, if otherwise it could return faulty information and we would have no way to check up on that.
+We need to argue that all DCR graphs can be built using a group of base structures. Each of these base structures have properties which can be used to describe the safety of the DCR graph history.
+
+\begin{figure}
+	\centering
+	\includegraphics{figures/GraphStructure_OneToOne}
+\end{figure}
+With a maximum of one malicious event in this graph structure and it not being event A, we have no way of telling if B lies or not.
+
+\begin{figure}
+	\centering
+	\includegraphics{figures/GraphStructure_OneToTwo}
+\end{figure}
+With a maximum of one malicious event in this graph structure and it not being event A, we are able to determine that someone lies but not who.
+
+\begin{figure}
+	\centering
+	\includegraphics{figures/GraphStructure_OneToTwoChain}
+\end{figure}
+This graph is just an extension of that above and therefore proposes the same properties.
+
+\begin{figure}
+	\centering
+	\includegraphics{figures/GraphStructure_OneToThree}
+\end{figure}
+With a maximum of one malicious event in this graph structure and it not being event A, we are able to determine that someone lies and who lies.
+
+
+This way we can strengthen the requirements of the DCR graph to not only require that a maximum M amount of malicious events exist is in a graph with 3M+1 events (taken from the byzantine generals problem). That to use these rules, we must have that maximum of 1 malicious event exist in each of these subgraphs.
+
 \chapter{Algorithms}
 The overall problem is: given a DCR graph with possible malicious nodes, for the events of the graph to reach consensus of a partial order of execution that has happened in that graph.
 
