@@ -19,10 +19,17 @@
 \usepackage{tabularx}
 \usepackage{titlesec}
 \usepackage[colorinlistoftodos]{todonotes}
-\usepackage[hidelinks]{hyperref}
 \usepackage{tocbibind}
 \usepackage{imakeidx}
+\usepackage{hyperref}
 \usepackage[totoc]{idxlayout}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}
 
 \newcommand\frontmatter{%
 	\clearpage
@@ -35,6 +42,9 @@
 	\pagenumbering{arabic}}
 
 \newcommand{\newpar}{\bigskip\noindent}
+
+\newcommand{\definitionautorefname}{Definition}
+\newcommand{\lemmaautorefname}{Lemma}
 
 \addto\extrasenglish{%
 	\renewcommand{\chapterautorefname}{Chapter}%
