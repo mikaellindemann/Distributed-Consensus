@@ -1,9 +1,9 @@
 \section{Data Structure}\label{sec:datastructure}
 \todo[inline]{Retfærdiggør valget af datastruktur.}
-\begin{lstlisting}[breaklines=true]
+\begin{lstlisting}[breaklines=true,language=FSharp]
 type Node {
 	Id: EventId + Local TimeStamp;
-	Type: String or Relation type;
+	Type: string or Relation type;
 	... more information about the action ...
 	Edges: Node.Id list;
 }

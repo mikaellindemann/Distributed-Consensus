@@ -7,6 +7,7 @@
 \usepackage{babelbib}
 %\usepackage[justification=centering]{caption}
 \usepackage{cite}
+\usepackage{color}
 \usepackage{fancyhdr}
 \usepackage{float}
 \usepackage[T1]{fontenc}
@@ -49,6 +50,31 @@
 \addto\extrasenglish{%
 	\renewcommand{\chapterautorefname}{Chapter}%
 	\renewcommand{\sectionautorefname}{Section}%
+}
+
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+
+\lstdefinelanguage{FSharp}%
+{morekeywords={let, new, match, with, rec, open, module, namespace, type, of, member, % 
+		and, for, while, true, false, in, do, begin, end, fun, function, return, yield, try, %
+		mutable, if, then, else, cloud, async, static, use, abstract, interface, inherit, finally, int, string },
+	otherkeywords={ let!, return!, do!, yield!, use!, var, from, select, where, order, by },
+	keywordstyle=\color{bluekeywords},
+	sensitive=true,
+	basicstyle=\ttfamily,
+	breaklines=true,
+	xleftmargin=\parindent,
+	aboveskip=\bigskipamount,
+	tabsize=4,
+	morecomment=[l][\color{greencomments}]{///},
+	morecomment=[l][\color{greencomments}]{//},
+	morecomment=[s][\color{greencomments}]{{(*}{*)}},
+	morestring=[b]",
+	showstringspaces=false,
+	literate={`}{\`}1,
+	stringstyle=\color{redstrings},
 }
 
 \author{Anders Fischer-Nielsen \\ Anders Wind Steffensen \\ Mikael Lindemann Jepsen}
