@@ -22,9 +22,14 @@
 \end{definition}
 
 \begin{lemma}\label{lemma:partialorder}
-	Locally, a history is totally ordered.\todo[inline]{Find et sted hvor total order matematisk defineres - Jeg synes \url{https://en.wikipedia.org/wiki/Total_order} er lidt for slap. - Mikael.} This is because the source Event knows the timestamps of all Actions and can order them by this. 
+	A set is in partial order if the relation between elements in the set is reflexive, antisymmetric, and transitive.
+	If S is a partially ordered set and every two elements of S are comparable, S is called a totally ordered or linearly ordered set, and the relation between elements in the set is a total or linear order.
+	\todo[inline]{Source: Discrete Mathematics and its Applications, 7th ed. - Kenneth H. Rosen - Afsnit 9.6, Partial Orderings}
 	
-	In a workflow these local histories are put together. This creates the possibility of having histories that cannot be totally ordered, because there haven't been exchanged messages between the source Events between the actions. This means that it is not possible to decide between all pairs of actions, which action happened first.
+	Locally, a history is totally ordered, since the source Event knows the timestamps of all Actions. Therefore an Action can be compared to every other Action in the history, since the relation between timestamps of Actions is reflexive, antisymmetric\todo{Hvorfor er de antisymmetriske? - Fisk} and transitive. 
+	If Action $A$ has timestamp $a$, Action $B$ has timestamp $b$ and Action $C$ has timestamp $c$, and $a < b$, $b < c$ then $a < c$. Therefore $A < C$.
+	
+	In a workflow these local histories are put together. This creates the possibility of having histories that cannot be totally ordered, because there haven't been exchanged messages between the source Events between the actions.\todo{Dette forstår jeg ikke. - Fisk} This means that it is not possible to decide between all pairs of actions, which action happened first.
 	
 	There is one limitation on the order of the actions that must be fulfilled by any history, locally or globally. That is, that the history cannot contain cycles as this would imply that two (or more) actions would have to happen before the other.
 	
