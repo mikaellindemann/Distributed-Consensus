@@ -148,7 +148,7 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{lstlisting}
 
 \section{Malicious Nodes}
-We must assume that the first contacted event is not malicious, if otherwise it could return faulty information and we would have no way to check up on that.
+We must assume that the first contacted event is not malicious, since if it is and returns faulty information there is no way to discover and recover from this.
 We need to argue that all DCR graphs can be built using a group of base structures. Each of these base structures have properties which can be used to describe the safety of the DCR graph history:
 
 \begin{figure}[H]
@@ -181,18 +181,18 @@ We need to argue that all DCR graphs can be built using a group of base structur
 \chapter{Algorithms}
 The overall problem is: given a DCR graph with possible malicious nodes, for the events of the graph to reach consensus of a partial order of execution that has happened in that graph.
 
-The algorithm consists of the following subalgorithms executed in that order:
+The algorithm consists of the following sub-algorithms executed in the following order:
 \begin{itemize}
-    \item Produce - which gathers the history.
-    \item Elect - which checks if the majority of the workflow can accept the proposed history
-    \item Simplify - which takes the history and creates an execution only history.
+    \item Produce - gathers the history.
+    \item Elect - checks if the majority of the workflow can accept the proposed history
+    \item Simplify - takes the history and creates an order of execution.
 \end{itemize}
 
-Correcness should be based on:
+\newpar Correctness should be based on:
 \begin{itemize}
-    \item How many events can be corrupted.
+    \item How many events are corrupted.
     \item How well the algorithm can determine which events are corrupted.
-    \item how well the algorithm can determine if any and how many events are corrupted.
+    \item How well the algorithm can determine if any and how many events are corrupted.
 \end{itemize}
 
 %History is created by using Fetch-and-Stitch with validation in the stitching phase.
