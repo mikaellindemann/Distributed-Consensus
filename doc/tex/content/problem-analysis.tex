@@ -26,10 +26,11 @@
 	If S is a partially ordered set and every two elements of S are comparable, S is called a totally ordered or linearly ordered set, and the relation between elements in the set is a total or linear order.
 	\todo[inline]{Source: Discrete Mathematics and its Applications, 7th ed. - Kenneth H. Rosen - Afsnit 9.6, Partial Orderings}
 	
-	Locally, a history is totally ordered, since the source Event knows the timestamps of all Actions. Therefore an Action can be compared to every other Action in the history, since the relation between timestamps of Actions is reflexive, antisymmetric\todo{Hvorfor er de antisymmetriske? - Fisk} and transitive. 
-	If Action $A$ has timestamp $a$, Action $B$ has timestamp $b$ and Action $C$ has timestamp $c$, and $a < b$, $b < c$ then $a < c$. Therefore $A < C$.
+	\newpar If Action $A$ has timestamp $a$, Action $B$ has timestamp $b$ and Action $C$ has timestamp $c$ in the local history H, and $a \geq a$ for every timestamp $a$, the relation $\geq$ is reflexive. If $a \geq b$ and $b \geq a$, then $a = b$. Therefore the relation $\geq$ is antisymmetric. Finally, $\geq$ is transitive because $a \geq b$ and $b \geq c$ imply that $a \geq c$. It follows that $\geq$ is a partial ordering on the set of timestamps. The same properties are present for $\leq$. 
 	
-	In a workflow these local histories are put together. This creates the possibility of having histories that cannot be totally ordered, because there haven't been exchanged messages between the source Events between the actions.\todo{Dette forstår jeg ikke. - Fisk} This means that it is not possible to decide between all pairs of actions, which action happened first.
+	\newpar A local history is therefore totally ordered since the source Event knows the timestamps of all Actions, and the relation between timestamps of Actions is reflexive, antisymmetric and transitive. 
+	
+	\newpar In a workflow these local histories are put together. This creates the possibility of having histories that cannot be totally ordered, because there haven't been exchanged messages between the source Events between the actions.\todo{Dette forstår jeg ikke. - Fisk} This means that it is not possible to decide between all pairs of actions, which action happened first.
 	
 	There is one limitation on the order of the actions that must be fulfilled by any history, locally or globally. That is, that the history cannot contain cycles as this would imply that two (or more) actions would have to happen before the other.
 	
@@ -155,6 +156,7 @@ We need to argue that all DCR graphs can be built using a group of base structur
 	\includegraphics[height=5cm]{figures/GraphStructure_OneToOne}
 	\caption{With a maximum of one malicious event in this graph structure and it not being event A, we have no way of telling if B lies or not.}
 \end{figure}
+\todo{Figur har underlige prikker på Event A.}
 
 \begin{figure}[H]
 	\centering
