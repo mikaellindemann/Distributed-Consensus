@@ -9,7 +9,7 @@ The goal of the algorithm is, given a collection of partially ordered histories,
 %A partially ordered graph should not contain cycles.
 
 \subsection{Implementation} % hvordan løses det
-To solve the problem a data structure, which represents the partial ordered history, has to be introduced. This structure can be \todo{måske skriv det her om når vi har implementeret skidtet.} a directed graph where the \texttt{nodes} represent \texttt{actions} and the \texttt{edges} represent the order in which these actions were made. Because a action can have multiple preceding actions a tree structure is not feasible. It is important to note, though, that the graph cannot contain cycles, as this would imply that a single action should happen both before and after another action.
+To solve the problem a data structure, which represents the partial ordered history, has to be introduced. This structure can be \todo[inline]{måske skriv det her om når vi har implementeret skidtet.} a directed graph where the \texttt{nodes} represent \texttt{actions} and the \texttt{edges} represent the order in which these actions were made. Because a action can have multiple preceding actions a tree structure is not feasible. It is important to note, though, that the graph cannot contain cycles, as this would imply that a single action should happen both before and after another action.
 
 \newpar Such a data structure requires the following functions:
 \begin{algorithm}
@@ -60,7 +60,7 @@ To solve the problem a data structure, which represents the partial ordered hist
 \subsection{Discussion} % bliver problemet løst
 Since the a local history of an event must be in a total order due to the strict timeline on an event, we know that we at least have some ordering in place. These histories can then be put in the same data structure. Since the ruleset described in \autoref{chap:domainanalysis}, explain explicit rules about which actions must occur before others if their IDs and action types correspond, we can add edges between the total orderings. 
 
-By doing so a partial order between parts of the different graphs is created. Over the course of the algorithm more and more explicity should appear as more and more of the ordering should be creating.\todo{<- what? Wat wat wat?} Even in the case that some actions cannot be used, it may be possible to later on since these actions are still kept in the graph. % this is so much bullshat. I can't even.
+By doing so a partial order between parts of the different graphs is created. Over the course of the algorithm more and more explicity should appear as more and more of the ordering should be creating.\todo[inline]{What? Wat wat wat?} Even in the case that some actions cannot be used, it may be possible to later on since these actions are still kept in the graph. % this is so much bullshat. I can't even.
 
 \newpar If two actions on the same event happen, an edge from the first occuring action to the second is created and therefore we know the order of the two. 
 If two actions on different events happen, and they do not correspond, each of the actions are placed in the graph but without a edge, showing that we have no knowledge about which event occurred first.
