@@ -15,7 +15,7 @@ Given a DCR graph, the algorithm should fetch and merge the histories of each ev
 \subsection{Implementation} % hvordan løses det
 To create the partially ordered history, all reachable events from a single event must be included. Reachable events are events where a path of relations from event to event exists, starting from the first event. This is accomplished by recursively contacting neighbouring events and asking them for their history while stitching the neighbours' history with its own history. 
 
-\newpar DCR graphs can form graphs with cycles, and therefore a mechanism for handling these needs to be implemented. This is done by using a trace of previously contacted events and handling when a cycle is detected.\todo{Hvor ser jeg det i pseudokoden?}
+\newpar DCR graphs can form graphs with cycles, and therefore a mechanism for handling these needs to be implemented. This is done by using a trace of previously contacted events and handling when a cycle is detected.
 
 \newpar The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
 The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests.
@@ -35,7 +35,7 @@ Cycles are therefore avoided, since a chain of events are unable to wait for any
 	\If {$W=\emptyset$}
 	\Return own history
 	\Else
-	\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$.
+	\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$. Cycles avoided.
 	\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
 	\State
 	\ForAll {$w$ in $W$} 
