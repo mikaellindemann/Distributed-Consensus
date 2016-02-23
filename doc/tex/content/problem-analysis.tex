@@ -148,7 +148,19 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{lstlisting}
 
 \section{Malicious Nodes}
-We must assume that the first contacted event is not malicious, since if it is and returns faulty information there is no way to discover and recover from this.
+We must assume that the first contacted event is not malicious, since if it is and returns faulty information there is no way to discover and recover from this. The problem with malicious nodes has similar characteristics as that of the Byzantine generals problem, described by Lamport e.l. The history problem though has some differences, that must be worked around to apply the Byzantine generals algorithm to ensure consensus. The first difference is that in DCR-graphs a single event do not propose a value to get consensus about, but must gather values from each event in the graph since each event is the only one who is knows the value for it self. This however should not be a problem as a malicious event can only cheat in the following three ways:
+\begin{definition}\label{malevent-type-omit}
+	A malicious \texttt{event} can omit \texttt{logs} when asked for its \texttt{history}.
+\end{definition}
+\begin{definition}\label{malevent-type-add}
+	A malicious \texttt{event} can add none-existent, consistent or inconsistent \texttt{logs} when asked for its \texttt{history}.
+\end{definition}
+\begin{definition}\label{malevent-type-responddifferent}
+	A malicious \texttt{event} can send different \texttt{histories} to different requests.
+\end{definition}
+
+
+%Gammel argumentation
 We need to argue that all DCR graphs can be built using a group of base structures. Each of these base structures have properties which can be used to describe the safety of the DCR graph history:
 
 \begin{figure}[H]
