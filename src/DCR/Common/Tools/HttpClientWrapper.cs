@@ -14,10 +14,7 @@ namespace Common.Tools
             _httpClient = httpClient;
         }
 
-        public HttpRequestHeaders DefaultRequestHeaders
-        {
-            get { return _httpClient.DefaultRequestHeaders; }
-        }
+        public HttpRequestHeaders DefaultRequestHeaders => _httpClient.DefaultRequestHeaders;
 
         public Uri BaseAddress
         {

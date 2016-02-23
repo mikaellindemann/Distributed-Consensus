@@ -69,10 +69,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerEventModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddEventToWorkflow(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.AddEventToWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -163,10 +162,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange 
             IServerStorage storage = new ServerStorage(_context);
-            ServerWorkflowModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddNewWorkflow(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.AddNewWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -240,10 +238,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            IEnumerable<ServerRoleModel> nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddRolesToWorkflow(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.AddRolesToWorkflow(null));
             
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -257,10 +254,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerUserModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddUser(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.AddUser(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -271,7 +267,7 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerUserModel userToAdd = new ServerUserModel {Name = "TestingName"};
+            var userToAdd = new ServerUserModel {Name = "TestingName"};
 
             // Act
             var testDelegate = new TestDelegate(async () => await storage.AddUser(userToAdd));
@@ -369,10 +365,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            string nullWorkflowId = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetEventsFromWorkflow(nullWorkflowId));
+            var testDelegate = new TestDelegate(async () => await storage.GetEventsFromWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -382,7 +377,7 @@ namespace Server.Tests.StorageTests
         public void GetEventsFromWorkflow_WhenWorkflowDoesNotExistExceptionIsRaised()
         {
             // Arrange
-            IServerStorage storage = new ServerStorage(_context);
+            var storage = new ServerStorage(_context);
 
             // Act
             var testDelegate = new TestDelegate(async () => await storage.GetEventsFromWorkflow("NonExistingWorkflowId"));
@@ -419,10 +414,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerHistoryStorage storage = new ServerStorage(_context);
-            string nullWorkflowId = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetHistoryForWorkflow(nullWorkflowId));
+            var testDelegate = new TestDelegate(async () => await storage.GetHistoryForWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -432,7 +426,7 @@ namespace Server.Tests.StorageTests
         public void GetHistoryForWorkflow_WhenWorkflowDoesNotExistNotFoundExceptionIsRaised()
         {
             // Arrange
-            IServerHistoryStorage storage = new ServerStorage(_context);
+            var storage = new ServerStorage(_context);
 
             // Act
             var testDelegate = new TestDelegate(async () => await storage.GetHistoryForWorkflow("NonExistingWorkflowId"));
@@ -504,7 +498,7 @@ namespace Server.Tests.StorageTests
         public async Task GetUser()
         {
             var toTest = new ServerStorage(_context);
-            var result = (await toTest.GetUser("TestingName", "TestingPassword"));
+            var result = await toTest.GetUser("TestingName", "TestingPassword");
 
             Assert.IsNotNull(result);
             Assert.AreEqual("TestingName", result.Name);
@@ -563,10 +557,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            string nullWorkflowId = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetWorkflow(nullWorkflowId));
+            var testDelegate = new TestDelegate(async () => await storage.GetWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -594,11 +587,6 @@ namespace Server.Tests.StorageTests
             // Act
             var actualWorkflow = await storage.GetWorkflow("1");
 
-            var workflowList =
-                from w in _workflows
-                where w.Id == "1"
-                select 1;
-
             var expectedWorkflow = new ServerWorkflowModel
             {
                 Id = "1",
@@ -618,10 +606,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerUserModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.Login(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.Login(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -667,10 +654,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            string nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RemoveWorkflow(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.RemoveWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -728,10 +714,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerRoleModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RoleExists(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.RoleExists(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -745,7 +730,7 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerRoleModel argument = new ServerRoleModel
+            var argument = new ServerRoleModel
             {
                 Id = roleId,
                 ServerWorkflowModelId = workflowId
@@ -765,10 +750,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerHistoryStorage storage = new ServerStorage(_context);
-            HistoryModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.SaveHistory(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.SaveHistory(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -817,10 +801,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerHistoryStorage storage = new ServerStorage(_context);
-            HistoryModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.SaveNonWorkflowSpecificHistory(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.SaveNonWorkflowSpecificHistory(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -833,10 +816,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            ServerWorkflowModel nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.UpdateWorkflow(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.UpdateWorkflow(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -868,10 +850,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            string nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.UserExists(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.UserExists(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
@@ -900,10 +881,9 @@ namespace Server.Tests.StorageTests
         {
             // Arrange
             IServerStorage storage = new ServerStorage(_context);
-            string nullArgument = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.WorkflowExists(nullArgument));
+            var testDelegate = new TestDelegate(async () => await storage.WorkflowExists(null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);

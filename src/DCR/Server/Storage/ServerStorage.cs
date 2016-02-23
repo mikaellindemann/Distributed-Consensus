@@ -73,7 +73,7 @@ namespace Server.Storage
             if (userModel.ServerRolesModels != null) return userModel.ServerRolesModels;
 
             var user = await _db.Users.FindAsync(userModel.Name);
-            return user != null ? user.ServerRolesModels : null;
+            return user?.ServerRolesModels;
         }
 
         public async Task<IEnumerable<ServerEventModel>> GetEventsFromWorkflow(string workflowId)

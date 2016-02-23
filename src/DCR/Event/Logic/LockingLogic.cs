@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Common.Exceptions;
 using Event.Interfaces;
@@ -18,7 +19,7 @@ namespace Event.Logic
         private readonly IEventFromEvent _eventCommunicator;
 
         //QUEUE is holding a dictionary of string (workflowid) , dictionary which holds string (eventid), the queue
-        public readonly static ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>> LockQueue = new ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>>();
+        public static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>> LockQueue = new ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>>();
 
         /// <summary>
         /// Constructor
@@ -52,13 +53,12 @@ namespace Event.Logic
             queue.Enqueue(lockDto);
         }
 
-        private LockDto Dequeue(string workflowId, string eventId)
+        private static void Dequeue(string workflowId, string eventId)
         {
             var eventDictionary = LockQueue.GetOrAdd(workflowId, new ConcurrentDictionary<string, ConcurrentQueue<LockDto>>());
             var queue = eventDictionary.GetOrAdd(eventId, new ConcurrentQueue<LockDto>());
             LockDto next;
             queue.TryDequeue(out next);
-            return next;
         }
 
         private bool AmINext(string workflowId, string eventId, LockDto lockDto)
@@ -168,31 +168,29 @@ namespace Event.Logic
             // Get dependent events
             var resp = await _storage.GetResponses(workflowId, eventId);
             var incl = await _storage.GetInclusions(workflowId, eventId);
-            var excl = await _storage.GetExclusions(workflowId, eventId);            
+            var excl = await _storage.GetExclusions(workflowId, eventId);
 
-            var allDependentEventsSorted = new SortedDictionary<string, RelationToOtherEventModel>();
-            // Add this Event's own lockDto (so the Event will be locked in order.)
-            allDependentEventsSorted.Add(eventId, new RelationToOtherEventModel
+            var allDependentEventsSorted = new SortedDictionary<string, RelationToOtherEventModel>
             {
-                EventId = eventId,
-                WorkflowId = workflowId,
-                Uri = await _storage.GetUri(workflowId, eventId)
-            });
-
-            foreach (var res in resp)
-            {
-                if (!allDependentEventsSorted.ContainsKey(res.EventId))
                 {
-                    allDependentEventsSorted.Add(res.EventId, res);
+                    eventId, new RelationToOtherEventModel
+                    {
+                        EventId = eventId,
+                        WorkflowId = workflowId,
+                        Uri = await _storage.GetUri(workflowId, eventId)
+                    }
                 }
+            };
+            // Add this Event's own lockDto (so the Event will be locked in order.)
+
+            foreach (var res in resp.Where(res => !allDependentEventsSorted.ContainsKey(res.EventId)))
+            {
+                allDependentEventsSorted.Add(res.EventId, res);
             }
 
-            foreach (var inc in incl)
+            foreach (var inc in incl.Where(inc => !allDependentEventsSorted.ContainsKey(inc.EventId)))
             {
-                if (!allDependentEventsSorted.ContainsKey(inc.EventId))
-                {
-                    allDependentEventsSorted.Add(inc.EventId, inc);
-                }
+                allDependentEventsSorted.Add(inc.EventId, inc);
             }
 
             foreach (var exc in excl)

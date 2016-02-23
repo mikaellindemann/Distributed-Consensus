@@ -1,6 +1,6 @@
 using System;
 
-namespace Event.Exceptions
+namespace Event.Exceptions.EventInteraction
 {
     public class FailedToUnlockOtherEventException : Exception
     {

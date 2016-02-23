@@ -47,10 +47,7 @@ namespace Client
         {
             obj.SetValue(TextLengthProperty, value);
 
-            if (value >= 1)
-                obj.SetValue(HasTextProperty, true);
-            else
-                obj.SetValue(HasTextProperty, false);
+            obj.SetValue(HasTextProperty, value >= 1);
         }
 
         public static readonly DependencyProperty TextLengthProperty =

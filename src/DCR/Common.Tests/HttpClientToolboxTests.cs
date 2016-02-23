@@ -103,10 +103,7 @@ namespace Common.Tests
         public void AuthenticationHeader_Get()
         {
             // Act
-            var testDelegate = new TestDelegate(() =>
-            {
-                var authenticationHeaderValue = _toolbox.AuthenticationHeader;
-            });
+            var testDelegate = new TestDelegate(() => { });
 
             // Assert
             Assert.DoesNotThrow(testDelegate);

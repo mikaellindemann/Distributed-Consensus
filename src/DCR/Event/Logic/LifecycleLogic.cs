@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
 using Common.DTO.Event;
 using Common.DTO.Shared;
 using Common.Exceptions;
@@ -150,7 +149,7 @@ namespace Event.Logic
         {
             if (workflowId == null || eventId == null)
             {
-                throw new ArgumentNullException("workflowId", "workflowId was null");
+                throw new ArgumentNullException(nameof(workflowId), "workflowId was null");
             }
 
             // Clear lock

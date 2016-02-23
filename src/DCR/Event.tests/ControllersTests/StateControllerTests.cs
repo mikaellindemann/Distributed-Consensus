@@ -7,6 +7,7 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Controllers;
 using Event.Exceptions;
+using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -261,7 +262,7 @@ namespace Event.Tests.ControllersTests
         {
             // Arrange
             _stateLogicMock.Setup(sl => sl.GetStateDto(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(((string workflowId, string eventId, string senderId) => Task.Run(() => new EventStateDto
+                .Returns((string workflowId, string eventId, string senderId) => Task.Run(() => new EventStateDto
                 {
                     Id = eventId,
                     Name = eventId.ToUpper(),
@@ -269,7 +270,7 @@ namespace Event.Tests.ControllersTests
                     Executed = executed,
                     Included = included,
                     Pending = pending
-                })));
+                }));
 
             // Act
             var result = await _stateController.GetState("workflowId", "eventId", "senderId");

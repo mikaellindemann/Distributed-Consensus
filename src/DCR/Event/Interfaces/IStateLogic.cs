@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Common.Exceptions;
 using Event.Exceptions;
 using Common.DTO.Event;
+using Event.Exceptions.EventInteraction;
 
 namespace Event.Interfaces
 {

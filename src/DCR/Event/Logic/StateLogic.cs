@@ -5,6 +5,7 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Communicators;
 using Event.Exceptions;
+using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;
 using Event.Storage;
@@ -272,7 +273,7 @@ namespace Event.Logic
                 throw new LockedException();
             }
             // Check whether Event can be executed at the moment
-            if (!(await IsExecutable(workflowId, eventId)))
+            if (!await IsExecutable(workflowId, eventId))
             {
                 throw new NotExecutableException();
             }

@@ -64,32 +64,31 @@ namespace Event.Controllers
             {
                 await _lockLogic.LockSelf(workflowId, eventId, lockDto);
                 await _historyLogic.SaveSuccesfullCall("POST", "Lock", eventId, workflowId);
-                return;
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveException(e, "POST", "Lock");
+                await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Lock: Seems input was not satisfactory"));
             }
             catch (LockedException e)
             {
-                _historyLogic.SaveException(e, "POST", "Lock");
+                await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "Lock: Failed to lock: Event is currently locked by someone else"));
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveException(e, "POST", "Lock");
+                await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Lock: Event seems not to exist"));
             }
             catch (IllegalStorageStateException e)
             {
-                _historyLogic.SaveException(e, "POST", "Lock");
+                await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Lock: Storage reported it is in a non-valid state"));
@@ -110,32 +109,31 @@ namespace Event.Controllers
             {
                 await _lockLogic.UnlockSelf(workflowId, eventId, senderId);
                 await _historyLogic.SaveSuccesfullCall("DELETE", "Unlock", eventId, workflowId);
-                return;
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "Unlock");
+                await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Unlock: Could not unlock: One or more of the provided arguments was null"));
             }
             catch (LockedException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "Unlock");
+                await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "Unlock: Could not unlock: Event is locked by someone else"));
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "Unlock");
+                await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Unlock: Event seems not to exist"));
             }
             catch (IllegalStorageStateException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "Unlock");
+                await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Unlock: Storage reported it is in a non-valid state"));

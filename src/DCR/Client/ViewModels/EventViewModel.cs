@@ -110,10 +110,7 @@ namespace Client.ViewModels
             }
         }
 
-        public Brush PendingColor
-        {
-            get { return Pending ? PendingBrush : WhiteBrush; }
-        }
+        public Brush PendingColor => Pending ? PendingBrush : WhiteBrush;
 
         public bool Executed
         {
@@ -126,10 +123,8 @@ namespace Client.ViewModels
             }
         }
 
-        public Brush ExecutedColor
-        {
-            get { return Executed ? ExecutedBrush : WhiteBrush; }
-        }
+        public Brush ExecutedColor => Executed ? ExecutedBrush : WhiteBrush;
+
         public bool Included
         {
             get { return _eventStateDto.Included; }
@@ -141,10 +136,7 @@ namespace Client.ViewModels
             }
         }
 
-        public Brush IncludedColor
-        {
-            get { return Included ? IncludedBrush : WhiteBrush; }
-        }
+        public Brush IncludedColor => Included ? IncludedBrush : WhiteBrush;
 
         public bool Executable
         {

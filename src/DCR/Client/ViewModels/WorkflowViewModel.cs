@@ -17,11 +17,10 @@ namespace Client.ViewModels
         private readonly WorkflowDto _workflowDto;
         private bool _resetEventRuns;
         private readonly IWorkflowListViewModel _parent;
-        private readonly IEnumerable<string> _roles;
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
 
-        public string WorkflowId { get { return _workflowDto.Id; } }
+        public string WorkflowId => _workflowDto.Id;
 
         public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles)
         {
@@ -32,7 +31,7 @@ namespace Client.ViewModels
             _parent = parent;
             EventList = new ObservableCollection<EventViewModel>();
             _workflowDto = workflowDto;
-            _roles = roles;
+            Roles = roles;
             _eventConnection = new EventConnection();
             _serverConnection = new ServerConnection(new Uri(Settings.LoadSettings().ServerAddress));
         }
@@ -42,7 +41,7 @@ namespace Client.ViewModels
         {
             _parent = parent;
             _workflowDto = workflowDto;
-            _roles = roles;
+            Roles = roles;
             _eventConnection = eventConnection;
             _serverConnection = serverConnection;
             EventList = eventList;
@@ -83,10 +82,7 @@ namespace Client.ViewModels
             }
         }
 
-        public IEnumerable<string> Roles
-        {
-            get { return _roles; }
-        }
+        public IEnumerable<string> Roles { get; }
 
         #endregion
 
@@ -106,7 +102,7 @@ namespace Client.ViewModels
 
             var events = (await _serverConnection.GetEventsFromWorkflow(WorkflowId))
                 .AsParallel()
-                .Where(e => e.Roles.Intersect(_roles).Any()) //Only selects the events, the current user can execute
+                .Where(e => e.Roles.Intersect(Roles).Any()) //Only selects the events, the current user can execute
                 .Select(eventAddressDto => new EventViewModel(eventAddressDto, this))
                 .ToList();
 
@@ -147,7 +143,7 @@ namespace Client.ViewModels
             IEnumerable<EventAddressDto> adminEventList;
             try
             {
-                adminEventList = (await _serverConnection.GetEventsFromWorkflow(WorkflowId));
+                adminEventList = await _serverConnection.GetEventsFromWorkflow(WorkflowId);
             }
             catch (NotFoundException)
             {

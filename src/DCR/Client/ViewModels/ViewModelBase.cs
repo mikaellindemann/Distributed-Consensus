@@ -17,10 +17,7 @@ namespace Client.ViewModels
         /// <param name="info">The name of the property which has been updated.</param>
         public void NotifyPropertyChanged(String info)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
     }
 }

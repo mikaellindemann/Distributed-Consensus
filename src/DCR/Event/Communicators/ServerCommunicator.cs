@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Common;
 using Common.DTO.Shared;
 using Common.Tools;
-using Event.Exceptions;
+using Event.Exceptions.ServerInteraction;
 using Event.Interfaces;
 
 namespace Event.Communicators
@@ -15,7 +14,7 @@ namespace Event.Communicators
     /// </summary>
     public class ServerCommunicator : IServerFromEvent
     {
-        public readonly HttpClientToolbox _httpClient;
+        public readonly HttpClientToolbox HttpClient;
 
         // _eventId represents this Event's id, and _workflowId the workflow that this Event is a part of.
         private readonly string _eventId;
@@ -31,7 +30,7 @@ namespace Event.Communicators
 
             _workflowId = workFlowId;
              _eventId = eventId;
-            _httpClient = new HttpClientToolbox(baseAddress);
+            HttpClient = new HttpClientToolbox(baseAddress);
         }
 
         ///<summary>
@@ -46,15 +45,15 @@ namespace Event.Communicators
 
             _workflowId = workFlowId;
             _eventId = eventId;
-            _httpClient = httpClient;
+            HttpClient = httpClient;
         }
 
         public async Task PostEventToServer(EventAddressDto addressDto)
         {
-            var path = string.Format("workflows/{0}", _workflowId);
+            var path = $"workflows/{_workflowId}";
             try
             {
-                await _httpClient.Create(path, addressDto);
+                await HttpClient.Create(path, addressDto);
             }
             catch (Exception)
             {
@@ -64,11 +63,11 @@ namespace Event.Communicators
 
         public async Task DeleteEventFromServer()
         {
-            var path = string.Format("workflows/{0}/{1}", _workflowId, _eventId);
+            var path = $"workflows/{_workflowId}/{_eventId}";
 
             try
             {
-                await _httpClient.Delete(path);
+                await HttpClient.Delete(path);
             }
             catch (Exception)
             {
@@ -78,7 +77,7 @@ namespace Event.Communicators
 
         public void Dispose()
         {
-            _httpClient.Dispose();
+            HttpClient.Dispose();
         }
     }
 }
