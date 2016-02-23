@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Common;
 using Common.DTO.Event;
 using Common.DTO.History;
 using Common.DTO.Shared;

@@ -7,6 +7,7 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Controllers;
 using Event.Exceptions;
+using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Moq;
 using NUnit.Framework;

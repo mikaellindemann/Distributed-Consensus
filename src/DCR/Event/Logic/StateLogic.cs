@@ -5,6 +5,7 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Communicators;
 using Event.Exceptions;
+using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;
 using Event.Storage;

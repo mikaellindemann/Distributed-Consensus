@@ -1,11 +1,11 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:viewModels="clr-namespace:Client.ViewModels" x:Class="Client.Views.HistoryView"
+        xmlns:ViewModels="clr-namespace:Client.ViewModels" x:Class="Client.Views.HistoryView"
         Title="Flow - History" Height="600" Width="1000">
     <Grid x:Name="HistoryGrid">
         <Grid.DataContext>
-            <viewModels:HistoryListViewModel/>
+            <ViewModels:HistoryListViewModel/>
         </Grid.DataContext>
         <Grid.RowDefinitions>
             <RowDefinition Height="61"/>
