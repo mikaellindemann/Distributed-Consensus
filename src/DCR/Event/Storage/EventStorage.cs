@@ -34,7 +34,7 @@ namespace Event.Storage
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
             _context = context;
         }
@@ -43,7 +43,7 @@ namespace Event.Storage
         {
             if (eventModel == null)
             {
-                throw new ArgumentNullException("eventModel", "eventModel was null");
+                throw new ArgumentNullException(nameof(eventModel), "eventModel was null");
             }
 
             if (await Exists(eventModel.WorkflowId, eventModel.Id))
@@ -224,7 +224,7 @@ namespace Event.Storage
 
             await EventIsInALegalState(workflowId, eventId);
 
-            var @event = (await _context.Events.SingleAsync(model => model.WorkflowId == workflowId && model.Id == eventId));
+            var @event = await _context.Events.SingleAsync(model => model.WorkflowId == workflowId && model.Id == eventId);
 
             @event.Included = includedValue;
 
@@ -492,7 +492,7 @@ namespace Event.Storage
         {
             if (toSave == null)
             {
-                throw new ArgumentNullException("toSave");
+                throw new ArgumentNullException(nameof(toSave));
             }
             if (!await Exists(toSave.WorkflowId, toSave.EventId))
             {

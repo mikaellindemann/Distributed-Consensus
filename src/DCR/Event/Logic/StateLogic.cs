@@ -272,7 +272,7 @@ namespace Event.Logic
                 throw new LockedException();
             }
             // Check whether Event can be executed at the moment
-            if (!(await IsExecutable(workflowId, eventId)))
+            if (!await IsExecutable(workflowId, eventId))
             {
                 throw new NotExecutableException();
             }

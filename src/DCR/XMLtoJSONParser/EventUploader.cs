@@ -76,7 +76,7 @@ namespace XMLtoJSONParser
 
         private static async Task AddRolesToUser(HttpClientToolbox tool, string username, IEnumerable<WorkflowRole> roles)
         {
-            await tool.Create(string.Format("users/{0}/roles", username), roles);
+            await tool.Create($"users/{username}/roles", roles);
         }
     }
 }

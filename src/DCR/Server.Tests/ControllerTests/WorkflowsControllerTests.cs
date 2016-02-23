@@ -59,7 +59,7 @@ namespace Server.Tests.ControllerTests
             var result = (await _controller.Get()).ToList();
 
             // Assert
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(1, result.Count);
             Assert.IsNotNull(result[0]);
             Assert.AreEqual("testWorkflow", result[0].Id);
             Assert.AreEqual("Test Workflow", result[0].Name);
@@ -72,7 +72,7 @@ namespace Server.Tests.ControllerTests
             var workflowDtos = new List<WorkflowDto>();
             for (var i = 0; i < 10; i++)
             {
-                workflowDtos.Add(new WorkflowDto { Id = string.Format("testWorkflow{0}", i), Name = string.Format("Test Workflow {0}", i)});
+                workflowDtos.Add(new WorkflowDto { Id = $"testWorkflow{i}", Name = $"Test Workflow {i}"});
             }
 
             _mock.Setup(logic => logic.GetAllWorkflows()).ReturnsAsync(workflowDtos);
@@ -115,7 +115,7 @@ namespace Server.Tests.ControllerTests
         public async void PostWorkflow_id_that_does_not_exist(string workflowId)
         {
             var list = new List<ServerWorkflowModel>();
-            _mock.Setup((logic => logic.AddNewWorkflow(It.IsAny<WorkflowDto>())))
+            _mock.Setup(logic => logic.AddNewWorkflow(It.IsAny<WorkflowDto>()))
                 .Returns((WorkflowDto incoming) => Task.Run(() => list.Add(new ServerWorkflowModel {Id = incoming.Id, Name = incoming.Id})));
 
             // Arrange
@@ -177,7 +177,7 @@ namespace Server.Tests.ControllerTests
         {
             var list = new List<ServerWorkflowModel> { new ServerWorkflowModel { Id = "DoesExist", Name = "This is a test..."} };
 
-            _mock.Setup((logic => logic.RemoveWorkflow(It.IsAny<string>())))
+            _mock.Setup(logic => logic.RemoveWorkflow(It.IsAny<string>()))
                 .Returns((string incomingId) => Task.Run(() => list.Remove(list.Find(w => w.Id == incomingId))));
 
             var dto = new WorkflowDto { Id = "DoesExist", Name = "lol"};
@@ -191,7 +191,7 @@ namespace Server.Tests.ControllerTests
         {
             var list = new List<ServerWorkflowModel> { new ServerWorkflowModel { Id = "DoesNotExist", Name = "This is a test..." } };
 
-            _mock.Setup((logic => logic.RemoveWorkflow(It.IsAny<string>())))
+            _mock.Setup(logic => logic.RemoveWorkflow(It.IsAny<string>()))
                 .Returns((string incomingId) => Task.Run(() =>
                 {
                     if (list.Count(w => w.Id == incomingId) != 0) return;
@@ -219,7 +219,7 @@ namespace Server.Tests.ControllerTests
 
             for (var i = 0; i < numberOfEvents; i++)
             {
-                list.Add(new EventAddressDto { Id = string.Format("event{0}", i), Uri = new Uri(string.Format("http://www.example.com/test{0}", i)) });
+                list.Add(new EventAddressDto { Id = $"event{i}", Uri = new Uri($"http://www.example.com/test{i}") });
             }
 
             _mock.Setup(logic => logic.GetEventsOnWorkflow(workflowId)).ReturnsAsync(list);
@@ -259,7 +259,7 @@ namespace Server.Tests.ControllerTests
             var list = new List<EventAddressDto>();
             // Arrange
             _mock.Setup(logic => logic.AddEventToWorkflow(It.IsAny<string>(), It.IsAny<EventAddressDto>()))
-                .Returns(((string s, EventAddressDto eventDto) => Task.Run(() => list.Add(eventDto))));
+                .Returns((string s, EventAddressDto eventDto) => Task.Run(() => list.Add(eventDto)));
             _mock.Setup(logic => logic.GetEventsOnWorkflow(It.IsAny<string>())).ReturnsAsync(list);
 
             var eventAddressDto = new EventAddressDto { Id = "id", Uri = new Uri("http://www.contoso.com/") };

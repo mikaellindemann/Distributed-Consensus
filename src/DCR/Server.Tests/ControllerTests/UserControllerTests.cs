@@ -68,8 +68,7 @@ namespace Server.Tests.ControllerTests
             var roles = new List<string> {"Inspector", "Administrator", "Receptionist"};
             rolesDictionary.Add("Hans",roles);
 
-            var returnDto = new RolesOnWorkflowsDto();
-            returnDto.RolesOnWorkflows = rolesDictionary;
+            var returnDto = new RolesOnWorkflowsDto { RolesOnWorkflows = rolesDictionary };
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ReturnsAsync(returnDto);
 
@@ -84,12 +83,11 @@ namespace Server.Tests.ControllerTests
         public async Task Login_LogsWhenRolesAreSuccesfullyReturned()
         {
             // Arrange
-            bool logMethodWasCalled = false;
+            var logMethodWasCalled = false;
             var loginDto = new LoginDto() { Username = "Hans", Password = "1234" };
             var rolesDictionary = new Dictionary<string, ICollection<string>>();
 
-            var returnDto = new RolesOnWorkflowsDto();
-            returnDto.RolesOnWorkflows = rolesDictionary;
+            var returnDto = new RolesOnWorkflowsDto {RolesOnWorkflows = rolesDictionary};
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ReturnsAsync(returnDto);
 
@@ -140,10 +138,10 @@ namespace Server.Tests.ControllerTests
 
         [TestCase(typeof(UnauthorizedException))]
         [TestCase(typeof(Exception))]
-        public void Login_WhenExceptionIsThrownHistoryIsCalled1(Type exceptionType)
+        public async Task Login_WhenExceptionIsThrownHistoryIsCalled1(Type exceptionType)
         {
             // Arrange
-            bool logMethodWasCalled = false;
+            var logMethodWasCalled = false;
             var loginDto = new LoginDto() { Username = "Hans", Password = "1234" };
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ThrowsAsync((Exception)exceptionType.GetConstructors().First().Invoke(null));
@@ -152,17 +150,17 @@ namespace Server.Tests.ControllerTests
                 .Callback((HistoryModel history) => logMethodWasCalled = true);
 
             // Act
-            _usersController.Login(loginDto);
+            await _usersController.Login(loginDto);
 
             // Assert
             Assert.IsTrue(logMethodWasCalled);
         }
 
         [Test]
-        public void Login_WhenExceptionIsThrownHistoryIsCalled2()
+        public async Task Login_WhenExceptionIsThrownHistoryIsCalled2()
         {
             // Arrange
-            bool logMethodWasCalled = false;
+            var logMethodWasCalled = false;
             var loginDto = new LoginDto() { Username = "Hans", Password = "1234" };
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ThrowsAsync(new ArgumentNullException());
@@ -171,7 +169,7 @@ namespace Server.Tests.ControllerTests
                 .Callback((HistoryModel history) => logMethodWasCalled = true);
 
             // Act
-            _usersController.Login(loginDto);
+            await _usersController.Login(loginDto);
 
             // Assert
             Assert.IsTrue(logMethodWasCalled);
@@ -180,11 +178,8 @@ namespace Server.Tests.ControllerTests
         [Test]
         public void Login_ThrowsExceptionWhenProvidedNullArgument()
         {
-            // Arrange
-            LoginDto loginDto = null;
-
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.Login(loginDto));
+            var testDelegate = new TestDelegate(async () => await _usersController.Login(null));
 
             // Assert
             Assert.Throws<HttpResponseException>(testDelegate);
@@ -194,13 +189,11 @@ namespace Server.Tests.ControllerTests
         public void Login_CallsHistoryWhenProvidedNullArgument()
         {
             // Arrange
-            bool hasLogged = false;
-            LoginDto loginDto = null;
             _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Callback((HistoryModel model) => hasLogged = true);
+                .Callback((HistoryModel model) => {});
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.Login(loginDto));
+            var testDelegate = new TestDelegate(async () => await _usersController.Login(null));
 
             // Assert
             Assert.Throws<HttpResponseException>(testDelegate);
@@ -213,27 +206,23 @@ namespace Server.Tests.ControllerTests
         [Test]
         public void CreateUser_RaisesExceptionWhenCalledWithNullArgument()
         {
-            // Arrange
-            UserDto nullUserDto = null;
-
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.CreateUser(nullUserDto));
+            var testDelegate = new TestDelegate(async () => await _usersController.CreateUser(null));
 
             // Assert
             Assert.Throws<HttpResponseException>(testDelegate);
         }
 
         [Test]
-        public void CreateUser_WillLogIfCalledWithNullArgument()
+        public async Task CreateUser_WillLogIfCalledWithNullArgument()
         {
             // Arrange
-            bool logWasCalled = false;
-            UserDto nullUserDto = null;
+            var logWasCalled = false;
             _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
                 .Callback((HistoryModel model) => logWasCalled = true);
 
             // Act
-            _usersController.CreateUser(nullUserDto);
+            await _usersController.CreateUser(null);
 
             // Assert
             Assert.IsTrue(logWasCalled);
@@ -246,9 +235,8 @@ namespace Server.Tests.ControllerTests
             var catchArgumentList = new List<UserDto>();
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>()))
                 .Callback((UserDto providedDto) => catchArgumentList.Add(providedDto));
-            var rolesList = new List<WorkflowRole>();
-            rolesList.Add(new WorkflowRole(){Role = "Ambassador",Workflow = "Healthcare"});
-            UserDto argumentToProvide = new UserDto()
+            var rolesList = new List<WorkflowRole> {new WorkflowRole {Role = "Ambassador", Workflow = "Healthcare"}};
+            var argumentToProvide = new UserDto
             {
                 Name = "Otto",
                 Password = "MargaretThatcher",
@@ -273,9 +261,8 @@ namespace Server.Tests.ControllerTests
         {
             // Arrange
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
-            var rolesList = new List<WorkflowRole>();
-            rolesList.Add(new WorkflowRole(){Role = "Ambassador",Workflow = "Healthcare"});
-            UserDto argumentToProvide = new UserDto()
+            var rolesList = new List<WorkflowRole> {new WorkflowRole {Role = "Ambassador", Workflow = "Healthcare"}};
+            var argumentToProvide = new UserDto
             {
                 Name = "Otto",
                 Password = "MargaretThatcher",
@@ -292,17 +279,17 @@ namespace Server.Tests.ControllerTests
         [TestCase(typeof(ArgumentNullException))]
         [TestCase(typeof(NotFoundException))]
         [TestCase(typeof(UserExistsException))]
-        public void CreateUser_WillLogWhenAnExceptionWasThrown_1(Type exceptionType)
+        public async Task CreateUser_WillLogWhenAnExceptionWasThrown_1(Type exceptionType)
         {
             // Arrange
-            bool logWasCalled = false;
+            var logWasCalled = false;
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
             _historyLogic.Setup(m => m.SaveHistory(It.IsAny<HistoryModel>())).Callback((HistoryModel x) => logWasCalled = true);
 
-            UserDto argumentToProvide = new UserDto();
+            var argumentToProvide = new UserDto();
 
             // Act
-            _usersController.CreateUser(argumentToProvide);
+            await _usersController.CreateUser(argumentToProvide);
 
             // Assert
             Assert.IsTrue(logWasCalled);
@@ -312,17 +299,17 @@ namespace Server.Tests.ControllerTests
         [TestCase(typeof(InvalidOperationException))]
         [TestCase(typeof(ArgumentException))]
         [TestCase(typeof(Exception))]
-        public void CreateUser_WillLogWhenAnExceptionWasThrown_2(Type exceptionType)
+        public async Task CreateUser_WillLogWhenAnExceptionWasThrown_2(Type exceptionType)
         {
             // Arrange
-            bool logWasCalled = false;
+            var logWasCalled = false;
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
             _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>())).Callback((HistoryModel x) => logWasCalled = true);
 
-            UserDto argumentToProvide = new UserDto();
+            var argumentToProvide = new UserDto();
 
             // Act
-            _usersController.CreateUser(argumentToProvide);
+            await _usersController.CreateUser(argumentToProvide);
 
             // Assert
             Assert.IsTrue(logWasCalled);
@@ -334,7 +321,7 @@ namespace Server.Tests.ControllerTests
             // Arrange
             var exceptionToBeThrown = new ArgumentException("Conflicting name", "user");
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws(exceptionToBeThrown);
-            UserDto provideDto = new UserDto();
+            var provideDto = new UserDto();
 
             // Act
             var task = _usersController.CreateUser(provideDto);
@@ -409,10 +396,10 @@ namespace Server.Tests.ControllerTests
         }
 
         [Test]
-        public void AddRolesToUser_WillLogWhenProvidedNonMappableInput()
+        public async Task AddRolesToUser_WillLogWhenProvidedNonMappableInput()
         {
             // Arrange
-            bool logWasCalled = false;
+            var logWasCalled = false;
             _usersController.ModelState.AddModelError("Name",new ArgumentNullException());
             _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
                 .Callback((HistoryModel model) => logWasCalled = true);
@@ -420,7 +407,7 @@ namespace Server.Tests.ControllerTests
 
 
             // Act
-            _usersController.AddRolesToUser("Hanne", rolesList);
+            await _usersController.AddRolesToUser("Hanne", rolesList);
 
             // Assert
             Assert.IsTrue(logWasCalled);
@@ -428,12 +415,12 @@ namespace Server.Tests.ControllerTests
 
 
         [Test]
-        public void AddRolesToUser_HandsOverInputUnaffectedToLogicLayer()
+        public async Task AddRolesToUser_HandsOverInputUnaffectedToLogicLayer()
         {
             // Arrange
-            string user = "Hanne";
+            const string user = "Hanne";
             string receivedUserOnLogicSide = null;
-            IEnumerable<WorkflowRole> rolesList = GetSomeRoles();
+            var rolesList = GetSomeRoles();
             IEnumerable<WorkflowRole> rolesListReceivedOnLogicSide = null;
             _logicMock.Setup(m => m.AddRolesToUser(It.IsAny<string>(), It.IsAny<IEnumerable<WorkflowRole>>())).
                 Callback((string u, IEnumerable<WorkflowRole> roles) =>
@@ -443,7 +430,7 @@ namespace Server.Tests.ControllerTests
                 });
 
             // Act
-            _usersController.AddRolesToUser(user, rolesList);
+            await _usersController.AddRolesToUser(user, rolesList);
 
             // Assert
             Assert.AreEqual(user,receivedUserOnLogicSide);
@@ -459,7 +446,7 @@ namespace Server.Tests.ControllerTests
             _logicMock.Setup(m => m.AddRolesToUser(It.IsAny<string>(), It.IsAny<IEnumerable<WorkflowRole>>()))
                 .Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
             var rolesList = GetSomeRoles();
-            var user = "Hanne";
+            const string user = "Hanne";
 
             // Act
             var testDelegate = new TestDelegate(async () => await _usersController.AddRolesToUser(user, rolesList));

@@ -2,12 +2,11 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using Common;
 using Common.DTO.Event;
 using Common.Exceptions;
 using Event.Exceptions;
+using Event.Exceptions.ServerInteraction;
 using Event.Interfaces;
 using Event.Logic;
 
@@ -62,39 +61,38 @@ namespace Event.Controllers
 
 
             // Prepare for method-call: Gets own URI
-            var s = string.Format("{0}://{1}", Request.RequestUri.Scheme, Request.RequestUri.Authority);
+            var s = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}";
             var ownUri = new Uri(s);
 
             try
             {
                 await _logic.CreateEvent(eventDto, ownUri);
                 await _historyLogic.SaveSuccesfullCall("POST", "CreateEvent", eventDto.EventId, eventDto.WorkflowId);
-                return; // Important that we return here. 
             }
             catch (EventExistsException e)
             {
-                _historyLogic.SaveException(e, "POST", "CreateEvent");
+                await _historyLogic.SaveException(e, "POST", "CreateEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "CreateEvent: Event already exists"));
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveException(e, "POST", "CreateEvent");
+                await _historyLogic.SaveException(e, "POST", "CreateEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "CreateEvent: Seems input was not satisfactory"));
             }
             catch (FailedToPostEventAtServerException e)
             {
-                _historyLogic.SaveException(e, "POST", "CreateEvent");
+                await _historyLogic.SaveException(e, "POST", "CreateEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "CreateEvent: Failed to Post Event at Server"));
             }
             catch (FailedToDeleteEventFromServerException e)
             {
-                _historyLogic.SaveException(e, "POST", "CreateEvent");
+                await _historyLogic.SaveException(e, "POST", "CreateEvent");
 
                 // Is thrown if we somehow fail to PostEventToServer
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
@@ -103,7 +101,7 @@ namespace Event.Controllers
             }
             catch (FailedToCreateEventException e)
             {
-                _historyLogic.SaveException(e, "POST", "CreateEvent");
+                await _historyLogic.SaveException(e, "POST", "CreateEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "CreateEvent: Failed to create Event locally "));
@@ -111,7 +109,7 @@ namespace Event.Controllers
             catch (Exception e)
             {
                 // Will catch any other Exception
-                _historyLogic.SaveException(e, "POST", "CreateEvent");
+                await _historyLogic.SaveException(e, "POST", "CreateEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Create Event: An un-expected exception arose"));
@@ -132,32 +130,31 @@ namespace Event.Controllers
             {
                 await _logic.DeleteEvent(workflowId, eventId);
                 await _historyLogic.SaveSuccesfullCall("DELETE", "DeleteEvent", eventId, workflowId);
-                return;
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
+                await _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "DeleteEvent: Seems input was not satisfactory"));
             }
             catch (LockedException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
+                await _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "DeleteEvent: Event is currently locked by someone else"));    
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
+                await _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "DeleteEvent: Event does not exist"));
             }
             catch (FailedToDeleteEventFromServerException e)
             {
-                _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
+                await _historyLogic.SaveException(e, "DELETE", "DeleteEvent");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "DeleteEvent: Failed to delete Event from Server"));
@@ -180,25 +177,26 @@ namespace Event.Controllers
             {
                 await _logic.ResetEvent(workflowId, eventId);
                 await _historyLogic.SaveSuccesfullCall("PUT", "ResetEvent", eventId, workflowId);
-                return;
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveException(e, "PUT", "ResetEvent", eventId, workflowId);
+                await _historyLogic.SaveException(e, "PUT", "ResetEvent", eventId, workflowId);
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "ResetEvent: Seems input was not satisfactory"));
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveException(e, "PUT", "ResetEvent", eventId, workflowId);
+                if (_historyLogic != null)
+                    await _historyLogic.SaveException(e, "PUT", "ResetEvent", eventId, workflowId);
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "ResetEvent: Event seems not to exist"));
             }
             catch (Exception e)
             {
-                _historyLogic.SaveException(e, "PUT", "ResetEvent", eventId, workflowId);
+                if (_historyLogic != null)
+                    await _historyLogic.SaveException(e, "PUT", "ResetEvent", eventId, workflowId);
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "An unexpected exception was thrown"));
@@ -224,19 +222,19 @@ namespace Event.Controllers
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
+                await _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                         workflowId + "." + eventId + " not found"));
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
+                await _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
             catch (Exception e)
             {
-                _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
+                await _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "An unexpected exception was thrown"));
             }

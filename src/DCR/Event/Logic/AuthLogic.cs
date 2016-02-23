@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.Exceptions;
-using Event.Exceptions;
 using Event.Interfaces;
 
 namespace Event.Logic
@@ -28,7 +26,7 @@ namespace Event.Logic
         {
             if (eventId == null || workflowId == null || roles == null)
             {
-                throw new ArgumentNullException("eventId", "eventId was null");
+                throw new ArgumentNullException(nameof(eventId), "eventId was null");
             }
 
             var eventRoles = await _storage.GetRoles(workflowId, eventId);

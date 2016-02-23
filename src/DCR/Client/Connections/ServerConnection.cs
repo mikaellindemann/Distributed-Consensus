@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Client.Exceptions;
-using Common;
 using Common.DTO.Event;
 using Common.DTO.History;
 using Common.DTO.Server;
@@ -91,7 +90,7 @@ namespace Client.Connections
         {
             try
             {
-                return _http.ReadList<EventAddressDto>(string.Format("workflows/{0}", workflowId));
+                return _http.ReadList<EventAddressDto>($"workflows/{workflowId}");
             }
             catch (HttpRequestException ex)
             {
@@ -111,7 +110,7 @@ namespace Client.Connections
         {
             try
             {
-                return await _http.ReadList<HistoryDto>(string.Format("history/{0}", workflowId));
+                return await _http.ReadList<HistoryDto>($"history/{workflowId}");
             }
             catch (HttpRequestException ex)
             {

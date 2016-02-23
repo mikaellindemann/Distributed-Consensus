@@ -27,7 +27,7 @@ namespace Client.ViewModels
         {
             if (rolesForWorkflows == null)
             {
-                throw new ArgumentNullException("rolesForWorkflows");
+                throw new ArgumentNullException(nameof(rolesForWorkflows));
             }
             WorkflowList = new ObservableCollection<WorkflowViewModel>();
 
@@ -67,10 +67,7 @@ namespace Client.ViewModels
             }
         }
 
-        public Dictionary<string, ICollection<string>> RolesForWorkflows
-        {
-            get { return _rolesForWorkflows; }
-        }
+        public Dictionary<string, ICollection<string>> RolesForWorkflows => _rolesForWorkflows;
 
         #endregion
 
@@ -126,8 +123,9 @@ namespace Client.ViewModels
         /// </summary>
         public void GetEventsOnWorkflow()
         {
-            if (SelectedWorkflowViewModel != null) SelectedWorkflowViewModel.GetEvents();
+            SelectedWorkflowViewModel?.GetEvents();
         }
+
         #endregion
     }
 }

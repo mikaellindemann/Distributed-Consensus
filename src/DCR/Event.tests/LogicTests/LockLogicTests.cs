@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Exceptions;
-using Event.Exceptions;
 using Event.Interfaces;
 using Event.Logic;
 using Event.Models;
@@ -234,10 +233,9 @@ namespace Event.Tests.LogicTests
         public void WaitForMyTurn_LockDtoIsNull()
         {
             //Arrange
-            ILockingLogic lockingLogic = SetupDefaultLockingLogic();
-            LockDto lockDto = null;
+            var lockingLogic = SetupDefaultLockingLogic();
             //Act
-            var testDelegate = new TestDelegate(async () => await lockingLogic.WaitForMyTurn("Wid", "Eid", lockDto));
+            var testDelegate = new TestDelegate(async () => await lockingLogic.WaitForMyTurn("Wid", "Eid", null));
             //Assert
             Assert.Throws<ArgumentNullException>(testDelegate);
             //Cleanup
@@ -1018,11 +1016,10 @@ namespace Event.Tests.LogicTests
         public void LockSelf_WillRaiseExceptionIfLockDtoIsNull()
         {
             // Arrange
-            ILockingLogic logic = SetupDefaultLockingLogic();
+            var logic = SetupDefaultLockingLogic();
 
             // Act 
-            LockDto nullLockDto = null;
-            var testDelegate = new TestDelegate(async () => await logic.LockSelf("workflowId", "testA", nullLockDto));
+            var testDelegate = new TestDelegate(async () => await logic.LockSelf("workflowId", "testA", null));
 
             // Assert
             Assert.Throws<ArgumentNullException>(testDelegate);

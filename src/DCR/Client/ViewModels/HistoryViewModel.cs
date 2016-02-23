@@ -15,7 +15,7 @@ namespace Client.ViewModels
         {
             if (historyDto == null)
             {
-                throw new ArgumentNullException("historyDto");
+                throw new ArgumentNullException(nameof(historyDto));
             }
             _historyDto = historyDto;
         }

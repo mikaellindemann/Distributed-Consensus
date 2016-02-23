@@ -11,12 +11,9 @@ namespace Event.Tests.StorageTests
 {
     internal class FakeDbSet<TEntity> where TEntity : class
     {
-        public Mock<DbSet<TEntity>> EventStateMockSet { get; private set; }
+        public Mock<DbSet<TEntity>> EventStateMockSet { get; }
 
-        public DbSet<TEntity> Object
-        {
-            get { return EventStateMockSet.Object; }
-        }
+        public DbSet<TEntity> Object => EventStateMockSet.Object;
 
         public FakeDbSet(IQueryable<TEntity> queryable)
         {
@@ -91,10 +88,7 @@ namespace Event.Tests.StorageTests
                 return GetAsyncEnumerator();
             }
 
-            IQueryProvider IQueryable.Provider
-            {
-                get { return new TestDbAsyncQueryProvider<T>(this); }
-            }
+            IQueryProvider IQueryable.Provider => new TestDbAsyncQueryProvider<T>(this);
         }
 
         private class TestDbAsyncEnumerator<T> : IDbAsyncEnumerator<T>
@@ -116,15 +110,9 @@ namespace Event.Tests.StorageTests
                 return Task.FromResult(_inner.MoveNext());
             }
 
-            public T Current
-            {
-                get { return _inner.Current; }
-            }
+            public T Current => _inner.Current;
 
-            object IDbAsyncEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IDbAsyncEnumerator.Current => Current;
         }
     }
 }

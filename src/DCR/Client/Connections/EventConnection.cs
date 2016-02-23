@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Client.Exceptions;
-using Client.ViewModels;
 using Common.DTO.Event;
 using Common.DTO.History;
 using Common.Exceptions;
@@ -47,7 +46,7 @@ namespace Client.Connections
             try
             {
                 return
-                    await _httpClient.Read<EventStateDto>(string.Format("{0}events/{1}/{2}/state/-1", uri, workflowId, eventId));
+                    await _httpClient.Read<EventStateDto>($"{uri}events/{workflowId}/{eventId}/state/-1");
             }
             catch (HttpRequestException e)
             {
@@ -66,7 +65,7 @@ namespace Client.Connections
         {
             try
             {
-                return await _httpClient.ReadList<HistoryDto>(string.Format("{0}history/{1}/{2}", uri, workflowId, eventId));
+                return await _httpClient.ReadList<HistoryDto>($"{uri}history/{workflowId}/{eventId}");
             }
             catch (HttpRequestException e)
             {
@@ -87,7 +86,7 @@ namespace Client.Connections
             try
             {
                 await
-                    _httpClient.Update(string.Format("{0}events/{1}/{2}/reset", uri, workflowId, eventId), (object) null);
+                    _httpClient.Update($"{uri}events/{workflowId}/{eventId}/reset", (object) null);
             }
             catch (HttpRequestException e)
             {
@@ -110,7 +109,7 @@ namespace Client.Connections
             try
             {
                 await
-                    _httpClient.Update(string.Format("{0}events/{1}/{2}/executed/", uri, workflowId, eventId),
+                    _httpClient.Update($"{uri}events/{workflowId}/{eventId}/executed/",
                         new RoleDto {Roles = roles});
             }
             catch (HttpRequestException e)

@@ -53,7 +53,7 @@ namespace Event.Tests.CommunicatorTests
         [Test]
         public void PostEventToServerTestSuccedes()
         {
-            Assert.DoesNotThrow((async () => await _toTest.PostEventToServer(new EventAddressDto())));
+            Assert.DoesNotThrow(async () => await _toTest.PostEventToServer(new EventAddressDto()));
             _toolBoxMock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
 
@@ -69,7 +69,7 @@ namespace Event.Tests.CommunicatorTests
         [Test]
         public void DeleteEventFromServerTestSuccedes()
         {
-            Assert.DoesNotThrow((async () => await _toTest.DeleteEventFromServer()));
+            Assert.DoesNotThrow(async () => await _toTest.DeleteEventFromServer());
             _toolBoxMock.Verify(t => t.Delete(It.IsAny<string>()), Times.Once);
         }
 

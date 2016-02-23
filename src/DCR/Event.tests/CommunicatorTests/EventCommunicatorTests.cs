@@ -92,7 +92,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
         [Test]
@@ -169,7 +169,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
         [Test]
@@ -244,7 +244,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
         [Test]
@@ -301,7 +301,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
         [Test]
@@ -358,7 +358,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
 
@@ -416,7 +416,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
 
@@ -474,7 +474,7 @@ namespace Event.Tests.CommunicatorTests
             }
 
             //Assert
-            Assert.AreEqual(inputUri, eventCommunicator._httpClient.HttpClient.BaseAddress);
+            Assert.AreEqual(inputUri, eventCommunicator.HttpClient.HttpClient.BaseAddress);
         }
 
 

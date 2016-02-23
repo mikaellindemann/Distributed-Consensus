@@ -52,7 +52,7 @@ namespace Server.Tests.LogicTests
 
             //Set up method for getting a specific workflow. Finds the given workflow in the list.
             toSetup.Setup(m => m.GetWorkflow(It.IsAny<string>()))
-                .Returns((string workflowId) => Task.FromResult(_list.Find(x => x.Id == (workflowId))));
+                .Returns((string workflowId) => Task.FromResult(_list.Find(x => x.Id == workflowId)));
 
             //Set up method for removing an event from a workflow. 
             //Finds the given workflow in the list, finds the event in the workflow and removes it.

@@ -90,10 +90,7 @@ namespace Server.Tests.StorageTests
                 return GetAsyncEnumerator();
             }
 
-            IQueryProvider IQueryable.Provider
-            {
-                get { return new TestDbAsyncQueryProvider<T>(this); }
-            }
+            IQueryProvider IQueryable.Provider => new TestDbAsyncQueryProvider<T>(this);
         }
 
         private class TestDbAsyncEnumerator<T> : IDbAsyncEnumerator<T>
@@ -115,15 +112,9 @@ namespace Server.Tests.StorageTests
                 return Task.FromResult(_inner.MoveNext());
             }
 
-            public T Current
-            {
-                get { return _inner.Current; }
-            }
+            public T Current => _inner.Current;
 
-            object IDbAsyncEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IDbAsyncEnumerator.Current => Current;
         }
     }
 }

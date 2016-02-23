@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.DTO.History;
-using NUnit.Core;
+﻿using Common.DTO.History;
 using NUnit.Framework;
 
 namespace Common.Tests.History

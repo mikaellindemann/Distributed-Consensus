@@ -89,7 +89,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -102,7 +102,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -115,7 +115,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -166,7 +166,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -179,7 +179,7 @@ namespace Server.Controllers
             }
             catch (WorkflowAlreadyExistsException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -192,7 +192,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -244,7 +244,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -257,7 +257,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -270,7 +270,7 @@ namespace Server.Controllers
             }
             catch (EventExistsException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -283,7 +283,7 @@ namespace Server.Controllers
             }
             catch (IllegalStorageStateException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -295,7 +295,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -397,7 +397,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -410,7 +410,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -423,7 +423,7 @@ namespace Server.Controllers
             }
             catch (IllegalStorageStateException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -436,7 +436,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new HistoryModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),

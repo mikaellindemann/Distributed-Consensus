@@ -269,13 +269,13 @@ namespace Event.Tests.LogicTests
                 new RelationToOtherEventModel() {EventId = "EventId9", Uri = new Uri("http://uri9.dk"), WorkflowId = "WorkflowId9"},
             };
 
-            var name = "Name";
-            var executed = false;
-            var included = false;
-            var pending = false;
+            const string name = "Name";
+            const bool executed = false;
+            const bool included = false;
+            const bool pending = false;
 
-            var workflowId = "workflowId";
-            var eventId = "eventId";
+            const string workflowId = "workflowId";
+            const string eventId = "eventId";
 
 
             mockStorage.Setup(m => m.GetName(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(name);

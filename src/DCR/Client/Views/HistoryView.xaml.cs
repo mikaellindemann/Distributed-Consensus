@@ -6,7 +6,7 @@ namespace Client.Views
     /// <summary>
     /// Interaction logic for HistoryView.xaml
     /// </summary>
-    public partial class HistoryView : Window
+    public partial class HistoryView
     {
         public HistoryView()
         {
