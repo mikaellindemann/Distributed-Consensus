@@ -6,6 +6,7 @@ using Common.DTO.Event;
 using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Exceptions;
+using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Logic;
 using Event.Models;

@@ -4,6 +4,7 @@ using Common.DTO.Shared;
 using Common.Tools;
 using Event.Communicators;
 using Event.Exceptions;
+using Event.Exceptions.ServerInteraction;
 using Moq;
 using NUnit.Framework;
 

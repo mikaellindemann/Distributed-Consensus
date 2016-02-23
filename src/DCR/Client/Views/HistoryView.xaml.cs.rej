@@ -1,0 +1,10 @@
+diff a/src/DCR/Client/Views/HistoryView.xaml.cs b/src/DCR/Client/Views/HistoryView.xaml.cs	(rejected hunks)
+@@ -6,7 +6,7 @@
+     /// <summary>
+     /// Interaction logic for HistoryView.xaml
+     /// </summary>
+-    public partial class HistoryView : Window
++    public partial class HistoryView
+     {
+         public HistoryView()
+         {
