@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <!-- String resource that can be localized -->
+    <system:String x:Key="InputFile">INPUT FILE</system:String>
+    <system:String x:Key="ButtonChooseXml">Choose XML-file</system:String>
+    
+    <system:String x:Key="WorkflowId">Workflow Id</system:String>
+    <system:String x:Key="WorkflowName">Workflow Name</system:String>
+    <system:String x:Key="ServerUrl">Server Base-URL</system:String>
+    <system:String x:Key="EventUrls">Event Base-URLs</system:String>
+    <system:String x:Key="Password">Password for users</system:String>
+
+    <system:String x:Key="CreateWorkflow">Create Workflow at Server</system:String>
+    <system:String x:Key="CreateUsers">Upload users to server</system:String>
+
+    <system:String x:Key="ConvertToJson">Convert Into JSON</system:String>
+    <system:String x:Key="UploadToEvent">Upload To Events</system:String>
+
+    <system:String x:Key="Comment1">PS: json filen ender samme sted som denne exe fil ligger, og den hedder altid graph.json.</system:String>
+    <system:String x:Key="Comment2">Komma separer eventbase urls hvis der er flere end 1!</system:String>
+
+    <system:String x:Key="XmlFileType">XML Files (*.xml)|*.xml</system:String>
+
+    <system:String x:Key="ParsingToJsonOk">Everything went OK. The file should have been created in the same place as this exe file</system:String>
+    <system:String x:Key="ParsingToJsonProblem">Something went wrong, probably bad file or file doesnt exist</system:String>
+
+    <system:String x:Key="UploadOk">Everything went OK. The file should have been uploaded to the given urls.</system:String>
+    <system:String x:Key="UploadWorkflowFailed">Something went wrong while creating the workflow on Server.</system:String>
+    <system:String x:Key="UploadEventsFailed">Something went wrong while uploading events.</system:String>
+    <system:String x:Key="UploadUsersFailed">Something went wrong while uploading users to Server.</system:String>
+    
+    
+</ResourceDictionary>
