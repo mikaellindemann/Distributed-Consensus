@@ -214,19 +214,19 @@ namespace Event.Controllers
 
                 return toReturn;
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
                 //await _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                         workflowId + "." + eventId + " not found"));
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
                 //await _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //await _historyLogic.SaveException(e, "GET", "GetEvent", eventId, workflowId);
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
