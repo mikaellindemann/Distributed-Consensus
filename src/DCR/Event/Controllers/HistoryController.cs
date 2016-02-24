@@ -44,20 +44,19 @@ namespace Event.Controllers
         [HttpGet]
         public async Task<IEnumerable<ActionDto>> GetHistory(string workflowId, string eventId)
         {
-            try 
-            {
+            //try 
+            //{
                 var toReturn = await _historyLogic.GetHistoryForEvent(workflowId, eventId);
-                await _historyLogic.SaveSuccesfullCall("GET", "GetHistory", eventId, workflowId);
-
+                //await _historyLogic.SaveSuccesfullCall("GET", "GetHistory", eventId, workflowId);
                 return toReturn;
-            }
+            //}
 
-            catch (Exception e) 
-            {
-                await _historyLogic.SaveException(e, "GET", "GetHistory", eventId, workflowId);
+            //catch (Exception e) 
+            //{
+            //    await _historyLogic.SaveException(e, "GET", "GetHistory", eventId, workflowId);
 
-                throw;
-            }
+            //    throw;
+            //}
         }
 
         protected override void Dispose(bool disposing)
