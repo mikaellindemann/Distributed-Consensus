@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Common.DTO.Event;
+using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Communicators;
@@ -21,6 +23,7 @@ namespace Event.Logic
         private readonly ILockingLogic _lockingLogic;
         private readonly IAuthLogic _authLogic;
         private readonly IEventFromEvent _eventCommunicator;
+        private readonly IEventHistoryLogic _historyLogic;
 
         /// <summary>
         /// Runtime Constructor.
@@ -32,6 +35,7 @@ namespace Event.Logic
             _eventCommunicator = new EventCommunicator();
             _lockingLogic = new LockingLogic(_storage, _eventCommunicator);
             _authLogic = new AuthLogic(_storage);
+            _historyLogic = new EventHistoryLogic(); // HACK, retrieve this through constructor injection.
         }
 
         /// <summary>
@@ -41,9 +45,9 @@ namespace Event.Logic
         /// <param name="lockingLogic">An implementation of ILockingLogic</param>
         /// <param name="authLogic">An implementation of IAuthLogic</param>
         /// <param name="eventCommunicator">An implementation of IEventFromEvent</param>
-        public StateLogic(IEventStorage storage, ILockingLogic lockingLogic, IAuthLogic authLogic, IEventFromEvent eventCommunicator)
+        public StateLogic(IEventStorage storage, ILockingLogic lockingLogic, IAuthLogic authLogic, IEventFromEvent eventCommunicator, IEventHistoryLogic eventHistory)
         {
-            if (storage == null || lockingLogic == null || authLogic == null || eventCommunicator == null)
+            if (storage == null || lockingLogic == null || authLogic == null || eventCommunicator == null || eventHistory == null)
             {
                 throw new ArgumentNullException();
             }
@@ -51,6 +55,7 @@ namespace Event.Logic
             _lockingLogic = lockingLogic;
             _authLogic = authLogic;
             _eventCommunicator = eventCommunicator;
+            _historyLogic = eventHistory;
         }
 
         public async Task<bool> IsExecuted(string workflowId, string eventId, string senderId)
@@ -183,14 +188,15 @@ namespace Event.Logic
 
             foreach (var condition in conditionRelations)
             {
-                var executed = await _eventCommunicator.IsExecuted(condition.Uri, condition.WorkflowId, condition.EventId, eventId);
-                var included = await _eventCommunicator.IsIncluded(condition.Uri, condition.WorkflowId, condition.EventId, eventId);
+                var cond =
+                    await
+                        _eventCommunicator.CheckCondition(condition.Uri, condition.WorkflowId, condition.EventId,
+                            eventId);
+
+                await _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId, condition.EventId);
 
                 // If the condition-event is not executed and currently included.
-                if (included && !executed)
-                {
-                    return false;
-                }
+                if (!cond) return false;
             }
             return true; // If all conditions are executed or excluded.
         }

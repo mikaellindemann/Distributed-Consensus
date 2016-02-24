@@ -82,6 +82,48 @@ namespace Event.Controllers
 
         }
 
+        [Route("events/{workflowId}/{eventId}/condition/{senderId}")]
+        [HttpGet]
+        public async Task<bool> GetCondition(string workflowId, string senderId, string eventId)
+        {
+            try
+            {
+                var included = await _logic.IsIncluded(workflowId, eventId, senderId);
+                var executed = await _logic.IsExecuted(workflowId, eventId, senderId);
+
+                await _historyLogic.SaveSuccesfullCall(ActionType.CheckedConditon, eventId, workflowId, senderId);
+
+                if (included && !executed)
+                {
+                    return false;
+                }
+
+                //await _historyLogic.SaveSuccesfullCall("GET", "GetIncluded", eventId, workflowId);
+                return true;
+            }
+            catch (NotFoundException)
+            {
+                //await _historyLogic.SaveException(e, "GET", "GetExecuted", eventId, workflowId);
+
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
+                    "GetIncluded: Not Found"));
+            }
+            catch (LockedException)
+            {
+                //await _historyLogic.SaveException(e, "GET", "GetExecuted", eventId, workflowId);
+
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
+                        "GetIncluded: Event is locked"));
+            }
+            catch (ArgumentNullException)
+            {
+                //await _historyLogic.SaveException(e, "GET", "GetExecuted", eventId, workflowId);
+
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "GetIncluded: Seems input was not satisfactory"));
+            }
+        }
+
         /// <summary>
         /// GetIncluded returns Event's current value for Included (bool). 
         /// </summary>

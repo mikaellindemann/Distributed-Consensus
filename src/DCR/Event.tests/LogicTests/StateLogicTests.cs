@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Common.DTO.Event;
+using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
-using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Logic;
@@ -24,6 +24,7 @@ namespace Event.Tests.LogicTests
         private Mock<ILockingLogic> _lockingLogicMock;
         private Mock<IAuthLogic> _authLogicMock;
         private Mock<IEventFromEvent> _eventCommunicatorMock;
+        private Mock<IEventHistoryLogic> _eventHistoryMock;
         private HashSet<RelationToOtherEventModel> _conditions, _responses, _inclusions, _exclusions;
 
         [SetUp]
@@ -63,10 +64,15 @@ namespace Event.Tests.LogicTests
             _eventCommunicatorMock.Setup(ec => ec.SendPending(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
             _eventCommunicatorMock.Setup(ec => ec.SendExcluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
             _eventCommunicatorMock.Setup(ec => ec.SendIncluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
+            _eventCommunicatorMock.Setup(ec => ec.CheckCondition(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
             _eventCommunicatorMock.Setup(ec => ec.IsExecuted(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
             _eventCommunicatorMock.Setup(ec => ec.IsIncluded(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
-            _stateLogic = new StateLogic(_eventStorageMock.Object, _lockingLogicMock.Object, _authLogicMock.Object, _eventCommunicatorMock.Object);
+            _eventHistoryMock = new Mock<IEventHistoryLogic>(MockBehavior.Strict);
+
+            _eventHistoryMock.Setup(ev => ev.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
+
+            _stateLogic = new StateLogic(_eventStorageMock.Object, _lockingLogicMock.Object, _authLogicMock.Object, _eventCommunicatorMock.Object, _eventHistoryMock.Object);
         }
 
         #region Constructors and Dispose
@@ -85,7 +91,7 @@ namespace Event.Tests.LogicTests
         public void Constructor_NullArguments()
         {
             // Act
-            var logic = new StateLogic(null, null, null, null);
+            var logic = new StateLogic(null, null, null, null, null);
 
             // Assert
             Assert.Fail("Should not be run: {0}", logic.GetType());
@@ -95,7 +101,7 @@ namespace Event.Tests.LogicTests
         public void Constructor_ValidArguments()
         {
             // Act
-            var logic = new StateLogic(_eventStorageMock.Object, _lockingLogicMock.Object, _authLogicMock.Object, _eventCommunicatorMock.Object);
+            var logic = new StateLogic(_eventStorageMock.Object, _lockingLogicMock.Object, _authLogicMock.Object, _eventCommunicatorMock.Object, _eventHistoryMock.Object);
 
             // Assert
             Assert.IsNotNull(logic);

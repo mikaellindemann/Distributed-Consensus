@@ -23,6 +23,8 @@ namespace Event.Interfaces
         /// <exception cref="FailedToGetExecutedFromAnotherEventException">Thrown if method fails to retrieve Executed value from the target Event</exception>
         Task<bool> IsExecuted(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
 
+        Task<bool> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
+
         /// <summary>
         /// Will determine if the target event is included (true) or not (false). 
         /// </summary>

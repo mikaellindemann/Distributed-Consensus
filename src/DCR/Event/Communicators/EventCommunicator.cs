@@ -47,6 +47,20 @@ namespace Event.Communicators
             
         }
 
+        public async Task<bool> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId)
+        {
+            HttpClient.SetBaseAddress(targetEventUri);
+
+            try
+            {
+                return await HttpClient.Read<bool>($"events/{targetWorkflowId}/{targetEventId}/condition/{ownId}");
+            }
+            catch (Exception)
+            {
+                throw new FailedToGetConditionFromAnotherEventException();
+            }
+        }
+
         public async Task<bool> IsIncluded(Uri targetEventUri, string targetWorkflowId, string targetId, string ownId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
@@ -134,5 +148,9 @@ namespace Event.Communicators
         {
             HttpClient.Dispose();
         }
+    }
+
+    public class FailedToGetConditionFromAnotherEventException : Exception
+    {
     }
 }
