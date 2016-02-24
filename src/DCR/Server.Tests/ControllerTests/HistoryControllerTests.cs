@@ -77,10 +77,8 @@ namespace Server.Tests.ControllerTests
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    Message = "All good!",
-                    HttpRequestType = "GET",
-                    TimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                    MethodCalledOnSender = "GetHistory"
+                    CounterPartId = "counterpartId",
+                    TimeStamp = 1
                 });
             }
 
