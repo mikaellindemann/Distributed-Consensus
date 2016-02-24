@@ -12,7 +12,7 @@ namespace Server.Interfaces
         DbSet<ServerWorkflowModel> Workflows { get; set; }
         DbSet<ServerUserModel> Users { get; set; }
         DbSet<ServerRoleModel> Roles { get; set; }
-        DbSet<HistoryModel> History { get; set; }
+        DbSet<ActionModel> History { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync();
     }

@@ -9,12 +9,12 @@ namespace Client.Tests.ViewModels
     class HistoryViewModelTests
     {
         private HistoryViewModel _model;
-        private HistoryDto _dto;
+        private ActionDto _dto;
 
         [SetUp]
         public void SetUp()
         {
-            _dto = new HistoryDto();
+            _dto = new ActionDto();
 
             _model = new HistoryViewModel(_dto);
         }
@@ -46,7 +46,7 @@ namespace Client.Tests.ViewModels
         public void Constructor_Parameter()
         {
             // Act
-            var model = new HistoryViewModel(new HistoryDto());
+            var model = new HistoryViewModel(new ActionDto());
 
             // Assert
             Assert.IsNotNull(model);

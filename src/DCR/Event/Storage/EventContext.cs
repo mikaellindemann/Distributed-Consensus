@@ -43,6 +43,6 @@ namespace Event.Storage
         public DbSet<ResponseUri> Responses { get; set; }
         public DbSet<InclusionUri> Inclusions { get; set; }
         public DbSet<ExclusionUri> Exclusions { get; set; }
-        public DbSet<HistoryModel> History { get; set; }
+        public DbSet<ActionModel> History { get; set; }
     }
 }

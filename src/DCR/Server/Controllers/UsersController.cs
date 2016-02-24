@@ -58,7 +58,7 @@ namespace Server.Controllers
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "The provided input could not be mapped onto an instance of LoginDto"));
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + toThrow.GetType(),
@@ -70,7 +70,7 @@ namespace Server.Controllers
             try
             {
                 var toReturn = await _logic.Login(loginDto);
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Called: Login with username: " + loginDto.Username,
@@ -81,7 +81,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     EventId = "",
                     HttpRequestType = "POST",
@@ -94,7 +94,7 @@ namespace Server.Controllers
             }
             catch (UnauthorizedException e)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -106,7 +106,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             { 
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -129,7 +129,7 @@ namespace Server.Controllers
             if (!ModelState.IsValid)
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState));
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + toThrow.GetType(),
@@ -142,7 +142,7 @@ namespace Server.Controllers
             try
             {
                 await _logic.AddUser(dto);
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Called: CreateUser with username: " + dto.Name,
@@ -151,7 +151,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
@@ -163,7 +163,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
@@ -174,7 +174,7 @@ namespace Server.Controllers
             }
             catch (UserExistsException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
@@ -185,7 +185,7 @@ namespace Server.Controllers
             }
             catch (InvalidOperationException e)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
@@ -200,7 +200,7 @@ namespace Server.Controllers
             {
                 if (e.ParamName != null && e.ParamName.Equals("user"))
                 {
-                    await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                    await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                     {
                         HttpRequestType = "POST",
                         Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
@@ -211,7 +211,7 @@ namespace Server.Controllers
                         "A user with that username already exists."));
                 }
                 else {
-                    await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                    await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                     {
                         HttpRequestType = "POST",
                         Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
@@ -223,7 +223,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -247,7 +247,7 @@ namespace Server.Controllers
             if (!ModelState.IsValid)
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState));
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + toThrow.GetType(),
@@ -260,7 +260,7 @@ namespace Server.Controllers
             try
             {
                 await _logic.AddRolesToUser(username, roles);
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Called: AddRolesToUser with username: " + username,
@@ -269,7 +269,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType() + " with username: " + username,
@@ -281,7 +281,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType() + " with username: " + username,
@@ -292,7 +292,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),

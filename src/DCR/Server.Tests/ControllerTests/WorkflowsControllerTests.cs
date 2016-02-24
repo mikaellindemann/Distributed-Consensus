@@ -29,7 +29,7 @@ namespace Server.Tests.ControllerTests
         {
             _mock = new Mock<IServerLogic>();
             _historyLogic = new Mock<IWorkflowHistoryLogic>();
-            _historyLogic.Setup(h => h.SaveHistory(It.IsAny<HistoryModel>())).Returns((HistoryModel model) => Task.Run(() => 1+1));
+            _historyLogic.Setup(h => h.SaveHistory(It.IsAny<ActionModel>())).Returns((ActionModel model) => Task.Run(() => 1+1));
 
             _mock.Setup(logic => logic.Dispose());
 

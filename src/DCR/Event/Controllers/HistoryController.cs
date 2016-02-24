@@ -42,7 +42,7 @@ namespace Event.Controllers
         /// <returns></returns>
         [Route("history/{workflowId}/{eventId}")]
         [HttpGet]
-        public async Task<IEnumerable<HistoryDto>> GetHistory(string workflowId, string eventId)
+        public async Task<IEnumerable<ActionDto>> GetHistory(string workflowId, string eventId)
         {
             try 
             {

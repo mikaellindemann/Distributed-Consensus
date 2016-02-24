@@ -91,8 +91,8 @@ namespace Server.Tests.ControllerTests
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ReturnsAsync(returnDto);
 
-            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Returns((HistoryModel history) => Task.Run(() => logMethodWasCalled = true));
+            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<ActionModel>()))
+                .Returns((ActionModel history) => Task.Run(() => logMethodWasCalled = true));
 
             // Act
             await _usersController.Login(loginDto);
@@ -146,8 +146,8 @@ namespace Server.Tests.ControllerTests
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ThrowsAsync((Exception)exceptionType.GetConstructors().First().Invoke(null));
 
-            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Callback((HistoryModel history) => logMethodWasCalled = true);
+            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<ActionModel>()))
+                .Callback((ActionModel history) => logMethodWasCalled = true);
 
             // Act
             await _usersController.Login(loginDto);
@@ -165,8 +165,8 @@ namespace Server.Tests.ControllerTests
 
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ThrowsAsync(new ArgumentNullException());
 
-            _historyLogic.Setup(m => m.SaveHistory(It.IsAny<HistoryModel>()))
-                .Callback((HistoryModel history) => logMethodWasCalled = true);
+            _historyLogic.Setup(m => m.SaveHistory(It.IsAny<ActionModel>()))
+                .Callback((ActionModel history) => logMethodWasCalled = true);
 
             // Act
             await _usersController.Login(loginDto);
@@ -189,8 +189,8 @@ namespace Server.Tests.ControllerTests
         public void Login_CallsHistoryWhenProvidedNullArgument()
         {
             // Arrange
-            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Callback((HistoryModel model) => {});
+            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<ActionModel>()))
+                .Callback((ActionModel model) => {});
 
             // Act
             var testDelegate = new TestDelegate(async () => await _usersController.Login(null));
@@ -218,8 +218,8 @@ namespace Server.Tests.ControllerTests
         {
             // Arrange
             var logWasCalled = false;
-            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Callback((HistoryModel model) => logWasCalled = true);
+            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<ActionModel>()))
+                .Callback((ActionModel model) => logWasCalled = true);
 
             // Act
             await _usersController.CreateUser(null);
@@ -284,7 +284,7 @@ namespace Server.Tests.ControllerTests
             // Arrange
             var logWasCalled = false;
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
-            _historyLogic.Setup(m => m.SaveHistory(It.IsAny<HistoryModel>())).Callback((HistoryModel x) => logWasCalled = true);
+            _historyLogic.Setup(m => m.SaveHistory(It.IsAny<ActionModel>())).Callback((ActionModel x) => logWasCalled = true);
 
             var argumentToProvide = new UserDto();
 
@@ -304,7 +304,7 @@ namespace Server.Tests.ControllerTests
             // Arrange
             var logWasCalled = false;
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
-            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>())).Callback((HistoryModel x) => logWasCalled = true);
+            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<ActionModel>())).Callback((ActionModel x) => logWasCalled = true);
 
             var argumentToProvide = new UserDto();
 
@@ -401,8 +401,8 @@ namespace Server.Tests.ControllerTests
             // Arrange
             var logWasCalled = false;
             _usersController.ModelState.AddModelError("Name",new ArgumentNullException());
-            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Callback((HistoryModel model) => logWasCalled = true);
+            _historyLogic.Setup(m => m.SaveNoneWorkflowSpecificHistory(It.IsAny<ActionModel>()))
+                .Callback((ActionModel model) => logWasCalled = true);
             var rolesList = GetSomeRoles();
 
 

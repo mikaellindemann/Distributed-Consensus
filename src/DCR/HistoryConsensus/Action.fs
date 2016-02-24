@@ -19,6 +19,8 @@ module Action =
         | LockedBy
         | Unlocks
         | UnlockedBy
+        | ExecuteStart
+        | ExecuteFinish
     
     type Action =
         {

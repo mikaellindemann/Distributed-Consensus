@@ -54,7 +54,7 @@ namespace Server.Controllers
         public async Task<IEnumerable<WorkflowDto>> Get()
         {
             var toReturn = await _logic.GetAllWorkflows();
-            await _historyLogic.SaveNoneWorkflowSpecificHistory(new HistoryModel
+            await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
             {
                 HttpRequestType = "GET",
                 Message = "Succesfully called: Get",
@@ -76,7 +76,7 @@ namespace Server.Controllers
             try
             {
                 var toReturn = await _logic.GetEventsOnWorkflow(workflowId);
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Succesfully called: Get",
@@ -88,7 +88,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -101,7 +101,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -114,7 +114,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -140,7 +140,7 @@ namespace Server.Controllers
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Provided input could not be mapped onto an instance of WorkflowDto."));
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + toThrow.GetType(),
@@ -155,7 +155,7 @@ namespace Server.Controllers
             {
                 // Add this Event to the specified workflow
                 await _logic.AddNewWorkflow(workflowDto);
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Succesfully called: PostWorkflow",
@@ -165,7 +165,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -178,7 +178,7 @@ namespace Server.Controllers
             }
             catch (WorkflowAlreadyExistsException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -191,7 +191,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -216,7 +216,7 @@ namespace Server.Controllers
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                                                 "Provided input could not be mapped onto EventAddressDto"));
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + toThrow.GetType(),
@@ -232,7 +232,7 @@ namespace Server.Controllers
             {
                 // Add this Event to the specified workflow
                 await _logic.AddEventToWorkflow(workflowId, eventToAddDto);
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     EventId = eventToAddDto.Id,
                     Message = "Succesfully called: PostEventWorkflow",
@@ -243,7 +243,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -256,7 +256,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -269,7 +269,7 @@ namespace Server.Controllers
             }
             catch (EventExistsException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -282,7 +282,7 @@ namespace Server.Controllers
             }
             catch (IllegalStorageStateException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -294,7 +294,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + e.GetType(),
@@ -321,7 +321,7 @@ namespace Server.Controllers
             {
                 // Delete the given event id from the list of workflow-events.
                 _logic.RemoveEventFromWorkflow(workflowId, eventId);
-                _historyLogic.SaveHistory(new HistoryModel
+                _historyLogic.SaveHistory(new ActionModel
                 {
                     EventId = eventId,
                     WorkflowId = workflowId,
@@ -332,7 +332,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                _historyLogic.SaveHistory(new ActionModel
                 {
                     EventId = eventId,
                     WorkflowId = workflowId,
@@ -346,7 +346,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                _historyLogic.SaveHistory(new ActionModel
                 {
                     EventId = eventId,
                     WorkflowId = workflowId,
@@ -360,7 +360,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                _historyLogic.SaveHistory(new HistoryModel
+                _historyLogic.SaveHistory(new ActionModel
                 {
                     EventId = eventId,
                     WorkflowId = workflowId,
@@ -386,7 +386,7 @@ namespace Server.Controllers
             try
             {
                 await _logic.RemoveWorkflow(workflowId);
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Succesfully called: DeleteWorkflow",
@@ -396,7 +396,7 @@ namespace Server.Controllers
             }
             catch (ArgumentNullException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -409,7 +409,7 @@ namespace Server.Controllers
             }
             catch (NotFoundException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -422,7 +422,7 @@ namespace Server.Controllers
             }
             catch (IllegalStorageStateException e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),
@@ -435,7 +435,7 @@ namespace Server.Controllers
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new HistoryModel
+                await _historyLogic.SaveHistory(new ActionModel
                 {
                     WorkflowId = workflowId,
                     Message = "Threw: " + e.GetType(),

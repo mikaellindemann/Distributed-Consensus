@@ -9,7 +9,7 @@ namespace Common.Tests.History
         [Test]
         public void HistoryDto_NoArguments()
         {
-            var testDelegate = new TestDelegate(() => new HistoryDto());
+            var testDelegate = new TestDelegate(() => new ActionDto());
 
             Assert.DoesNotThrow(testDelegate);
         }
@@ -17,9 +17,9 @@ namespace Common.Tests.History
         [Test]
         public void HistoryDto_Takes_HistoryModel_As_Argument()
         {
-            var historymodel = new HistoryModel();
+            var historymodel = new ActionModel();
 
-            var testDelegate = new TestDelegate(() => new HistoryDto(historymodel));
+            var testDelegate = new TestDelegate(() => new ActionDto(historymodel));
 
             Assert.DoesNotThrow(testDelegate);
         }

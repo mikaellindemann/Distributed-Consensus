@@ -19,7 +19,7 @@ namespace Event.Interfaces
         DbSet<ResponseUri> Responses { get; set; }
         DbSet<InclusionUri> Inclusions { get; set; }
         DbSet<ExclusionUri> Exclusions { get; set; }
-        DbSet<HistoryModel> History { get; set; }
+        DbSet<ActionModel> History { get; set; }
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class; 
 
         int SaveChanges();

@@ -63,8 +63,8 @@
     <Compile Include="Tools\HttpClientWrapper.cs" />
     <Compile Include="Tools\IHttpClient.cs" />
     <Compile Include="DTO\Server\LoginDto.cs" />
-    <Compile Include="DTO\History\HistoryDto.cs" />
-    <Compile Include="DTO\History\HistoryModel.cs" />
+    <Compile Include="DTO\History\ActionDto.cs" />
+    <Compile Include="DTO\History\ActionModel.cs" />
     <Compile Include="DTO\Event\RoleDto.cs" />
     <Compile Include="Tools\HttpClientToolbox.cs" />
     <Compile Include="DTO\Shared\EventAddressDto.cs" />

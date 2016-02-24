@@ -18,7 +18,7 @@ namespace Event.Tests.ControllersTests
     [TestFixture]
     class LifeCycleControllerTests
     {
-        private IList<HistoryModel> _historyTestList;
+        private IList<ActionModel> _historyTestList;
         private IList<EventModel> _eventTestList;
         private LifecycleController _toTest;
         private Mock<IEventHistoryLogic> _historyMock;
@@ -35,15 +35,15 @@ namespace Event.Tests.ControllersTests
                 .Returns((string wId, string eId) => Task.Run( () => 
                 {
                     var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
-                    var dtos = new List<HistoryDto>();
-                    models.ForEach(x => dtos.Add(new HistoryDto(x)));
+                    var dtos = new List<ActionDto>();
+                    models.ForEach(x => dtos.Add(new ActionDto(x)));
                     return dtos.AsEnumerable();
                 })).Verifiable();
 
             _historyMock.Setup(l => l.SaveException(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((Exception e, string request, string method, string eId, string wId) =>
                     {
-                       return Task.Run( () => _historyTestList.Add(new HistoryModel
+                       return Task.Run( () => _historyTestList.Add(new ActionModel
                        {
                            EventId = eId, WorkflowId = wId, HttpRequestType = request, Message = e.GetType().ToString(), MethodCalledOnSender = method
                        }));
@@ -54,7 +54,7 @@ namespace Event.Tests.ControllersTests
                 .Returns((string request, string method, string eId, string wId) =>
                     {
                         return Task.Run( () => 
-                        _historyTestList.Add(new HistoryModel
+                        _historyTestList.Add(new ActionModel
                         {
                             EventId = eId,
                             WorkflowId = wId,
@@ -97,7 +97,7 @@ namespace Event.Tests.ControllersTests
         [SetUp]
         public void ResetLists()
         {
-            _historyTestList = new List<HistoryModel>();
+            _historyTestList = new List<ActionModel>();
             _eventTestList = new List<EventModel>();
         }
 
