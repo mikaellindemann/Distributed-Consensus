@@ -17,10 +17,11 @@
         <ListBox x:Name="ListBox" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="1" ItemsSource="{Binding HistoryViewModelList}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <UniformGrid Rows="1" Columns="3">
+                    <UniformGrid Rows="1" Columns="4">
                         <Label Content="{Binding Title}" HorizontalAlignment="Stretch"/>
-                        <Label Content="{Binding Message}" HorizontalAlignment="Stretch" />
-                        <Label Content="{Binding TimeStamp}" ContentStringFormat="{}{0:yyyy/MM/dd HH:mm:ss}" HorizontalAlignment="Stretch" />
+                        <Label Content="{Binding EventId}" HorizontalAlignment="Stretch" />
+                        <Label Content="{Binding CounterPartId}" HorizontalAlignment="Stretch" />
+                        <Label Content="{Binding TimeStamp}" HorizontalAlignment="Stretch" />
                     </UniformGrid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
