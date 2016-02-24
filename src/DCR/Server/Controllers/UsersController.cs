@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Common.DTO.Event;
-using Common.DTO.History;
 using Common.DTO.Server;
 using Common.Exceptions;
 using Server.Exceptions;
@@ -21,7 +20,7 @@ namespace Server.Controllers
     public class UsersController : ApiController
     {
         private readonly IServerLogic _logic;
-        private readonly IWorkflowHistoryLogic _historyLogic;
+        //private readonly IWorkflowHistoryLogic _historyLogic;
 
         /// <summary>
         /// Default constructor used during runtime
@@ -29,7 +28,7 @@ namespace Server.Controllers
         public UsersController()
         {
             _logic = new ServerLogic(new ServerStorage());
-            _historyLogic = new WorkflowHistoryLogic();
+          //  _historyLogic = new WorkflowHistoryLogic();
         }
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace Server.Controllers
         public UsersController(IServerLogic logic, IWorkflowHistoryLogic historyLogic)
         {
             _logic = logic;
-            _historyLogic = historyLogic;
+            //_historyLogic = historyLogic;
         }
 
  
@@ -58,60 +57,60 @@ namespace Server.Controllers
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "The provided input could not be mapped onto an instance of LoginDto"));
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                /*await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Threw: " + toThrow.GetType(),
                     MethodCalledOnSender = "PostWorkflow"
-                });
+                });*/
                 throw toThrow;
             }
 
             try
             {
                 var toReturn = await _logic.Login(loginDto);
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                /*await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
                 {
                     HttpRequestType = "POST",
                     Message = "Called: Login with username: " + loginDto.Username,
                     MethodCalledOnSender = "Login",
-                });
+                });*/
 
                 return toReturn;
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    EventId = "",
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "Login"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    EventId = "",
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "Login"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (UnauthorizedException e)
+            catch (UnauthorizedException)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "Login",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "Login",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Unauthorized,
                     "Username or password does not correspond to a user."));
             }
             catch (Exception e)
             { 
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "Login",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "Login",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e));
             }
@@ -129,12 +128,12 @@ namespace Server.Controllers
             if (!ModelState.IsValid)
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState));
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + toThrow.GetType(),
-                    MethodCalledOnSender = "CreateUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + toThrow.GetType(),
+                //    MethodCalledOnSender = "CreateUser",
+                //});
 
                 throw toThrow;
             }
@@ -142,55 +141,55 @@ namespace Server.Controllers
             try
             {
                 await _logic.AddUser(dto);
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Called: CreateUser with username: " + dto.Name,
-                    MethodCalledOnSender = "CreateUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Called: CreateUser with username: " + dto.Name,
+                //    MethodCalledOnSender = "CreateUser",
+                //});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
-                    MethodCalledOnSender = "CreateUser"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
+                //    MethodCalledOnSender = "CreateUser"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
-                    MethodCalledOnSender = "CreateUser"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
+                //    MethodCalledOnSender = "CreateUser"
+                //});
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "A role attached to the provided user could not be found"));
             }
-            catch (UserExistsException e)
+            catch (UserExistsException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
-                    MethodCalledOnSender = "CreateUser"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
+                //    MethodCalledOnSender = "CreateUser"
+                //});
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "The provided user already exists at Server."));
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
-                    MethodCalledOnSender = "CreateUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
+                //    MethodCalledOnSender = "CreateUser",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "One of the roles does not exist."));
@@ -200,35 +199,35 @@ namespace Server.Controllers
             {
                 if (e.ParamName != null && e.ParamName.Equals("user"))
                 {
-                    await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                    {
-                        HttpRequestType = "POST",
-                        Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
-                        MethodCalledOnSender = "CreateUser",
-                    });
+                    //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                    //{
+                    //    HttpRequestType = "POST",
+                    //    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
+                    //    MethodCalledOnSender = "CreateUser",
+                    //});
 
                     throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                         "A user with that username already exists."));
                 }
                 else {
-                    await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                    {
-                        HttpRequestType = "POST",
-                        Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
-                        MethodCalledOnSender = "CreateUser",
-                    });
+                    //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                    //{
+                    //    HttpRequestType = "POST",
+                    //    Message = "Threw: " + e.GetType() + " with username: " + dto.Name,
+                    //    MethodCalledOnSender = "CreateUser",
+                    //});
 
                     throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, e));
                 }
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "CreateUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "CreateUser",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, e));
             }
@@ -247,12 +246,12 @@ namespace Server.Controllers
             if (!ModelState.IsValid)
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState));
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + toThrow.GetType(),
-                    MethodCalledOnSender = "AddRolesToUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + toThrow.GetType(),
+                //    MethodCalledOnSender = "AddRolesToUser",
+                //});
 
                 throw toThrow;
             }
@@ -260,44 +259,44 @@ namespace Server.Controllers
             try
             {
                 await _logic.AddRolesToUser(username, roles);
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Called: AddRolesToUser with username: " + username,
-                    MethodCalledOnSender = "AddRolesToUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Called: AddRolesToUser with username: " + username,
+                //    MethodCalledOnSender = "AddRolesToUser",
+                //});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType() + " with username: " + username,
-                    MethodCalledOnSender = "AddRolesToUser"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType() + " with username: " + username,
+                //    MethodCalledOnSender = "AddRolesToUser"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType() + " with username: " + username,
-                    MethodCalledOnSender = "AddRolesToUser"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType() + " with username: " + username,
+                //    MethodCalledOnSender = "AddRolesToUser"
+                //});
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "The user, or the role could not be found."));
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "AddRolesToUser",
-                });
+                //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "AddRolesToUser",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest, e));
             }
