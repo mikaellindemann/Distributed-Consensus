@@ -135,8 +135,9 @@ namespace Client.Tests.ViewModels
                 _serverHistoryDtos.Add(new ActionDto
                 {
                     WorkflowId = "workflowId",
-                    HttpRequestType = "GET",
-                    TimeStamp = "2015-04-30T15:48:55+02:00"
+                    EventId = "eventId",
+                    CounterPartId = "counterpartId",
+                    TimeStamp = 1
                 });
             }
 
@@ -166,9 +167,9 @@ namespace Client.Tests.ViewModels
                     _eventHistoryDtos.Add(new ActionDto
                     {
                         WorkflowId = "workflowId",
-                        EventId = eventId,
-                        HttpRequestType = "GET",
-                        TimeStamp = "2015-04-30T15:48:55+02:00"
+                        EventId = "eventId",
+                        CounterPartId = "counterpartId",
+                        TimeStamp = 1
                     });
                 }
             }

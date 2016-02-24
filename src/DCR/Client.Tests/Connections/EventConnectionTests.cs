@@ -125,8 +125,8 @@ namespace Client.Tests.Connections
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    TimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                    HttpRequestType = "GET"
+                    CounterPartId = "counterpartId",
+                    TimeStamp = 1
                 });
             }
 
