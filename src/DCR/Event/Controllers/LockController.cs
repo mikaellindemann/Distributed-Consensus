@@ -66,28 +66,28 @@ namespace Event.Controllers
                 await _lockLogic.LockSelf(workflowId, eventId, lockDto);
                 await _historyLogic.SaveSuccesfullCall(ActionType.LockedBy, eventId, workflowId, lockDto.LockOwner);
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
                 //await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Lock: Seems input was not satisfactory"));
             }
-            catch (LockedException e)
+            catch (LockedException)
             {
                 //await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "Lock: Failed to lock: Event is currently locked by someone else"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
                 //await _historyLogic.SaveException(e, "POST", "Lock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Lock: Event seems not to exist"));
             }
-            catch (IllegalStorageStateException e)
+            catch (IllegalStorageStateException)
             {
                 //await _historyLogic.SaveException(e, "POST", "Lock");
 
@@ -111,28 +111,28 @@ namespace Event.Controllers
                 await _lockLogic.UnlockSelf(workflowId, eventId, senderId);
                 await _historyLogic.SaveSuccesfullCall(ActionType.UnlockedBy, eventId, workflowId, senderId);
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
                 //await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Unlock: Could not unlock: One or more of the provided arguments was null"));
             }
-            catch (LockedException e)
+            catch (LockedException)
             {
                 //await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "Unlock: Could not unlock: Event is locked by someone else"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
                 //await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Unlock: Event seems not to exist"));
             }
-            catch (IllegalStorageStateException e)
+            catch (IllegalStorageStateException)
             {
                 //await _historyLogic.SaveException(e, "DELETE", "Unlock");
 
