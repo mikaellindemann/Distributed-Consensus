@@ -88,7 +88,6 @@ namespace Server.Tests.ControllerTests
             // Assert
             Assert.AreSame(_historyDtos, result);
             _historyLogicMock.Verify(hl => hl.GetHistoryForWorkflow("workflowId"), Times.Once);
-            _historyLogicMock.Verify(hl => hl.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
         }
 
         [Test]
@@ -104,7 +103,6 @@ namespace Server.Tests.ControllerTests
             // Assert
             var responseException = Assert.Throws<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest, responseException.Response.StatusCode);
-            _historyLogicMock.Verify(hl => hl.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
         }
 
         [Test]
@@ -120,7 +118,6 @@ namespace Server.Tests.ControllerTests
             // Assert
             var responseException = Assert.Throws<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.NotFound, responseException.Response.StatusCode);
-            _historyLogicMock.Verify(hl => hl.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
         }
 
         [TestCase(typeof(Exception)),
@@ -138,7 +135,6 @@ namespace Server.Tests.ControllerTests
             // Assert
             var responseException = Assert.Throws<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.InternalServerError, responseException.Response.StatusCode);
-            _historyLogicMock.Verify(hl => hl.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
         }
         #endregion
     }
