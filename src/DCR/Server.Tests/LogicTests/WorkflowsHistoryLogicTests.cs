@@ -65,10 +65,8 @@ namespace Server.Tests.LogicTests
             Assert.IsTrue(_testModelList.Any());
             Assert.AreEqual(testHistory.WorkflowId, result.WorkflowId);
             Assert.AreEqual(testHistory.EventId, result.EventId);
-            Assert.AreEqual(testHistory.HttpRequestType, result.HttpRequestType);
-            Assert.AreEqual(testHistory.Message, result.Message);
-            Assert.AreEqual("01/01/0001 00:00:00", result.TimeStamp);
-            Assert.AreEqual(testHistory.MethodCalledOnSender, result.MethodCalledOnSender);
+            Assert.AreEqual(testHistory.CounterPartId, result.CounterPartId);
+            Assert.AreEqual(1, result.TimeStamp);
         }
 
         [Test]
@@ -117,10 +115,9 @@ namespace Server.Tests.LogicTests
             {
                 EventId = @"&%¤#æøå*¨^´`?",
                 WorkflowId = @"&%¤#æøå*¨^´`?",
-                HttpRequestType = @"&%¤#æøå*¨^´`?",
-                Message = @"&%¤#æøå*¨^´`?",
-                MethodCalledOnSender = @"&%¤#æøå*¨^´`?",
-                TimeStamp = DateTime.MinValue
+                Id = 1,
+                CounterPartId = @"&%¤#æøå*¨^´`?",
+                Type = ActionType.Excludes
             };
         }
     }

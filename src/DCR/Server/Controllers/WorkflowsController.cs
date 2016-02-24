@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Common.DTO.Event;
-using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
 using Server.Exceptions;
@@ -21,7 +20,7 @@ namespace Server.Controllers
     public class WorkflowsController : ApiController
     {
         private readonly IServerLogic _logic;
-        private readonly IWorkflowHistoryLogic _historyLogic;
+        //private readonly IWorkflowHistoryLogic _historyLogic;
 
         /// <summary>
         /// Default constructor used during runtime
@@ -29,7 +28,7 @@ namespace Server.Controllers
         public WorkflowsController()
         {
             _logic = new ServerLogic(new ServerStorage());
-            _historyLogic = new WorkflowHistoryLogic();
+            //_historyLogic = new WorkflowHistoryLogic();
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace Server.Controllers
         public WorkflowsController(IServerLogic logic, IWorkflowHistoryLogic historyLogic)
         {
             _logic = logic;
-            _historyLogic = historyLogic;
+            //_historyLogic = historyLogic;
         }
 
         #region GET requests
@@ -54,12 +53,12 @@ namespace Server.Controllers
         public async Task<IEnumerable<WorkflowDto>> Get()
         {
             var toReturn = await _logic.GetAllWorkflows();
-            await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
-            {
-                HttpRequestType = "GET",
-                Message = "Succesfully called: Get",
-                MethodCalledOnSender = "Get"
-            });
+            //await _historyLogic.SaveNoneWorkflowSpecificHistory(new ActionModel
+            //{
+            //    HttpRequestType = "GET",
+            //    Message = "Succesfully called: Get",
+            //    MethodCalledOnSender = "Get"
+            //});
 
             return toReturn;
         }
@@ -76,51 +75,51 @@ namespace Server.Controllers
             try
             {
                 var toReturn = await _logic.GetEventsOnWorkflow(workflowId);
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Succesfully called: Get",
-                    HttpRequestType = "GET",
-                    MethodCalledOnSender = "Get(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Succesfully called: Get",
+                //    HttpRequestType = "GET",
+                //    MethodCalledOnSender = "Get(" + workflowId + ")"
+                //});
 
                 return toReturn;
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "GET",
-                    MethodCalledOnSender = "GET(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "GET",
+                //    MethodCalledOnSender = "GET(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "GET",
-                    MethodCalledOnSender = "Get(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "GET",
+                //    MethodCalledOnSender = "Get(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "The specified workflow could not be found"));
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "GET",
-                    MethodCalledOnSender = "Get(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "GET",
+                //    MethodCalledOnSender = "Get(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound, e.Message));
             }
@@ -140,13 +139,13 @@ namespace Server.Controllers
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Provided input could not be mapped onto an instance of WorkflowDto."));
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + toThrow.GetType(),
-                    MethodCalledOnSender = "PostWorkflow",
-                    WorkflowId = workflowDto.Id
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + toThrow.GetType(),
+                //    MethodCalledOnSender = "PostWorkflow",
+                //    WorkflowId = workflowDto.Id
+                //});
 
                 throw toThrow;
             }
@@ -155,48 +154,48 @@ namespace Server.Controllers
             {
                 // Add this Event to the specified workflow
                 await _logic.AddNewWorkflow(workflowDto);
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Succesfully called: PostWorkflow",
-                    MethodCalledOnSender = "PostWorkflow",
-                    WorkflowId = workflowDto.Id
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Succesfully called: PostWorkflow",
+                //    MethodCalledOnSender = "PostWorkflow",
+                //    WorkflowId = workflowDto.Id
+                //});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostWorkflow",
-                    WorkflowId = workflowDto != null ? workflowDto.Id : ""
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostWorkflow",
+                //    WorkflowId = workflowDto != null ? workflowDto.Id : ""
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (WorkflowAlreadyExistsException e)
+            catch (WorkflowAlreadyExistsException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostWorkflow",
-                    WorkflowId = workflowDto.Id
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostWorkflow",
+                //    WorkflowId = workflowDto.Id
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
                     "A workflow with that id exists!"));
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostWorkflow",
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostWorkflow",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e));
             }
@@ -216,14 +215,14 @@ namespace Server.Controllers
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                                                 "Provided input could not be mapped onto EventAddressDto"));
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + toThrow.GetType(),
-                    MethodCalledOnSender = "PostEventWorkflow",
-                    WorkflowId = workflowId,
-                    EventId = eventToAddDto.Id
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + toThrow.GetType(),
+                //    MethodCalledOnSender = "PostEventWorkflow",
+                //    WorkflowId = workflowId,
+                //    EventId = eventToAddDto.Id
+                //});
 
                 throw toThrow;
             }
@@ -232,75 +231,75 @@ namespace Server.Controllers
             {
                 // Add this Event to the specified workflow
                 await _logic.AddEventToWorkflow(workflowId, eventToAddDto);
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    EventId = eventToAddDto.Id,
-                    Message = "Succesfully called: PostEventWorkflow",
-                    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
-                    HttpRequestType = "POST",
-                    WorkflowId = workflowId
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    EventId = eventToAddDto.Id,
+                //    Message = "Succesfully called: PostEventWorkflow",
+                //    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
+                //    HttpRequestType = "POST",
+                //    WorkflowId = workflowId
+                //});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
-                    WorkflowId = workflowId
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
+                //    WorkflowId = workflowId
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
-                    WorkflowId = workflowId
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
+                //    WorkflowId = workflowId
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "The workflow was not found at Server"));
             }
-            catch (EventExistsException e)
+            catch (EventExistsException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
-                    WorkflowId = workflowId
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
+                //    WorkflowId = workflowId
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "The event already exists at Server. You may wish to update the Event instead, using a PUT call"));
             }
             catch (IllegalStorageStateException e)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
-                    WorkflowId = workflowId
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
+                //    WorkflowId = workflowId
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e));
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    HttpRequestType = "POST",
-                    Message = "Threw: " + e.GetType(),
-                    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
-                    WorkflowId = workflowId
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    HttpRequestType = "POST",
+                //    Message = "Threw: " + e.GetType(),
+                //    MethodCalledOnSender = "PostEventWorkflow(" + workflowId + ")",
+                //    WorkflowId = workflowId
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e));
             }
@@ -321,53 +320,53 @@ namespace Server.Controllers
             {
                 // Delete the given event id from the list of workflow-events.
                 _logic.RemoveEventFromWorkflow(workflowId, eventId);
-                _historyLogic.SaveHistory(new ActionModel
-                {
-                    EventId = eventId,
-                    WorkflowId = workflowId,
-                    Message = "Succesfully called: DeleteEventFromWorkflow",
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
-                });
+                //_historyLogic.SaveHistory(new ActionModel
+                //{
+                //    EventId = eventId,
+                //    WorkflowId = workflowId,
+                //    Message = "Succesfully called: DeleteEventFromWorkflow",
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
+                //});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                _historyLogic.SaveHistory(new ActionModel
-                {
-                    EventId = eventId,
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
-                });
+                //_historyLogic.SaveHistory(new ActionModel
+                //{
+                //    EventId = eventId,
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
-                _historyLogic.SaveHistory(new ActionModel
-                {
-                    EventId = eventId,
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
-                });
+                //_historyLogic.SaveHistory(new ActionModel
+                //{
+                //    EventId = eventId,
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "Either the event or the workflow was not found at Server"));
             }
             catch (Exception e)
             {
-                _historyLogic.SaveHistory(new ActionModel
-                {
-                    EventId = eventId,
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
-                });
+                //_historyLogic.SaveHistory(new ActionModel
+                //{
+                //    EventId = eventId,
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteEventFromWorkflow(" + workflowId + ", " + eventId + ")",
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Server: Failed to remove Event from workflow", e));
@@ -386,62 +385,62 @@ namespace Server.Controllers
             try
             {
                 await _logic.RemoveWorkflow(workflowId);
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Succesfully called: DeleteWorkflow",
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")",
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Succesfully called: DeleteWorkflow",
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")",
+                //});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "Seems input was not satisfactory"));
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
                     "The workflow could not be found"));
             }
-            catch (IllegalStorageStateException e)
+            catch (IllegalStorageStateException)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Server: Storage was found in an illegal state"));
             }
             catch (Exception e)
             {
-                await _historyLogic.SaveHistory(new ActionModel
-                {
-                    WorkflowId = workflowId,
-                    Message = "Threw: " + e.GetType(),
-                    HttpRequestType = "DELETE",
-                    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
-                });
+                //await _historyLogic.SaveHistory(new ActionModel
+                //{
+                //    WorkflowId = workflowId,
+                //    Message = "Threw: " + e.GetType(),
+                //    HttpRequestType = "DELETE",
+                //    MethodCalledOnSender = "DeleteWorkflow(" + workflowId + ")"
+                //});
 
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Server: Failed to remove workflow", e));
