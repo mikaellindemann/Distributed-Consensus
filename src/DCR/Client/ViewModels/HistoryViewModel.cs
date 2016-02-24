@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Common.DTO.History;
 
 namespace Client.ViewModels
@@ -41,6 +40,16 @@ namespace Client.ViewModels
             }
         }
 
+        public string CounterPartId
+        {
+            get { return _actionDto.CounterPartId; }
+            set
+            {
+                _actionDto.CounterPartId = value;
+                NotifyPropertyChanged("CounterPartId");
+            }
+        }
+
         private string _title = "";
         public string Title
         {
@@ -55,22 +64,12 @@ namespace Client.ViewModels
             }
         }
 
-        public string Message
+        public int TimeStamp
         {
-            get { return _actionDto.Message; }
+            get { return _actionDto.TimeStamp; }
             set
             {
-                _actionDto.Message = value;
-                NotifyPropertyChanged("Message");
-            }
-        }
-
-        public DateTime TimeStamp
-        {
-            get { return DateTime.Parse(_actionDto.TimeStamp, new DateTimeFormatInfo()); }
-            set
-            {
-                _actionDto.TimeStamp = value.ToString(CultureInfo.InvariantCulture);
+                _actionDto.TimeStamp = value;
                 NotifyPropertyChanged("TimeStamp"); }
         }
         
