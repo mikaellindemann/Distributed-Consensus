@@ -1,5 +1,4 @@
 ﻿namespace HistoryConsensus
-
 module Action =
     type EventId = string
     type LocalTimeStamp = int
@@ -21,7 +20,7 @@ module Action =
         | UnlockedBy
         | ExecuteStart
         | ExecuteFinish
-    
+
     type Action =
         {
             Id: ActionId;
@@ -30,8 +29,4 @@ module Action =
             Edges: ActionId list;
         }
 
-    let create id counterpartId actionType edges = 
-        {   Id = id; 
-            CounterpartEventId = counterpartId; 
-            Type = actionType; 
-            Edges = edges}
+    val create : ActionId -> EventId -> ActionType -> ActionId list -> Action
