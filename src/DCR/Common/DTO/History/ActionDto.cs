@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Common.DTO.History
+﻿namespace Common.DTO.History
 {
     public class ActionDto
     {
@@ -8,6 +6,7 @@ namespace Common.DTO.History
         public string EventId { get; set; }
         public string WorkflowId { get; set; }
         public string CounterPartId { get; set; }
+        public ActionType Type { get; set; }
 
         public ActionDto()
         {
@@ -19,6 +18,7 @@ namespace Common.DTO.History
             EventId = model.EventId;
             WorkflowId = model.WorkflowId;
             CounterPartId = model.CounterPartId;
+            Type = model.Type;
         }
     }
 }
