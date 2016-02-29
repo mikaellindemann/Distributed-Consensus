@@ -65,7 +65,30 @@ module Graph =
                        inner x.Edges newGraph xs
         transitiveClous beginningNodes graph
 
+    let transitiveReduction beginningNodes graph = 
+        let rec transitiveRed (list:Action list) newGraph = 
+            match list with
+            | [] -> newGraph
+            | x::xs -> let rec inner newList newNewGraph = 
+                            match xs with
+                            | [] -> transitiveRed xs newNewGraph
+                            | y::ys -> if (List.exists (fun id -> id = x.Id) x.Edges) 
+                                       then 
+                                            let rec innerInner newNewList newNewNewGraph = 
+                                                match ys with 
+                                                | [] -> inner ys newNewNewGraph
+                                                | z::zs -> if (List.exists (fun id -> id = z.Id) y.Edges && List.exists (fun id -> id = z.Id) x.Edges) 
+                                                            then innerInner zs (removeEdge x z newNewNewGraph) 
+                                                            else innerInner zs newNewNewGraph
+                                            innerInner ys newNewGraph
+                                       else 
+                                            inner ys newNewGraph
+                       inner xs newGraph
+        transitiveRed beginningNodes graph
+
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
         let graphWithTransClous = transitiveClousure beginningNodes graph actionType
-        empty 
+        let filteredGraph = { Nodes = Map.filter (fun id action -> action.Type = actionType ) graphWithTransClous.Nodes }
+        let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
+        transReduction 
