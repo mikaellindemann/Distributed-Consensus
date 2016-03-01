@@ -48,7 +48,7 @@ module Graph =
             | [] -> accList
             | (x,y)::xs -> calcToNodes xs (List.foldBack (fun element list -> element::list) y.Edges accList)
         let toNodes = calcToNodes (graphNodesToList graph) []
-        let beginningNodesIds = List.except (List.map (fun (x,y) -> x) (graphNodesToList graph)) toNodes
+        let beginningNodesIds = List.except toNodes (List.map (fun (x,y) -> x) (graphNodesToList graph))
         getNodes graph beginningNodesIds
 
     let transitiveClousure beginningNodes graph actionType = 
@@ -72,7 +72,7 @@ module Graph =
             | x::xs -> let rec inner newList newNewGraph = 
                             match xs with
                             | [] -> transitiveRed xs newNewGraph
-                            | y::ys -> if (List.exists (fun id -> id = x.Id) x.Edges) 
+                            | y::ys -> if (List.exists (fun id -> id = y.Id) x.Edges) 
                                        then 
                                             let rec innerInner newNewList newNewNewGraph = 
                                                 match ys with 
@@ -86,6 +86,18 @@ module Graph =
                        inner xs newGraph
         transitiveRed beginningNodes graph
 
+    let hasRelation (fromNode:Action) (toNode:Action) : bool = 
+        let getEventId (actionId: ActionId) : EventId = match actionId with | (eId,time) -> eId
+        let checkID = fromNode.CounterpartEventId = (getEventId toNode.Id)  && (getEventId fromNode.Id) = toNode.CounterpartEventId
+        match (fromNode.Type, toNode.Type) with
+        | (CheckedConditon, ChecksConditon) -> true
+        | (IncludedBy, Includes) -> true
+        | (ExcludedBy, Excludes) -> true
+        | (SetPendingBy, SetsPending) -> true
+        | (LockedBy, Locks) -> true
+        | (UnlockedBy, Unlocks) -> true
+        | _ -> false
+
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
         let graphWithTransClous = transitiveClousure beginningNodes graph actionType
@@ -93,4 +105,16 @@ module Graph =
         let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction 
 
-    let merge (localGraph : Graph) (otherGraph : Graph) = Some empty // Todo: Implement merge.
+    let merge (localGraph : Graph) (otherGraph : Graph) = 
+        let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
+        let rec mergeInner (list:(ActionId*Action) list) graph = 
+            match list with
+            | [] -> graph
+            | (xId,xa)::xs -> let rec mergeInnerInner innerList innerGraph = 
+                                match innerList with 
+                                | [] -> mergeInner xs innerGraph
+                                | (yId,ya)::ys -> if (hasRelation xa ya && not (List.exists (fun id -> id = yId) xa.Edges)) 
+                                                    then mergeInnerInner ys (addEdge xa ya innerGraph)
+                                                    else mergeInnerInner ys innerGraph
+                              mergeInnerInner xs graph
+        Some (mergeInner (graphNodesToList combinedGraph)  combinedGraph)
