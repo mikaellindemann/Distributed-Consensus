@@ -18,6 +18,7 @@ namespace Event.Controllers
     public class HistoryController : ApiController
     {
         private readonly IEventHistoryLogic _historyLogic;
+        private readonly ILifecycleLogic _lifecycleLogic;
 
         /// <summary>
         /// Default constructor; should be used during runtime
@@ -25,15 +26,17 @@ namespace Event.Controllers
         public HistoryController()
         {
             _historyLogic = new EventHistoryLogic();
+            _lifecycleLogic = new LifecycleLogic();
         }
 
         /// <summary>
         /// Constructor used for dependency-injection
         /// </summary>
         /// <param name="historyLogic">Logic-layer implementing the IEventHistory interface</param>
-        public HistoryController(IEventHistoryLogic historyLogic)
+        public HistoryController(IEventHistoryLogic historyLogic, ILifecycleLogic lifecycleLogic)
         {
             _historyLogic = historyLogic;
+            _lifecycleLogic = lifecycleLogic;
         }
 
         /// <summary>
@@ -125,6 +128,8 @@ namespace Event.Controllers
                     old.Id,
                     old.CounterpartEventId,
                     old.Type,
+                    // The below line, is the important part of this loop. It creates
+                    // the relation from one action to the next in the local history.
                     FSharpList<Tuple<string, int>>.Cons(localHistory[i + 1].Id, FSharpList<Tuple<string, int>>.Empty));
 
                 localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
@@ -132,8 +137,29 @@ namespace Event.Controllers
 
             localHistoryGraph = Graph.addNode(localHistory[localHistory.Length - 1], localHistoryGraph);
 
-            // Todo: Fetch relations, and possibly convert them to a format, that can be used for further produce requests.
-            return History.produce(FSharpList<string>.Empty,  localHistoryGraph);
+            // HACK: We should have another way of fetching relations.
+            var eventDto = await _lifecycleLogic.GetEventDto(workflowId, eventId);
+            var relations =
+                eventDto.Conditions
+                .Union(eventDto.Responses)
+                .Union(eventDto.Inclusions)
+                .Union(eventDto.Exclusions)
+                .Select(relation => relation.Uri.ToString());
+            
+            return History.produce(ToFSharpList(relations), localHistoryGraph);
+        }
+
+        /// <summary>
+        /// Turns a typed IEnumerable into the corresponding FSharpList.
+        /// 
+        /// The list gets reversed up front because it is cons'ed together backwards.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        private static FSharpList<T> ToFSharpList<T>(IEnumerable<T> elements)
+        {
+            return elements.Reverse().Aggregate(FSharpList<T>.Empty, (current, element) => FSharpList<T>.Cons(element, current));
         }
 
 
