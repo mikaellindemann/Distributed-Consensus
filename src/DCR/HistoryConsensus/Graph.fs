@@ -92,3 +92,5 @@ module Graph =
         let filteredGraph = { Nodes = Map.filter (fun id action -> action.Type = actionType ) graphWithTransClous.Nodes }
         let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction 
+
+    let merge (localGraph : Graph) (otherGraph : Graph) = Some empty // Todo: Implement merge.

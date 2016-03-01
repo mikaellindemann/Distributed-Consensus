@@ -11,4 +11,5 @@ module Graph =
     val removeNode : Action -> Graph -> Graph
     val addEdge : Action -> Action -> Graph -> Graph
     val removeEdge : Action -> Action -> Graph -> Graph
+    val merge : Graph -> Graph -> Graph option
     val empty : Graph
