@@ -86,7 +86,7 @@ module Graph =
             | [] -> transitiveClos newFromNodes innerAccGraph // when it has been iterated over call the first method with a new list and new graph
             | node2::toNodes ->
                 let toNode = (getNode graph node2) // find the toNode
-                if(toNode.Type = actionType) // we only need these edges
+                if toNode.Type = actionType // we only need these edges
                 then innerFun toNodes                (toNode::newFromNodes) fromNode (addEdge fromNode toNode innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
                 else innerFun (toNodes@toNode.Edges) newFromNodes           fromNode innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
         
@@ -113,6 +113,28 @@ module Graph =
                                    inner ys newNewGraph
                 inner xs newGraph
         transitiveRed beginningNodes graph
+
+    let transitiveReductionBetter beginningNodes graph = 
+        // the beginning nodes - goes over all of them -> probably egts updated from the next function.
+        let rec fromNodesFun (fromNodes:Action list) accGraph = 
+            match fromNodes with
+            | [] -> accGraph
+            | fromNode::fromNodesRest -> neighboursFun (getNodes accGraph fromNode.Edges) fromNode fromNodesRest accGraph
+        // Goes over all the neighbours of the fromNode -> neighbours can get updated from the next function. Update fromNodes list with each neighbour
+        and neighboursFun (neighbours:Action list) (fromNode:Action) (newFromNodes:Action list) (accGraph:Graph) =
+            match neighbours with
+            | [] -> fromNodesFun newFromNodes accGraph
+            | neighbour::neighboursRest -> 
+                endNodesFun (getNodes accGraph neighbour.Edges) neighboursRest fromNode (neighbour::newFromNodes) accGraph
+        // Goes over all the neighbours of the neighbour in the previous function. -> If there is an edge from fromNode to endNode remove it. Otherwise add the endNode to neighbours in the previous function.
+        and endNodesFun (endNodes:Action list) (newNeighbours:Action list) (fromNode:Action) (newFromNodes:Action list) (accGraph:Graph) : Graph=
+            match endNodes with 
+            | [] -> neighboursFun newNeighbours fromNode newFromNodes accGraph
+            | endNode::endNodesRest -> if (List.exists (fun id -> id = endNode.Id) fromNode.Edges)
+                                       then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode endNode accGraph) 
+                                       else endNodesFun endNodesRest (endNode::newNeighbours) fromNode newFromNodes accGraph
+        
+        fromNodesFun beginningNodes graph
 
     let hasRelation (fromNode:Action) (toNode:Action) : bool = 
         let checkID = 
