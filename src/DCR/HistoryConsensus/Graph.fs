@@ -127,7 +127,7 @@ module Graph =
                                 | (yId,ya)::ys -> if (hasRelation xa ya && not (List.exists (fun id -> id = yId) xa.Edges)) 
                                                   then mergeInnerInner ys (addEdge xa ya innerGraph)
                                                   else mergeInnerInner ys innerGraph
-                              mergeInnerInner xs graph
+                              mergeInnerInner list graph
         Some (mergeInner (Map.toList combinedGraph.Nodes)  combinedGraph)
 
     
