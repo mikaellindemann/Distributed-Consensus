@@ -8,6 +8,7 @@ using Event.Interfaces;
 using Event.Logic;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
+using Microsoft.FSharp.Core;
 using Action = HistoryConsensus.Action;
 
 namespace Event.Controllers
@@ -113,9 +114,9 @@ namespace Event.Controllers
             );
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("history/{workflowId}/{eventId}/produce")]
-        public async Task<Graph.Graph> Produce(string workflowId, string eventId)
+        public async Task<FSharpOption<Graph.Graph>> Produce(string workflowId, string eventId, IEnumerable<string> traceList)
         {
             var localHistory = (await GetHistory(workflowId, eventId)).Select(Convert).ToArray();
 
@@ -146,7 +147,7 @@ namespace Event.Controllers
                 .Union(eventDto.Exclusions)
                 .Select(relation => relation.Uri.ToString());
             
-            return History.produce(ToFSharpList(relations), localHistoryGraph);
+            return History.produce(workflowId, eventId, ToFSharpList(traceList), ToFSharpList(relations), localHistoryGraph);
         }
 
         /// <summary>
