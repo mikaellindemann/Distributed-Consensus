@@ -37,7 +37,7 @@ module Graph =
 
     let getNode graph actionId : Action = Map.find actionId graph.Nodes
     let getNodes graph actionIdList = List.map (getNode graph) actionIdList
-    let graphNodesToList graph = Map.toList (graph.Nodes)
+    let getActionsFromGraph graph = List.map (fun (actionId, action) -> action) (Map.toList graph.Nodes)
 
     let empty : Graph = { Nodes = Map.empty }
 
@@ -49,9 +49,9 @@ module Graph =
             match nodes with
             | [] -> accList
             | (_,action)::xs -> calcToNodes xs (List.foldBack (fun element list -> element::list) action.Edges accList)
-        let toNodes = calcToNodes (graphNodesToList graph) []        
+        let toNodes = calcToNodes (Map.toList graph.Nodes) []        
         // Find all action ids, that are not referenced in the graph.
-        let beginningNodesIds = List.except toNodes (List.map (fun (x,y) -> x) (graphNodesToList graph))
+        let beginningNodesIds = List.except toNodes (List.map (fun (x,y) -> x) (Map.toList graph.Nodes))
         // Return the Actions of the non-referenced action ids.
         getNodes graph beginningNodesIds
 
@@ -108,8 +108,8 @@ module Graph =
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
-        let graphWithTransClous = transitiveClosure beginningNodes graph actionType
-        let filteredGraph = { Nodes = Map.filter (fun id action -> action.Type = actionType ) graphWithTransClous.Nodes }
+        let graphWithTransClos = transitiveClosure beginningNodes graph actionType
+        let filteredGraph = { Nodes = Map.filter (fun id action -> action.Type = actionType ) graphWithTransClos.Nodes }
         let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction 
 
@@ -122,7 +122,30 @@ module Graph =
                                 match innerList with 
                                 | [] -> mergeInner xs innerGraph
                                 | (yId,ya)::ys -> if (hasRelation xa ya && not (List.exists (fun id -> id = yId) xa.Edges)) 
-                                                    then mergeInnerInner ys (addEdge xa ya innerGraph)
-                                                    else mergeInnerInner ys innerGraph
+                                                  then mergeInnerInner ys (addEdge xa ya innerGraph)
+                                                  else mergeInnerInner ys innerGraph
                               mergeInnerInner xs graph
-        Some (mergeInner (graphNodesToList combinedGraph)  combinedGraph)
+        Some (mergeInner (Map.toList combinedGraph.Nodes)  combinedGraph)
+
+    
+
+    let merge2 (localGraph : Graph) (otherGraph : Graph) = 
+        // Add all nodes from the otherGraph to the localGraph
+        let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
+
+        // Retrieve the Actions of the Graph for later use.
+        let combinedGraphList = getActionsFromGraph combinedGraph
+
+        // For every pair of actions in the Graph
+        List.fold2 (fun mergedGraph node1 node2 ->
+                        // If the actions are related by type and Id's (an action knows its counterpart) and they
+                        // have no edge between them already
+                        if (hasRelation node1 node2 && not (List.exists (fun id -> id = node2.Id) node1.Edges)) 
+                        // Add the edge and look at the rest of the pairs of actions.
+                        then (addEdge node1 node2 mergedGraph)
+                        // Otherwise, just look at the rest of the pairs of actions.
+                        else mergedGraph) 
+                   combinedGraph combinedGraphList combinedGraphList
+        
+        
+        // TODO: reimplement addNode node graph to update edges if node already exists.
