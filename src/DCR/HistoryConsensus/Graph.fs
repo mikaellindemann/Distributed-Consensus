@@ -95,17 +95,19 @@ module Graph =
         transitiveRed beginningNodes graph
 
     let hasRelation (fromNode:Action) (toNode:Action) : bool = 
-        let checkID = fromNode.CounterpartEventId = (fst toNode.Id)  && (fst fromNode.Id) = toNode.CounterpartEventId
+        let checkID = 
+            let eventId = fst toNode.Id
+            fromNode.CounterpartEventId = eventId && eventId = toNode.CounterpartEventId
         let checkRelation fromType toType = 
-            match (fromType, toType) with
-            | (CheckedConditon, ChecksConditon) -> true
-            | (IncludedBy, Includes) -> true
-            | (ExcludedBy, Excludes) -> true
-            | (SetPendingBy, SetsPending) -> true
-            | (LockedBy, Locks) -> true
-            | (UnlockedBy, Unlocks) -> true
-            | _ -> false
-        checkID && (checkRelation fromNode.Type toNode.Type)
+            match fromType, toType with
+            | CheckedConditon, ChecksConditon   -> true
+            | IncludedBy, Includes              -> true
+            | ExcludedBy, Excludes              -> true
+            | SetPendingBy, SetsPending         -> true
+            | LockedBy, Locks                   -> true
+            | UnlockedBy, Unlocks               -> true
+            | _                                 -> false
+        checkID && checkRelation fromNode.Type toNode.Type
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
