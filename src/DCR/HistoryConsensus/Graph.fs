@@ -7,7 +7,23 @@ module Graph =
             Nodes: Map<ActionId, Action>
         }
 
-    let addNode node (graph : Graph) : Graph = { Nodes = Map.add node.Id node graph.Nodes }
+    let addNode (node:Action) (graph : Graph) : Graph = 
+        let existsInGraph n = Map.containsKey n graph.Nodes
+        let addToListIfNotPresent toAdd existing = 
+            Set.toList (Set.union <| Set.ofList toAdd <| Set.ofList existing)
+
+        let findAndAdd n = 
+            let inGraph = Map.find n.Id graph.Nodes
+            let added = addToListIfNotPresent n.Edges inGraph.Edges
+            let inGraph' = { inGraph with Edges = added }
+            Map.add inGraph'.Id inGraph' graph.Nodes
+
+        let edges' = 
+            if not <| existsInGraph node.Id 
+            then Map.add node.Id node graph.Nodes
+            else findAndAdd node
+        { Nodes = edges' }
+
     let removeNode node (graph : Graph) : Graph =
         let graph' = Map.remove node.Id graph.Nodes
         { Nodes = Map.map (fun id action -> 
