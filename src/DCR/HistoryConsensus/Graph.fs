@@ -130,27 +130,25 @@ module Graph =
                               mergeInnerInner list graph
         Some (mergeInner (Map.toList combinedGraph.Nodes)  combinedGraph)
 
-    
 
-    let merge2 (localGraph : Graph) (otherGraph : Graph) = 
-        // Add all nodes from the otherGraph to the localGraph
+    // a more functional graph
+    let mergeBetter (localGraph : Graph) (otherGraph : Graph) = 
+        // Combine the graphs by putting all the nodes in the local graph
         let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
-
-        // Retrieve the Actions of the Graph for later use.
-        let combinedGraphList = getActionsFromGraph combinedGraph
-
-        // For every pair of actions in the Graph
-        List.fold2 (fun mergedGraph node1 node2 ->
-                        let shouldBeAdded = hasRelation node1 node2 
-                                            && not (List.exists (fun id -> id = node2.Id) node1.Edges)
-                        // If the actions are related by type and Id's (an action knows its counterpart) and they
-                        // have no edge between them already ...
-                        if shouldBeAdded
-                        // ... add the edge and look at the rest of the pairs of actions ...
-                        then addEdge node1 node2 mergedGraph
-                        // ... otherwise just look at the rest of the pairs of actions.
-                        else mergedGraph) 
-                   combinedGraph combinedGraphList combinedGraphList
         
-        
-        // TODO: reimplement addNode node graph to update edges if node already exists.
+        // go over every node in the graph
+        let rec mergeInner (list:(ActionId*Action) list) (accGraph:Graph) : Graph = 
+            match list with
+            | [] -> accGraph
+            | (node1Id,node1Action)::xs -> 
+                // This calls the mergeInner recoursively with a new folded graph
+                mergeInner xs (List.foldBack (fun (node2Id, node2Action) foldGraph -> 
+                    // the foldback goes over all nodes and checks if relations exist from node1 to node2
+                    // Check if a relation exist from node1 to node2 and check that there is not already an edge from node1 to node2.
+                    if (hasRelation node1Action node2Action && not (List.exists (fun id -> id = node2Id) node1Action.Edges))
+                    // add the edge to the foldGraph
+                    then (addEdge node1Action node2Action foldGraph)
+                    // dont change foldGraph
+                    else foldGraph ) list accGraph)           
+                                             
+        Some (mergeInner (Map.toList combinedGraph.Nodes)  combinedGraph)    
