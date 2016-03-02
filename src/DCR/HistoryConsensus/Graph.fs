@@ -35,9 +35,9 @@ module Graph =
                     Edges = List.ofSeq (Seq.where (fun actionId -> actionId <> toNode.Id) (Seq.ofList fromNode.Edges))
             }) graph.Nodes }
 
-    let getNode graph actionId : Action = Map.find actionId graph.Nodes
+    let getNode graph actionId = Map.find actionId graph.Nodes
     let getNodes graph actionIdList = List.map (getNode graph) actionIdList
-    let getActionsFromGraph graph = List.map (fun (actionId, action) -> action) (Map.toList graph.Nodes)
+    let getActionsFromGraph graph = List.map snd (Map.toList graph.Nodes)
 
     let empty : Graph = { Nodes = Map.empty }
 
@@ -139,12 +139,14 @@ module Graph =
 
         // For every pair of actions in the Graph
         List.fold2 (fun mergedGraph node1 node2 ->
+                        let shouldBeAdded = hasRelation node1 node2 
+                                            && not (List.exists (fun id -> id = node2.Id) node1.Edges)
                         // If the actions are related by type and Id's (an action knows its counterpart) and they
-                        // have no edge between them already
-                        if (hasRelation node1 node2 && not (List.exists (fun id -> id = node2.Id) node1.Edges)) 
-                        // Add the edge and look at the rest of the pairs of actions.
-                        then (addEdge node1 node2 mergedGraph)
-                        // Otherwise, just look at the rest of the pairs of actions.
+                        // have no edge between them already ...
+                        if shouldBeAdded
+                        // ... add the edge and look at the rest of the pairs of actions ...
+                        then addEdge node1 node2 mergedGraph
+                        // ... otherwise just look at the rest of the pairs of actions.
                         else mergedGraph) 
                    combinedGraph combinedGraphList combinedGraphList
         
