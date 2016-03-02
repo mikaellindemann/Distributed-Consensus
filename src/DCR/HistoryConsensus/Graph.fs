@@ -186,7 +186,7 @@ module Graph =
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
         let graphWithTransClos = transitiveClosureBetter beginningNodes graph actionType
-        let filteredGraph = Map.foldBack (fun actionId action graph -> if action.Type = actionType then removeNode action graph else graph) graphWithTransClos.Nodes graphWithTransClos
+        let filteredGraph = Map.foldBack (fun actionId action graph -> if action.Type = actionType then graph else removeNode action graph) graphWithTransClos.Nodes graphWithTransClos
         let transReduction = transitiveReductionBetter (getBeginningNodes filteredGraph) filteredGraph
         transReduction
 
