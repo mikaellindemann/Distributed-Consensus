@@ -7,57 +7,85 @@ module Graph =
             Nodes: Map<ActionId, Action>
         }
 
-    let addNode node (graph : Graph) : Graph = { Nodes = Map.add node.Id node graph.Nodes }
+    ///Add a node to the Action graph. 
+    ///If the node already exists, add the edges of the node to the existing node in the graph.
+    let addNode node graph = 
+        let existsInGraph n = Map.containsKey n graph.Nodes
+
+        //Convert lists to Sets, union sets and convert back in order to only add not present elements.
+        let addToListIfNotPresent toAdd existing = 
+            Set.toList (Set.union <| Set.ofList toAdd <| Set.ofList existing)
+
+        //Retrieve an existing node Id from the graph and add the edges from the given node to the one 
+        //in the graph.
+        let findAndAdd n = 
+            let inGraph = Map.find n.Id graph.Nodes
+            let added = addToListIfNotPresent n.Edges inGraph.Edges
+            let inGraph' = { inGraph with Edges = added }
+            Map.add inGraph'.Id inGraph' graph.Nodes
+
+        //If the node does not exist already, add it to the graph.
+        //If it does exist, add edges from the given node to the existing node.
+        let edges' = 
+            if not <| existsInGraph node.Id 
+            then Map.add node.Id node graph.Nodes
+            else findAndAdd node
+        { Nodes = edges' }
+
     let removeNode node (graph : Graph) : Graph =
         let graph' = Map.remove node.Id graph.Nodes
-        { Nodes = Map.map (fun id action -> 
-            {
-                Id = id; 
-                CounterpartEventId = action.CounterpartEventId; 
-                Type = action.Type;
-                Edges = List.ofSeq (Seq.where (fun id -> id = node.Id) (List.toSeq action.Edges))
-            }) graph' }
+        { 
+            Nodes = Map.map 
+                        (fun id action -> { Id = id;
+                                            CounterpartEventId = action.CounterpartEventId;
+                                            Type = action.Type
+                                            Edges = List.where (fun id -> id = node.Id) action.Edges }) 
+                        graph' 
+        }
 
     let addEdge fromNode toNode (graph : Graph) : Graph =
-        { Nodes = Map.add fromNode.Id 
-            ({
-                Id = fromNode.Id; 
-                CounterpartEventId = fromNode.CounterpartEventId; 
-                Type = fromNode.Type;
-                Edges = toNode.Id :: fromNode.Edges}) graph.Nodes }
+        { 
+            Nodes = Map.add 
+                        fromNode.Id 
+                        { fromNode with Edges = toNode.Id :: fromNode.Edges} 
+                        graph.Nodes 
+        }
 
     let removeEdge fromNode toNode (graph : Graph) : Graph =
-        { Nodes = Map.add fromNode.Id 
-            ({
-                    Id = fromNode.Id;
-                    CounterpartEventId = fromNode.CounterpartEventId;
-                    Type = fromNode.Type;
-                    Edges = List.ofSeq (Seq.where (fun actionId -> actionId <> toNode.Id) (Seq.ofList fromNode.Edges))
-            }) graph.Nodes }
+        { 
+            Nodes = Map.add 
+                        fromNode.Id 
+                        { fromNode with Edges = List.where (fun actionId -> actionId <> toNode.Id) fromNode.Edges } 
+                        graph.Nodes 
+        }
 
+    //Retrive a single node from an actionId.
     let getNode graph actionId = Map.find actionId graph.Nodes
+    //Retrieve a collection of nodes from given ActionIds.
     let getNodes graph actionIdList = List.map (getNode graph) actionIdList
+    //Retrieve every Action in the graph.
     let getActionsFromGraph graph = List.map snd (Map.toList graph.Nodes)
 
     let empty : Graph = { Nodes = Map.empty }
 
 
     let getBeginningNodes graph : Action list = 
-
         // Calculate all the action ids that are referenced by other nodes in the graph (which is turned into a list).
-        let rec calcToNodes (nodes:(ActionId*Action) list) (accList:ActionId list) : ActionId list =
+        let rec calcToNodes nodes accList =
             match nodes with
             | [] -> accList
-            | (_,action)::xs -> calcToNodes xs (List.foldBack (fun element list -> element::list) action.Edges accList)
+            | (_, action)::rest -> calcToNodes rest (List.foldBack (fun element list -> element::list) action.Edges accList)
         let toNodes = calcToNodes (Map.toList graph.Nodes) []        
+
         // Find all action ids, that are not referenced in the graph.
         let beginningNodesIds = List.except toNodes (List.map (fun (x,y) -> x) (Map.toList graph.Nodes))
+
         // Return the Actions of the non-referenced action ids.
         getNodes graph beginningNodesIds
 
+
     // Calculate all edges between nodes?
     let transitiveClosure beginningNodes graph actionType = 
-
         let rec transitiveClos (list:Action list) newGraph = 
             match list with
             | [] -> newGraph
@@ -74,7 +102,6 @@ module Graph =
 
 
     let transitiveClosureBetter beginningNodes graph actionType = 
-
         // Go over every node in the graph
         let rec transitiveClos (list:Action list) (accGraph:Graph) = 
             match list with
@@ -91,6 +118,7 @@ module Graph =
                 else innerFun (toNodes@toNode.Edges) newFromNodes           fromNode innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
         
         transitiveClos beginningNodes graph
+
 
     let transitiveReduction beginningNodes graph = 
         let rec transitiveRed (list:Action list) newGraph = 
@@ -114,6 +142,7 @@ module Graph =
                 inner xs newGraph
         transitiveRed beginningNodes graph
 
+
     let transitiveReductionBetter beginningNodes graph = 
         // the beginning nodes - goes over all of them -> probably egts updated from the next function.
         let rec fromNodesFun (fromNodes:Action list) accGraph = 
@@ -136,6 +165,8 @@ module Graph =
         
         fromNodesFun beginningNodes graph
 
+
+    ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool = 
         let checkID = 
             let eventId = fst toNode.Id
@@ -151,12 +182,14 @@ module Graph =
             | _                                 -> false
         checkID && checkRelation fromNode.Type toNode.Type
 
+
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
         let graphWithTransClos = transitiveClosure beginningNodes graph actionType
         let filteredGraph = { Nodes = Map.filter (fun id action -> action.Type = actionType ) graphWithTransClos.Nodes }
         let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction 
+
 
     let merge (localGraph : Graph) (otherGraph : Graph) = 
         let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
@@ -170,7 +203,7 @@ module Graph =
                                                   then mergeInnerInner ys (addEdge xa ya innerGraph)
                                                   else mergeInnerInner ys innerGraph
                               mergeInnerInner list graph
-        Some (mergeInner (Map.toList combinedGraph.Nodes)  combinedGraph)
+        Some <| mergeInner (Map.toList combinedGraph.Nodes) combinedGraph
 
 
     // a more functional graph
