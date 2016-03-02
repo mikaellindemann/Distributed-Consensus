@@ -192,7 +192,7 @@ module Graph =
 
 
     let merge (localGraph : Graph) (otherGraph : Graph) = 
-        let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
+        let combinedGraph = Map.foldBack (fun actionId action graph -> addNode action graph) otherGraph.Nodes localGraph
         let rec mergeInner (list:(ActionId*Action) list) graph = 
             match list with
             | [] -> graph
