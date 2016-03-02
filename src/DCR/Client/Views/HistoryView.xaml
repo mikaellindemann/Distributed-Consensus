@@ -1,0 +1,29 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ViewModels="clr-namespace:Client.ViewModels" x:Class="Client.Views.HistoryView"
+        Title="Flow - History" Height="600" Width="1000">
+    <Grid x:Name="HistoryGrid">
+        <Grid.DataContext>
+            <ViewModels:HistoryListViewModel/>
+        </Grid.DataContext>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="61"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Style="{StaticResource TextLabelStyle}" Content="History of workflow:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="41" Width="213" FontSize="24" Margin="10,10,0,0" FontFamily="Segoe UI Light"/>
+        <Label Grid.Row="0" Style="{StaticResource TextLabelStyle}" Content="{Binding WorkflowId}" Margin="228,10,380,0" VerticalAlignment="Top" Height="41" FontSize="24" FontFamily="Segoe UI Light"/>
+        <TextBlock Grid.Row="0" Text="{Binding Status}" TextAlignment="Right" TextWrapping="Wrap" Width="380" Foreground="Red" VerticalAlignment="Top" HorizontalAlignment="Right" Height="61" FontSize="16" FontFamily="Segoe UI Light" />
+        <ListBox x:Name="ListBox" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="1" ItemsSource="{Binding HistoryViewModelList}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <UniformGrid Rows="1" Columns="3">
+                        <Label Content="{Binding Title}" HorizontalAlignment="Stretch"/>
+                        <Label Content="{Binding Message}" HorizontalAlignment="Stretch" />
+                        <Label Content="{Binding TimeStamp}" ContentStringFormat="{}{0:yyyy/MM/dd HH:mm:ss}" HorizontalAlignment="Stretch" />
+                    </UniformGrid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>

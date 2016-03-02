@@ -148,7 +148,23 @@ All logs have the form (\#Number, FromID, RelationType, ToID/ByID)
 \end{lstlisting}
 
 \section{Malicious Nodes}
-We must assume that the first contacted event is not malicious, since if it is and returns faulty information there is no way to discover and recover from this.
+We assume that a malicious event can cheat in the following three ways.
+\begin{definition}\label{malevent-type-omit}
+	A malicious \texttt{event} can omit \texttt{logs} when asked for its \texttt{history}.
+\end{definition}
+\begin{definition}\label{malevent-type-add}
+	A malicious \texttt{event} can add none-existent, consistent or inconsistent \texttt{logs} when asked for its \texttt{history}.
+\end{definition}
+\begin{definition}\label{malevent-type-responddifferent}
+	A malicious \texttt{event} can send different \texttt{histories} to different requests.
+\end{definition}
+Furthermore we must assume that the first contacted event is not malicious, since if it is and returns faulty information there is no way to discover and recover from this. 
+
+\newpar Creating history in a DCR graph with malicious events has similar characteristics as that of the Byzantine generals problem\cite{byzantinegeneralsproblem}. Each of these situations have some distributed systems, in which data has to be passed around and reached consensus about. Though creating a history has some differences, that must be worked around to apply the Byzantine generals algorithm to ensure consensus, we can argue that the algorithms proposed for the Byzantine generals problem still can be used. The first difference is that in DCR-graphs a single event do not propose a singular value to get consensus about, but must gather values from each event in the graph since each event is the only one who is knows the value for it self. To argue that this does not change the problem domain, we see the information gathering process from the perspective of the requested event instead of the requester. The situation is now similar to that of the Byzantine generals because the requested event returns and therefore propose a value that all of its requesters have to agree and get consensus on.
+
+\newpar If we assume that the domain is a Byzantine generals problem, the same properties must exist in the DCR graph and we can therefore say that for a DCR graph to reach consensus on a history we need 3m+1 events with a maximum of m malicious events, when the DCR graph represents a 3-regular graph where there exist a path from loyal \texttt{event I} to any loyal \texttt{event k}.
+
+\todo[inline]{Gammel argumentation - adapt/remove}
 We need to argue that all DCR graphs can be built using a group of base structures. Each of these base structures have properties which can be used to describe the safety of the DCR graph history:
 
 \begin{figure}[H]

@@ -1,0 +1,25 @@
+﻿<Window FocusManager.FocusedElement="{Binding ElementName=Login}"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModels="clr-namespace:Client.ViewModels" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        x:Class="Client.Views.LoginView"
+        Title="Flow - Login" Height="380.212" Width="300" Background="#FF00A2E8" WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <viewModels:LoginViewModel/>
+    </Window.DataContext>
+    <UniformGrid Rows="3" Margin="10,10,10,10">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+            <xctk:WatermarkTextBox Name="Username" Style="{StaticResource FillTextBoxStyle}" Watermark="Username" Margin="10,10,10,0 " TextWrapping="Wrap" Text="{Binding Username}" />
+            <PasswordBox Name="Password" Style="{StaticResource PasswordBoxWatermark}" Margin="10,10,10,0" PasswordChanged="Password_PasswordChanged"/>
+        </StackPanel>
+        <TextBlock VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Style="{StaticResource HeaderTextBlockStyle}" FontStyle="Italic" Text="{Binding Status}" Margin="10,0,10,0"/>
+        <Button Name="Login" Style="{StaticResource ButtonDefaultStyle}"  Content="Login" Margin="10,56,10.333,10.333" Height="Auto">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <ei:CallMethodAction TargetObject="{Binding Mode=OneWay}" MethodName="Login"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+    </UniformGrid>
+</Window>
