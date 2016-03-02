@@ -185,10 +185,10 @@ module Graph =
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
-        let graphWithTransClos = transitiveClosure beginningNodes graph actionType
+        let graphWithTransClos = transitiveClosureBetter beginningNodes graph actionType
         let filteredGraph = { Nodes = Map.filter (fun id action -> action.Type = actionType ) graphWithTransClos.Nodes }
-        let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
-        transReduction 
+        let transReduction = transitiveReductionBetter (getBeginningNodes filteredGraph) filteredGraph
+        transReduction
 
 
     let merge (localGraph : Graph) (otherGraph : Graph) = 
