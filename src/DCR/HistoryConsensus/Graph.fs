@@ -68,7 +68,7 @@ module Graph =
                     | y::ys ->  let toNode = (getNode graph y)
                                 if(toNode.Type = actionType)
                                 then inner ys (addEdge (getNode graph x.Id) toNode innerGraph) (toNode::newXs)
-                                else inner ys innerGraph newXs
+                                else inner (ys@(getNode innerGraph y).Edges)  innerGraph newXs
                 inner x.Edges newGraph xs
         transitiveClos beginningNodes graph
 
