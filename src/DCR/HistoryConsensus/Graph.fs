@@ -72,6 +72,26 @@ module Graph =
                 inner x.Edges newGraph xs
         transitiveClos beginningNodes graph
 
+
+    let transitiveClosureBetter beginningNodes graph actionType = 
+
+        // Go over every node in the graph
+        let rec transitiveClos (list:Action list) (accGraph:Graph) = 
+            match list with
+            | [] -> accGraph
+            | node::fromNodes -> innerFun node.Edges fromNodes node accGraph
+        // With a fromNode - find add edge to all other nodes of type ActionType
+        and innerFun edgeList newFromNodes fromNode (innerAccGraph:Graph) = 
+            match edgeList with
+            | [] -> transitiveClos newFromNodes innerAccGraph // when it has been iterated over call the first method with a new list and new graph
+            | node2::toNodes ->
+                let toNode = (getNode graph node2) // find the toNode
+                if(toNode.Type = actionType) // we only need these edges
+                then innerFun toNodes                (toNode::newFromNodes) fromNode (addEdge fromNode toNode innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
+                else innerFun (toNodes@toNode.Edges) newFromNodes           fromNode innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
+        
+        transitiveClos beginningNodes graph
+
     let transitiveReduction beginningNodes graph = 
         let rec transitiveRed (list:Action list) newGraph = 
             match list with
