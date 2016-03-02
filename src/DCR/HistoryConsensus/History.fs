@@ -8,7 +8,6 @@ open Newtonsoft.Json
 type WorkflowId = string
 
 module History =
-
     /// Utility function. Makes an options list to a list option.
     /// If any element of the source list is None, the result will become None.
     let rec optionUnwrapper optionList = 
