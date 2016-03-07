@@ -39,7 +39,7 @@ module Graph =
                         (fun id action -> { Id = id;
                                             CounterpartEventId = action.CounterpartEventId;
                                             Type = action.Type
-                                            Edges = List.where (fun id -> id = node.Id) action.Edges }) 
+                                            Edges = List.where (fun id -> id <> node.Id) action.Edges }) 
                         graph' 
         }
 
