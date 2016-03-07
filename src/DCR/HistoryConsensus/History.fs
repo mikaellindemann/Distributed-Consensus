@@ -32,10 +32,10 @@ module History =
 
     /// Externally calls the produce request on neighboring nodes, and returns the result as
     /// an option type.
-    let callProduce workflowId eventId trace uri =
+    let callProduce eventId trace uri =
         let body = JsonConvert.SerializeObject (eventId :: trace)
         let response =
-            createRequest Post (sprintf "%s/history/%s/%s/produce" uri workflowId eventId)
+            createRequest Post (sprintf "%s/produce" uri)
             |> withBody body
             |> withHeader (ContentType "application/json") 
             |> withHeader (Accept "application/json")
@@ -46,11 +46,11 @@ module History =
     /// The produce algorithm checks whether or not this event is already part of this history call.
     /// If it is, it just returns its local history. If not, it gathers information from its neighbors,
     /// Stitches it (if possible) and returns this as a Graph option.
-    let produce workflowId eventId trace uris localHistory =
+    let produce (workflowId : WorkflowId) (eventId : EventId) trace uris localHistory =
         if List.contains eventId trace
         then Some localHistory
         else
-            let otherHistories = List.map (fun uri -> callProduce workflowId eventId trace uri) uris
+            let otherHistories = List.map (fun uri -> callProduce eventId trace uri) uris
             match optionUnwrapper otherHistories with
             | None -> None
             | Some histories -> stitch localHistory histories

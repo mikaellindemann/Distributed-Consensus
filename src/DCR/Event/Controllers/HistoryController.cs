@@ -160,7 +160,7 @@ namespace Event.Controllers
                 .Union(eventDto.Responses)
                 .Union(eventDto.Inclusions)
                 .Union(eventDto.Exclusions)
-                .Select(relation => relation.Uri.ToString());
+                .Select(relation => $"{relation.Uri.ToString()}history/{relation.WorkflowId}/{relation.Id}");
             
             return History.produce(workflowId, eventId, ToFSharpList(traceList), ToFSharpList(relations), localHistoryGraph);
         }
