@@ -9,6 +9,7 @@ using Event.Logic;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
+using Newtonsoft.Json;
 using Action = HistoryConsensus.Action;
 
 namespace Event.Controllers
@@ -112,6 +113,20 @@ namespace Event.Controllers
                 ConvertType(action.Type),
                 FSharpList<Tuple<string, int>>.Empty // Todo: Remember to add an edge to the resulting graph, from this action to the next.
             );
+        }
+
+        [HttpGet]
+        [Route("history/{workflowId}/{eventId}/create")]
+        public async Task<FSharpOption<Graph.Graph>> StartHistoryCreation(string workflowId, string eventId)
+        {
+            var history = await Produce(workflowId, eventId, new List<string>());
+
+            if (FSharpOption<Graph.Graph>.get_IsNone(history))
+            {
+                return history;
+            }
+
+            return FSharpOption<Graph.Graph>.Some(Graph.simplify(history.Value, Action.ActionType.ExecuteFinish));
         }
 
         [HttpPost]

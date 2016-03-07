@@ -33,12 +33,15 @@ module History =
     /// Externally calls the produce request on neighboring nodes, and returns the result as
     /// an option type.
     let callProduce workflowId eventId trace uri =
+        let body = JsonConvert.SerializeObject (eventId :: trace)
         let response =
             createRequest Post (sprintf "%s/history/%s/%s/produce" uri workflowId eventId)
-            |> withBody (JsonConvert.SerializeObject (eventId :: trace))
+            |> withBody body
             |> withHeader (ContentType "application/json") 
+            |> withHeader (Accept "application/json")
             |> getResponseBody
-        JsonConvert.DeserializeObject<Graph option> response
+        let result = JsonConvert.DeserializeObject<Graph option> response
+        result
 
     /// The produce algorithm checks whether or not this event is already part of this history call.
     /// If it is, it just returns its local history. If not, it gathers information from its neighbors,

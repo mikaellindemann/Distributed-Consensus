@@ -1,5 +1,6 @@
 ﻿namespace HistoryConsensus
 open Action
+open Newtonsoft.Json
 
 module Graph =
     type Graph =
@@ -13,3 +14,4 @@ module Graph =
     val removeEdge : Action -> Action -> Graph -> Graph
     val merge : Graph -> Graph -> Graph option
     val empty : Graph
+    val simplify : Graph -> ActionType -> Graph
