@@ -226,11 +226,11 @@ module Graph =
         let findFirstRelation action corner = Seq.tryFind (fun (actionId', action') -> hasRelation action action' corner) combinedGraphAsSeq 
 
         let edgesList,_ = 
-            Seq.foldBack (fun (actionId, action) (newEdgesList,corner) -> 
+            Seq.fold (fun (newEdgesList,corner) (actionId, action) -> 
                     match findFirstRelation action corner with
                     | Some (actionId', action') -> ((action, action') :: newEdgesList, Set.add actionId' corner)
                     | None -> newEdgesList,corner
-                ) (Map.toSeq combinedGraph.Nodes) ([], Set.empty)
+                ) ([], Set.empty) (Map.toSeq combinedGraph.Nodes)
 
         Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode toNode graph) combinedGraph edgesList
     
