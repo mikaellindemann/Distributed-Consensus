@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Common.DTO.Event;
 using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Communicators;
-using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;
@@ -303,18 +301,21 @@ namespace Event.Logic
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
                     await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId);
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
                     await
                         _eventCommunicator.SendIncluded(inclusion.Uri, addressDto, inclusion.WorkflowId,
                             inclusion.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Includes, eventId, workflowId, inclusion.EventId);
                 }
                 foreach (var exclusion in await _storage.GetExclusions(workflowId, eventId))
                 {
                     await
                         _eventCommunicator.SendExcluded(exclusion.Uri, addressDto, exclusion.WorkflowId,
                             exclusion.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Excludes, eventId, workflowId, exclusion.EventId);
                 }
                 // There might have been made changes on the entity itself in another controller-call
                 // Therefore we have to reload the state from database.
