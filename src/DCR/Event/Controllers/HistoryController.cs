@@ -137,22 +137,13 @@ namespace Event.Controllers
 
             var localHistoryGraph = Graph.empty;
 
-            for (var i = 0; i < localHistory.Length - 1; i++)
+            localHistoryGraph = Graph.addNode(localHistory[0], localHistoryGraph);
+
+            for (var i = 1; i < localHistory.Length - 1; i++)
             {
-                var old = localHistory[i];
-                localHistory[i] = Action.create(
-                    old.Id,
-                    old.CounterpartEventId,
-                    old.Type,
-                    // The below line, is the important part of this loop. It creates
-                    // the relation from one action to the next in the local history.
-                    new FSharpSet<Tuple<string, int>>(new[] {localHistory[i + 1].Id}));
-                    
-
                 localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
+                localHistoryGraph = Graph.addEdge(localHistory[i - 1], localHistory[i], localHistoryGraph);
             }
-
-            localHistoryGraph = Graph.addNode(localHistory[localHistory.Length - 1], localHistoryGraph);
 
             // HACK: We should have another way of fetching relations.
             var eventDto = await _lifecycleLogic.GetEventDto(workflowId, eventId);
