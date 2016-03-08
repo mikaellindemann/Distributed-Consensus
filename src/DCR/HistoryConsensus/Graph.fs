@@ -129,7 +129,7 @@ module Graph =
         
         transitiveClos beginningNodes graph
 
-    let transitiveReduction beginningNodes graph = 
+    (*let transitiveReduction beginningNodes graph = 
         let rec transitiveRed (list:Action list) newGraph = 
             match list with
             | [] -> newGraph
@@ -149,6 +149,21 @@ module Graph =
                                else 
                                    inner ys newNewGraph
                 inner xs newGraph
+        transitiveRed beginningNodes graph*)
+
+    let transitiveReduction beginningNodes graph = 
+        let removeEdgeIfRedundant x y z graph' =
+            if (Set.exists (fun id -> id = z.Id) y.Edges && Set.exists (fun id -> id = z.Id) x.Edges) 
+            then removeEdge x z graph'
+            else graph'
+
+        let rec transitiveRed (list:Action list) newGraph = 
+            List.fold (fun graph' action' ->
+                List.fold (fun graph'' action'' -> 
+                    if Set.contains action''.Id action'.Edges
+                    then List.fold (fun graph''' action''' -> removeEdgeIfRedundant action' action'' action''' graph''') graph'' list
+                    else graph'') graph' list) newGraph list
+
         transitiveRed beginningNodes graph
 
 
@@ -194,7 +209,7 @@ module Graph =
         let beginningNodes = getBeginningNodes graph
         let graphWithTransClos = transitiveClosureBetter beginningNodes graph actionType
         let filteredGraph = Map.foldBack (fun actionId action graph -> if action.Type = actionType then graph else removeNode action graph) graphWithTransClos.Nodes graphWithTransClos
-        let transReduction = transitiveReductionBetter (getBeginningNodes filteredGraph) filteredGraph
+        let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction
 
     (*let merge (localGraph : Graph) (otherGraph : Graph) = 
