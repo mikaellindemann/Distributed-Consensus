@@ -221,53 +221,15 @@ module Graph =
                 && not <| Set.contains second.Id corner
 
         let combinedGraph = Map.fold (fun graph key value -> addNode value graph) localGraph otherGraph.Nodes
-        let combinedGraphAsSeq = Map.toSeq combinedGraph.Nodes
+        let combinedGraphAsSeq = Seq.map (fun (id,action) -> action) <| Map.toSeq combinedGraph.Nodes
 
-        let findFirstRelation action corner = Seq.tryFind (fun (actionId', action') -> hasRelation action action' corner) combinedGraphAsSeq 
+        let findFirstRelation action corner = Seq.tryFind (fun action' -> hasRelation action action' corner) combinedGraphAsSeq 
 
         let edgesList,_ = 
-            Seq.fold (fun (newEdgesList,corner) (actionId, action) -> 
+            Seq.fold (fun (newEdgesList,corner) action -> 
                     match findFirstRelation action corner with
-                    | Some (actionId', action') -> ((action, action') :: newEdgesList, Set.add actionId' corner)
+                    | Some action' -> ((action, action') :: newEdgesList, addToUsedActions action' corner)
                     | None -> newEdgesList,corner
-                ) ([], Set.empty) (Map.toSeq combinedGraph.Nodes)
+                ) ([], Set.empty) combinedGraphAsSeq
 
-        Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode toNode graph) combinedGraph edgesList
-    
-
-    (*let merge localGraph otherGraph =
-        let addToCorner action corner = Set.add action.Id corner
-        let addEdgeIfHasRelation first second graph corner =
-            if hasRelation first second 
-                && not <| Set.contains second.Id first.Edges
-                && not <| Set.contains second.Id corner
-            then (addEdge first second graph,addToCorner second corner)
-            else (graph,corner)
-
-        let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
-
-        Some <| fst (Map.foldBack (fun actionId action (graph, corner) ->
-                        Map.foldBack (fun aciont1Id action1 (graph', corner') -> addEdgeIfHasRelation action action1 graph' corner') graph.Nodes (graph,corner))
-                    combinedGraph.Nodes (combinedGraph,Set.empty))*)
-
-    // a more functional graph
-    let mergeBetter (localGraph : Graph) (otherGraph : Graph) = 
-        // Combine the graphs by putting all the nodes in the local graph
-        let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
-        
-        // go over every node in the graph
-        let rec mergeInner (list:(ActionId*Action) list) (accGraph:Graph) : Graph = 
-            match list with
-            | [] -> accGraph
-            | (node1Id,node1Action)::xs -> 
-                // This calls the mergeInner recoursively with a new folded graph
-                mergeInner xs (List.foldBack (fun (node2Id, node2Action) foldGraph -> 
-                    // the foldback goes over all nodes and checks if relations exist from node1 to node2
-                    // Check if a relation exist from node1 to node2 and check that there is not already an edge from node1 to node2.
-                    if (hasRelation node1Action node2Action && not (Set.exists (fun id -> id = node2Id) node1Action.Edges))
-                    // add the edge to the foldGraph
-                    then (addEdge node1Action node2Action foldGraph)
-                    // dont change foldGraph
-                    else foldGraph ) list accGraph)           
-                                             
-        Some (mergeInner (Map.toList combinedGraph.Nodes)  combinedGraph)    
+        Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode toNode graph) combinedGraph edgesList 
