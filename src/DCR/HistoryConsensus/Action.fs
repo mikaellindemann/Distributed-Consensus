@@ -27,7 +27,7 @@ module Action =
             Id: ActionId;
             CounterpartEventId: EventId;
             Type: ActionType;
-            Edges: ActionId list;
+            Edges: ActionId Set;
         }
 
     let create id counterpartId actionType edges = 

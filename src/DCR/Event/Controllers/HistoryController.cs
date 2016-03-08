@@ -111,7 +111,7 @@ namespace Event.Controllers
                 new Tuple<string, int>(action.EventId, action.TimeStamp),
                 action.CounterPartId,
                 ConvertType(action.Type),
-                FSharpList<Tuple<string, int>>.Empty // Todo: Remember to add an edge to the resulting graph, from this action to the next.
+                new FSharpSet<Tuple<string, int>>(Enumerable.Empty<Tuple<string,int>>()) // Todo: Remember to add an edge to the resulting graph, from this action to the next.
             );
         }
 
@@ -146,7 +146,8 @@ namespace Event.Controllers
                     old.Type,
                     // The below line, is the important part of this loop. It creates
                     // the relation from one action to the next in the local history.
-                    FSharpList<Tuple<string, int>>.Cons(localHistory[i + 1].Id, FSharpList<Tuple<string, int>>.Empty));
+                    new FSharpSet<Tuple<string, int>>(new[] {localHistory[i + 1].Id}));
+                    
 
                 localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
             }

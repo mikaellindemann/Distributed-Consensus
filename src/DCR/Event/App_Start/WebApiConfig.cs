@@ -48,6 +48,7 @@ namespace Event
             var s = value as string;
             if (s != null)
             {
+                s = s.Substring(1, s.Length - 2);
                 var v = s.Split(',');
                 return new Tuple<string, int>(v[0], int.Parse(v[1]));
             }
@@ -61,7 +62,7 @@ namespace Event
             {
                 var v = value as Tuple<string, int>;
                 if (v != null)
-                    return $"{v.Item1}, {v.Item2}";
+                    return $"({v.Item1}, {v.Item2})";
             }
             return base.ConvertTo(context, culture, value, destinationType);
         }

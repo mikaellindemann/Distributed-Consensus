@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.DTO.History;
 using Common.Exceptions;
 using Event.Interfaces;
 using Event.Models;
@@ -17,6 +18,7 @@ namespace Event.Logic
     {
         private readonly IEventStorage _storage;
         private readonly IEventFromEvent _eventCommunicator;
+        private readonly IEventHistoryLogic _historyLogic;
 
         //QUEUE is holding a dictionary of string (workflowid) , dictionary which holds string (eventid), the queue
         public static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>> LockQueue = new ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>>();
@@ -31,6 +33,7 @@ namespace Event.Logic
         {
             _storage = storage;
             _eventCommunicator = eventCommunicator;
+            _historyLogic = new EventHistoryLogic();
         }
 
 
@@ -222,6 +225,7 @@ namespace Event.Logic
                 try
                 {
                     await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Locks, eventId, relation.WorkflowId, relation.EventId);
                     lockedEvents.Add(relation);
                 }
                 catch (Exception)
@@ -299,6 +303,7 @@ namespace Event.Logic
                 try
                 {
                     await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId);
                 }
                 catch (Exception)
                 {
@@ -352,6 +357,7 @@ namespace Event.Logic
                 try
                 {
                     await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId);
                 }
                 catch (Exception)
                 {
