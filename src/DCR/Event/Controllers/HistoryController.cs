@@ -139,7 +139,7 @@ namespace Event.Controllers
 
             localHistoryGraph = Graph.addNode(localHistory[0], localHistoryGraph);
 
-            for (var i = 1; i < localHistory.Length - 1; i++)
+            for (var i = 1; i < localHistory.Length; i++)
             {
                 localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
                 localHistoryGraph = Graph.addEdge(localHistory[i - 1], localHistory[i], localHistoryGraph);
