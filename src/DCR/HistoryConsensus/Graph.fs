@@ -96,8 +96,7 @@ module Graph =
         // Find all actions, that are not referenced in the graph.
         List.except toNodes allNodes
 
-
-    // Calculate all edges between nodes?
+    (*// Calculate all edges between nodes?
     let transitiveClosure beginningNodes graph actionType = 
         let rec transitiveClos (list:Action list) newGraph = 
             match list with
@@ -111,27 +110,24 @@ module Graph =
                                 then inner ys (addEdge (getNode graph x.Id) toNode innerGraph) (toNode::newXs)
                                 else inner (List.ofSeq <| Set.union (Set.ofList ys) (getNode innerGraph y).Edges)  innerGraph newXs
                 inner (Set.toList x.Edges) newGraph xs
-        transitiveClos beginningNodes graph
-
+        transitiveClos beginningNodes graph*)
 
     let transitiveClosureBetter beginningNodes graph actionType = 
         // Go over every node in the graph
         let rec transitiveClos (list:Action list) (accGraph:Graph) = 
             match list with
             | [] -> accGraph
-            | node::fromNodes -> innerFun (Set.toList node.Edges) fromNodes node accGraph
+            | node::fromNodes -> innerFun (getNodes graph (Set.toList node.Edges)) fromNodes node accGraph
         // With a fromNode - find add edge to all other nodes of type ActionType
         and innerFun edgeList newFromNodes fromNode (innerAccGraph:Graph) = 
             match edgeList with
             | [] -> transitiveClos newFromNodes innerAccGraph // when it has been iterated over call the first method with a new list and new graph
-            | node2::toNodes ->
-                let toNode = (getNode graph node2) // find the toNode
+            | toNode::toNodes ->
                 if toNode.Type = actionType // we only need these edges
-                then innerFun toNodes                                                               (toNode::newFromNodes)  fromNode    (addEdge fromNode toNode innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
-                else innerFun (Set.toList <| Set.union (Set.ofList toNodes)  toNode.Edges)          newFromNodes            fromNode    innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
+                then innerFun toNodes                                                               (Set.toList <| (Set.add toNode (Set.ofList newFromNodes)))  fromNode    (addEdge fromNode toNode innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
+                else innerFun (Set.toList <| Set.union (Set.ofList toNodes)  (Set.ofList (getNodes innerAccGraph (Set.toList toNode.Edges))))          newFromNodes            fromNode    innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
         
         transitiveClos beginningNodes graph
-
 
     let transitiveReduction beginningNodes graph = 
         let rec transitiveRed (list:Action list) newGraph = 
@@ -181,8 +177,7 @@ module Graph =
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool = 
         let checkID = 
-            let eventId = fst toNode.Id
-            fromNode.CounterpartEventId = eventId && eventId = toNode.CounterpartEventId
+            fromNode.CounterpartEventId = fst toNode.Id && fst fromNode.Id = toNode.CounterpartEventId
         let checkRelation fromType toType = 
             match fromType, toType with
             | CheckedConditon, ChecksConditon   -> true
@@ -217,19 +212,43 @@ module Graph =
                               mergeInnerInner list graph
         Some <| mergeInner (Map.toList combinedGraph.Nodes) combinedGraph*)
 
-
-
     let merge localGraph otherGraph =
-        let addEdgeIfHasRelation first second graph =
-            if hasRelation first second && not (Set.exists (fun id -> id = second.Id) first.Edges)
-            then addEdge first second graph
-            else graph
+        let addToUsedActions action corner = Set.add action.Id corner
+
+        let hasRelation first second corner =
+            (fst first.Id <> fst second.Id)
+                && hasRelation first second 
+                && not <| Set.contains second.Id corner
+
+        let combinedGraph = Map.fold (fun graph key value -> addNode value graph) localGraph otherGraph.Nodes
+        let combinedGraphAsSeq = Map.toSeq combinedGraph.Nodes
+
+        let findFirstRelation action corner = Seq.tryFind (fun (actionId', action') -> hasRelation action action' corner) combinedGraphAsSeq 
+
+        let edgesList,_ = 
+            Seq.foldBack (fun (actionId, action) (newEdgesList,corner) -> 
+                    match findFirstRelation action corner with
+                    | Some (actionId', action') -> ((action, action') :: newEdgesList, Set.add actionId' corner)
+                    | None -> newEdgesList,corner
+                ) (Map.toSeq combinedGraph.Nodes) ([], Set.empty)
+
+        Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode toNode graph) combinedGraph edgesList
+    
+
+    (*let merge localGraph otherGraph =
+        let addToCorner action corner = Set.add action.Id corner
+        let addEdgeIfHasRelation first second graph corner =
+            if hasRelation first second 
+                && not <| Set.contains second.Id first.Edges
+                && not <| Set.contains second.Id corner
+            then (addEdge first second graph,addToCorner second corner)
+            else (graph,corner)
 
         let combinedGraph = { Nodes = Map.fold (fun acc key value -> Map.add key value acc) localGraph.Nodes otherGraph.Nodes }
 
-        Some <| Map.foldBack (fun actionId action graph ->
-                        Map.foldBack (fun aciont1Id action1 graph' -> addEdgeIfHasRelation action action1 graph') graph.Nodes graph)
-                    combinedGraph.Nodes combinedGraph
+        Some <| fst (Map.foldBack (fun actionId action (graph, corner) ->
+                        Map.foldBack (fun aciont1Id action1 (graph', corner') -> addEdgeIfHasRelation action action1 graph' corner') graph.Nodes (graph,corner))
+                    combinedGraph.Nodes (combinedGraph,Set.empty))*)
 
     // a more functional graph
     let mergeBetter (localGraph : Graph) (otherGraph : Graph) = 
