@@ -5,7 +5,8 @@
         public int TimeStamp { get; set; }
         public string EventId { get; set; }
         public string WorkflowId { get; set; }
-        public string CounterPartId { get; set; }
+        public string CounterpartId { get; set; }
+        public int CounterpartTimeStamp { get; set; }
         public ActionType Type { get; set; }
 
         public ActionDto()
@@ -17,7 +18,8 @@
             TimeStamp = model.Id;
             EventId = model.EventId;
             WorkflowId = model.WorkflowId;
-            CounterPartId = model.CounterPartId;
+            CounterpartId = model.CounterpartId;
+            CounterpartTimeStamp = model.CounterpartTimeStamp;
             Type = model.Type;
         }
     }

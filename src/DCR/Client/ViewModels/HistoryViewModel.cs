@@ -42,11 +42,11 @@ namespace Client.ViewModels
 
         public string CounterPartId
         {
-            get { return _actionDto.CounterPartId; }
+            get { return _actionDto.CounterpartId; }
             set
             {
-                _actionDto.CounterPartId = value;
-                NotifyPropertyChanged("CounterPartId");
+                _actionDto.CounterpartId = value;
+                NotifyPropertyChanged("CounterpartId");
             }
         }
 

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Security.AccessControl;
-
-namespace Common.DTO.History
+﻿namespace Common.DTO.History
 {
     public class ActionModel
     {
         public int Id { get; set; }
         public string EventId { get; set; }
         public string WorkflowId { get; set; }
-        public string CounterPartId { get; set; }
+        public string CounterpartId { get; set; }
+        public int CounterpartTimeStamp { get; set; }
         public ActionType Type { get; set; }
 
         public ActionModel()

@@ -224,8 +224,8 @@ namespace Event.Logic
 
                 try
                 {
-                    await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Locks, eventId, relation.WorkflowId, relation.EventId);
+                    var timestamp = await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Locks, eventId, relation.WorkflowId, relation.EventId, timestamp);
                     lockedEvents.Add(relation);
                 }
                 catch (Exception)
@@ -302,8 +302,8 @@ namespace Event.Logic
                 var relation = tuple.Value;
                 try
                 {
-                    await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId);
+                    var timestamp = await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId, timestamp);
                 }
                 catch (Exception)
                 {
@@ -356,8 +356,8 @@ namespace Event.Logic
             {
                 try
                 {
-                    await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId);
+                    var timestamp = await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId, timestamp);
                 }
                 catch (Exception)
                 {

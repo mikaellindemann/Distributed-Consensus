@@ -51,7 +51,7 @@ namespace Event.Controllers
         /// <param name="eventId">The id of the Event, that caller wants to lock</param>
         [Route("events/{workflowId}/{eventId}/lock")]
         [HttpPost]
-        public async Task Lock(string workflowId, string eventId, [FromBody] LockDto lockDto)
+        public async Task<int> Lock(string workflowId, string eventId, [FromBody] LockDto lockDto)
         {
             if (!ModelState.IsValid)
             {
@@ -64,7 +64,8 @@ namespace Event.Controllers
             try
             {
                 await _lockLogic.LockSelf(workflowId, eventId, lockDto);
-                await _historyLogic.SaveSuccesfullCall(ActionType.LockedBy, eventId, workflowId, lockDto.LockOwner);
+                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.LockedBy, eventId, workflowId, lockDto.LockOwner);
+                return timestamp;
             }
             catch (ArgumentNullException)
             {
@@ -104,12 +105,13 @@ namespace Event.Controllers
         /// <param name="eventId">The id of the Event, that caller seeks to unlock</param>
         [Route("events/{workflowId}/{eventId}/lock/{senderId}")]
         [HttpDelete]
-        public async Task Unlock(string workflowId, string eventId, string senderId)
+        public async Task<int> Unlock(string workflowId, string eventId, string senderId)
         {
             try
             {
                 await _lockLogic.UnlockSelf(workflowId, eventId, senderId);
-                await _historyLogic.SaveSuccesfullCall(ActionType.UnlockedBy, eventId, workflowId, senderId);
+                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.UnlockedBy, eventId, workflowId, senderId);
+                return timestamp;
             }
             catch (ArgumentNullException)
             {

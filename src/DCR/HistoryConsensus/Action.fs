@@ -25,13 +25,13 @@ module Action =
     type Action =
         {
             Id: ActionId;
-            CounterpartEventId: EventId;
+            CounterpartId: ActionId;
             Type: ActionType;
             Edges: ActionId Set;
         }
 
     let create id counterpartId actionType edges = 
         {   Id = id; 
-            CounterpartEventId = counterpartId; 
+            CounterpartId = counterpartId; 
             Type = actionType; 
             Edges = edges}

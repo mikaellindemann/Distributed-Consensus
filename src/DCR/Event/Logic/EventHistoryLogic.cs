@@ -34,7 +34,7 @@ namespace Event.Logic
             {
                 WorkflowId = workflowId,
                 EventId = eventId,
-                CounterPartId = null
+                CounterpartId = null
             };
 
             await _storage.SaveHistory(toSave);*/
@@ -46,17 +46,19 @@ namespace Event.Logic
             return models.Select(model => new ActionDto(model));
         }
 
-        public async Task SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "")
+        public async Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "", int senderTimeStamp = -1)
         {
             var toSave = new ActionModel
             {
                 WorkflowId = workflowId,
                 EventId = eventId,
-                CounterPartId = senderId,
+                CounterpartId = senderId,
+                CounterpartTimeStamp = senderTimeStamp,
                 Type = type
             };
 
             await _storage.SaveHistory(toSave);
+            return toSave.Id;
         }
 
         public void Dispose()

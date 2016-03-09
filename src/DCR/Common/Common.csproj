@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\Event\ConditionDto.cs" />
     <Compile Include="Exceptions\EventExistsException.cs" />
     <Compile Include="Exceptions\IllegalstorageStateException.cs" />
     <Compile Include="Exceptions\LockedException.cs" />

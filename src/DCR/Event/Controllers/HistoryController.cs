@@ -109,7 +109,7 @@ namespace Event.Controllers
         {
             return Action.create(
                 new Tuple<string, int>(action.EventId, action.TimeStamp),
-                action.CounterPartId,
+                new Tuple<string, int>(action.CounterpartId, action.CounterpartTimeStamp),
                 ConvertType(action.Type),
                 new FSharpSet<Tuple<string, int>>(Enumerable.Empty<Tuple<string,int>>()) // Todo: Remember to add an edge to the resulting graph, from this action to the next.
             );

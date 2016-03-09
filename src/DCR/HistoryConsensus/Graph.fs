@@ -19,10 +19,7 @@ module Graph =
         let graph' = Map.remove node.Id graph.Nodes
         {
             Nodes = Map.map
-                        (fun id action -> { Id = id;
-                                            CounterpartEventId = action.CounterpartEventId;
-                                            Type = action.Type
-                                            Edges = Set.filter (fun id -> id <> node.Id) action.Edges })
+                        (fun id action -> { action with Edges = Set.filter (fun id -> id <> node.Id) action.Edges })
                         graph'
         }
 
@@ -142,7 +139,7 @@ module Graph =
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool =
         let checkID =
-            fromNode.CounterpartEventId = fst toNode.Id && fst fromNode.Id = toNode.CounterpartEventId
+            toNode.CounterpartId = fromNode.Id && fst toNode.Id = fst fromNode.CounterpartId
         let checkRelation fromType toType =
             match fromType, toType with
             | CheckedConditon, ChecksConditon   -> true

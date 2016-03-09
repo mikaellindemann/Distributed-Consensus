@@ -24,9 +24,9 @@ module Action =
     type Action =
         {
             Id: ActionId;
-            CounterpartEventId: EventId;
+            CounterpartId: ActionId;
             Type: ActionType;
             Edges: ActionId Set;
         }
 
-    val create : ActionId -> EventId -> ActionType -> ActionId Set -> Action
+    val create : ActionId -> ActionId -> ActionType -> ActionId Set -> Action

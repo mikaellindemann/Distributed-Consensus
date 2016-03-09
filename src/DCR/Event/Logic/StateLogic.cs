@@ -191,10 +191,10 @@ namespace Event.Logic
                         _eventCommunicator.CheckCondition(condition.Uri, condition.WorkflowId, condition.EventId,
                             eventId);
 
-                await _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId, condition.EventId);
+                await _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId, condition.EventId, cond.TimeStamp);
 
                 // If the condition-event is not executed and currently included.
-                if (!cond) return false;
+                if (!cond.Condition) return false;
             }
             return true; // If all conditions are executed or excluded.
         }
@@ -300,22 +300,22 @@ namespace Event.Logic
                 };
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
-                    await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId);
+                    var timestamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId, timestamp);
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
-                    await
+                    var timestamp = await
                         _eventCommunicator.SendIncluded(inclusion.Uri, addressDto, inclusion.WorkflowId,
                             inclusion.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Includes, eventId, workflowId, inclusion.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Includes, eventId, workflowId, inclusion.EventId, timestamp);
                 }
                 foreach (var exclusion in await _storage.GetExclusions(workflowId, eventId))
                 {
-                    await
+                    var timestamp = await
                         _eventCommunicator.SendExcluded(exclusion.Uri, addressDto, exclusion.WorkflowId,
                             exclusion.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Excludes, eventId, workflowId, exclusion.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Excludes, eventId, workflowId, exclusion.EventId, timestamp);
                 }
                 // There might have been made changes on the entity itself in another controller-call
                 // Therefore we have to reload the state from database.

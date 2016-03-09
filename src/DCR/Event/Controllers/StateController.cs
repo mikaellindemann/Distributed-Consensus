@@ -84,22 +84,22 @@ namespace Event.Controllers
 
         [Route("events/{workflowId}/{eventId}/condition/{senderId}")]
         [HttpGet]
-        public async Task<bool> GetCondition(string workflowId, string senderId, string eventId)
+        public async Task<ConditionDto> GetCondition(string workflowId, string senderId, string eventId)
         {
             try
             {
                 var included = await _logic.IsIncluded(workflowId, eventId, senderId);
                 var executed = await _logic.IsExecuted(workflowId, eventId, senderId);
 
-                await _historyLogic.SaveSuccesfullCall(ActionType.CheckedConditon, eventId, workflowId, senderId);
+                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.CheckedConditon, eventId, workflowId, senderId);
 
                 if (included && !executed)
                 {
-                    return false;
+                    return new ConditionDto {Condition = false, TimeStamp = timestamp};
                 }
 
                 //await _historyLogic.SaveSuccesfullCall("GET", "GetIncluded", eventId, workflowId);
-                return true;
+                return new ConditionDto {Condition = true, TimeStamp = timestamp};
             }
             catch (NotFoundException)
             {
@@ -215,7 +215,7 @@ namespace Event.Controllers
         /// <param name="eventId">The id of the Event, whose Included value is to be updated</param>
         [Route("events/{workflowId}/{eventId}/included/{boolValueForIncluded}")]
         [HttpPut]
-        public async Task UpdateIncluded(string workflowId, string eventId, bool boolValueForIncluded, [FromBody] EventAddressDto eventAddressDto)
+        public async Task<int> UpdateIncluded(string workflowId, string eventId, bool boolValueForIncluded, [FromBody] EventAddressDto eventAddressDto)
         {
             // Check if provided input can be mapped onto an instance of EventAddressDto
             if (!ModelState.IsValid)
@@ -229,8 +229,10 @@ namespace Event.Controllers
             try
             {
                 await _logic.SetIncluded(workflowId, eventId, eventAddressDto.Id, boolValueForIncluded);
-                await _historyLogic.SaveSuccesfullCall(boolValueForIncluded ? ActionType.IncludedBy : ActionType.ExcludedBy, 
+                var timestamp = await _historyLogic.SaveSuccesfullCall(boolValueForIncluded ? ActionType.IncludedBy : ActionType.ExcludedBy, 
                     eventId, workflowId, eventAddressDto.Id);
+
+                return timestamp;
             }
             catch (NotFoundException)
             {
@@ -269,7 +271,7 @@ namespace Event.Controllers
         /// <param name="eventId">The id of the Event, whose Pending value is to be set</param>
         [Route("events/{workflowId}/{eventId}/pending/{boolValueForPending}")]
         [HttpPut]
-        public async Task UpdatePending(string workflowId, string eventId, bool boolValueForPending, [FromBody] EventAddressDto eventAddressDto)
+        public async Task<int> UpdatePending(string workflowId, string eventId, bool boolValueForPending, [FromBody] EventAddressDto eventAddressDto)
         {
             // Check to see whether caller provided a legal instance of an EventAddressDto
             if (!ModelState.IsValid)
@@ -283,8 +285,8 @@ namespace Event.Controllers
             try
             {
                 await _logic.SetPending(workflowId, eventId, eventAddressDto.Id, boolValueForPending);
-                if (boolValueForPending)
-                    await _historyLogic.SaveSuccesfullCall(ActionType.SetPendingBy, eventId, workflowId, eventAddressDto.Id);
+                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.SetPendingBy, eventId, workflowId, eventAddressDto.Id);
+                return timestamp;
             }
             catch (ArgumentNullException)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Common.DTO.Event;
 using Common.DTO.Shared;
 using Common.Tools;
 using Event.Exceptions.EventInteraction;
@@ -47,13 +48,13 @@ namespace Event.Communicators
             
         }
 
-        public async Task<bool> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId)
+        public async Task<ConditionDto> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
 
             try
             {
-                return await HttpClient.Read<bool>($"events/{targetWorkflowId}/{targetEventId}/condition/{ownId}");
+                return await HttpClient.Read<ConditionDto>($"events/{targetWorkflowId}/{targetEventId}/condition/{ownId}");
             }
             catch (Exception)
             {
@@ -74,12 +75,12 @@ namespace Event.Communicators
             }
         }
 
-        public async Task SendPending(Uri targetEventUri, EventAddressDto lockDto, string targetWorkflowId, string targetId)
+        public async Task<int> SendPending(Uri targetEventUri, EventAddressDto lockDto, string targetWorkflowId, string targetId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
             try
             {
-                await HttpClient.Update($"events/{targetWorkflowId}/{targetId}/pending/true", lockDto);
+                return await HttpClient.Update<EventAddressDto, int>($"events/{targetWorkflowId}/{targetId}/pending/true", lockDto);
             }
             catch (Exception)
             {
@@ -88,12 +89,12 @@ namespace Event.Communicators
             
         }
 
-        public async Task SendIncluded(Uri targetEventUri, EventAddressDto lockDto, string targetWorkflowId, string targetId)
+        public async Task<int> SendIncluded(Uri targetEventUri, EventAddressDto lockDto, string targetWorkflowId, string targetId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
             try
             {
-                await HttpClient.Update($"events/{targetWorkflowId}/{targetId}/included/true", lockDto);
+                return await HttpClient.Update<EventAddressDto, int>($"events/{targetWorkflowId}/{targetId}/included/true", lockDto);
             }
             catch (Exception)
             {
@@ -102,12 +103,12 @@ namespace Event.Communicators
             
         }
 
-        public async Task SendExcluded(Uri targetEventUri, EventAddressDto lockDto, string targetWorkflowId, string targetId)
+        public async Task<int> SendExcluded(Uri targetEventUri, EventAddressDto lockDto, string targetWorkflowId, string targetId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
             try
             {
-                await HttpClient.Update($"events/{targetWorkflowId}/{targetId}/included/false", lockDto);
+                return await HttpClient.Update<EventAddressDto, int>($"events/{targetWorkflowId}/{targetId}/included/false", lockDto);
             }
             catch (Exception)
             {
@@ -115,14 +116,14 @@ namespace Event.Communicators
             }  
         }
 
-        public async Task Lock(Uri targetEventUri, LockDto lockDto, string targetWorkflowId, string targetId)
+        public async Task<int> Lock(Uri targetEventUri, LockDto lockDto, string targetWorkflowId, string targetId)
         {
             //long oldTimeout = HttpClient.HttpClient.Timeout.Ticks;
             //HttpClient.HttpClient.Timeout = new TimeSpan(0,0,10);
             HttpClient.SetBaseAddress(targetEventUri);
             try
             {
-                await HttpClient.Create($"events/{targetWorkflowId}/{targetId}/lock", lockDto);
+                return await HttpClient.Create<LockDto, int>($"events/{targetWorkflowId}/{targetId}/lock", lockDto);
             }
             catch (Exception)
             {
@@ -131,12 +132,12 @@ namespace Event.Communicators
             //HttpClient.HttpClient.Timeout = new TimeSpan(oldTimeout);
         }
 
-        public async Task Unlock(Uri targetEventUri, string targetWorkflowId, string targetId, string unlockId)
+        public async Task<int> Unlock(Uri targetEventUri, string targetWorkflowId, string targetId, string unlockId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
             try
             {
-                await HttpClient.Delete($"events/{targetWorkflowId}/{targetId}/lock/{unlockId}");
+                return await HttpClient.Delete<int>($"events/{targetWorkflowId}/{targetId}/lock/{unlockId}");
             }
             catch (Exception)
             {

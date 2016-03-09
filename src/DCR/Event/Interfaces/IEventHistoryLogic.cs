@@ -37,6 +37,6 @@ namespace Event.Interfaces
         /// <param name="eventId">>EventId of the Event, that was involved in the operation.</param>
         /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
         /// <returns></returns>
-        Task SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "");
+        Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "", int senderTimeStamp = -1);
     }
 }
