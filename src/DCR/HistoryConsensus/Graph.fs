@@ -189,6 +189,24 @@ module Graph =
                                        else endNodesFun endNodesRest (unionListWithoutDuplicates [endNode] newNeighbours) fromNode newFromNodes accGraph
         fromNodesFun beginningNodes graph
 
+    let transitiveReductionExperimental beginningNodes graph = 
+        let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
+        let neighboursNeighbour node: ActionId Set =
+            let rec inner (list:ActionId list) (set:ActionId Set) = 
+                match list with
+                | [] -> set
+                | newNode::nodes -> let newSet = Set.foldBack (fun id acc -> Set.union (getNode graph id).Edges acc) node.Edges set
+                                    inner (Set.toList <| Set.union (Set.ofList nodes) newSet) newSet
+            inner (Set.toList node.Edges) Set.empty
+        // the beginning nodes - goes over all of them -> probably egts updated from the next function.
+        let rec fromNodesFun (fromNodes:Action list) accGraph = 
+            match fromNodes with
+            | [] -> accGraph
+            | fromNode::fromNodesRest -> let neighboursNeighours = neighboursNeighbour fromNode
+                                         let transitiveEdges = Set.filter (fun edge -> neighboursNeighours.Contains edge ) fromNode.Edges
+                                         let newGraph = Set.foldBack (fun toNode acc-> removeEdge fromNode (getNode accGraph toNode) acc ) transitiveEdges graph
+                                         fromNodesFun (unionListWithoutDuplicates (getNodes newGraph (Set.toList fromNode.Edges)) fromNodesRest) newGraph
+        fromNodesFun beginningNodes graph
 
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool =
