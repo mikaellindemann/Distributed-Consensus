@@ -142,7 +142,7 @@ namespace Event.Controllers
             for (var i = 1; i < localHistory.Length; i++)
             {
                 localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
-                localHistoryGraph = Graph.addEdge(localHistory[i - 1], localHistory[i], localHistoryGraph);
+                localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
             }
 
             // HACK: We should have another way of fetching relations.

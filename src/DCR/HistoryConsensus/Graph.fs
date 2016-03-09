@@ -26,26 +26,32 @@ module Graph =
                         graph'
         }
 
-    let addEdge fromNode toNode (graph : Graph) : Graph =
-        {
-            Nodes = Map.add
-                        fromNode.Id
-                        { fromNode with Edges = Set.add toNode.Id fromNode.Edges}
-                        graph.Nodes
-        }
-
-    let removeEdge fromNode toNode (graph : Graph) : Graph =
-        {
-            Nodes = Map.add
-                        fromNode.Id
-                        { fromNode with Edges = Set.filter (fun actionId -> actionId <> toNode.Id) fromNode.Edges }
-                        graph.Nodes
-        }
-
     //Retrive a single node from an actionId.
     let getNode graph actionId = Map.find actionId graph.Nodes
+
+    let addEdge fromNodeId toNodeId (graph : Graph) : Graph =
+        let fromNode = getNode graph fromNodeId
+        {
+            Nodes = Map.add
+                        fromNodeId
+                        { fromNode with Edges = Set.add toNodeId fromNode.Edges}
+                        graph.Nodes
+        }
+
+    let removeEdge fromNodeId toNodeId (graph : Graph) : Graph =
+        let fromNode = getNode graph fromNodeId
+        {
+            
+            Nodes = Map.add
+                        fromNode.Id
+                        { fromNode with Edges = Set.filter (fun actionId -> actionId <> toNodeId) fromNode.Edges }
+                        graph.Nodes
+        }
+
+    
     //Retrieve a collection of nodes from given ActionIds.
     let getNodes graph actionIdList = List.map (getNode graph) actionIdList
+    let getNodesS graph actionIdSet = Set.map (getNode graph) actionIdSet
     //Retrieve every Action in the graph.
     let getActionsFromGraph graph = List.map snd (Map.toList graph.Nodes)
 
@@ -71,21 +77,28 @@ module Graph =
         // Find all actions, that are not referenced in the graph.
         List.except toNodes allNodes
 
-    (*// Calculate all edges between nodes?
-    let transitiveClosure beginningNodes graph actionType =
-        let rec transitiveClos (list:Action list) newGraph =
-            match list with
-            | [] -> newGraph
-            | x::xs ->
-                let rec inner edgeList innerGraph newXs =
-                    match edgeList with
-                    | [] -> transitiveClos newXs innerGraph
-                    | y::ys ->  let toNode = (getNode graph y)
-                                if(toNode.Type = actionType)
-                                then inner ys (addEdge (getNode graph x.Id) toNode innerGraph) (toNode::newXs)
-                                else inner (List.ofSeq <| Set.union (Set.ofList ys) (getNode innerGraph y).Edges)  innerGraph newXs
-                inner (Set.toList x.Edges) newGraph xs
-        transitiveClos beginningNodes graph*)
+    let transitiveClosure2 beginningNodes graph actionType =
+        let rec findNeighborOfSourceNode (sourceAction : Action) (otherAction : Action) edgesToAdd =
+            Set.fold
+                (fun edgesToAdd neighborId -> 
+                    let neighbor = getNode graph neighborId
+                    if neighbor.Type = actionType
+                    then findNeighborOfSourceNode neighbor     neighbor (Set.add (sourceAction, neighbor) edgesToAdd)
+                    else findNeighborOfSourceNode sourceAction neighbor edgesToAdd
+                ) 
+                edgesToAdd
+                otherAction.Edges
+
+        let edgesToAdd = 
+            List.fold
+                (fun newEdges beginningNode -> findNeighborOfSourceNode beginningNode beginningNode newEdges) 
+                Set.empty
+                beginningNodes
+
+        Set.fold 
+            (fun graph (sourceNode, toNode) -> addEdge sourceNode.Id toNode.Id graph)
+            graph
+            edgesToAdd
 
     let transitiveClosureBetter beginningNodes graph actionType =
         // Go over every node in the graph
@@ -99,50 +112,12 @@ module Graph =
             | [] -> transitiveClos newFromNodes innerAccGraph // when it has been iterated over call the first method with a new list and new graph
             | toNode::toNodes ->
                 if toNode.Type = actionType // we only need these edges
-                then innerFun toNodes                                                               (Set.toList <| (Set.add toNode (Set.ofList newFromNodes)))  fromNode    (addEdge fromNode toNode innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
+                then innerFun toNodes                                                               (Set.toList <| (Set.add toNode (Set.ofList newFromNodes)))  fromNode    (addEdge fromNode.Id toNode.Id innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
                 else innerFun (Set.toList <| Set.union (Set.ofList toNodes)  (Set.ofList (getNodes innerAccGraph (Set.toList toNode.Edges))))          newFromNodes            fromNode    innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
 
         transitiveClos beginningNodes graph
 
-    (*let transitiveReduction beginningNodes graph =
-        let rec transitiveRed (list:Action list) newGraph =
-            match list with
-            | [] -> newGraph
-            | x::xs ->
-                let rec inner newList newNewGraph =
-                    match xs with
-                    | [] -> transitiveRed xs newNewGraph
-                    | y::ys -> if (Set.exists (fun id -> id = y.Id) x.Edges)
-                               then
-                                   let rec innerInner newNewList newNewNewGraph =
-                                       match ys with
-                                       | [] -> inner ys newNewNewGraph
-                                       | z::zs -> if (Set.exists (fun id -> id = z.Id) y.Edges && Set.exists (fun id -> id = z.Id) x.Edges)
-                                                  then innerInner zs (removeEdge x z newNewNewGraph)
-                                                  else innerInner zs newNewNewGraph
-                                   innerInner ys newNewGraph
-                               else
-                                   inner ys newNewGraph
-                inner xs newGraph
-        transitiveRed beginningNodes graph*)
-
     let transitiveReduction beginningNodes graph =
-        let removeEdgeIfRedundant x y z graph' =
-            if (Set.exists (fun id -> id = z.Id) y.Edges && Set.exists (fun id -> id = z.Id) x.Edges)
-            then removeEdge x z graph'
-            else graph'
-
-        let rec transitiveRed (list:Action list) newGraph =
-            List.fold (fun graph' action' ->
-                List.fold (fun graph'' action'' ->
-                    if Set.contains action''.Id action'.Edges
-                    then List.fold (fun graph''' action''' -> removeEdgeIfRedundant action' action'' action''' graph''') graph'' list
-                    else graph'') graph' list) newGraph list
-
-        transitiveRed beginningNodes graph
-
-
-    let transitiveReductionBetter beginningNodes graph =
         let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
         // the beginning nodes - goes over all of them -> probably egts updated from the next function.
         let rec fromNodesFun (fromNodes:Action list) accGraph =
@@ -160,27 +135,8 @@ module Graph =
             match endNodes with
             | [] -> neighboursFun newNeighbours fromNode newFromNodes accGraph
             | endNode::endNodesRest -> if (Set.exists (fun id -> id = endNode.Id) fromNode.Edges)
-                                       then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode endNode accGraph)
+                                       then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode.Id endNode.Id accGraph)
                                        else endNodesFun endNodesRest (unionListWithoutDuplicates [endNode] newNeighbours) fromNode newFromNodes accGraph
-        fromNodesFun beginningNodes graph
-
-    let transitiveReductionExperimental beginningNodes graph = 
-        let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
-        let neighboursNeighbour node: ActionId Set =
-            let rec inner (list:ActionId list) (set:ActionId Set) = 
-                match list with
-                | [] -> set
-                | newNode::nodes -> let newSet = Set.foldBack (fun id acc -> Set.union (getNode graph id).Edges acc) node.Edges set
-                                    inner (Set.toList <| Set.union (Set.ofList nodes) newSet) newSet
-            inner (Set.toList node.Edges) Set.empty
-        // the beginning nodes - goes over all of them -> probably egts updated from the next function.
-        let rec fromNodesFun (fromNodes:Action list) accGraph = 
-            match fromNodes with
-            | [] -> accGraph
-            | fromNode::fromNodesRest -> let neighboursNeighours = neighboursNeighbour fromNode
-                                         let transitiveEdges = Set.filter (fun edge -> neighboursNeighours.Contains edge ) fromNode.Edges
-                                         let newGraph = Set.foldBack (fun toNode acc-> removeEdge fromNode (getNode accGraph toNode) acc ) transitiveEdges graph
-                                         fromNodesFun (unionListWithoutDuplicates (getNodes newGraph (Set.toList fromNode.Edges)) fromNodesRest) newGraph
         fromNodesFun beginningNodes graph
 
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
@@ -197,7 +153,6 @@ module Graph =
             | UnlockedBy, Unlocks               -> true
             | _                                 -> false
         checkID && checkRelation fromNode.Type toNode.Type
-
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
@@ -226,7 +181,7 @@ module Graph =
                     | None -> newEdgesList,corner
                 ) ([], Set.empty) combinedGraphAsSeq
 
-        Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode toNode graph) combinedGraph edgesList
+        Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode.Id toNode.Id graph) combinedGraph edgesList
 
     let cycleCheck node graph =
         let rec cycleThrough visitedNodes remaining =
