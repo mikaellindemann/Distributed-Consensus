@@ -14,20 +14,20 @@ namespace GraphOptionToGravizo
     {
         private static string ActionToString(Action.ActionType type)
         {
-            if (type.IsCheckedConditon) return "CheckedCondition";
-            if (type.IsChecksConditon)  return "ChecksCondition";
-            if (type.IsExcludedBy)      return "ExcludedBy";
-            if (type.IsExcludes)        return "Excludes";
-            if (type.IsExecuteFinish)   return "ExecuteFinish";
-            if (type.IsExecuteStart)    return "ExecuteStart";
-            if (type.IsIncludedBy)      return "IncludedBy";
-            if (type.IsIncludes)        return "Includes";
-            if (type.IsLockedBy)        return "LockedBy";
-            if (type.IsLocks)           return "Locks";
-            if (type.IsSetPendingBy)    return "SetPendingBy";
-            if (type.IsSetsPending)     return "SetsPending";
-            if (type.IsUnlockedBy)      return "UnlockedBy";
-            if (type.IsUnlocks)         return "Unlocks";
+            if (type.IsCheckedConditon) return "CheckedCondition\"";
+            if (type.IsChecksConditon)  return "ChecksCondition\"";
+            if (type.IsExcludedBy)      return "ExcludedBy\"";
+            if (type.IsExcludes)        return "Excludes\"";
+            if (type.IsExecuteFinish)   return "ExecuteFinish\",style=filled,fillcolor=green";
+            if (type.IsExecuteStart)    return "ExecuteStart\"";
+            if (type.IsIncludedBy)      return "IncludedBy\"";
+            if (type.IsIncludes)        return "Includes\"";
+            if (type.IsLockedBy)        return "LockedBy\"";
+            if (type.IsLocks)           return "Locks\"";
+            if (type.IsSetPendingBy)    return "SetPendingBy\"";
+            if (type.IsSetsPending)     return "SetsPending\"";
+            if (type.IsUnlockedBy)      return "UnlockedBy\"";
+            if (type.IsUnlocks)         return "Unlocks\"";
 
             throw new ArgumentException("Unknown type", nameof(type));
         }
@@ -52,7 +52,7 @@ namespace GraphOptionToGravizo
                     action =>
                         new
                         {
-                            ActionString = $"{action.Id.Item2}[label=\"{action.Id.Item1}, {ActionToString(action.Type)}\"];",
+                            ActionString = $"{action.Id.Item2}[label=\"{action.Id.Item1}, {ActionToString(action.Type)}];",
                             EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item2}->{edge.Item2};")
                         });
 
