@@ -248,3 +248,10 @@ module Graph =
                 ) ([], Set.empty) combinedGraphAsSeq
 
         Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode toNode graph) combinedGraph edgesList 
+
+    let cycleCheck (node:Action) graph =
+        let rec cycleThrough (visitedNodes : ActionId list) (restNodes: Action list) : bool=
+            match restNodes with
+            | [] -> true
+            | action::nodes -> if (List.isEmpty <| (List.where (fun visitedId -> visitedId = action.Id) visitedNodes)) then cycleThrough (action.Id::visitedNodes) (nodes@(getNodes graph (Set.toList node.Edges))) else false
+        cycleThrough [node.Id] (getNodes graph (Set.toList node.Edges))
