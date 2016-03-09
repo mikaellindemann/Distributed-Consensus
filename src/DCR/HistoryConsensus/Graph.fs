@@ -168,6 +168,7 @@ module Graph =
 
 
     let transitiveReductionBetter beginningNodes graph = 
+        let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
         // the beginning nodes - goes over all of them -> probably egts updated from the next function.
         let rec fromNodesFun (fromNodes:Action list) accGraph = 
             match fromNodes with
@@ -178,14 +179,14 @@ module Graph =
             match neighbours with
             | [] -> fromNodesFun newFromNodes accGraph
             | neighbour::neighboursRest -> 
-                endNodesFun (getNodes accGraph (Set.toList neighbour.Edges)) neighboursRest fromNode (neighbour::newFromNodes) accGraph
+                endNodesFun (getNodes accGraph (Set.toList neighbour.Edges)) neighboursRest fromNode (unionListWithoutDuplicates [neighbour] newFromNodes) accGraph
         // Goes over all the neighbours of the neighbour in the previous function. -> If there is an edge from fromNode to endNode remove it. Otherwise add the endNode to neighbours in the previous function.
         and endNodesFun (endNodes:Action list) (newNeighbours:Action list) (fromNode:Action) (newFromNodes:Action list) (accGraph:Graph) : Graph =
             match endNodes with 
             | [] -> neighboursFun newNeighbours fromNode newFromNodes accGraph
             | endNode::endNodesRest -> if (Set.exists (fun id -> id = endNode.Id) fromNode.Edges)
                                        then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode endNode accGraph) 
-                                       else endNodesFun endNodesRest (endNode::newNeighbours) fromNode newFromNodes accGraph
+                                       else endNodesFun endNodesRest (unionListWithoutDuplicates [endNode] newNeighbours) fromNode newFromNodes accGraph
         fromNodesFun beginningNodes graph
 
 
