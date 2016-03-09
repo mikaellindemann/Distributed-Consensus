@@ -1,48 +1,44 @@
 ﻿module GraphTests
 
 open NUnit.Framework
+open FsUnit
+
 open HistoryConsensus.Graph
 open HistoryConsensus.Action
-open NUnitRunner
 
 [<TestFixture>]
 type GraphTests() = 
+    let testAction = {
+            Id = ("Test", 1);
+            CounterpartId = ("CounterpartTest", 1);
+            Type = ActionType.LockedBy;
+            Edges = Set.ofList [("2", 2); ("3", 3); ("4", 4)]
+        }
 
     [<Test>]
-    member g.testAddNode() = 
+    member g.``Add node to an empty map`` () = 
         let testGraph = {
             Nodes = Map.empty
         }
 
-        let testAction = {
-            Id = ("Test", 1);
-            CounterpartEventId = "CounterpartTest";
-            Type = ActionType.LockedBy;
-            Edges = Set.empty
-        }
-
         let result = addNode testAction testGraph
-        Assert.IsTrue (Map.forall (fun a v -> a = testAction.Id && v = testAction) result.Nodes)
+        let actual =  Map.find ("Test", 1) result.Nodes
+        actual |> should equal testAction
 
     [<Test>]
-    member g.testAddNodeThatAlreadyExists() = 
+    member g.``Add node that already exists, and verify that edges are added to existing`` () = 
         let testGraph = {
             Nodes = Map.ofList 
                 [(("Test", 1), {
                     Id = ("Test", 1);
-                    CounterpartEventId = "CounterpartTest";
+                    CounterpartId = ("CounterpartTest", 1);
                     Type = ActionType.LockedBy;
                     Edges = Set.ofList [("1", 1)]
                 })]
         }
 
-        let testAction = {
-            Id = ("Test", 1);
-            CounterpartEventId = "CounterpartTest";
-            Type = ActionType.LockedBy;
-            Edges = Set.ofList [("2", 2); ("3", 3); ("4", 4)]
-        }
-
         let result = addNode testAction testGraph
-        Assert.IsTrue (Map.forall (fun a v -> a = testAction.Id && v.Type = testAction.Type && v.CounterpartEventId = testAction.CounterpartEventId) result.Nodes)
-        Assert.IsTrue ((Map.find ("Test", 1) result.Nodes).Edges = Set.ofList [("1", 1); ("2", 2); ("3", 3); ("4", 4)])
+        let expected = { testAction with Edges = Set.ofList [("1", 1); ("2", 2); ("3", 3); ("4", 4)] }
+
+        let actual =  Map.find ("Test", 1) result.Nodes
+        actual |> should equal expected
