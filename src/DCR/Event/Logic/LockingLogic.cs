@@ -286,10 +286,20 @@ namespace Event.Logic
                 }
             }
 
+            var me = new RelationToOtherEventModel
+            {
+                WorkflowId = workflowId,
+                EventId = eventId,
+                Uri = await _storage.GetUri(workflowId, eventId)
+            };
+            if (!eventsToBeUnlockedSorted.ContainsKey(me.EventId))
+            {
+                eventsToBeUnlockedSorted.Add(me.EventId, me);
+            }
+
             var b = await UnlockList(eventsToBeUnlockedSorted, eventId);
             
-            
-            await _storage.ClearLock(workflowId, eventId);
+            //await _storage.ClearLock(workflowId, eventId);
             
             return b;
         }
