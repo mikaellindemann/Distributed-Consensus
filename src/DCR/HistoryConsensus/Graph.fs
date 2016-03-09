@@ -151,10 +151,56 @@ module Graph =
             | _                                 -> false
         checkID && checkRelation fromNode.Type toNode.Type
 
+    let collapse (graph : Graph) =
+        let createMapForSingleExecution actions newActionId map = 
+            Set.fold (fun map action -> Map.add action.Id newActionId map) map actions
+
+        let findSuccessorOnEvent action =
+            if Set.isEmpty action.Edges
+            then None
+            else
+                Some <| getNode graph (Seq.find (fun (neighborEventId,_) -> (fst action.Id) = neighborEventId) action.Edges)
+
+
+        let rec findSingleExecution action result =
+            let newResult = (Set.add action result)
+            if action.Type = ExecuteFinish
+            then newResult
+            else 
+                match findSuccessorOnEvent action with
+                | None -> newResult
+                | Some successor -> findSingleExecution successor newResult
+
+        let startExecutions = 
+            Map.fold (fun set _ action -> Set.add action set)
+                Set.empty
+                (Map.filter (fun _ action -> action.Type = ExecuteStart) graph.Nodes) 
+
+        let mapOfCollapsedExecutions =
+            let uncollapsed = Set.map (fun startAction -> startAction.Id, findSingleExecution startAction Set.empty) startExecutions
+            Set.fold 
+                (fun map (startActionId,execution) -> createMapForSingleExecution execution startActionId map)
+                Map.empty
+                uncollapsed
+
+        let getEdgesThatIsntYourself actionId (newActionId : ActionId) map =
+            let action = getNode graph actionId
+            let newIds = Set.map (fun oldId -> Map.find oldId map) action.Edges
+            Set.remove newActionId newIds
+
+        Map.fold 
+            (fun newGraph oldId newId ->
+                let edgeSet = getEdgesThatIsntYourself oldId newId mapOfCollapsedExecutions // Todo, calculate this set of edges from oldId excluding events in the same event.
+                let action = Action.create newId newId ActionType.ExecuteFinish edgeSet
+                addNode action newGraph)
+            empty
+            mapOfCollapsedExecutions
+
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let beginningNodes = getBeginningNodes graph
         let graphWithTransClos = transitiveClosureBetter beginningNodes graph actionType
-        let filteredGraph = Map.foldBack (fun actionId action graph -> if action.Type = actionType then graph else removeNode action graph) graphWithTransClos.Nodes graphWithTransClos
+        let collapsedExecutions = collapse graphWithTransClos
+        let filteredGraph = Map.foldBack (fun actionId action graph -> if action.Type = actionType then graph else removeNode action graph) collapsedExecutions.Nodes collapsedExecutions
         let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction
 
