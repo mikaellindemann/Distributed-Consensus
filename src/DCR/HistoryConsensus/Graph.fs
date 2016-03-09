@@ -213,21 +213,6 @@ module Graph =
         let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
         transReduction
 
-    (*let merge (localGraph : Graph) (otherGraph : Graph) = 
-        let combinedGraph = Map.foldBack (fun actionId action graph -> addNode action graph) otherGraph.Nodes localGraph
-        
-        let rec mergeInner (list:(ActionId*Action) list) graph = 
-            match list with
-            | [] -> graph
-            | (xId,xa)::xs -> let rec mergeInnerInner innerList innerGraph = 
-                                match innerList with 
-                                | [] -> mergeInner xs innerGraph
-                                | (yId,ya)::ys -> if (hasRelation xa ya && not (Set.exists (fun id -> id = yId) xa.Edges)) 
-                                                  then mergeInnerInner ys (addEdge xa ya innerGraph)
-                                                  else mergeInnerInner ys innerGraph
-                              mergeInnerInner list graph
-        Some <| mergeInner (Map.toList combinedGraph.Nodes) combinedGraph*)
-
     let merge localGraph otherGraph =
         let addToUsedActions action corner = Set.add action.Id corner
 
