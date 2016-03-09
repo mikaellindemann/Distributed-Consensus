@@ -19,7 +19,7 @@ namespace GraphOptionToGravizo
             if (type.IsExcludedBy)      return "ExcludedBy\"";
             if (type.IsExcludes)        return "Excludes\"";
             if (type.IsExecuteFinish)   return "ExecuteFinish\",style=filled,fillcolor=green";
-            if (type.IsExecuteStart)    return "ExecuteStart\"";
+            if (type.IsExecuteStart)    return "ExecuteStart\",style=filled,fillcolor=red";
             if (type.IsIncludedBy)      return "IncludedBy\"";
             if (type.IsIncludes)        return "Includes\"";
             if (type.IsLockedBy)        return "LockedBy\"";
