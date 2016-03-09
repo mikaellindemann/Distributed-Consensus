@@ -15,31 +15,6 @@ module Graph =
         else
             { Nodes = Map.add node.Id node graph.Nodes }
 
-    (*///Add a node to the Action graph. 
-    ///If the node already exists, add the edges of the node to the existing node in the graph.
-    let addNode node graph = 
-        let existsInGraph n = Map.containsKey n graph.Nodes
-
-        //Convert lists to Sets, union sets and convert back in order to only add not present elements.
-        let addToListIfNotPresent toAdd existing = 
-            Set.toList (Set.union <| Set.ofList toAdd <| Set.ofList existing)
-
-        //Retrieve an existing node Id from the graph and add the edges from the given node to the one 
-        //in the graph.
-        let findAndAdd n = 
-            let inGraph = Map.find n.Id graph.Nodes
-            let added = addToListIfNotPresent n.Edges inGraph.Edges
-            let inGraph' = { inGraph with Edges = added }
-            Map.add inGraph'.Id inGraph' graph.Nodes
-
-        //If the node does not exist already, add it to the graph.
-        //If it does exist, add edges from the given node to the existing node.
-        let edges' = 
-            if not <| existsInGraph node.Id 
-            then Map.add node.Id node graph.Nodes
-            else findAndAdd node
-        { Nodes = edges' }*)
-
     let removeNode node (graph : Graph) : Graph =
         let graph' = Map.remove node.Id graph.Nodes
         { 
