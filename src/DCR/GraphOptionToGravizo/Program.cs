@@ -12,42 +12,76 @@ namespace GraphOptionToGravizo
 {
     public class Program
     {
-        private static string ActionToString(Action.ActionType type)
-        {
-            if (type.IsCheckedConditon) return "CheckedCondition\"";
-            if (type.IsChecksConditon)  return "ChecksCondition\"";
-            if (type.IsExcludedBy)      return "ExcludedBy\"";
-            if (type.IsExcludes)        return "Excludes\"";
-            if (type.IsExecuteFinish)   return "ExecuteFinish\",style=filled,fillcolor=green";
-            if (type.IsExecuteStart)    return "ExecuteStart\",style=filled,fillcolor=red";
-            if (type.IsIncludedBy)      return "IncludedBy\"";
-            if (type.IsIncludes)        return "Includes\"";
-            if (type.IsLockedBy)        return "LockedBy\"";
-            if (type.IsLocks)           return "Locks\"";
-            if (type.IsSetPendingBy)    return "SetPendingBy\"";
-            if (type.IsSetsPending)     return "SetsPending\"";
-            if (type.IsUnlockedBy)      return "UnlockedBy\"";
-            if (type.IsUnlocks)         return "Unlocks\"";
-
-            throw new ArgumentException("Unknown type", nameof(type));
-        }
-
         public static void Main(string[] args)
         {
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: GraphOptionToGravizo FileToRead [FileToWrite]");
+                Console.WriteLine("\tIf no FileToWrite is supplied, temporary files will be created and deleted.");
+                Console.WriteLine("\tIf FileToWrite is specified, the files will be created and stored on the disk.");
+                return;
+            }
+
+            if (!File.Exists(args[0]))
+            {
+                Console.WriteLine("The specified in-file does not exist!");
                 return;
             }
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
                 new TypeConverterAttribute(typeof(TupleConverter)));
-            var file = args[0];
-            var json = File.ReadAllText(file);
 
-            var graph = JsonConvert.DeserializeObject<FSharpOption<Graph.Graph>>(json).Value.Nodes;
+            var graph = JsonConvert.DeserializeObject<FSharpOption<Graph.Graph>>(File.ReadAllText(args[0])).Value;
 
-            var gravizoGraph = graph.Select(kvPair => kvPair.Value)
+            string randomFile = null;
+            var dotFileName = args.Length >= 2 ? args[1] : randomFile = Path.GetTempFileName();
+
+            using (TextWriter writer = new StreamWriter(File.OpenWrite(dotFileName)))
+            {
+                WriteGraphToDotFile(graph, writer);
+            }
+
+            try
+            {
+                var process = Process.Start("dot", $"-Kdot -Tpdf -O {dotFileName}");
+                if (process != null) process.WaitForExit();
+                else throw new Exception();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("If you had Graphviz installed in path the produced graph would have been displayed!");
+                Console.Write("Press any key to exit...");
+                Console.Read();
+                return;
+            }
+            ShowPdf($"{dotFileName}.pdf", randomFile);
+        }
+
+        private static string ActionToString(Action.ActionType type)
+        {
+            if (type.IsCheckedConditon) return "CheckedCondition\"";
+            if (type.IsChecksConditon) return "ChecksCondition\"";
+            if (type.IsExcludedBy) return "ExcludedBy\"";
+            if (type.IsExcludes) return "Excludes\"";
+            if (type.IsExecuteFinish) return "ExecuteFinish\",style=filled,fillcolor=green";
+            if (type.IsExecuteStart) return "ExecuteStart\",style=filled,fillcolor=red";
+            if (type.IsIncludedBy) return "IncludedBy\"";
+            if (type.IsIncludes) return "Includes\"";
+            if (type.IsLockedBy) return "LockedBy\"";
+            if (type.IsLocks) return "Locks\"";
+            if (type.IsSetPendingBy) return "SetPendingBy\"";
+            if (type.IsSetsPending) return "SetsPending\"";
+            if (type.IsUnlockedBy) return "UnlockedBy\"";
+            if (type.IsUnlocks) return "Unlocks\"";
+
+            throw new ArgumentException("Unknown type", nameof(type));
+        }
+
+        private static void WriteGraphToDotFile(Graph.Graph graph, TextWriter writer)
+        {
+            var map = graph.Nodes;
+            var gravizoGraph = map.Select(kvPair => kvPair.Value)
                 .Select(
                     action =>
                         new
@@ -56,42 +90,27 @@ namespace GraphOptionToGravizo
                             EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item2}->{edge.Item2};")
                         });
 
-            TextWriter writer;
-            if (args.Length >= 2)
-            {
-                var outStream = File.OpenWrite(args[1]);
-                writer = new StreamWriter(outStream);
-            }
-            else
-            {
-                writer = Console.Out;
-            }
             writer.WriteLine("digraph G {");
             foreach (var element in gravizoGraph)
             {
-                writer.WriteLine(element.ActionString);
+                writer.Write($"\t{element.ActionString}");
                 foreach (var edgesString in element.EdgesStrings)
                 {
-                    writer.WriteLine(edgesString);
+                    writer.Write($"{edgesString}");
                 }
+                writer.WriteLine();
             }
             writer.WriteLine("}");
+        }
 
-            writer.Flush();
-            writer.Close();
-
-            if (args.Length >= 2)
+        private static void ShowPdf(string fileToShow, string fileToDelete)
+        {
+            var pdfProcess = Process.Start(fileToShow);
+            if (fileToDelete != null && pdfProcess != null)
             {
-                try
-                {
-                    Process.Start("gvedit", args[1]);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("If you had Graphviz installed in path, GVEdit would have launched now!");
-                    Console.Write("Press any key to exit...");
-                    Console.Read();
-                }
+                pdfProcess.WaitForExit();
+                File.Delete(fileToDelete);
+                File.Delete($"{fileToDelete}.pdf");
             }
         }
     }
