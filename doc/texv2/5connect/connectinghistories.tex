@@ -2,5 +2,26 @@
 \chapter{Connecting Histories} % Måske bedre navn. Dette er lidt for Nokia.
 	% Happens before, Transitive Closure, Transitive Reduction, Collapsing, Filtering, No cycles in history
 	\section{Analysis} % Giv bedre navn
+	In order to build a history for the events reachable in the system, local histories for connected events have to be connected somehow in order to enable finding a global history. 
+	
+	Using the concept of happens-before relations helps determining what events (or executions of events) have happened before others. 
+	
+	The individual actions that have happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$. 
+	Futhermore edges can be created between actions on two different events, if $A$ is registered as sent on event $a$ and is registered as received on event $b$.
+	
+	The concepts of transitivity, irreflexivity and antisymmetry also apply to the happens-before relation. That is if $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$ (transitivity), $A \not\rightarrow A$ (irreflexivity) and if $A \not\equiv B$ and $A \rightarrow B$ then $B \not\rightarrow A$ (antisymmetry).
+	
+	Using the representation of history detailed in \ref{chap:representing-a-history} it is possible to create a graph of happens-before relations.
+	
+	% TODO: Transitive closure
+	% TODO: Transitive reduction
+	% TODO: Collapsing
+	
+	It is necessary to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
+	
+	% TODO: No cycles
 	\section{Implementation} % Giv bedre navn
+	The implementation of determining happens-before relations works by ...
+	
 	\section{Discussion} % Giv bedre navn
+	
