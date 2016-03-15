@@ -11,32 +11,13 @@
 	\clearpage
 	\tableofcontents
 	\clearpage
-%	\chapter{Introduction}
-%		\section{History?}
-	\chapter{Theory}
-		\section{Dynamic Condition Response Graphs}
-		\section{Distributed Systems}
-			\subsection{Consensus}
-	\chapter{Problem Definition} % Husk overgang med amerikansk lærebogsafsnit
-	\chapter{Representing a History}
-		% Logs, persist, retrieve, representing, ordering
-		\section{Analysis} % Giv bedre navn
-		\section{Implementation} % Giv bedre navn
-		\section{Discussion} % Giv bedre navn
-	\chapter{Connecting Histories} % Måske bedre navn. Dette er lidt for Nokia.
-		% Happens before, Transitive Closure, Transitive Reduction, Collapsing, Filtering, No cycles in history
-		\section{Analysis} % Giv bedre navn
-		\section{Implementation} % Giv bedre navn
-		\section{Discussion} % Giv bedre navn
-	\chapter{Gathering of Distributed History}
-		% Produce, cycle detection (trace), reachability, timing issues (two related fetches doesn't always return the same information)
-		\section{Analysis} % Giv bedre navn
-		\section{Implementation} % Giv bedre navn
-		\section{Discussion} % Giv bedre navn
-	\chapter{Consensus of History in Distributed DCR Graphs}
-		% Malicious events, treregulære DCR grafer og hvorfor DCR grafer ikke typisk er dette, elections
-		\section{Analysis} % Giv bedre navn
-		\section{Implementation} % Giv bedre navn
-		\section{Discussion} % Giv bedre navn
-	\chapter{Conclusion}
+	\include{1introduction/introduction}
+	\include{2theory/theory}
+	\include{3problemdefinition/problemdefinition}
+	\include{4local/representingahistory} %Mikael
+	\include{5connect/connectinghistories} %Fischer
+	\include{6global/gathering} %Wind
+	\include{7consensus/historyindcr}
+	\include{8conclusion/conclusion}
+
 \end{document}
