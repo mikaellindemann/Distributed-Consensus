@@ -1,6 +1,51 @@
 % !TeX root = ../DistributedConsensus.tex
 \chapter{Gathering of Distributed History}
 	% Produce, cycle detection (trace), reachability, timing issues (two related fetches doesn't always return the same information)
+	We now examn what implications it have for the creation of the workflow if a single event is not able to contact every other event in the DCR graph, as well as how this can be handled.
+	
 	\section{Analysis} % Giv bedre navn
-	\section{Implementation} % Giv bedre navn
-	\section{Discussion} % Giv bedre navn
+	If each event only knows a subset of the other events of a workflow, then simply merging the histories of that subset of neighbours will not create a complete history of what has happened up until that moment in time. Furthermore the history will be less precise since information and happen before relations persisted on events not in the neighbouring set of events, but with connections to those events, are not taken into account / omitted.
+	
+	Because of these problems an algorithm which is able to gather information from the entire workflow without knowing all the nodes is introduced. Such an algorithm needs to be measured in its ability to reach most events in the graph, as well as its ability to handle cycles. 
+	
+	\subsection{Produce algorithm}
+	Given a DCR graph where all events are not reachable from the starting event, the algorithm should fetch and merge the histories of each event in the graph into one history.
+	
+	This is accomplished by recursively contacting neighbouring events and asking them for their history while stitching the neighbours' history with its own history. To handle cycles, the use of a trace of previously contacted events is send from each event to the next.
+	
+	\newpar The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
+	The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. 
+	
+	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history their history with the ID of the event appended to the \texttt{request trace}. 
+	
+	\subsubsection*{Implementation}
+	\begin{algorithmic}
+		\State Event receives request for history with a \texttt{request trace}, $T$.
+		\State Event has internal \texttt{wait for}, $W$
+		\State
+		\State $W\gets W::$ reachable events \Comment Add all reachable events to \texttt{wait for}.
+		\If {$W=\emptyset$}
+		\Return own history
+		\Else
+		\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$. Cycles avoided.
+		\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
+		\State
+		\ForAll {$w$ in $W$} 
+		\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
+		\EndFor
+		\State wait for receiving histories
+		\State stitch received histories with own history
+		\State
+		\Return stitched histories
+		\EndIf
+	\end{algorithmic}
+	
+	This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
+	
+	\subsubsection*{Correctness}
+	
+	
+	
+	\subsubsection{Performance}
+	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This situation occurs when all events have relations to all other events in the graph. Realistically though this situation will rarely occur since DCR graphs \todo[inline]{argumenter}
+	
