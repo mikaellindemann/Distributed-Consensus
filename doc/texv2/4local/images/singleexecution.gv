@@ -1,0 +1,8 @@
+digraph G {
+	3[label="ReadGasmeter, ExecuteStart",style=filled,fillcolor=red];3->4;
+	4[label="ReadGasmeter, LockedBy"];4->5;
+	5[label="ReadGasmeter, Locks"];5->6;
+	6[label="ReadGasmeter, UnlockedBy"];6->7;
+	7[label="ReadGasmeter, Unlocks"];7->8;
+	8[label="ReadGasmeter, ExecuteFinish",style=filled,fillcolor=green];
+}
