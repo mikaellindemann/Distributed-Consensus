@@ -1,7 +1,7 @@
 % !TeX root = DistributedConsensus.tex
 \chapter{Connecting Histories} % Måske bedre navn. Dette er lidt for Nokia.
 	% Happens before, Transitive Closure, Transitive Reduction, Collapsing, Filtering, No cycles in history
-	\section{Analysis} % Giv bedre navn
+	\section{Creating Distributed  History} % Giv bedre navn
 	In order to build a history for the events reachable in the system, local histories for connected events have to be connected somehow in order to enable finding a global history. 
 	
 	Using the concept of happens-before relations helps determining what events (or executions of events) have happened before others. 
@@ -20,8 +20,8 @@
 	It is necessary to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
 	
 	% TODO: No cycles
-	\section{Implementation} % Giv bedre navn
-	The implementation of determining happens-before relations works by ...
+	\section{Connecting Histories using Algorithms} % Giv bedre navn
+	The implementation of determining happens-before relations works by looking at every node in the history graph, creating an edge between nodes of the given type wishing to be found, and adding the node the edge is going to to the list of nodes to check. The algorithm is implemented in such a way that the iteration through the history graph is a Breath First Search. 
 	
-	\section{Discussion} % Giv bedre navn
+	\section{Correctness of the Implementation} % Giv bedre navn
 	
