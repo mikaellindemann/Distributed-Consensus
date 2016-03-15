@@ -20,7 +20,7 @@
 %%   \import{<path to file>}{<filename>.pdf_tex}
 %% Alternatively, one can specify
 %%   \graphicspath{{<path to file>/}}
-%% 
+%%
 %% For more information, please see info/svg-inkscape on CTAN:
 %%   http://tug.ctan.org/tex-archive/info/svg-inkscape
 %%
@@ -49,18 +49,18 @@
   \global\let\svgscale\undefined%
   \makeatother%
   \begin{picture}(1,1.62903226)%
-    \put(0,0){\includegraphics[width=\unitlength,page=1]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{singleexecution.pdf}}%
     \put(0.49999596,1.52402994){\makebox(0,0)[b]{\smash{ReadGasmeter, ExecuteStart}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=2]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{singleexecution.pdf}}%
     \put(0.49999596,1.23426819){\makebox(0,0)[b]{\smash{ReadGasmeter, LockedBy}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=3]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{singleexecution.pdf}}%
     \put(0.49999596,0.9445065){\makebox(0,0)[b]{\smash{ReadGasmeter, Locks}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=4]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{singleexecution.pdf}}%
     \put(0.49999596,0.65474476){\makebox(0,0)[b]{\smash{ReadGasmeter, UnlockedBy}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=5]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{singleexecution.pdf}}%
     \put(0.49999596,0.36498301){\makebox(0,0)[b]{\smash{ReadGasmeter, Unlocks}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=6]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{singleexecution.pdf}}%
     \put(0.49999596,0.07522125){\makebox(0,0)[b]{\smash{ReadGasmeter, ExecuteFinish}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=7]{4local/images/singleexecution.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{singleexecution.pdf}}%
   \end{picture}%
 \endgroup%
