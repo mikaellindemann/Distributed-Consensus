@@ -1,0 +1,90 @@
+%% Creator: Inkscape 0.91_64bit, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file '3executionswithtransitive.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{216bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,5.87037037)%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{3executionswithtransitive.pdf}}%
+    \put(0.63193523,5.75138911){\makebox(0,0)[b]{\smash{A Execute Start}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{3executionswithtransitive.pdf}}%
+    \put(0.63193523,5.41805578){\makebox(0,0)[b]{\smash{A Locked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{3executionswithtransitive.pdf}}%
+    \put(0.63193523,5.08472245){\makebox(0,0)[b]{\smash{A Locks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{3executionswithtransitive.pdf}}%
+    \put(0.63193523,4.75138883){\makebox(0,0)[b]{\smash{A Unlocked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{3executionswithtransitive.pdf}}%
+    \put(0.63193523,4.4180555){\makebox(0,0)[b]{\smash{A Unlocks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{3executionswithtransitive.pdf}}%
+    \put(0.63193523,4.08472217){\makebox(0,0)[b]{\smash{A Execute End}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{3executionswithtransitive.pdf}}%
+    \put(0.3958255,3.75138883){\makebox(0,0)[b]{\smash{A Execute Start}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{3executionswithtransitive.pdf}}%
+    \put(0.6273056,2.08472217){\makebox(0,0)[b]{\smash{A Execute End}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{3executionswithtransitive.pdf}}%
+    \put(0.38193661,3.4180555){\makebox(0,0)[b]{\smash{A Locked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{3executionswithtransitive.pdf}}%
+    \put(0.37267735,3.08472217){\makebox(0,0)[b]{\smash{A Locks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{3executionswithtransitive.pdf}}%
+    \put(0.36804772,2.75138883){\makebox(0,0)[b]{\smash{A Unlocked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{3executionswithtransitive.pdf}}%
+    \put(0.40971439,2.4180555){\makebox(0,0)[b]{\smash{A Unlocks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{3executionswithtransitive.pdf}}%
+    \put(0.40508476,1.75138883){\makebox(0,0)[b]{\smash{A Execute Start}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=14]{3executionswithtransitive.pdf}}%
+    \put(0.64582412,0.08472222){\makebox(0,0)[b]{\smash{A Execute End}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=15]{3executionswithtransitive.pdf}}%
+    \put(0.40045513,1.4180555){\makebox(0,0)[b]{\smash{A Locked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=16]{3executionswithtransitive.pdf}}%
+    \put(0.39119587,1.08472224){\makebox(0,0)[b]{\smash{A Locks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=17]{3executionswithtransitive.pdf}}%
+    \put(0.38656624,0.7513889){\makebox(0,0)[b]{\smash{A Unlocked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=18]{3executionswithtransitive.pdf}}%
+    \put(0.42823291,0.41805557){\makebox(0,0)[b]{\smash{A Unlocks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=19]{3executionswithtransitive.pdf}}%
+  \end{picture}%
+\endgroup%
