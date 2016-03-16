@@ -1,0 +1,8 @@
+% !TeX root = ../DistributedConsensus.tex
+% !TeX spellcheck = en_GB
+\chapter{Problem Definition} % Husk overgang med amerikansk lærebogsafsnit
+	Given a distributed implementation of DCR Graphs, the purpose is to extract an order of execution in the instance of a workflow. Furthermore the computers running the events should agree upon this order of execution.
+	
+	\newpar
+	In \autoref{chap:theory} relevant theory needed in the rest of the report is described. This includes theory of DCR Graphs as well as certain aspects of Distributed Systems. In \autoref{chap:representing-a-history} we describe a simplified problem, where the DCR Graph contains a single event. It is discussed how to represent \texttt{Action}s and \texttt{History}. In \autoref{chap:connecting-histories} the problem is extended by adding neighbouring events to the starting event in the workflow. In \autoref{chap:gathering-distributed-history} it is discussed how we can gather histories of all events in a connected DCR Graph, and which requirements it poses on the workflow. In \autoref{chap:consensusindcr} it is elaborated how to reach consensus on a given resulting history, as well as how to cope with events emitting erroneous data.
+	
