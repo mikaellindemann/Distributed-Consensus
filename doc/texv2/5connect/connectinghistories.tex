@@ -83,7 +83,10 @@
 	A subgraph of a given graph that has the same reachability but as few edges as possible, a minimum equivalent graph, is therefore desired. Finding this is possible by doing transitive reduction on the original graph, which then results in the minimum equivalent graph. 
 	Therefore, if there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
 	
-
+	% TODO: Collapsing
+	
+	% Filtering:
+	It is necessary to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
 	
 	% TODO: No cycles
 	\section{Connecting Histories using Algorithms} % Giv bedre navn
