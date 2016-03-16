@@ -26,18 +26,18 @@
 		\State
 		\State $W\gets W::$ reachable events \Comment Add all reachable events to \texttt{wait for}.
 		\If {$W=\emptyset$}
-		\Return own history
+			\Return own history
 		\Else
-		\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$. Cycles avoided.
-		\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
-		\State
-		\ForAll {$w$ in $W$} 
-		\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
-		\EndFor
-		\State wait for receiving histories
-		\State stitch received histories with own history
-		\State
-		\Return stitched histories
+			\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$. Cycles avoided.
+			\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
+			\State
+			\ForAll {$w$ in $W$} 
+				\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
+			\EndFor
+			\State wait for receiving histories
+			\State stitch received histories with own history
+			\State
+			\Return stitched histories
 		\EndIf
 	\end{algorithmic}
 	
