@@ -25,9 +25,9 @@
 	The individual actions that have happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$. 
 	Futhermore edges can be created between actions on two different events, if $A$ is registered as sent on event $a$ and is registered as received on event $b$.
 	
-	The concepts of transitivity, irreflexivity and antisymmetry also apply to happens-before relations. That is if $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$ (transitivity), $A \not\rightarrow A$ (irreflexivity) and if $A \not\equiv B$ and $A \rightarrow B$ then $B \not\rightarrow A$ (antisymmetry).
+	The concepts of transitivity, irreflexivity and antisymmetry also apply to happens-before relations. That is if $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$ (transitivity), $A \not\rightarrow A$ (irreflexivity) and if $A \neq B$ and $A \rightarrow B$ then $B \not\rightarrow A$ (antisymmetry).
 	
-	\newpar Using the representation of history detailed in \autoref{chap:representing-a-history} it is possible to create a graph of happens-before relations. To connect actions across events, the actionID and the counterpart actionID of the action is used, in addition to the type of the action. We define the relation between action types as:
+	\newpar Using the representation of history detailed in \autoref{chap:representing-a-history} it is possible to create a graph of happens-before relations. To connect actions across events, the action ID and the counterpart action ID of the action is used, in addition to the type of the action. We define the relation between action types as:
 	
 	\begin{definition}
 		The following relations describe what action types happen before other action types.
@@ -41,12 +41,39 @@
 			\end{itemize}
 	\end{definition}
 	
+	Given this functionality provided by the happens before relations, an algorithm can be created to merge two histories together. First of all, every actions of the history need to be added to a joined history. To connect actions, for each action of the graph the corrosponding action is found due to the rules described in the previous section. Then an edge is created from the first action to the second. Every action has at most one corresponding action due to the fact that an action ID is unique in the workflow and it is therefore possible to match the counterpart ID with the exact action it corresponds to. With this algorithm a set of histories can then be merged together two at the time, until one final combined history remains.
+	
 	\section{Simplifying}
-	% TODO: Collapsing
-	It is necessary to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
-		
+	When a combined history has been produced, it represents all the actions that has happened in the workflow. This however is a history that contains more information than is necessary to show the order of execution. Finding the history with only executions is therefore desired.
+	
 	% Transitive closure
-	\newpar In order to build an order of execution, edges between all executions in the history graph must exist. The transitive closure of the history graph has this property and it is therefore necessary to find this closure. 
+	\newpar In order to remove unnecessary actions and preserve the order of execution, direct edges between executions in the history graph must be created based on the existing paths so that reachability between executions is preserved. The transitive closure of a graph has this property and therefore an algorithm finding this closure is needed.\footnote{\url{https://en.wikipedia.org/wiki/Transitive_closure}} Since reachability is preserved by only creating edges from an execution to the first execution encountered on every path from the execution, it is not required to find a complete transitive closure, as long as it is then done for every of the encountered executions. An example of this can be seen on figure \todo{figure here}
+	
+	\begin{algorithm}
+		\begin{algorithmic}
+		\Function{Execution Transitive-Closure}{graph}
+			\State startFromSet $\leftarrow$ nodes with no incomming edges in graph
+			\ForAll{fromNode in startFromSet}
+				\State neighbourNodes $\leftarrow$ \Call{GetNeighboursOfNeighbours}{fromNode}
+				\ForAll{neighbour in neighbourNodes}
+					\If {neighbour is execution}
+						\State graph $\leftarrow$ \Call{addEdge}{fromNode, neighbour, graph}
+						\State startFromSet $\leftarrow$ \Call{add}{neighbour, startFromSet}
+					\Else
+						\State neighbourNodes $\leftarrow$ \Call{Union}{neighbour.neighbours, neighbourNodes}
+					\EndIf
+				\EndFor
+			\EndFor
+			\State 
+			\Return graph
+		\EndFunction
+		\end{algorithmic}
+		\caption{Transitive Closure Algorithm}
+	\end{algorithm}
+
+	
+	% TODO: Collapsing
+	\newpar After finding the transtive clousures between executions it is possible to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
 	
 	In order to not create redundant edges in the history graph, it is possible to only find the first edge from a given action to its neighbors and then repeat this procedure for every neighbor, since every action of the given type will still then be reachable. %TODO: Proof.
 	If these edges are not found, execution actions will not be connected and therefore not reachable, and finding an order of execution would be impossible. % TODO: Really impossible?
