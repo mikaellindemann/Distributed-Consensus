@@ -106,11 +106,11 @@ namespace Client.Connections
         /// <exception cref="NotFoundException">If the resource isn't found</exception>
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
-        public async Task<IEnumerable<HistoryDto>> GetHistory(string workflowId)
+        public async Task<IEnumerable<ActionDto>> GetHistory(string workflowId)
         {
             try
             {
-                return await _http.ReadList<HistoryDto>($"history/{workflowId}");
+                return await _http.ReadList<ActionDto>($"history/{workflowId}");
             }
             catch (HttpRequestException ex)
             {

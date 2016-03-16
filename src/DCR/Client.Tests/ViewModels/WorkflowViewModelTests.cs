@@ -223,7 +223,7 @@ namespace Client.Tests.ViewModels
                 .ReturnsAsync(eventAddressList).Verifiable();
 
             _eventConnectionMock.Setup(conn => conn.ResetEvent(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0)).Verifiable();
+                .Returns(Task.Delay(200)).Verifiable();
 
             
             // Act

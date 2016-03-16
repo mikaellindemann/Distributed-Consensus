@@ -12,12 +12,12 @@ namespace Server.Interfaces
     public interface IServerHistoryStorage : IDisposable
     {
         /// <summary>
-        /// Save a given HistoryModel to storage.
+        /// Save a given ActionModel to storage.
         /// </summary>
         /// <param name="toSave"></param>
-        Task SaveHistory(HistoryModel toSave);
+        Task SaveHistory(ActionModel toSave);
 
-        Task SaveNonWorkflowSpecificHistory(HistoryModel toSave);
+        Task SaveNonWorkflowSpecificHistory(ActionModel toSave);
 
         /// <summary>
         /// Returns the history at the Server for the specified workflow.
@@ -26,6 +26,6 @@ namespace Server.Interfaces
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if the argument is null.</exception>
         /// <exception cref="NotFoundException">Thrown if the workflow could not be found.</exception>
-        Task<IQueryable<HistoryModel>> GetHistoryForWorkflow(string workflowId);
+        Task<IQueryable<ActionModel>> GetHistoryForWorkflow(string workflowId);
     }
 }

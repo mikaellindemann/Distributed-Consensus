@@ -23,41 +23,42 @@ namespace Event.Logic
             _storage = new EventStorage();
         }
 
-        public async Task SaveException(Exception ex, string requestType, string method, string eventId = "", string workflowId = "")
+        public Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId = "")
         {
+            // Todo: Remove this method.
+            return Task.Delay(0);/*
             //Don't save a null reference.
             if (ex == null) return;
 
-            var toSave = new HistoryModel
+            var toSave = new ActionModel
             {
+                WorkflowId = workflowId,
                 EventId = eventId,
-                HttpRequestType = requestType,
-                Message = "Threw: " + ex.GetType(),
-                MethodCalledOnSender = method,
-                WorkflowId = workflowId
+                CounterpartId = null
             };
 
-            await _storage.SaveHistory(toSave);
+            await _storage.SaveHistory(toSave);*/
         }
 
-        public async Task<IEnumerable<HistoryDto>> GetHistoryForEvent(string workflowId, string eventId)
+        public async Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId)
         {
             var models = (await _storage.GetHistoryForEvent(workflowId, eventId)).ToList();
-            return models.Select(model => new HistoryDto(model));
+            return models.Select(model => new ActionDto(model));
         }
 
-        public async Task SaveSuccesfullCall(string requestType, string method, string eventId = "", string workflowId = "")
+        public async Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "", int senderTimeStamp = -1)
         {
-            var toSave = new HistoryModel
+            var toSave = new ActionModel
             {
+                WorkflowId = workflowId,
                 EventId = eventId,
-                HttpRequestType = requestType,
-                Message = "Succesfully called: " + method,
-                MethodCalledOnSender = method,
-                WorkflowId = workflowId
+                CounterpartId = senderId,
+                CounterpartTimeStamp = senderTimeStamp,
+                Type = type
             };
 
             await _storage.SaveHistory(toSave);
+            return toSave.Id;
         }
 
         public void Dispose()

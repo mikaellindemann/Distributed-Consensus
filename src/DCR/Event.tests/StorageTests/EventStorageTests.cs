@@ -19,13 +19,13 @@ namespace Event.Tests.StorageTests
         private Mock<IEventContext> _contextMock;
         private EventStorage _eventStorage;
         private List<EventModel> _eventModels;
-        private List<HistoryModel> _historyModels;
+        private List<ActionModel> _historyModels;
         private List<ExclusionUri> _exclusionUris;
         private List<InclusionUri> _inclusionUris;
         private List<ConditionUri> _conditionUris;
         private List<ResponseUri> _responseUris;
         private FakeDbSet<EventModel> _eventModelMock;
-        private FakeDbSet<HistoryModel> _historyMock; 
+        private FakeDbSet<ActionModel> _historyMock; 
         private FakeDbSet<ResponseUri> _responseMock;
         private FakeDbSet<ConditionUri> _conditionMock;
         private FakeDbSet<InclusionUri> _inclusionMock;
@@ -65,8 +65,8 @@ namespace Event.Tests.StorageTests
             _eventModelMock = new FakeDbSet<EventModel>(_eventModels.AsQueryable());
             _eventModelMock.EventStateMockSet.Setup(c => c.Remove(It.IsAny<EventModel>())).Verifiable();
 
-            _historyModels = new List<HistoryModel>();
-            _historyMock = new FakeDbSet<HistoryModel>(_historyModels.AsQueryable());
+            _historyModels = new List<ActionModel>();
+            _historyMock = new FakeDbSet<ActionModel>(_historyModels.AsQueryable());
 
             _responseUris = new List<ResponseUri>();
             _responseMock = new FakeDbSet<ResponseUri>(_responseUris.AsQueryable());
@@ -394,7 +394,7 @@ namespace Event.Tests.StorageTests
         public async Task GetHistoryForEvent_Returns_Histories()
         {
             // Arrange
-            _historyModels.Add(new HistoryModel
+            _historyModels.Add(new ActionModel
             {
                 WorkflowId = "workflowId",
                 EventId = "eventId"
@@ -558,14 +558,14 @@ namespace Event.Tests.StorageTests
         public async Task SaveHistory_Ok()
         {
             // Act
-            await _eventStorage.SaveHistory(new HistoryModel
+            await _eventStorage.SaveHistory(new ActionModel
             {
                 WorkflowId = "workflowId",
                 EventId = "eventId"
             });
 
             // Assert
-            _historyMock.EventStateMockSet.Verify(c => c.Add(It.IsAny<HistoryModel>()), Times.Once);
+            _historyMock.EventStateMockSet.Verify(c => c.Add(It.IsAny<ActionModel>()), Times.Once);
         }
 
         [Test]
@@ -584,7 +584,7 @@ namespace Event.Tests.StorageTests
         public void SaveHistory_NullIds(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(new HistoryModel
+            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(new ActionModel
             {
                 WorkflowId = workflowId,
                 EventId = eventId
@@ -598,7 +598,7 @@ namespace Event.Tests.StorageTests
         public void SaveHistory_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(new HistoryModel
+            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(new ActionModel
             {
                 WorkflowId = "notWorkflowId",
                 EventId = "notEventId"

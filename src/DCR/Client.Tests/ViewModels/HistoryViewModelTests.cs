@@ -9,12 +9,12 @@ namespace Client.Tests.ViewModels
     class HistoryViewModelTests
     {
         private HistoryViewModel _model;
-        private HistoryDto _dto;
+        private ActionDto _dto;
 
         [SetUp]
         public void SetUp()
         {
-            _dto = new HistoryDto();
+            _dto = new ActionDto();
 
             _model = new HistoryViewModel(_dto);
         }
@@ -46,7 +46,7 @@ namespace Client.Tests.ViewModels
         public void Constructor_Parameter()
         {
             // Act
-            var model = new HistoryViewModel(new HistoryDto());
+            var model = new HistoryViewModel(new ActionDto());
 
             // Assert
             Assert.IsNotNull(model);
@@ -94,18 +94,18 @@ namespace Client.Tests.ViewModels
          TestCase(null),
          TestCase("Rubbish"),
          TestCase("Very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, long Message")]
-        public void Message_PropertyChanged(string message)
+        public void Message_PropertyChanged(string counterPartId)
         {
             // Arrange
             var changed = false;
-            _model.PropertyChanged += (o, s) => { if (s.PropertyName == "Message") changed = true; };
+            _model.PropertyChanged += (o, s) => { if (s.PropertyName == "CounterPartId") changed = true; };
 
             // Act
-            _model.Message = message;
+            _model.CounterPartId = counterPartId;
 
             // Assert
             Assert.IsTrue(changed);
-            Assert.AreEqual(message, _model.Message);
+            Assert.AreEqual(counterPartId, _model.CounterPartId);
         }
 
         [TestCase(""),
@@ -132,10 +132,8 @@ namespace Client.Tests.ViewModels
             // Arrange
             var changed = false;
             _model.PropertyChanged += (o, s) => { if (s.PropertyName == "TimeStamp") changed = true; };
-            var dt = DateTime.Now;
+            var dt = new Random().Next(4124924);
 
-            // Truncate milliseconds.
-            dt = dt.AddTicks(-(dt.Ticks % TimeSpan.TicksPerSecond));
 
             // Act
             _model.TimeStamp = dt;

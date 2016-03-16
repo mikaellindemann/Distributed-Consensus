@@ -360,7 +360,7 @@ namespace Server.Storage
             _db.Dispose();
         }
 
-        public async Task SaveHistory(HistoryModel toSave)
+        public async Task SaveHistory(ActionModel toSave)
         {
             if (toSave == null)
             {
@@ -375,7 +375,7 @@ namespace Server.Storage
             await _db.SaveChangesAsync();
         }
 
-        public async Task SaveNonWorkflowSpecificHistory(HistoryModel toSave)
+        public async Task SaveNonWorkflowSpecificHistory(ActionModel toSave)
         {
             if (toSave == null)
             {
@@ -386,7 +386,7 @@ namespace Server.Storage
             await _db.SaveChangesAsync();
         }
 
-        public async Task<IQueryable<HistoryModel>> GetHistoryForWorkflow(string workflowId)
+        public async Task<IQueryable<ActionModel>> GetHistoryForWorkflow(string workflowId)
         {
             if (workflowId == null)
             {

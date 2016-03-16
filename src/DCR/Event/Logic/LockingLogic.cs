@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.DTO.History;
 using Common.Exceptions;
 using Event.Interfaces;
 using Event.Models;
@@ -17,6 +18,7 @@ namespace Event.Logic
     {
         private readonly IEventStorage _storage;
         private readonly IEventFromEvent _eventCommunicator;
+        private readonly IEventHistoryLogic _historyLogic;
 
         //QUEUE is holding a dictionary of string (workflowid) , dictionary which holds string (eventid), the queue
         public static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>> LockQueue = new ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>>();
@@ -31,6 +33,7 @@ namespace Event.Logic
         {
             _storage = storage;
             _eventCommunicator = eventCommunicator;
+            _historyLogic = new EventHistoryLogic();
         }
 
 
@@ -221,7 +224,8 @@ namespace Event.Logic
 
                 try
                 {
-                    await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
+                    var timestamp = await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Locks, eventId, relation.WorkflowId, relation.EventId, timestamp);
                     lockedEvents.Add(relation);
                 }
                 catch (Exception)
@@ -282,10 +286,20 @@ namespace Event.Logic
                 }
             }
 
+            var me = new RelationToOtherEventModel
+            {
+                WorkflowId = workflowId,
+                EventId = eventId,
+                Uri = await _storage.GetUri(workflowId, eventId)
+            };
+            if (!eventsToBeUnlockedSorted.ContainsKey(me.EventId))
+            {
+                eventsToBeUnlockedSorted.Add(me.EventId, me);
+            }
+
             var b = await UnlockList(eventsToBeUnlockedSorted, eventId);
             
-            
-            await _storage.ClearLock(workflowId, eventId);
+            //await _storage.ClearLock(workflowId, eventId);
             
             return b;
         }
@@ -298,7 +312,8 @@ namespace Event.Logic
                 var relation = tuple.Value;
                 try
                 {
-                    await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    var timestamp = await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId, timestamp);
                 }
                 catch (Exception)
                 {
@@ -351,7 +366,8 @@ namespace Event.Logic
             {
                 try
                 {
-                    await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    var timestamp = await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
+                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId, timestamp);
                 }
                 catch (Exception)
                 {

@@ -49,6 +49,6 @@ namespace Client.Connections
         /// <exception cref="NotFoundException">If the resource isn't found</exception>
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
-        Task<IEnumerable<HistoryDto>> GetHistory(string workflowId);
+        Task<IEnumerable<ActionDto>> GetHistory(string workflowId);
     }
 }

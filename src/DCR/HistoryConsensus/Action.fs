@@ -2,7 +2,7 @@
 
 module Action =
     type EventId = string
-    type LocalTimeStamp = string
+    type LocalTimeStamp = int
     
     type ActionId = (EventId * LocalTimeStamp)
     
@@ -13,18 +13,25 @@ module Action =
         | ExcludedBy
         | SetsPending
         | SetPendingBy
-        | CheckedConditon of bool
-        | ChecksConditon of bool
+        | CheckedConditon// of bool
+        | ChecksConditon// of bool
         | Locks
         | LockedBy
         | Unlocks
         | UnlockedBy
+        | ExecuteStart
+        | ExecuteFinish
     
     type Action =
         {
             Id: ActionId;
-            CounterpartEventId: EventId;
+            CounterpartId: ActionId;
             Type: ActionType;
-            Edges: ActionId list;
+            Edges: ActionId Set;
         }
 
+    let create id counterpartId actionType edges = 
+        {   Id = id; 
+            CounterpartId = counterpartId; 
+            Type = actionType; 
+            Edges = edges}

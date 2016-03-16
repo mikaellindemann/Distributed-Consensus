@@ -31,7 +31,7 @@ namespace Server.Logic
             _storage = storage;
         }
 
-        public async Task<IEnumerable<HistoryDto>> GetHistoryForWorkflow(string workflowId)
+        public async Task<IEnumerable<ActionDto>> GetHistoryForWorkflow(string workflowId)
         {
             if (workflowId == null)
             {
@@ -39,10 +39,10 @@ namespace Server.Logic
             }
 
             var models = (await _storage.GetHistoryForWorkflow(workflowId)).ToList();
-            return models.Select(model => new HistoryDto(model));
+            return models.Select(model => new ActionDto(model));
         }
 
-        public async Task SaveHistory(HistoryModel toSave)
+        public async Task SaveHistory(ActionModel toSave)
         {
             if (toSave == null)
             {
@@ -52,7 +52,7 @@ namespace Server.Logic
             await _storage.SaveHistory(toSave);
         }
 
-        public async Task SaveNoneWorkflowSpecificHistory(HistoryModel toSave)
+        public async Task SaveNoneWorkflowSpecificHistory(ActionModel toSave)
         {
             if (toSave == null)
             {

@@ -12,12 +12,12 @@ namespace Event.Interfaces
     public interface IEventHistoryStorage : IDisposable
     {
         /// <summary>
-        /// Saves the given HistoryModel to storage.
+        /// Saves the given ActionModel to storage.
         /// </summary>
-        /// <param name="toSave">The HistoryModel that is to be saved.</param>
+        /// <param name="toSave">The ActionModel that is to be saved.</param>
         /// <returns></returns>
         /// <exception cref="NotFoundException">Thrown if the specified Event does not exist.</exception>
-        Task SaveHistory(HistoryModel toSave);
+        Task SaveHistory(ActionModel toSave);
 
         /// <summary>
         /// Retrieves the History for a specified Event as an IQueryable.
@@ -26,6 +26,6 @@ namespace Event.Interfaces
         /// <param name="eventId">EventId of the Event, whose history is to be retrieved.</param>
         /// <returns></returns>
         /// <exception cref="NotFoundException">Thrown if the specified Event does not exist.</exception>
-        Task<IQueryable<HistoryModel>> GetHistoryForEvent(string workflowId, string eventId);
+        Task<IQueryable<ActionModel>> GetHistoryForEvent(string workflowId, string eventId);
     }
 }

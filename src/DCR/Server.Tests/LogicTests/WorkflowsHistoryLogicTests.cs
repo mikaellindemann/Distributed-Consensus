@@ -14,7 +14,7 @@ namespace Server.Tests.LogicTests
     class WorkflowsHistoryLogicTests
     {
         private Mock<IServerHistoryStorage> _storageMock;
-        private List<HistoryModel> _testModelList;
+        private List<ActionModel> _testModelList;
         private IWorkflowHistoryLogic _toTest;
 
         [TestFixtureSetUp]
@@ -26,12 +26,12 @@ namespace Server.Tests.LogicTests
                 .Returns((string workflowId) => 
                             Task.Run( () => _testModelList.Where(w => w.WorkflowId == workflowId).AsQueryable() )).Verifiable();
 
-            mock.Setup(m => m.SaveHistory(It.IsAny<HistoryModel>()))
-                .Returns((HistoryModel model) =>
+            mock.Setup(m => m.SaveHistory(It.IsAny<ActionModel>()))
+                .Returns((ActionModel model) =>
                             Task.Run( () => _testModelList.Add(model))).Verifiable();
 
-            mock.Setup(m => m.SaveNonWorkflowSpecificHistory(It.IsAny<HistoryModel>()))
-                .Returns((HistoryModel model) => 
+            mock.Setup(m => m.SaveNonWorkflowSpecificHistory(It.IsAny<ActionModel>()))
+                .Returns((ActionModel model) => 
                             Task.Run(() => _testModelList.Add(model))).Verifiable();
 
             mock.Setup(m => m.Dispose()).Verifiable();
@@ -43,7 +43,7 @@ namespace Server.Tests.LogicTests
         [SetUp]
         public void ResetList()
         {
-            _testModelList = new List<HistoryModel>();
+            _testModelList = new List<ActionModel>();
         }
 
         [Test]
@@ -65,10 +65,8 @@ namespace Server.Tests.LogicTests
             Assert.IsTrue(_testModelList.Any());
             Assert.AreEqual(testHistory.WorkflowId, result.WorkflowId);
             Assert.AreEqual(testHistory.EventId, result.EventId);
-            Assert.AreEqual(testHistory.HttpRequestType, result.HttpRequestType);
-            Assert.AreEqual(testHistory.Message, result.Message);
-            Assert.AreEqual("01/01/0001 00:00:00", result.TimeStamp);
-            Assert.AreEqual(testHistory.MethodCalledOnSender, result.MethodCalledOnSender);
+            Assert.AreEqual(testHistory.CounterPartId, result.CounterPartId);
+            Assert.AreEqual(1, result.TimeStamp);
         }
 
         [Test]
@@ -82,7 +80,7 @@ namespace Server.Tests.LogicTests
 
             //Assert.
             Assert.Throws<ArgumentNullException>(async () => await _toTest.SaveHistory(null));
-            _storageMock.Verify(m => m.SaveHistory(It.IsAny<HistoryModel>()), Times.Once);
+            _storageMock.Verify(m => m.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
             Assert.IsTrue(_testModelList.Any());
         }
 
@@ -96,7 +94,7 @@ namespace Server.Tests.LogicTests
 
             //Assert.
             Assert.Throws<ArgumentNullException>(async () => await _toTest.SaveNoneWorkflowSpecificHistory(null));
-            _storageMock.Verify(m => m.SaveNonWorkflowSpecificHistory(It.IsAny<HistoryModel>()), Times.Once);
+            _storageMock.Verify(m => m.SaveNonWorkflowSpecificHistory(It.IsAny<ActionModel>()), Times.Once);
             Assert.IsTrue(_testModelList.Any());
         }
 
@@ -111,16 +109,15 @@ namespace Server.Tests.LogicTests
             _storageMock.Verify(m => m.Dispose(), Times.Once);
         }
 
-        private static HistoryModel CreateTestHistory()
+        private static ActionModel CreateTestHistory()
         {
-            return new HistoryModel
+            return new ActionModel
             {
                 EventId = @"&%¤#æøå*¨^´`?",
                 WorkflowId = @"&%¤#æøå*¨^´`?",
-                HttpRequestType = @"&%¤#æøå*¨^´`?",
-                Message = @"&%¤#æøå*¨^´`?",
-                MethodCalledOnSender = @"&%¤#æøå*¨^´`?",
-                TimeStamp = DateTime.MinValue
+                Id = 1,
+                CounterPartId = @"&%¤#æøå*¨^´`?",
+                Type = ActionType.Excludes
             };
         }
     }

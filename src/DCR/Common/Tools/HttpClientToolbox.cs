@@ -194,6 +194,28 @@ namespace Common.Tools
         }
 
         /// <summary>
+        /// Sends a PUT http request with the type T to the address (baseaddress + URI). 
+        /// T and the URI string must match.
+        /// </summary>
+        /// <typeparam name="T"> An object matching the expected object at the address (baseaddress + URI)</typeparam>
+        /// <param name="uri">A URI to the API (baseaddress + uri) where objects of type T are stored.</param>
+        /// <param name="toUpdate"> The type of object to update at the API.</param>
+        /// <exception cref="NotFoundException">If the resource isn't found</exception>
+        /// <exception cref="UnauthorizedException">If the user does not have the right access rights</exception>
+        /// <exception cref="LockedException">If an event is locked</exception>
+        /// <exception cref="NotExecutableException">If an event is not executable, when execute is pressed</exception>
+        /// <exception cref="Exception">If an unexpected error happened</exception>
+        /// <exception cref="HttpRequestException">If the host wasn't found.</exception>
+        public virtual async Task<TResult> Update<T, TResult>(string uri, T toUpdate)
+        {
+            var response = await HttpClient.PutAsJsonAsync(uri, toUpdate);
+            await EnsureSuccessStatusCode(response);
+
+            var result = await response.Content.ReadAsAsync<TResult>();
+            return result;
+        }
+
+        /// <summary>
         /// Sends a DELETE http request to the address (baseaddress + URI).
         /// </summary>
         /// <param name="uri">A URI to the API (baseaddress + uri) where objects of type T are stored.</param>
@@ -207,6 +229,25 @@ namespace Common.Tools
         {
             var response = await HttpClient.DeleteAsync(uri);
             await EnsureSuccessStatusCode(response);
+        }
+
+        /// <summary>
+        /// Sends a DELETE http request to the address (baseaddress + URI).
+        /// </summary>
+        /// <param name="uri">A URI to the API (baseaddress + uri) where objects of type T are stored.</param>
+        /// <exception cref="NotFoundException">If the resource isn't found</exception>
+        /// <exception cref="UnauthorizedException">If the user does not have the right access rights</exception>
+        /// <exception cref="LockedException">If an event is locked</exception>
+        /// <exception cref="NotExecutableException">If an event is not executable, when execute is pressed</exception>
+        /// <exception cref="Exception">If an unexpected error happened</exception>
+        /// <exception cref="HttpRequestException">If the host wasn't found.</exception>
+        public virtual async Task<TResult> Delete<TResult>(string uri)
+        {
+            var response = await HttpClient.DeleteAsync(uri);
+            await EnsureSuccessStatusCode(response);
+
+            var result = await response.Content.ReadAsAsync<TResult>();
+            return result;
         }
 
         public virtual void Dispose()

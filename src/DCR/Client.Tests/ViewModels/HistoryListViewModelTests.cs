@@ -20,15 +20,15 @@ namespace Client.Tests.ViewModels
         private HistoryListViewModel _model;
         private Mock<IServerConnection> _serverConnectionMock;
         private Mock<IEventConnection> _eventConnectionMock;
-        private List<HistoryDto> _serverHistoryDtos, _eventHistoryDtos;
+        private List<ActionDto> _serverHistoryDtos, _eventHistoryDtos;
         private List<EventAddressDto> _eventAddressDtos;
         private readonly string[] _events = { "eventId", "elj", "hrioargn", "vifhd", "ragæoj", "grnjalgr" };
 
         [SetUp]
         public void SetUp()
         {
-            _serverHistoryDtos = new List<HistoryDto>();
-            _eventHistoryDtos = new List<HistoryDto>();
+            _serverHistoryDtos = new List<ActionDto>();
+            _eventHistoryDtos = new List<ActionDto>();
             _eventAddressDtos = new List<EventAddressDto>();
 
             _serverConnectionMock = new Mock<IServerConnection>(MockBehavior.Strict);
@@ -132,11 +132,12 @@ namespace Client.Tests.ViewModels
             // Arrange
             for (var i = 0; i < amount; i++)
             {
-                _serverHistoryDtos.Add(new HistoryDto
+                _serverHistoryDtos.Add(new ActionDto
                 {
                     WorkflowId = "workflowId",
-                    HttpRequestType = "GET",
-                    TimeStamp = "2015-04-30T15:48:55+02:00"
+                    EventId = "eventId",
+                    CounterPartId = "counterpartId",
+                    TimeStamp = 1
                 });
             }
 
@@ -163,12 +164,12 @@ namespace Client.Tests.ViewModels
 
                 for (var j = 0; j < historyAmount; j++)
                 {
-                    _eventHistoryDtos.Add(new HistoryDto
+                    _eventHistoryDtos.Add(new ActionDto
                     {
                         WorkflowId = "workflowId",
-                        EventId = eventId,
-                        HttpRequestType = "GET",
-                        TimeStamp = "2015-04-30T15:48:55+02:00"
+                        EventId = "eventId",
+                        CounterPartId = "counterpartId",
+                        TimeStamp = 1
                     });
                 }
             }

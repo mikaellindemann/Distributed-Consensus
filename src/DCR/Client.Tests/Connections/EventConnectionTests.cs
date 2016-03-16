@@ -20,15 +20,15 @@ namespace Client.Tests.Connections
     {
         private EventConnection _connection;
         private Mock<HttpClientToolbox> _toolboxMock;
-        private List<HistoryDto> _historyDtos;
+        private List<ActionDto> _historyDtos;
 
         [SetUp]
         public void SetUp()
         {
-            _historyDtos = new List<HistoryDto>();
+            _historyDtos = new List<ActionDto>();
 
             _toolboxMock = new Mock<HttpClientToolbox>(MockBehavior.Strict);
-            _toolboxMock.Setup(t => t.ReadList<HistoryDto>(It.IsAny<string>()))
+            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>()))
                 .ReturnsAsync(_historyDtos);
 
             _connection = new EventConnection(_toolboxMock.Object);
@@ -121,12 +121,12 @@ namespace Client.Tests.Connections
             // Arrange
             for (var i = 0; i < amount; i++)
             {
-                _historyDtos.Add(new HistoryDto
+                _historyDtos.Add(new ActionDto
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    TimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                    HttpRequestType = "GET"
+                    CounterPartId = "counterpartId",
+                    TimeStamp = 1
                 });
             }
 
@@ -141,7 +141,7 @@ namespace Client.Tests.Connections
         public void GetHistory_HostNotFound()
         {
             // Arrange
-            _toolboxMock.Setup(t => t.ReadList<HistoryDto>(It.IsAny<string>()))
+            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>()))
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
@@ -149,7 +149,7 @@ namespace Client.Tests.Connections
 
             // Assert
             Assert.Throws<HostNotFoundException>(testDelegate);
-            _toolboxMock.Verify(t => t.ReadList<HistoryDto>(It.IsAny<string>()), Times.Once);
+            _toolboxMock.Verify(t => t.ReadList<ActionDto>(It.IsAny<string>()), Times.Once);
         }
 
         [TestCase(typeof(NotFoundException)),
@@ -161,7 +161,7 @@ namespace Client.Tests.Connections
             // Arrange
             var exception = (Exception)exceptionType.GetConstructors().First().Invoke(null);
 
-            _toolboxMock.Setup(t => t.ReadList<HistoryDto>(It.IsAny<string>()))
+            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>()))
                 .ThrowsAsync(exception);
 
             // Act

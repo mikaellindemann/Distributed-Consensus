@@ -1,43 +1,52 @@
 ﻿using System;
-using System.Globalization;
 using Common.DTO.History;
 
 namespace Client.ViewModels
 {
     public class HistoryViewModel : ViewModelBase
     {
-        private readonly HistoryDto _historyDto;
+        private readonly ActionDto _actionDto;
         public HistoryViewModel()
         {
-            _historyDto = new HistoryDto();
+            _actionDto = new ActionDto();
         }
-        public HistoryViewModel(HistoryDto historyDto)
+        public HistoryViewModel(ActionDto actionDto)
         {
-            if (historyDto == null)
+            if (actionDto == null)
             {
-                throw new ArgumentNullException(nameof(historyDto));
+                throw new ArgumentNullException(nameof(actionDto));
             }
-            _historyDto = historyDto;
+            _actionDto = actionDto;
         }
 
         #region DataBindings
         public string WorkflowId
         {
-            get { return _historyDto.WorkflowId; }
+            get { return _actionDto.WorkflowId; }
             set
             {
-                _historyDto.WorkflowId = value;
+                _actionDto.WorkflowId = value;
                 NotifyPropertyChanged("WorkflowId");
             }
         }
 
         public string EventId
         {
-            get { return _historyDto.EventId; }
+            get { return _actionDto.EventId; }
             set
             {
-                _historyDto.EventId = value;
+                _actionDto.EventId = value;
                 NotifyPropertyChanged("EventId");
+            }
+        }
+
+        public string CounterPartId
+        {
+            get { return _actionDto.CounterpartId; }
+            set
+            {
+                _actionDto.CounterpartId = value;
+                NotifyPropertyChanged("CounterpartId");
             }
         }
 
@@ -55,22 +64,12 @@ namespace Client.ViewModels
             }
         }
 
-        public string Message
+        public int TimeStamp
         {
-            get { return _historyDto.Message; }
+            get { return _actionDto.TimeStamp; }
             set
             {
-                _historyDto.Message = value;
-                NotifyPropertyChanged("Message");
-            }
-        }
-
-        public DateTime TimeStamp
-        {
-            get { return DateTime.Parse(_historyDto.TimeStamp, new DateTimeFormatInfo()); }
-            set
-            {
-                _historyDto.TimeStamp = value.ToString(CultureInfo.InvariantCulture);
+                _actionDto.TimeStamp = value;
                 NotifyPropertyChanged("TimeStamp"); }
         }
         

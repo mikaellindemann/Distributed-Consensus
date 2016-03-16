@@ -16,7 +16,7 @@ namespace Event.Interfaces
         /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
         /// <param name="eventId">EventId of the specified Event.</param>
         /// <returns></returns>
-        Task<IEnumerable<HistoryDto>> GetHistoryForEvent(string workflowId, string eventId);
+        Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId);
 
         /// <summary>
         /// Will save a thrown Exception for this event. Should be used if an operation throws an exception.   
@@ -27,8 +27,8 @@ namespace Event.Interfaces
         /// <param name="eventId">EventId of the Event, that was involved in the operation that caused the exception.</param>
         /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
         /// <returns></returns>
-        Task SaveException(Exception ex, string requestType, string method, string eventId = "", string workflowId = "");
-
+        Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId  = "");
+        
         /// <summary>
         /// Will save a succesfull method call for this event. Should be used when an operation was carried out succesfully.
         /// </summary>
@@ -37,6 +37,6 @@ namespace Event.Interfaces
         /// <param name="eventId">>EventId of the Event, that was involved in the operation.</param>
         /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
         /// <returns></returns>
-        Task SaveSuccesfullCall(string requestType, string method, string eventId = "", string workflowId = "");
+        Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "", int senderTimeStamp = -1);
     }
 }

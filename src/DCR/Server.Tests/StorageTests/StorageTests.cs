@@ -21,7 +21,7 @@ namespace Server.Tests.StorageTests
         private List<ServerWorkflowModel> _workflows;
         private List<ServerEventModel> _events;
         private List<ServerRoleModel> _roles;
-        private List<HistoryModel> _history;
+        private List<ActionModel> _history;
             
         [SetUp]
         public void SetUp()
@@ -46,8 +46,8 @@ namespace Server.Tests.StorageTests
             var fakeRolesSet = new FakeDbSet<ServerRoleModel>(_roles.AsQueryable()).Object;
 
             //HISTORY:
-            _history = new List<HistoryModel>();
-            var fakeHistorySet = new FakeDbSet<HistoryModel>(_history.AsQueryable()).Object;
+            _history = new List<ActionModel>();
+            var fakeHistorySet = new FakeDbSet<ActionModel>(_history.AsQueryable()).Object;
 
             // Final prep
             context.Setup(m => m.Users).Returns(fakeUserSet);
@@ -764,7 +764,7 @@ namespace Server.Tests.StorageTests
             // Arrange
             IServerHistoryStorage storage = new ServerStorage(_context);
 
-            var argument = new HistoryModel
+            var argument = new ActionModel
             {
                 WorkflowId = "2"
             };
@@ -782,7 +782,7 @@ namespace Server.Tests.StorageTests
             // Arrange
             IServerHistoryStorage storage = new ServerStorage(_context);
 
-            var argument = new HistoryModel
+            var argument = new ActionModel
             {
                 WorkflowId = "1"
             };

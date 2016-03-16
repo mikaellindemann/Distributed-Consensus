@@ -16,7 +16,7 @@ namespace Server.Interfaces
         /// <param name="workflowId">Id of the workflow, whose history is to be obtained</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if the argument is null</exception>
-        Task<IEnumerable<HistoryDto>> GetHistoryForWorkflow(string workflowId);
+        Task<IEnumerable<ActionDto>> GetHistoryForWorkflow(string workflowId);
 
         /// <summary>
         /// Saves the history given in the provided toSave.
@@ -24,7 +24,7 @@ namespace Server.Interfaces
         /// <param name="toSave">Contains the information about the history that should be saved</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if the argument is null</exception>
-        Task SaveHistory(HistoryModel toSave);
+        Task SaveHistory(ActionModel toSave);
 
         /// <summary>
         /// Saves a history that is non-specific to a workflow. 
@@ -32,6 +32,6 @@ namespace Server.Interfaces
         /// <param name="toSave">Information to be saved</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if the argument is null</exception>
-        Task SaveNoneWorkflowSpecificHistory(HistoryModel toSave);
+        Task SaveNoneWorkflowSpecificHistory(ActionModel toSave);
     }
 }

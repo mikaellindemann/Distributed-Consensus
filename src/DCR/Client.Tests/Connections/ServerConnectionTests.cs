@@ -22,19 +22,19 @@ namespace Client.Tests.Connections
         private Mock<HttpClientToolbox> _toolboxMock;
         private List<WorkflowDto> _workflowDtos;
         private List<EventAddressDto> _eventAddressDtos;
-        private List<HistoryDto> _historyDtos;
+        private List<ActionDto> _historyDtos;
 
         [SetUp]
         public void SetUp()
         {
             _workflowDtos = new List<WorkflowDto>();
             _eventAddressDtos = new List<EventAddressDto>();
-            _historyDtos = new List<HistoryDto>();
+            _historyDtos = new List<ActionDto>();
 
             _toolboxMock = new Mock<HttpClientToolbox>(MockBehavior.Strict);
             _toolboxMock.Setup(t => t.ReadList<WorkflowDto>(It.IsAny<string>())).ReturnsAsync(_workflowDtos);
             _toolboxMock.Setup(t => t.ReadList<EventAddressDto>(It.IsAny<string>())).ReturnsAsync(_eventAddressDtos);
-            _toolboxMock.Setup(t => t.ReadList<HistoryDto>(It.IsAny<string>())).ReturnsAsync(_historyDtos);
+            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ReturnsAsync(_historyDtos);
 
             _connection = new ServerConnection(_toolboxMock.Object);
         }
@@ -222,7 +222,7 @@ namespace Client.Tests.Connections
         public async void GetHistory_Ok()
         {
             // Arrange
-            _historyDtos.Add(new HistoryDto
+            _historyDtos.Add(new ActionDto
             {
                 WorkflowId = "workflowId",
                 EventId = "eventId"
@@ -240,7 +240,7 @@ namespace Client.Tests.Connections
         public void GetHistory_Throws()
         {
             // Arrange
-            _toolboxMock.Setup(t => t.ReadList<HistoryDto>(It.IsAny<string>())).ThrowsAsync(new HttpRequestException());
+            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ThrowsAsync(new HttpRequestException());
 
             // Act
             var testDelegate = new TestDelegate(async () => await _connection.GetHistory("workflowId"));
@@ -253,7 +253,7 @@ namespace Client.Tests.Connections
         public async void GetHistory_Empty()
         {
             // Arrange
-            _toolboxMock.Setup(t => t.ReadList<HistoryDto>(It.IsAny<string>())).ReturnsAsync(new List<HistoryDto>());
+            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ReturnsAsync(new List<ActionDto>());
 
             // Act
             var workflows = await _connection.GetHistory("workflowId");

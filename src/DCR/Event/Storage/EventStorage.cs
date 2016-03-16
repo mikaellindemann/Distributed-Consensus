@@ -488,7 +488,7 @@ namespace Event.Storage
         }
         #endregion
 
-        public async Task SaveHistory(HistoryModel toSave)
+        public async Task SaveHistory(ActionModel toSave)
         {
             if (toSave == null)
             {
@@ -503,7 +503,7 @@ namespace Event.Storage
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IQueryable<HistoryModel>> GetHistoryForEvent(string workflowId, string eventId)
+        public async Task<IQueryable<ActionModel>> GetHistoryForEvent(string workflowId, string eventId)
         {
             if (!await Exists(workflowId, eventId))
             {

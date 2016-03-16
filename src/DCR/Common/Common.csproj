@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Common</RootNamespace>
     <AssemblyName>Common</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\Event\ConditionDto.cs" />
     <Compile Include="Exceptions\EventExistsException.cs" />
     <Compile Include="Exceptions\IllegalstorageStateException.cs" />
     <Compile Include="Exceptions\LockedException.cs" />
@@ -63,8 +65,8 @@
     <Compile Include="Tools\HttpClientWrapper.cs" />
     <Compile Include="Tools\IHttpClient.cs" />
     <Compile Include="DTO\Server\LoginDto.cs" />
-    <Compile Include="DTO\History\HistoryDto.cs" />
-    <Compile Include="DTO\History\HistoryModel.cs" />
+    <Compile Include="DTO\History\ActionDto.cs" />
+    <Compile Include="DTO\History\ActionModel.cs" />
     <Compile Include="DTO\Event\RoleDto.cs" />
     <Compile Include="Tools\HttpClientToolbox.cs" />
     <Compile Include="DTO\Shared\EventAddressDto.cs" />
