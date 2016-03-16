@@ -47,21 +47,13 @@
 	When a combined history has been produced, it represents all the actions that has happened in the workflow. This however is a history that contains more information than is necessary to show the order of execution. Finding the history with only executions is therefore desired.
 	
 	% Transitive closure
-	\newpar In order to remove unnecessary actions and preserve the order of execution, direct edges between executions in the history graph must be created based on the existing paths so that reachability between executions is preserved. The transitive closure of a graph has this property and therefore an algorithm finding this closure is needed.\footnote{\url{https://en.wikipedia.org/wiki/Transitive_closure}} Since reachability is preserved by only creating edges from an execution to the first execution encountered on every path from the execution, it is not required to find a complete transitive closure, as long as it is then done for every of the encountered executions. An example of this can be seen on figures \ref{fig:connect:3executions} and \ref{fig:connect:3executionstrans}.
+	\newpar In order to remove unnecessary actions and preserve the order of execution, direct edges between executions in the history graph must be created based on the existing paths so that reachability between executions is preserved. The transitive closure of a graph has this property and therefore an algorithm finding this closure is needed.\footnote{\url{https://en.wikipedia.org/wiki/Transitive_closure}} Since reachability is preserved by only creating edges from an execution to the first execution encountered on every path from the execution, it is not required to find a complete transitive closure, as long as it is then done for every of the encountered executions. An example of this can be seen on \autoref{fig:connect:3executionstrans}.
 	
 	\begin{figure}
 		\centering
-		\def\svgwidth{0.15\columnwidth}
-		\import{5connect/images/}{3executions.pdf_tex}
-		\caption{3 executions before applying execution transitive closure.}
-		\label{fig:connect:3executions}
-	\end{figure}
-	
-	\begin{figure}
-		\centering
-		\def\svgwidth{0.22\columnwidth}
+		\def\svgwidth{0.42\columnwidth}
 		\import{5connect/images/}{3executionswithtransitive.pdf_tex}
-		\caption{3 executions after applying execution transitive closure.}
+		\caption{3 executions before and after applying execution transitive closure.}
 		\label{fig:connect:3executionstrans}
 	\end{figure}
 	
