@@ -51,6 +51,7 @@
 	
 	\begin{figure}
 		\centering
+		\def\svgwidth{0.15\columnwidth}
 		\import{5connect/images/}{3executions.pdf_tex}
 		\caption{3 executions before applying execution transitive closure.}
 		\label{fig:connect:3executions}
@@ -58,6 +59,7 @@
 	
 	\begin{figure}
 		\centering
+		\def\svgwidth{0.22\columnwidth}
 		\import{5connect/images/}{3executionswithtransitive.pdf_tex}
 		\caption{3 executions after applying execution transitive closure.}
 		\label{fig:connect:3executionstrans}
@@ -87,13 +89,10 @@
 
 	
 	% TODO: Collapsing
-	\newpar After finding the transtive clousures between executions it is possible to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
-	
-	In order to not create redundant edges in the history graph, it is possible to only find the first edge from a given action to its neighbors and then repeat this procedure for every neighbor, since every action of the given type will still then be reachable. %TODO: Proof.
-	If these edges are not found, execution actions will not be connected and therefore not reachable, and finding an order of execution would be impossible. % TODO: Really impossible?
+	\newpar After finding the transitive closures between executions it is possible to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{ExecutionStart} and \texttt{ExecutionEnd} must be removed from the history graph. 
 	
 	% TODO: Transitive reduction
-	Redudant edges exist in a given history graph. These edges do not give any extra information, since the reachability to an action is the same. In prder to give a usable history, these redundant edges should be removed. 
+	\newpar Redudant edges exist in a given history graph. These edges do not give any extra information, since the reachability to an action is the same. In prder to give a usable history, these redundant edges should be removed. 
 	A subgraph of a given graph that has the same reachability but as few edges as possible, a minimum equivalent graph, is therefore desired. Finding this is possible by doing transitive reduction on the original graph, which then results in the minimum equivalent graph. 
 	Therefore, if there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
 	
