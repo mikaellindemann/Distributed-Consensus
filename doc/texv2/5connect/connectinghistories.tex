@@ -10,7 +10,14 @@
 	\noindent All the events in the workflow are neighbours of the event responsible for generating the history in the DCR graph.
 	
 	\section{Merging histories} 
-	In order to build a history for the events in the workflow, the actions of the events must be connected somehow in order to partially order them and thereby determine the global history. Due to the nature of actions being distributed, it is not possible to ensure a total order of actions. For example if action A on event A knows that it has happened before action B on event B, and action C on event C, but there is no relation between event B and C, then we have no way of knowing if action B or C happened first. This case can be seen on figure \todo{insert figure where you can se that action a happenes before action b and c but we dont know which of b and c happens}
+	In order to build a history for the events in the workflow, the actions of the events must be connected somehow in order to partially order them and thereby determine the global history. Due to the nature of actions being distributed, it is not possible to ensure a total order of actions. For example if action A on event A knows that it has happened before action B on event B, and action C on event C, but there is no relation between event B and C, then we have no way of knowing if action B or C happened first. This case can be seen on \autoref{fig:connect:partialorder}.
+	
+	\begin{figure}
+		\centering
+		\import{5connect/images/}{partialorder.pdf_tex}
+		\caption{The result of finding an order of execution when two events have no happens-before relations.}
+		\label{fig:connect:partialorder}
+	\end{figure}
 	
 	%Happens-before
 	\newpar The concept of happens-before relations helps determining what actions have happened before others across events. 
