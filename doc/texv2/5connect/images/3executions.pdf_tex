@@ -1,0 +1,90 @@
+%% Creator: Inkscape 0.91_64bit, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file '3executions.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{159bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,7.97484277)%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{3executions.pdf}}%
+    \put(0.49998937,7.81320785){\makebox(0,0)[b]{\smash{A Execute Start}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{3executions.pdf}}%
+    \put(0.49998937,7.36037767){\makebox(0,0)[b]{\smash{A Locked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{3executions.pdf}}%
+    \put(0.49998937,6.90754748){\makebox(0,0)[b]{\smash{A Locks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{3executions.pdf}}%
+    \put(0.49998937,6.4547169){\makebox(0,0)[b]{\smash{A Unlocked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{3executions.pdf}}%
+    \put(0.49998937,6.00188672){\makebox(0,0)[b]{\smash{A Unlocks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{3executions.pdf}}%
+    \put(0.49998937,5.54905653){\makebox(0,0)[b]{\smash{A Execute End}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{3executions.pdf}}%
+    \put(0.49998937,5.09622634){\makebox(0,0)[b]{\smash{A Execute Start}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{3executions.pdf}}%
+    \put(0.49998937,4.64339615){\makebox(0,0)[b]{\smash{A Locked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{3executions.pdf}}%
+    \put(0.49998937,4.19056596){\makebox(0,0)[b]{\smash{A Locks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{3executions.pdf}}%
+    \put(0.49998937,3.73773577){\makebox(0,0)[b]{\smash{A Unlocked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{3executions.pdf}}%
+    \put(0.49998937,3.28490558){\makebox(0,0)[b]{\smash{A Unlocks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{3executions.pdf}}%
+    \put(0.49998937,2.83207539){\makebox(0,0)[b]{\smash{A Execute End}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{3executions.pdf}}%
+    \put(0.49998937,2.37924521){\makebox(0,0)[b]{\smash{A Execute Start}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=14]{3executions.pdf}}%
+    \put(0.49998937,1.92641502){\makebox(0,0)[b]{\smash{A Locked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=15]{3executions.pdf}}%
+    \put(0.49998937,1.47358492){\makebox(0,0)[b]{\smash{A Locks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=16]{3executions.pdf}}%
+    \put(0.49998937,1.02075474){\makebox(0,0)[b]{\smash{A Unlocked by A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=17]{3executions.pdf}}%
+    \put(0.49998937,0.56792455){\makebox(0,0)[b]{\smash{A Unlocks A}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=18]{3executions.pdf}}%
+    \put(0.49998937,0.11509434){\makebox(0,0)[b]{\smash{A Execute End}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=19]{3executions.pdf}}%
+  \end{picture}%
+\endgroup%
