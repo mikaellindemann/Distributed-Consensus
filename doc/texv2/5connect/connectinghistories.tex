@@ -1,19 +1,26 @@
 % !TeX root = DistributedConsensus.tex
 \chapter{Connecting Histories} % Måske bedre navn. Dette er lidt for Nokia.
 \label{chap:connecting-histories}
+	This chapter defines the merging of logs across multiple events into one consistent history. Furthermore it describes how it is possible to simplify a graph of logs into an order of execution.
 	% Happens before, Transitive Closure, Transitive Reduction, Collapsing, Filtering, No cycles in history
 	\section{Creating Distributed  History} 
-	In order to build a history for the events reachable in the system, local histories for connected events have to be connected somehow in order to enable finding a global history. 
+	We now expand the problem domain by allowing multiple events in the DCR graph distributed on multiple computers. We define:
+	\begin{definition}
+		A \textit{\textbf{neighbouring event}} of an event A is an event which event A has a relation to.  
+	\end{definition}
+	\noindent All the events in the workflow are neighbours of the event responsible for generating the history in the DCR graph.
+	
+	\newpar In order to build a history for the events in the workflow, the actions of the events must be connected somehow in order to partially order them and thereby determine the global history. Due to the nature of actions being distributed, it is not possible to ensure a total order of actions. For example if action A on event A knows that it has happened before action B on event B, and action C on event C, but there is no relation between event B and C, then we have no way of knowing if action B or C happened first. This case can be seen on figure \todo{insert figure where you can se that action a happenes before action b and c but we dont know which of b and c happens}
 	
 	%Happens-before
-	Using the concept of happens-before relations helps determining what events (or executions of events) have happened before others. 
+	The concept of happens-before relations helps determining what actions have happened before others. 
 	
 	The individual actions that have happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$. 
 	Futhermore edges can be created between actions on two different events, if $A$ is registered as sent on event $a$ and is registered as received on event $b$.
 	
 	The concepts of transitivity, irreflexivity and antisymmetry also apply to the happens-before relation. That is if $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$ (transitivity), $A \not\rightarrow A$ (irreflexivity) and if $A \not\equiv B$ and $A \rightarrow B$ then $B \not\rightarrow A$ (antisymmetry).
 	
-	Using the representation of history detailed in \ref{chap:representing-a-history} it is possible to create a graph of happens-before relations.
+	Using the representation of history detailed in \autoref{chap:representing-a-history} it is possible to create a graph of happens-before relations.
 	
 	% Transitive closure
 	In order to build an order of execution, edges between all executions in the history graph must exist. The transitive closure of the history graph has this property and it is therefore necessary to find this closure. 
