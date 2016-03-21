@@ -54,9 +54,6 @@ module Graph =
 
     let empty : Graph = { Nodes = Map.empty }
 
-
-
-
     let getBeginningNodes graph : Action list =
         // Calculate all the action ids that are referenced by other nodes in the graph (which is turned into a list).
         let calcToNodeIds allNodes =
@@ -73,46 +70,6 @@ module Graph =
 
         // Find all actions, that are not referenced in the graph.
         List.except toNodes allNodes
-
-    let transitiveClosure2 beginningNodes graph actionType =
-        let rec findNeighborOfSourceNode (sourceAction : Action) (otherAction : Action) edgesToAdd =
-            Set.fold
-                (fun edgesToAdd neighborId -> 
-                    let neighbor = getNode graph neighborId
-                    if neighbor.Type = actionType
-                    then findNeighborOfSourceNode neighbor     neighbor (Set.add (sourceAction, neighbor) edgesToAdd)
-                    else findNeighborOfSourceNode sourceAction neighbor edgesToAdd
-                ) 
-                edgesToAdd
-                otherAction.Edges
-
-        let edgesToAdd = 
-            List.fold
-                (fun newEdges beginningNode -> findNeighborOfSourceNode beginningNode beginningNode newEdges) 
-                Set.empty
-                beginningNodes
-
-        Set.fold 
-            (fun graph (sourceNode, toNode) -> addEdge sourceNode.Id toNode.Id graph)
-            graph
-            edgesToAdd
-
-    let transitiveClosureBetter beginningNodes graph actionType =
-        // Go over every node in the graph
-        let rec transitiveClos (list:Action list) (accGraph:Graph) =
-            match list with
-            | [] -> accGraph
-            | node::fromNodes -> innerFun (getNodes graph (Set.toList node.Edges)) fromNodes node accGraph
-        // With a fromNode - find add edge to all other nodes of type ActionType
-        and innerFun edgeList newFromNodes fromNode (innerAccGraph:Graph) =
-            match edgeList with
-            | [] -> transitiveClos newFromNodes innerAccGraph // when it has been iterated over call the first method with a new list and new graph
-            | toNode::toNodes ->
-                if toNode.Type = actionType // we only need these edges
-                then innerFun toNodes                                                               (Set.toList <| (Set.add toNode (Set.ofList newFromNodes)))  fromNode    (addEdge fromNode.Id toNode.Id innerAccGraph) // update xs to now have the toNode - this is done to reduce unneccesary transitive clousures
-                else innerFun (Set.toList <| Set.union (Set.ofList toNodes)  (Set.ofList (getNodes innerAccGraph (Set.toList toNode.Edges))))          newFromNodes            fromNode    innerAccGraph // since no match was found add the edges of the toNode to the nodes which needs to be examined. By adding to the end of the list we achieve breadth first.
-
-        transitiveClos beginningNodes graph
 
     let transitiveReduction beginningNodes graph =
         let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
@@ -139,45 +96,50 @@ module Graph =
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool =
         let checkID =
-            toNode.CounterpartId = fromNode.Id && fst toNode.Id = fst fromNode.CounterpartId
+            fromNode.CounterpartId = toNode.Id && fst fromNode.Id = fst toNode.CounterpartId
         let checkRelation fromType toType =
             match fromType, toType with
-            | CheckedConditon, ChecksConditon   -> true
-            | IncludedBy, Includes              -> true
-            | ExcludedBy, Excludes              -> true
-            | SetPendingBy, SetsPending         -> true
-            | LockedBy, Locks                   -> true
-            | UnlockedBy, Unlocks               -> true
+            | ChecksConditon, CheckedConditon   -> true
+            | Includes, IncludedBy              -> true
+            | Excludes, ExcludedBy              -> true
+            | SetsPending, SetPendingBy         -> true
+            | Locks, LockedBy                   -> true
+            | Unlocks, UnlockedBy               -> true
             | _                                 -> false
         checkID && checkRelation fromNode.Type toNode.Type
 
     let collapse (graph : Graph) =
         let createMapForSingleExecution actions newActionId map = 
-            Set.fold (fun map action -> Map.add action.Id newActionId map) map actions
+            Set.fold (fun map actionId -> Map.add actionId newActionId map) map actions
 
-        let findSuccessorOnEvent action =
-            if Set.isEmpty action.Edges
-            then None
+        let findSuccessorOnEvent actionId currentExecution =
+            let edges = (getNode graph actionId).Edges
+            if Set.isEmpty edges
+            then (currentExecution, None)
             else
-                Some <| getNode graph (Seq.find (fun (neighborEventId,_) -> (fst action.Id) = neighborEventId) action.Edges)
+                let immediateSuccessor = Seq.find (fun (neighborEventId,_) -> (fst actionId) = neighborEventId) edges
+                let rest = Set.remove immediateSuccessor edges
+                if Set.isEmpty rest
+                then (currentExecution, Some <| immediateSuccessor)
+                else (Set.add (Seq.find (fun t -> true) rest) currentExecution, Some immediateSuccessor)
 
-
-        let rec findSingleExecution action result =
-            let newResult = (Set.add action result)
+        let rec findSingleExecution actionId result =
+            let newResult = (Set.add actionId result)
+            let action = getNode graph actionId
             if action.Type = ExecuteFinish
             then newResult
             else 
-                match findSuccessorOnEvent action with
-                | None -> newResult
-                | Some successor -> findSingleExecution successor newResult
+                match findSuccessorOnEvent actionId newResult with
+                | (currentExecution, None) -> currentExecution
+                | (currentExecution, Some successor) -> findSingleExecution successor currentExecution
 
         let startExecutions = 
-            Map.fold (fun set _ action -> Set.add action set)
+            Map.fold (fun set actionId _ -> Set.add actionId set)
                 Set.empty
                 (Map.filter (fun _ action -> action.Type = ExecuteStart) graph.Nodes) 
 
         let mapOfCollapsedExecutions =
-            let uncollapsed = Set.map (fun startAction -> startAction.Id, findSingleExecution startAction Set.empty) startExecutions
+            let uncollapsed = Set.map (fun startActionId -> startActionId, findSingleExecution startActionId Set.empty) startExecutions
             Set.fold 
                 (fun map (startActionId,execution) -> createMapForSingleExecution execution startActionId map)
                 Map.empty
@@ -197,11 +159,8 @@ module Graph =
             mapOfCollapsedExecutions
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
-        let beginningNodes = getBeginningNodes graph
-        let graphWithTransClos = transitiveClosureBetter beginningNodes graph actionType
-        let collapsedExecutions = collapse graphWithTransClos
-        let filteredGraph = Map.foldBack (fun actionId action graph -> if action.Type = actionType then graph else removeNode action graph) collapsedExecutions.Nodes collapsedExecutions
-        let transReduction = transitiveReduction (getBeginningNodes filteredGraph) filteredGraph
+        let collapsedExecutions = collapse graph
+        let transReduction = transitiveReduction (getBeginningNodes collapsedExecutions) collapsedExecutions
         transReduction
 
     let merge localGraph otherGraph =
