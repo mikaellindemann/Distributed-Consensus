@@ -156,7 +156,7 @@ namespace Event.Logic
                 Executed = executed,
                 Included = included,
                 Pending = pending,
-                Executable = await IsExecutable(workflowId, eventId)
+                Executable = await IsExecutable(workflowId, eventId, false)
             };
 
             return eventStateDto;
@@ -169,7 +169,7 @@ namespace Event.Logic
         /// <param name="eventId">EventId of the Event</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if any of the arguments are null</exception>
-        private async Task<bool> IsExecutable(string workflowId, string eventId)
+        private async Task<bool> IsExecutable(string workflowId, string eventId, bool log)
         {
             if (workflowId == null || eventId == null)
             {
@@ -186,15 +186,31 @@ namespace Event.Logic
 
             foreach (var condition in conditionRelations)
             {
-                var cond =
+                if (log)
+                {
+                    var cond =
+                        await
+                            _eventCommunicator.CheckCondition(condition.Uri, condition.WorkflowId, condition.EventId,
+                                eventId);
+
                     await
-                        _eventCommunicator.CheckCondition(condition.Uri, condition.WorkflowId, condition.EventId,
-                            eventId);
+                        _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId,
+                            condition.EventId, cond.TimeStamp);
 
-                await _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId, condition.EventId, cond.TimeStamp);
+                    // If the condition-event is not executed and currently included.
+                    if (!cond.Condition) return false;
+                }
+                else
+                {
+                    var executed = await _eventCommunicator.IsExecuted(condition.Uri, condition.WorkflowId, condition.EventId, eventId);
+                    var included = await _eventCommunicator.IsIncluded(condition.Uri, condition.WorkflowId, condition.EventId, eventId);
 
-                // If the condition-event is not executed and currently included.
-                if (!cond.Condition) return false;
+                    // If the condition-event is not executed and currently included.
+                    if (included && !executed)
+                    {
+                        return false;
+                    }
+                }
             }
             return true; // If all conditions are executed or excluded.
         }
@@ -277,7 +293,7 @@ namespace Event.Logic
                 throw new LockedException();
             }
             // Check whether Event can be executed at the moment
-            if (!await IsExecutable(workflowId, eventId))
+            if (!await IsExecutable(workflowId, eventId, true))
             {
                 throw new NotExecutableException();
             }
