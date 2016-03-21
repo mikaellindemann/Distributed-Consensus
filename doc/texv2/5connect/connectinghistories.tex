@@ -1,4 +1,5 @@
 % !TeX root = DistributedConsensus.tex
+% !TeX spellcheck = en_GB
 \chapter{Connecting Histories} % Måske bedre navn. Dette er lidt for Nokia.
 \label{chap:connecting-histories}
 	This chapter defines the merging of logs across multiple events into one consistent history. Furthermore it describes how it is possible to simplify a graph of logs into an order of execution.
@@ -46,6 +47,7 @@
 	\section{Simplifying}
 	When a combined history has been produced, it represents all the actions that has happened in the workflow. This however is a history that contains more information than is necessary to show the order of execution. Finding the history with only executions is therefore desired.
 	
+	\todo[inline]{This is probably no longer needed, START}
 	% Transitive closure
 	\newpar In order to remove unnecessary actions and preserve the order of execution, direct edges between executions in the history graph must be created based on the existing paths so that reachability between executions is preserved. The transitive closure of a graph has this property and therefore an algorithm finding this closure is needed.\footnote{\url{https://en.wikipedia.org/wiki/Transitive_closure}} Since reachability is preserved by only creating edges from an execution to the first execution encountered on every path from the execution, it is not required to find a complete transitive closure, as long as it is then done for every of the encountered executions. An example of this can be seen on \autoref{fig:connect:3executionstrans}.
 	
@@ -79,8 +81,37 @@
 		\end{algorithmic}
 		\caption{Transitive Closure Algorithm}
 	\end{algorithm}
+	\todo[inline]{This is probably no longer needed, FINISH}
 
 	% TODO: Collapsing
+	When looking at the order of execution, it can be hard to determine which action should be the canonical representation of the time of an execution. If \texttt{ExecuteFinish} is chosen, it can be hard to tell which execution happened before the other, because the related actions happen before the \texttt{ExecuteFinish} action. The same property is true for the \texttt{ExecuteStart} action, although the problem is to decide which execution happened first.
+	
+	\newpar In order to overcome these problems we decided to look into \textit{Collapsing} an execution. What is meant by collapsing an execution, is to look at all of the actions between \texttt{ExecuteStart} and \texttt{ExecuteFinish} of a certain execution of an event. The actions between start and finish, might contain relations to actions located at other event's local histories. Because these actions are created\todo{Created er ikke det rette ord her} by the interaction from the current event, we say that these actions now belong to the execution of the current event. An example of this separation of executions can be found in \autoref{fig:before-collapsing}. This also gives us the property that no action has happened outside the execution of an event.
+	
+	\begin{figure}
+		\centering
+		\def\svgwidth{0.42\columnwidth}
+		\fontsize{6}{8}\selectfont
+		\import{5connect/images/}{before_collapsing.pdf_tex}
+		\caption{Separation of executions}
+		\label{fig:before-collapsing}
+	\end{figure}
+	\todo{Måske skal denne figur laves ud fra GasWorkflow}
+	
+	\newpar
+	When the separation has been found, it is time to decide what should happen to the groupings. Because we want to keep all relations intact, we point all ingoing edges towards a new \textit{collapsed} node, and all outgoing edges are added to the same new node. In order not to create more types of actions, we chose the \texttt{ExecuteFinish} type to denote a collapsed execution. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
+	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efterfølgende}
+	
+	\begin{figure}
+		\centering
+		\def\svgwidth{0.22\columnwidth}
+		\fontsize{6}{8}\selectfont
+		\import{5connect/images/}{after_collapsing.pdf_tex}
+		\caption{Executions after collapsing}
+		\label{fig:after-collapsing}
+	\end{figure}
+	\todo{Måske skal denne figur laves ud fra GasWorkflow}
+	
 	\newpar After finding the transitive closures between executions it is possible to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{Execution finish} must be removed from the history graph. 
 	
 	% TODO: Transitive reduction
