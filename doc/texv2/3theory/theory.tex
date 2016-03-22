@@ -27,5 +27,7 @@
 	Modeling an event that has to be executed in order for the event to be in a "completed" state \todo{Find bedre phrasing for "completed" udtryk.} is made possible by the \textit{response} (\response) relation. If an event has a \textit{response} edge going to it in the DCR graph, the event is in a \textit{pending} state. The pending state signifies that the event should be executed in order for the process to be in an accepting state.
 	
 	Users of a given DCR graph will execute events in order to change the state of the process the DCR graph is modeling. Events will have been executed in a certain order, which have resulted in the current state of the workflow. Several users can execute events concurrently in different locations. The events change state accordingly by communicating with reachable events. 
+	
+	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation. 
 	\section{Distributed Systems}
 		\subsection{Consensus}
