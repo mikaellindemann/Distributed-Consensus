@@ -1,5 +1,31 @@
 % !TeX root = ../DistributedConsensus.tex
 \chapter{Theory}\label{chap:theory}
 	\section{Dynamic Condition Response Graphs}
+	
+	\todo{Skriv om, så ikke i definition.}
+	\begin{definition}[DCR Graph]
+		A DCR Graph is a tuple $(E, l R, M)$ where
+		\begin{itemize}
+			\item $E$ is a finite set of events (nodes of the graph)
+			\item $l$ is a labeling function, assigning a label to each event
+			\item $R$ is a finite set of relations between events (edges of the graph). These are partitioned into five kinds; conditions (\condition), responses (\response), milestones ($\rightarrow\!\!\!\diamond$), inclusions(\inclusion) and exclusion (\exclusion).
+			\item $M$ is the marking of the graph. A marking represent the state of the process and is a triple ($Ex,Re,In$) of sets of events, respectively the executed ($Ex$), the pending ($Re$), and the included ($In$) events.
+		\end{itemize}
+		A DCR Graph with data is a tuple (E,l,R,Md,g,V) where V is a set of data variables, Md = (M,ev), (E,l,R,M) is a DCR Graph, ev is an evaluation function mapping data variables to values, and g is a (partial) relation guard mapping from (some of) the relations to boolean expressions over variables. \todo{cite "A Case for Declarative Process Modelling: Agile Development of a Grant Application System, Søren Debois, Thomas Hildebrandt and Tijs Slaats, p. 128"}
+	\end{definition}
+	Events are atomic and can represent the start or the end of an activity, or an atomic event. 
+	For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
+	
+	A DCR graph can model a \textit{workflow}, which represents a work process. The DCR graph can then be used to represent the current state of the process, to see what parts of the process have been completed and what parts of the process remain to be completed or \textit{executed}. 
+	
+	The partitioning of the five types of relations in DCR graph makes modeling interconnected events possible, e.g. having an event in a process that makes another event non-executable. This is made possible by the \textit{exclusion} (\exclusion) relation, that excludes the other event and therefore makes in non-executable. 
+	
+	Modeling an event that is dependent on the completion of another event is made possible by the \textit{condition} (\condition) relation, which makes it impossible to execute an event, unless the event that has a condtition to it has been executed.
+	
+	Modeling an event that can be excluded and then then re-included is made possible by the \textit{inclusion} (\inclusion) relation. 
+	
+	Modeling an event that has to be executed in order for the event to be in a "completed" state \todo{Find bedre phrasing for "completed" udtryk.} is made possible by the \textit{response} (\response) relation. If an event has a \textit{response} edge going to it in the DCR graph, the event is in a \textit{pending} state. The pending state signifies that the event should be executed in order for the process to be in an accepting state.
+	
+	Users of a given DCR graph will execute events in order to change the state of the process the DCR graph is modeling. Events will have been executed in a certain order, which have resulted in the current state of the workflow. Several users can execute events concurrently in different locations. The events change state accordingly by communicating with reachable events. 
 	\section{Distributed Systems}
 		\subsection{Consensus}
