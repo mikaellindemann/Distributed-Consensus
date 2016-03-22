@@ -45,7 +45,7 @@
 	\newpar This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
 	
 	\subsection*{Correctness}
-	In the earlier section we saw that 
+	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
 	
 	\subsection{Performance}
 	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This situation occurs when all events have relations to all other events in the graph. Realistically though this situation will rarely occur since DCR graphs.
