@@ -1,5 +1,6 @@
 ﻿namespace HistoryConsensus
 open FSharp.Data
+open Array.Parallel
 open Action
 open Graph
 open HttpClient
@@ -46,6 +47,8 @@ module History =
         let result = JsonConvert.DeserializeObject<Graph option> response
         result
 
+    let mapParallel func list = List.ofArray <| Array.Parallel.map func (List.toArray list)
+
     /// The produce algorithm checks whether or not this event is already part of this history call.
     /// If it is, it just returns its local history. If not, it gathers information from its neighbors,
     /// Stitches it (if possible) and returns this as a Graph option.
@@ -53,9 +56,10 @@ module History =
         if List.contains eventId trace
         then Some localHistory
         else
-            let otherHistories = List.map (fun uri -> callProduce eventId trace uri) uris
+            let otherHistories = mapParallel (fun uri -> callProduce eventId trace uri) uris
             match optionUnwrapper otherHistories with
             | None -> None
             | Some histories -> stitch localHistory histories
         
+    
     
