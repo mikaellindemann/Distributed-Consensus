@@ -44,7 +44,8 @@ module Graph =
                         { fromNode with Edges = Set.filter (fun actionId -> actionId <> toNodeId) fromNode.Edges }
                         graph.Nodes
         }
-
+    
+    let hasEdge (fromAction:Action) (toActionId:ActionId) = Set.exists (fun id -> id=toActionId) fromAction.Edges
     
     //Retrieve a collection of nodes from given ActionIds.
     let getNodes graph actionIdList = List.map (getNode graph) actionIdList
@@ -70,6 +71,24 @@ module Graph =
 
         // Find all actions, that are not referenced in the graph.
         List.except toNodes allNodes
+
+    let simpleTransitiveReduction (graph: Graph) : Graph =
+        Map.fold 
+            (fun graph1 node1Id node1Action -> 
+                Map.fold 
+                    (fun graph2 node2Id node2Action -> 
+                        if (hasEdge node1Action node2Id )
+                        then 
+                            Map.fold
+                                ( fun graph3 node3Id node3Action -> 
+                                    if (hasEdge node2Action node3Id && hasEdge node1Action node3Id)
+                                    then removeEdge node1Id node3Id graph3
+                                    else graph3
+                                ) graph2 graph2.Nodes
+                        else graph2 
+                    ) graph1 graph1.Nodes
+            ) graph graph.Nodes
+
 
     let transitiveReduction beginningNodes graph =
         let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
