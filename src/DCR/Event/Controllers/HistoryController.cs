@@ -126,7 +126,7 @@ namespace Event.Controllers
                 return history;
             }
 
-            return FSharpOption<Graph.Graph>.Some(Graph.simplify(history.Value, Action.ActionType.ExecuteFinish));
+           return FSharpOption<Graph.Graph>.Some(Graph.simplify(history.Value, Action.ActionType.ExecuteFinish));
         }
 
         [HttpPost]
@@ -137,12 +137,11 @@ namespace Event.Controllers
 
             var localHistoryGraph = Graph.empty;
 
-            localHistoryGraph = Graph.addNode(localHistory[0], localHistoryGraph);
-
-            for (var i = 1; i < localHistory.Length; i++)
+            for (var i = 0; i < localHistory.Length; i++)
             {
                 localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
-                localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
+                if (i - 1 >= 0)
+                    localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
             }
 
             // HACK: We should have another way of fetching relations.
@@ -152,6 +151,7 @@ namespace Event.Controllers
                 .Union(eventDto.Responses)
                 .Union(eventDto.Inclusions)
                 .Union(eventDto.Exclusions)
+                .Where(relation => !traceList.Contains(relation.Id))
                 .Select(relation => $"{relation.Uri.ToString()}history/{relation.WorkflowId}/{relation.Id}");
             
             return History.produce(workflowId, eventId, ToFSharpList(traceList), ToFSharpList(relations), localHistoryGraph);

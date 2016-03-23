@@ -34,12 +34,15 @@ module History =
     /// an option type.
     let callProduce eventId trace uri =
         let body = JsonConvert.SerializeObject (eventId :: trace)
-        let response =
+
+        let response = Http.RequestString((sprintf "%s/produce" uri), body = HttpRequestBody.TextRequest body, headers = [("ContentType", "application/json"); ("Accept", "application/json")], httpMethod = "POST", customizeHttpRequest = (fun request -> request.Timeout <- 3600000; request.ContentType <- "application/json"; request))
+        (*let response =
             createRequest Post (sprintf "%s/produce" uri)
             |> withBody body
             |> withHeader (ContentType "application/json") 
             |> withHeader (Accept "application/json")
-            |> getResponseBody
+            |> withKeepAlive true
+            |> getResponseBody*)
         let result = JsonConvert.DeserializeObject<Graph option> response
         result
 
