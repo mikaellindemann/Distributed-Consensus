@@ -62,5 +62,7 @@
 	
 	
 	\section{Overall discussion}
-	There is a couple of downfalls with the algorithm. If we introduce malicious events to the DCR graph, we see the same problems as we did with the graph where the beginning node knew the rest of the graph. That is that if the neighbouring nodes does not know enough of eachother we have no way of making sure that the returned history is correct. Furthermore this uncertainty is now amplified since for each event that is asked that we do not have enough information about, can tamper with the history of the recoursively called events, or even add history of non existant events. Therefore some actions must be taken to handle these downfalls.
+	There is a couple of pitfalls with the algorithm. If malicious events are introduced in the DCR graph, the same problems arise as with the graph where the beginning node had relations with the rest of the graph. 
+	
+	That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recoursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls.
 	
