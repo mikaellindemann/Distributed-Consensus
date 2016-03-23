@@ -4,8 +4,8 @@
 	DCR graphs function as a good domain for developing an algorithm for finding an order of execution in distributed systems. Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
 	Furthermore DCR graphs specify several types of directed edges in the graph, which provide useful information for determining order of execution.
 	
-	\todo{Skriv om, så ikke i definition.}
-	\begin{definition}[DCR Graph]
+	\newpar DCR graphs are in \cite{} defined as: 
+		\begin{quotation}	
 		A DCR Graph is a tuple $(E, l R, M)$ where
 		\begin{itemize}
 			\item $E$ is a finite set of events (nodes of the graph)
@@ -13,10 +13,12 @@
 			\item $R$ is a finite set of relations between events (edges of the graph). These are partitioned into five kinds; conditions (\condition), responses (\response), milestones ($\rightarrow\!\!\!\diamond$), inclusions(\inclusion) and exclusion (\exclusion).
 			\item $M$ is the marking of the graph. A marking represent the state of the process and is a triple ($Ex,Re,In$) of sets of events, respectively the executed ($Ex$), the pending ($Re$), and the included ($In$) events.
 		\end{itemize}
-		A DCR Graph with data is a tuple (E,l,R,Md,g,V) where V is a set of data variables, Md = (M,ev), (E,l,R,M) is a DCR Graph, ev is an evaluation function mapping data variables to values, and g is a (partial) relation guard mapping from (some of) the relations to boolean expressions over variables. \todo{cite "A Case for Declarative Process Modelling: Agile Development of a Grant Application System, Søren Debois, Thomas Hildebrandt and Tijs Slaats, p. 128"}
-	\end{definition}
-	Events are atomic and can represent the start or the end of an activity, or an atomic event. 
-	For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
+		A DCR Graph with data is a tuple $(E,l,R,Md,g,V)$ where $V$ is a set of data variables, $Md = (M,ev), (E,l,R,M)$ is a DCR Graph, $ev$ is an evaluation function mapping data variables to values, and $g$ is a (partial) relation guard mapping from (some of) the relations to boolean expressions over variables.
+		
+		Events are atomic and can represent the start or the end of an activity, or an atomic event. 
+	\end{quotation}
+	
+	\newpar For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
 	
 	A DCR graph can model a \textit{workflow}, which represents a work process. The DCR graph can then be used to represent the current state of the process, to see what parts of the process have been completed and what parts of the process remain to be completed or \textit{executed}. 
 	
@@ -34,7 +36,7 @@
 	\section{Distributed Systems}
 		\subsection{Consensus}
 		\subsection{History}
-		It is often wanted to see a history of which events, from now on actions, has occured. In "Time, Clocks, and the Ordering of Events in a Distributed System" by Leslie Lamport, Lamport describes the relation between events, and their place in time as an ordering of events. 
+		It is often wanted to see a history of which events (\textit{actions}) has occured. In "Time, Clocks, and the Ordering of Events in a Distributed System" by Leslie Lamport, Lamport describes the relation between events, and their place in time as an ordering of events. 
 		
 		\newpar In set theory a total order is an order that has the properties antisymmetric, that is if $a \leq b$ and $b \leq a$ then $a = b$, and the transitive property, if $a \leq b$ and $b \leq c$ then $a \leq c$, as well as the totality, that is $a \leq b$ or $b \leq a$. Such a  A partial order is an order is like the total order in the sense that it also has the transitive and anti symmetry properties, but instead of totality is has the reflexivity property, $a \leq b$. 
 		
