@@ -84,9 +84,14 @@
 
 	% TODO: Collapsing
 	\subsection{Collapsing}
-	When looking at the order of execution, it can be hard to determine which action should be the canonical representation of the time of an execution. If \texttt{ExecuteFinish} is chosen, it can be hard to tell which execution happened before the other, because the related actions happen before the \texttt{ExecuteFinish} action. The same property is true for the \texttt{ExecuteStart} action, although the problem is to decide which execution happened first.
+	When looking at the order of execution, it can be difficult to determine which action should be the canonical representation of the time of an execution. If \texttt{ExecuteFinish} is chosen, it can be difficult to tell which execution happened before the other, due to the fact that related actions happen before the \texttt{ExecuteFinish} action. 
+	The same is true for the \texttt{ExecuteStart} action. It therefore needs to be decided what constitutes an entire execution, and to decide in what order these executions happen.
 	
-	\newpar In order to overcome these problems we decided to look into \textit{Collapsing} an execution. What is meant by collapsing an execution, is to look at all of the actions between \texttt{ExecuteStart} and \texttt{ExecuteFinish} of a certain execution of an event. The actions between start and finish, might contain relations to actions located at other event's local histories. Because these actions are created\todo{Created er ikke det rette ord her} by the interaction from the current event, we say that these actions now belong to the execution of the current event. An example of this separation of executions can be found in \autoref{fig:before-collapsing}. This also gives us the property that no action has happened outside the execution of an event.
+	\newpar It is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} is to look at all of the actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connect these events into a single entity, representing an entire execution. 
+	
+	The actions between start and finish might contain relations to other actions located in the local histories of other events. Since events are only affected by other events being executed, it is safe to collapse these actions into a single execution going out from the current event, due to this fact. Since an action is always caused by the execution of \textit{some} event, the property that no action has happened outside the execution of an event is also gained\todo{'Gained' er ikke det rigtige udtryk her.}. 
+	
+	An example of this separation of executions can be found in \autoref{fig:before-collapsing}.
 	
 	\begin{figure}
 		\centering
