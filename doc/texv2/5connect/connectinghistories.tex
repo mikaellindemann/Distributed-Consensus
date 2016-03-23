@@ -45,7 +45,9 @@
 	Given this functionality provided by the happens before relations, an algorithm can be created to merge two histories together. First of all, every actions of the history need to be added to a joined history. To connect actions, for each action of the graph the corrosponding action is found due to the rules described in the previous section. Then an edge is created from the first action to the second. Every action has at most one corresponding action due to the fact that an action ID is unique in the workflow and it is therefore possible to match the counterpart ID with the exact action it corresponds to. With this algorithm a set of histories can then be merged together two at the time, until one final combined history remains.
 	
 	\section{Simplifying}
-	When a combined history has been produced, it represents all the actions that has happened in the workflow. This however is a history that contains more information than is necessary to show the order of execution. Finding the history with only executions is therefore desired.
+	When a combined history has been produced, it represents all the actions that has happened in the workflow. This, however, is a history that contains more information than is necessary to show the order of execution. Finding the history with only executions is therefore desired.
+	
+	
 	
 	\todo[inline]{This is probably no longer needed, START}
 	% Transitive closure

@@ -49,8 +49,7 @@ module Graph =
     
     let hasPath sourceNode toNodeId graph = 
         let rec checkNodes node =         
-            if hasEdge sourceNode node
-            then true
+            if hasEdge sourceNode node then true
             else Set.fold (fun acc i -> acc || checkNodes i) false (getNode graph node).Edges    
         checkNodes sourceNode.Id
     
@@ -102,7 +101,8 @@ module Graph =
                     ) graphSource graphSource.Nodes
             ) graph graph.Nodes
 
-
+    (*
+        
     let transitiveReduction beginningNodes graph =
         let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
         // the beginning nodes - goes over all of them -> probably egts updated from the next function.
@@ -124,23 +124,10 @@ module Graph =
                                        then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode.Id endNode.Id accGraph)
                                        else endNodesFun endNodesRest (unionListWithoutDuplicates [endNode] newNeighbours) fromNode newFromNodes accGraph
         fromNodesFun beginningNodes graph
+        
+    *)
 
-    ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
-    let hasRelation (fromNode:Action) (toNode:Action) : bool =
-        let checkID =
-            fromNode.CounterpartId = toNode.Id && fst fromNode.Id = fst toNode.CounterpartId
-        let checkRelation fromType toType =
-            match fromType, toType with
-            | ChecksConditon, CheckedConditon   -> true
-            | Includes, IncludedBy              -> true
-            | Excludes, ExcludedBy              -> true
-            | SetsPending, SetPendingBy         -> true
-            | Locks, LockedBy                   -> true
-            | Unlocks, UnlockedBy               -> true
-            | _                                 -> false
-        checkID && checkRelation fromNode.Type toNode.Type
-
-    let collapse (graph : Graph) =
+    let collapse graph =
         let createMapForSingleExecution actions newActionId map = 
             Set.fold (fun map actionId -> Map.add actionId newActionId map) map actions
 
@@ -177,14 +164,14 @@ module Graph =
                 Map.empty
                 uncollapsed
 
-        let getEdgesThatIsntYourself actionId (newActionId : ActionId) map =
+        let getEdgesThatAreNotYourself actionId (newActionId : ActionId) map =
             let action = getNode graph actionId
             let newIds = Set.map (fun oldId -> Map.find oldId map) action.Edges
             Set.remove newActionId newIds
-
+            
         Map.fold 
             (fun newGraph oldId newId ->
-                let edgeSet = getEdgesThatIsntYourself oldId newId mapOfCollapsedExecutions
+                let edgeSet = getEdgesThatAreNotYourself oldId newId mapOfCollapsedExecutions
                 let action = Action.create newId newId ActionType.ExecuteFinish edgeSet
                 addNode action newGraph)
             empty
@@ -192,8 +179,23 @@ module Graph =
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let collapsedExecutions = collapse graph
-        let transReduction = transitiveReduction (getBeginningNodes collapsedExecutions) collapsedExecutions
+        let transReduction = simpleTransitiveReduction collapsedExecutions
         transReduction
+
+    ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
+    let hasRelation (fromNode:Action) (toNode:Action) : bool =
+        let checkID =
+            fromNode.CounterpartId = toNode.Id && fst fromNode.Id = fst toNode.CounterpartId
+        let checkRelation fromType toType =
+            match fromType, toType with
+            | ChecksConditon, CheckedConditon   -> true
+            | Includes, IncludedBy              -> true
+            | Excludes, ExcludedBy              -> true
+            | SetsPending, SetPendingBy         -> true
+            | Locks, LockedBy                   -> true
+            | Unlocks, UnlockedBy               -> true
+            | _                                 -> false
+        checkID && checkRelation fromNode.Type toNode.Type
 
     let merge localGraph otherGraph =
         let addToUsedActions action corner = Set.add action.Id corner
