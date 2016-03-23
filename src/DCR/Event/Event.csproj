@@ -32,7 +32,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <IncludeIisSettings>true</IncludeIisSettings>
+    <IncludeIisSettings>false</IncludeIisSettings>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -120,6 +120,11 @@
     <Compile Include="Logic\AuthLogic.cs" />
     <Compile Include="Logic\LockingLogic.cs" />
     <Compile Include="Logic\StateLogic.cs" />
+    <Compile Include="Migrations\201603211037260_InitialCreate.cs" />
+    <Compile Include="Migrations\201603211037260_InitialCreate.Designer.cs">
+      <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EventRoleModel.cs" />
     <Compile Include="Models\RelationToOtherEventModel.cs" />
     <Compile Include="Models\UriClasses\ConditionUri.cs" />
@@ -164,6 +169,11 @@
       <Project>{5e6bb204-f6dc-4b14-b20d-2244cf6e48dc}</Project>
       <Name>HistoryConsensus</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201603211037260_InitialCreate.resx">
+      <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

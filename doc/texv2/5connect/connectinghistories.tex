@@ -84,6 +84,7 @@
 	\todo[inline]{This is probably no longer needed, FINISH}
 
 	% TODO: Collapsing
+	\subsection{Collapsing}
 	When looking at the order of execution, it can be hard to determine which action should be the canonical representation of the time of an execution. If \texttt{ExecuteFinish} is chosen, it can be hard to tell which execution happened before the other, because the related actions happen before the \texttt{ExecuteFinish} action. The same property is true for the \texttt{ExecuteStart} action, although the problem is to decide which execution happened first.
 	
 	\newpar In order to overcome these problems we decided to look into \textit{Collapsing} an execution. What is meant by collapsing an execution, is to look at all of the actions between \texttt{ExecuteStart} and \texttt{ExecuteFinish} of a certain execution of an event. The actions between start and finish, might contain relations to actions located at other event's local histories. Because these actions are created\todo{Created er ikke det rette ord her} by the interaction from the current event, we say that these actions now belong to the execution of the current event. An example of this separation of executions can be found in \autoref{fig:before-collapsing}. This also gives us the property that no action has happened outside the execution of an event.
@@ -112,8 +113,50 @@
 	\end{figure}
 	\todo{Måske skal denne figur laves ud fra GasWorkflow}
 	
+	The Collapse algorithm can be seen in \autoref{alg:collapse}.
+	
+	\begin{algorithm}
+		\begin{algorithmic}
+			\Function{Collapse}{graph}\State
+				locals: CollapseMap: Mapping from old to newaction IDs.
+				\State\hspace{28pt} Result: Graph, initially empty
+				\State
+				\State ExecuteStarts $\leftarrow$ \Call{Filter}{type = ExecuteStart, graph} \State
+				Executions $\leftarrow$ \Call{Map.map}{FindSingleExecution, ExecuteStarts}
+				\ForAll{executions in Executions}\State
+					CollapseMap $\leftarrow$ \Call{CreateExecutionMap}{execution, newExecutionId, CollapseMap}
+				\EndFor
+				\ForAll{oldActionID, newActionID in CollapseMap}
+					\State
+					NewAction $\leftarrow$ Action with \State\hspace{28pt}ID = newActionID and \State\hspace{28pt}Edges = edges from oldActionID in graph mapped to new IDs\State
+					Result $\leftarrow$ \Call{AddNode}{NewAction, Result} \State\Comment{This requires AddNode to merge edge sets when existing nodes are added}
+				\EndFor
+				
+			\EndFunction
+			\State
+			\Function{FindSingleExecution}{startAction}
+				\State locals: execution
+				\While{startAction.Type $\neq$ ExecuteFinish} \State
+					execution $\leftarrow$ \Call{AddRange}{startAction.Edges, execution}
+				\EndWhile\State
+				\Return execution
+			\EndFunction
+			\State
+			\Function{CreateExecutionMap}{ActionSet, newActionId, accumulatorMap}
+				\ForAll{actions in ActionSet}\State
+					accumulatorMap $\leftarrow$ \Call{Add}{action.Id, newActionId, accumulatorMap}
+				\EndFor \State
+				\Return accumulatorMap
+			\EndFunction
+		\end{algorithmic}
+		\caption{Collapse algorithm}
+		\label{alg:collapse}
+	\end{algorithm}
+	
+	\todo[inline]{The following paragraphs is about closures and filtering. Remove?}
 	\newpar After finding the transitive closures between executions it is possible to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{Execution finish} must be removed from the history graph. 
 	
+	\subsection{Transitive Reduction}
 	% TODO: Transitive reduction
 	\newpar In the resulting history, redudant edges can still exist. In cases where there exists a path from an action to another action as well as a direct edge from the two, the direct edge is redundant and can be removed.	A subgraph of the history with the same reachability but with as few edges as possible, a minimum equivalent graph, is therefore desired. Finding this is possible by transitive reduction on the original graph, which then results in the minimum equivalent graph. Therefore, if there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
 	

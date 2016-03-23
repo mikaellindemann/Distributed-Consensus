@@ -152,7 +152,7 @@ module Graph =
 
         Map.fold 
             (fun newGraph oldId newId ->
-                let edgeSet = getEdgesThatIsntYourself oldId newId mapOfCollapsedExecutions // Todo, calculate this set of edges from oldId excluding events in the same event.
+                let edgeSet = getEdgesThatIsntYourself oldId newId mapOfCollapsedExecutions
                 let action = Action.create newId newId ActionType.ExecuteFinish edgeSet
                 addNode action newGraph)
             empty

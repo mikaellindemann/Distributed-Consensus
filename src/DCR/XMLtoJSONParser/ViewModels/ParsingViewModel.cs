@@ -20,8 +20,16 @@ namespace XMLtoJSONParser.ViewModels
         public ParsingViewModel()
         {
             _uploadButtonActive = true;
-            _serverUri = "http://";
-            _eventUris = "http://";
+#if DEBUG
+            _serverUri = "http://localhost:13768";
+            _eventUris = "http://localhost:13752";
+#else
+            _serverUri = "http://flowit.azurewebsites.net";
+            _eventUris = "http://flowites1.azurewebsites.net,http://flowites2.azurewebsites.net";
+            _defaultPassword = "Password";
+            _createUsers = true;
+            _createWorkflow = true;
+#endif
         }
 
         public string XmlFilePath
