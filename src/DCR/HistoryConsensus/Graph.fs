@@ -73,20 +73,26 @@ module Graph =
         List.except toNodes allNodes
 
     let simpleTransitiveReduction (graph: Graph) : Graph =
+        let ifTransitiveClosureThenReduce sourceNodeId sourceNodeAction neighbourNodeAction destinationNodeId graphDestination =
+            if (hasEdge neighbourNodeAction destinationNodeId && hasEdge sourceNodeAction destinationNodeId)
+            then removeEdge sourceNodeId destinationNodeId graphDestination
+            else graphDestination
+
+        let ifEdgeThenCheckFurther sourceNodeId sourceAction neighbourNodeId neighbourAction graphNeighbour = 
+            if (hasEdge sourceAction sourceNodeId )
+            then 
+                Map.fold
+                    ( fun graphDestination destinationNodeId destinationNodeAction -> 
+                        ifTransitiveClosureThenReduce sourceNodeId sourceAction neighbourAction destinationNodeId graphDestination
+                    ) graphNeighbour graphNeighbour.Nodes
+            else graphNeighbour
+
         Map.fold 
-            (fun graph1 node1Id node1Action -> 
+            (fun graphSource sourceNodeId sourceAction -> 
                 Map.fold 
-                    (fun graph2 node2Id node2Action -> 
-                        if (hasEdge node1Action node2Id )
-                        then 
-                            Map.fold
-                                ( fun graph3 node3Id node3Action -> 
-                                    if (hasEdge node2Action node3Id && hasEdge node1Action node3Id)
-                                    then removeEdge node1Id node3Id graph3
-                                    else graph3
-                                ) graph2 graph2.Nodes
-                        else graph2 
-                    ) graph1 graph1.Nodes
+                    (fun graphNeighbour neighbourNodeId neighbourAction -> 
+                        ifEdgeThenCheckFurther sourceNodeId sourceAction neighbourNodeId neighbourAction graphNeighbour
+                    ) graphSource graphSource.Nodes
             ) graph graph.Nodes
 
 
