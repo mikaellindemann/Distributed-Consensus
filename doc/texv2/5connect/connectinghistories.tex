@@ -170,7 +170,7 @@
 			\Function{Execution Transitive-Reduction}{history}
 				\ForAll{action1 in history}
 					\ForAll{action2 in history}
-						\If{\Call{edgeExists}{action1, action2, history}}
+						\If{\Call{pathExists}{action1, action2, history}}
 							\ForAll{action3 in history}
 								\If{\Call{edgeExists}{action2, action3, history}}
 									\If{\Call{edgeExists}{action1, action3, history}}
@@ -187,7 +187,9 @@
 		\end{algorithmic}
 		\caption{Transitive Reduction Algorithm}
 	\end{algorithm}
-		
+	
+	\newpar The transitive reduction algorithm runs in $O(n^3)$ where n is the number of actions. This can be seen by the fact that the algorithm has a triple nested for-loop over all the actions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is constant. Realistically the graph will not be totally connected and therefore the innermost loop will not be executed for most of the actions.
+	
 	\newpar By combining these three steps, transitive closure, filtering and transitive reduction, we find the order of execution represented as a minimum equivalent graph of the entire history. 
 	
 	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot falsify the history. Just like in the case where one event represented the workflow, we have no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to eachother. The following chapters go more into depth with why that is the case.
