@@ -103,8 +103,9 @@
 	\end{figure}
 	\todo{Måske skal denne figur laves ud fra GasWorkflow}
 	
-	\newpar
-	When the separation has been found, it is time to decide what should happen to the groupings. Because we want to keep all relations intact, we point all ingoing edges towards a new \textit{collapsed} node, and all outgoing edges are added to the same new node. In order not to create more types of actions, we chose the \texttt{ExecuteFinish} type to denote a collapsed execution. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
+	\newpar When actions contained in an exectuion have been found, it is necessary to decide what should happen to the groupings. It is desired to keep all relations intact, and therefore all ingoing edges to the current event are pointed towards a new \textit{collapsed node}, and all outgoing edges are added to the same new node. This new \textit{collapsed node} then represents the entire execution. 
+	
+	In order not to create another type of action, the \texttt{ExecuteFinish} type was chosen to denote a collapsed execution. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
 	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efterfølgende}
 	
 	\begin{figure}

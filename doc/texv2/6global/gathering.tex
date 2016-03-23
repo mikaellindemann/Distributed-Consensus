@@ -48,7 +48,17 @@
 	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
 	
 	\subsection{Performance}
-	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This situation occurs when all events have relations to all other events in the graph. Realistically though this situation will rarely occur since DCR graphs.
+	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This occurs when the graph is fully connected, and all events therefore have relations to all other events in the graph. 
+	
+	Realistically this situation will rarely occur since DCR graphs. \todo{Since wat?}
+	
+	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents new problems. 
+	
+	Certain issues arise if an event with neighbours is the last event in what would have been a produce cycle and due to tracing returns its own local history which would then be cached. This event would then never return the histories of its neighbours if contacted again from a different event, but would instead only return its own history due to caching. 
+	
+	The neighbours history of the neighbours would then only be produced once, and therefore pass through a single, possibly malicious, node. The lack of redundancy in the system therefore presents an issue when validating histories. \todo{"See section bla bla Security where this is detailed further."} 
+	
+	It is therefore necessary to produce redundant histories, which makes caching impossible.
 	
 	
 	\section{Overall discussion}
