@@ -47,6 +47,13 @@ module Graph =
     
     let hasEdge (fromAction:Action) (toActionId:ActionId) = Set.exists (fun id -> id=toActionId) fromAction.Edges
     
+    let hasPath sourceNode toNodeId graph = 
+        let rec checkNodes node =         
+            if hasEdge sourceNode node
+            then true
+            else Set.fold (fun acc i -> acc || checkNodes i) false (getNode graph node).Edges    
+        checkNodes sourceNode.Id
+    
     //Retrieve a collection of nodes from given ActionIds.
     let getNodes graph actionIdList = List.map (getNode graph) actionIdList
     let getNodesS graph actionIdSet = Set.map (getNode graph) actionIdSet
@@ -79,7 +86,7 @@ module Graph =
             else graphDestination
 
         let ifEdgeThenCheckFurther sourceNodeId sourceAction neighbourNodeId neighbourAction graphNeighbour = 
-            if (hasEdge sourceAction sourceNodeId )
+            if (hasPath sourceAction neighbourNodeId graphNeighbour)
             then 
                 Map.fold
                     ( fun graphDestination destinationNodeId destinationNodeAction -> 
