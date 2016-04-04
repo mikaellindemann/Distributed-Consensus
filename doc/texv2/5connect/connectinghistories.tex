@@ -27,13 +27,14 @@
 	\subsection{Happens-before}
 	The concept of happens-before relations helps determining what actions have happened before others across events.
 	
-	\todo{Recall her?}
+	\todo{har vi ikke allerede defineret dette i teori samt representing a history? (jeg har tilføjet recall)}
 	Recall that individual actions that have happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$.
 	Also recall that edges can be created between actions on two different events, if $A$ is registered as sent on event $a$ and is registered\todo{Er registered as nødvendigt her?} as received on event $b$.
 	
 	The concepts of transitivity, irreflexivity and antisymmetry also apply to happens-before relations. That is if $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$ (transitivity), $A \not\rightarrow A$ (irreflexivity) and if $A \neq B$ and $A \rightarrow B$ then $B \not\rightarrow A$ (antisymmetry).
 	
-	\newpar Using the representation of history detailed in \autoref{chap:representing-a-history} it is possible to create a graph of happens-before relations. To connect actions across events, the action ID and the counterpart action ID of the action is used, in addition to the type of the action. We define the relation between action types as:
+	\newpar As discussed in \autoref{chap:representing-a-history} an action can be seen from two perspectives: The perspective of the performer and the perspective of the receiver.
+	Because the two actions represent sides of the same message exchange, we say that an initiation of this action happens before the action is logged on the receiving side. Therefore an edge can be created between the pairs of actions that correspond to each other. The types of actions that can correspond are defined in \autoref{def:happensbeforeaction}.
 	
 	\begin{definition}
 		The following relations describe what action types happen before other action types.
@@ -45,9 +46,12 @@
 				\item Locks $\rightarrow$ Locked by
 				\item Unlocks $\rightarrow$ Unlocked by
 			\end{itemize}
+			\label{def:happensbeforeaction}
 	\end{definition}
 	
-	Given this functionality provided by the happens before relations, an algorithm can be created to merge two histories together. First of all, every actions of the history need to be added to a joined history. To connect actions, for each action of the graph the corrosponding action is found due to the rules described in the previous section. Then an edge is created from the first action to the second. Every action has at most one corresponding action due to the fact that an action ID is unique in the workflow and it is therefore possible to match the counterpart ID with the exact action it corresponds to. With this algorithm a set of histories can then be merged together two at the time, until one final combined history remains.
+	\newpar Because multiple events can share actions, and also, the types of two actions are not enough to determine whether or not that pair of actions is each others complement. Therefore the actions are also matched by the ID of the counterpart, seen from each side. Because the same event can possibly be executed multiple times, and thereby create multiple pairs of corresponding actions, at least one of the actions must know the local time stamp of the other. In the implementation we have chosen that the performer logs the time stamp of its counterpart as part of its action. With this information pairs of actions can uniquely be identified, eliminating the possibility of creating inconsistent histories due to mispaired \todo{Jeg ved ikke om man kan bruge dette ord, men det bruges omkring DNA kæder hvis de mod\-stående nukleotider ikke passer sammen} data. Furthermore an action can only match with one other action following these rules. This limits the amount of outgoing (and incoming) edges for each action to 0 to 2 (remember that an action is also part of the local history of the event).
+	
+	Given this functionality provided by the happens before relations, an algorithm can be created to merge two histories together. First of all, every action of the history need to be added to a joined history. To connect actions, for each action of the graph the corresponding action is found by the rules described in the previous section. Whenever a match is found the edge is added from the performing action to the receiving action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
 	
 	\section{Simplifying}
 	When a combined history has been produced, it represents all the actions that has happened in the workflow. This, however, is a history that contains more information than is necessary to show the order of execution. Finding the history with only executions is therefore desired.
@@ -89,6 +93,8 @@
 
 	% TODO: Collapsing
 	\subsection{Collapsing}
+	Although it is the receiver that saves the "by"-actions, these actions are still initiated by the performer, and is therefore part of the performers execution. By the use of this idea...\todo{Continue}
+		
 	When looking at the order of execution, it can be difficult to determine which action should be the canonical representation of the time of an execution. If \texttt{ExecuteFinish} is chosen, it can be difficult to tell which execution happened before the other, due to the fact that related actions happen before the \texttt{ExecuteFinish} action. 
 	The same is true for the \texttt{ExecuteStart} action. It therefore needs to be decided what constitutes an entire execution, and to decide in what order these executions happen.
 	
