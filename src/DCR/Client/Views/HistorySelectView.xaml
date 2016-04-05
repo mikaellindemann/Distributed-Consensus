@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client.Views"
         xmlns:viewModels="clr-namespace:Client.ViewModels"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
@@ -32,5 +31,6 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
+        <Label Content="{Binding EventViewModel.Name}" HorizontalAlignment="Center"></Label>
     </StackPanel>
 </Window>

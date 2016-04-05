@@ -40,7 +40,7 @@ namespace Client.ViewModels
             }
         }
 
-        public string CounterPartId
+        public string CounterpartId
         {
             get { return _actionDto.CounterpartId; }
             set

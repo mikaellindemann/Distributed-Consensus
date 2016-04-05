@@ -1,22 +1,18 @@
-﻿using System.CodeDom.Compiler;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.IO;
 using Client.Connections;
-using Common.DTO.Shared;
 using GraphOptionToGravizo;
 
 namespace Client.ViewModels
 {
     public class HistorySelectViewModel : ViewModelBase
     {
-        public EventAddressDto EventAddressDto { get; set; }
+        public EventViewModel EventViewModel { get; set; }
 
         private readonly IEventConnection _connection;
 
-        public HistorySelectViewModel(EventAddressDto eventAddressDto)
+        public HistorySelectViewModel(EventViewModel eventViewModel)
         {
-            EventAddressDto = eventAddressDto;
+            EventViewModel = eventViewModel;
             _connection = new EventConnection();
         }
 
@@ -27,7 +23,7 @@ namespace Client.ViewModels
 
         public async void Produce()
         {
-            var json = await _connection.Produce(EventAddressDto.Uri, EventAddressDto.WorkflowId, EventAddressDto.Id);
+            var json = await _connection.Produce(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
 
             var file = Path.GetTempFileName();
             File.WriteAllText(file, json);
@@ -38,7 +34,7 @@ namespace Client.ViewModels
 
         public async void Collapse()
         {
-            var json = await _connection.Collapse(EventAddressDto.Uri, EventAddressDto.WorkflowId, EventAddressDto.Id);
+            var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
 
             var file = Path.GetTempFileName();
             File.WriteAllText(file, json);
@@ -49,7 +45,7 @@ namespace Client.ViewModels
 
         public async void Create()
         {
-            var json = await _connection.Create(EventAddressDto.Uri, EventAddressDto.WorkflowId, EventAddressDto.Id);
+            var json = await _connection.Create(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
 
             var file = Path.GetTempFileName();
             File.WriteAllText(file, json);
