@@ -14,10 +14,6 @@ module Action =
         | SetPendingBy
         | CheckedConditon// of bool
         | ChecksConditon// of bool
-        | Locks
-        | LockedBy
-        | Unlocks
-        | UnlockedBy
         | ExecuteStart
         | ExecuteFinish
 

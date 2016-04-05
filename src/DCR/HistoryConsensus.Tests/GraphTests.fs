@@ -11,7 +11,7 @@ type GraphTests() =
     let testAction = {
             Id = ("Test", 1);
             CounterpartId = ("CounterpartTest", 1);
-            Type = ActionType.LockedBy;
+            Type = ActionType.IncludedBy;
             Edges = Set.ofList [("2", 2); ("3", 3); ("4", 4)]
         }
 
@@ -32,7 +32,7 @@ type GraphTests() =
                 [(("Test", 1), {
                     Id = ("Test", 1);
                     CounterpartId = ("CounterpartTest", 1);
-                    Type = ActionType.LockedBy;
+                    Type = ActionType.IncludedBy;
                     Edges = Set.ofList [("1", 1)]
                 })]
         }

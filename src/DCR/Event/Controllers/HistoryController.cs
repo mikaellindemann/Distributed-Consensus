@@ -78,14 +78,6 @@ namespace Event.Controllers
                     return Action.ActionType.CheckedConditon;
                 case ActionType.ChecksConditon:
                     return Action.ActionType.ChecksConditon;
-                case ActionType.Locks:
-                    return Action.ActionType.Locks;
-                case ActionType.LockedBy:
-                    return Action.ActionType.LockedBy;
-                case ActionType.Unlocks:
-                    return Action.ActionType.Unlocks;
-                case ActionType.UnlockedBy:
-                    return Action.ActionType.UnlockedBy;
                 case ActionType.ExecuteStart:
                     return Action.ActionType.ExecuteStart;
                 case ActionType.ExecuteFinished:

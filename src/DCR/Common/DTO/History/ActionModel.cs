@@ -25,10 +25,6 @@
         SetPendingBy,
         CheckedConditon,
         ChecksConditon,
-        Locks,
-        LockedBy,
-        Unlocks,
-        UnlockedBy,
         ExecuteStart,
         ExecuteFinished
     }

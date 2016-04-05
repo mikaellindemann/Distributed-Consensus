@@ -68,12 +68,8 @@ namespace GraphOptionToGravizo
             if (type.IsExecuteStart) return "ExecuteStart\",style=filled,fillcolor=red";
             if (type.IsIncludedBy) return "IncludedBy\"";
             if (type.IsIncludes) return "Includes\"";
-            if (type.IsLockedBy) return "LockedBy\"";
-            if (type.IsLocks) return "Locks\"";
             if (type.IsSetPendingBy) return "SetPendingBy\"";
             if (type.IsSetsPending) return "SetsPending\"";
-            if (type.IsUnlockedBy) return "UnlockedBy\"";
-            if (type.IsUnlocks) return "Unlocks\"";
 
             throw new ArgumentException("Unknown type", nameof(type));
         }

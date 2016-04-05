@@ -17,7 +17,6 @@ namespace Event.Logic
     {
         private readonly IEventStorage _storage;
         private readonly IEventFromEvent _eventCommunicator;
-        private readonly IEventHistoryLogic _historyLogic;
 
         //QUEUE is holding a dictionary of string (workflowid) , dictionary which holds string (eventid), the queue
         public static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>> LockQueue = new ConcurrentDictionary<string, ConcurrentDictionary<string, ConcurrentQueue<LockDto>>>();
@@ -28,11 +27,10 @@ namespace Event.Logic
         /// <param name="storage">Implementation of IEventStorage</param>
         /// <param name="eventCommunicator">Instance of IEventFromEvent, that will be used for communication
         /// to another Event.</param>
-        public LockingLogic(IEventStorage storage, IEventFromEvent eventCommunicator, IEventHistoryLogic historyLogic)
+        public LockingLogic(IEventStorage storage, IEventFromEvent eventCommunicator)
         {
             _storage = storage;
             _eventCommunicator = eventCommunicator;
-            _historyLogic = historyLogic;
         }
 
 
@@ -221,8 +219,7 @@ namespace Event.Logic
 
                 try
                 {
-                    var timestamp = await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Locks, eventId, relation.WorkflowId, relation.EventId, timestamp);
+                    await _eventCommunicator.Lock(relation.Uri, toLock, relation.WorkflowId, relation.EventId);
                     lockedEvents.Add(relation);
                 }
                 catch (Exception)
@@ -309,8 +306,7 @@ namespace Event.Logic
                 var relation = tuple.Value;
                 try
                 {
-                    var timestamp = await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId, timestamp);
+                    await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
                 }
                 catch (Exception)
                 {
@@ -363,8 +359,7 @@ namespace Event.Logic
             {
                 try
                 {
-                    var timestamp = await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Unlocks, eventId, relation.WorkflowId, relation.EventId, timestamp);
+                    await _eventCommunicator.Unlock(relation.Uri, relation.WorkflowId, relation.EventId, eventId);
                 }
                 catch (Exception)
                 {

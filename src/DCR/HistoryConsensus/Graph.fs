@@ -192,8 +192,6 @@ module Graph =
             | Includes, IncludedBy              -> true
             | Excludes, ExcludedBy              -> true
             | SetsPending, SetPendingBy         -> true
-            | Locks, LockedBy                   -> true
-            | Unlocks, UnlockedBy               -> true
             | _                                 -> false
         checkID && checkRelation fromNode.Type toNode.Type
 
