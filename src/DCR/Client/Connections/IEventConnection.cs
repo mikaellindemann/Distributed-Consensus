@@ -52,5 +52,9 @@ namespace Client.Connections
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
         Task Execute(Uri uri, string workflowId, string eventId, IEnumerable<string> roles);
+
+        Task<string> Produce(Uri uri, string workflowId, string id);
+        Task<string> Collapse(Uri uri, string workflowId, string id);
+        Task<string> Create(Uri uri, string workflowId, string id);
     }
 }

@@ -14,4 +14,5 @@ module Graph =
     val removeEdge : ActionId -> ActionId -> Graph -> Graph
     val merge : Graph -> Graph -> Graph option
     val empty : Graph
+    val collapse : Graph -> Graph
     val simplify : Graph -> ActionType -> Graph

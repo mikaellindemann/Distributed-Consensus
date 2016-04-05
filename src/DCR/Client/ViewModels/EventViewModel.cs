@@ -13,7 +13,7 @@ namespace Client.ViewModels
 {
     public class EventViewModel : ViewModelBase
     {
-        private readonly EventAddressDto _eventAddressDto;
+        internal readonly EventAddressDto _eventAddressDto;
         private EventStateDto _eventStateDto;
         private readonly IWorkflowViewModel _parent;
         private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush;

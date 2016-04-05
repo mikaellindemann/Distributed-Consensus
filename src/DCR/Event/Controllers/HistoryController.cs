@@ -129,6 +129,20 @@ namespace Event.Controllers
            return FSharpOption<Graph.Graph>.Some(Graph.simplify(history.Value, Action.ActionType.ExecuteFinish));
         }
 
+        [HttpGet]
+        [Route("history/{workflowId}/{eventId}/collapse")]
+        public async Task<FSharpOption<Graph.Graph>> Collapse(string workflowId, string eventId)
+        {
+            var history = await Produce(workflowId, eventId, new List<string>());
+
+            if (FSharpOption<Graph.Graph>.get_IsNone(history))
+            {
+                return history;
+            }
+
+            return FSharpOption<Graph.Graph>.Some(Graph.collapse(history.Value));
+        }
+
         [HttpPost]
         [Route("history/{workflowId}/{eventId}/produce")]
         public async Task<FSharpOption<Graph.Graph>> Produce(string workflowId, string eventId, IEnumerable<string> traceList)

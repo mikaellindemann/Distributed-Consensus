@@ -120,6 +120,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\HistoryListViewModel.cs" />
+    <Compile Include="ViewModels\HistorySelectViewModel.cs" />
     <Compile Include="ViewModels\HistoryViewModel.cs" />
     <Compile Include="ViewModels\IWorkflowListViewModel.cs" />
     <Compile Include="ViewModels\IWorkflowViewModel.cs" />
@@ -127,6 +128,9 @@
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\WorkflowListViewModel.cs" />
     <Compile Include="ViewModels\WorkflowViewModel.cs" />
+    <Compile Include="Views\HistorySelectView.xaml.cs">
+      <DependentUpon>HistorySelectView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HistoryView.xaml.cs">
       <DependentUpon>HistoryView.xaml</DependentUpon>
     </Compile>
@@ -141,6 +145,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="WaterMarkTextHelper.cs" />
+    <Page Include="Views\HistorySelectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\HistoryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,6 +176,10 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{a67e92fe-e12c-4f15-9eb1-750ef642406d}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GraphOptionToGravizo\GraphOptionToGravizo.csproj">
+      <Project>{98cb8062-6a49-4d78-91a6-873c520a22e8}</Project>
+      <Name>GraphOptionToGravizo</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

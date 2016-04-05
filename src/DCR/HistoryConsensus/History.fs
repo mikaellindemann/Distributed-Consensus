@@ -36,18 +36,20 @@ module History =
     let callProduce eventId trace uri =
         let body = JsonConvert.SerializeObject (eventId :: trace)
 
-        let response = Http.RequestString((sprintf "%s/produce" uri), body = HttpRequestBody.TextRequest body, headers = [("ContentType", "application/json"); ("Accept", "application/json")], httpMethod = "POST", customizeHttpRequest = (fun request -> request.Timeout <- 3600000; request.ContentType <- "application/json"; request))
-        (*let response =
-            createRequest Post (sprintf "%s/produce" uri)
-            |> withBody body
-            |> withHeader (ContentType "application/json") 
-            |> withHeader (Accept "application/json")
-            |> withKeepAlive true
-            |> getResponseBody*)
+        let response = 
+            Http.RequestString((sprintf "%s/produce" uri), 
+                body = HttpRequestBody.TextRequest body, 
+                customizeHttpRequest = 
+                    (fun request -> 
+                        request.Timeout <- 3600000; 
+                        request.ContentType <- "application/json"; 
+                        request.Accept <- "application/json"; 
+                        request.Method <- "POST";
+                        request
+                    )
+            )
         let result = JsonConvert.DeserializeObject<Graph option> response
         result
-
-    let mapParallel func list = List.ofArray <| Array.Parallel.map func (List.toArray list)
 
     /// The produce algorithm checks whether or not this event is already part of this history call.
     /// If it is, it just returns its local history. If not, it gathers information from its neighbors,
@@ -56,10 +58,7 @@ module History =
         if List.contains eventId trace
         then Some localHistory
         else
-            let otherHistories = mapParallel (fun uri -> callProduce eventId trace uri) uris
+            let otherHistories = List.map (fun uri -> callProduce eventId trace uri) uris
             match optionUnwrapper otherHistories with
             | None -> None
             | Some histories -> stitch localHistory histories
-        
-    
-    

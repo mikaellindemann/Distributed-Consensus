@@ -118,6 +118,46 @@ namespace Client.Connections
             }
         }
 
+        public async Task<string> Produce(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await
+                    _httpClient.Create<object, string>($"{uri}history/{workflowId}/{eventId}/produce/",
+                        new object[0]);
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public async Task<string> Collapse(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await
+                    _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/collapse/");
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public async Task<string> Create(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await
+                    _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/create/");
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
         public void Dispose()
         {
             _httpClient.Dispose();

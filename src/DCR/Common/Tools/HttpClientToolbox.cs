@@ -126,6 +126,8 @@ namespace Common.Tools
             var response = await HttpClient.PostAsJsonAsync(uri, toPost);
             await EnsureSuccessStatusCode(response);
 
+            if (typeof(TResult) == typeof(string)) return (TResult) (object) await response.Content.ReadAsStringAsync();
+
             return await response.Content.ReadAsAsync<TResult>();
         }
 
@@ -169,6 +171,8 @@ namespace Common.Tools
         {
             var response = await HttpClient.GetAsync(uri);
             await EnsureSuccessStatusCode(response);
+
+            if (typeof(T) == typeof(string)) return (T)(object)await response.Content.ReadAsStringAsync();
 
             var result = await response.Content.ReadAsAsync<T>();
             return result;

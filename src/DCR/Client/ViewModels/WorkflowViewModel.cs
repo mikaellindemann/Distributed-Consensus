@@ -120,8 +120,10 @@ namespace Client.ViewModels
         {
             if (EventList != null && EventList.Count != 0)
             {
-                var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
-                historyView.Show();
+                var history = new HistorySelectView(new HistorySelectViewModel(SelectedEventViewModel._eventAddressDto));
+                history.Show();
+                //var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
+                //historyView.Show();
             }
         }
 
