@@ -32,35 +32,43 @@ namespace Event.Tests.ControllersTests
             _lifecycleMock = new Mock<ILifecycleLogic>(MockBehavior.Strict);
 
             _historyMock.Setup(l => l.GetHistoryForEvent(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((string wId, string eId) => Task.Run( () => 
-                {
-                    var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
-                    var dtos = new List<ActionDto>();
-                    models.ForEach(x => dtos.Add(new ActionDto(x)));
-                    return dtos.AsEnumerable();
-                })).Verifiable();
+                .Returns((string wId, string eId) => Task.Run(() =>
+               {
+                   var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
+                   var dtos = new List<ActionDto>();
+                   models.ForEach(x => dtos.Add(new ActionDto(x)));
+                   return dtos.AsEnumerable();
+               })).Verifiable();
 
             _historyMock.Setup(l => l.SaveException(It.IsAny<Exception>(), It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((Exception e, ActionType type, string eId, string wId, string cId) =>
                     {
-                       return Task.Run( () => _historyTestList.Add(new ActionModel
-                       {
-                           EventId = eId, WorkflowId = wId, Type = type, CounterPartId = cId
-                       }));
-                    }
-                ).Verifiable();
-
-            _historyMock.Setup(l => l.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((ActionType type, string eId, string wId, string cId) =>
-                    {
-                        return Task.Run( () => 
-                        _historyTestList.Add(new ActionModel
+                        return Task.Run(() => _historyTestList.Add(new ActionModel
                         {
                             EventId = eId,
                             WorkflowId = wId,
-                            CounterPartId = cId,
-                            Type = type
+                            Type = type,
+                            CounterpartId = cId
                         }));
+                    }
+                ).Verifiable();
+
+            _historyMock.Setup(l => l.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
+                .Returns((ActionType type, string eId, string wId, string cId) =>
+                    {
+                        return Task.Run(() =>
+                        {
+                            var model =
+                                new ActionModel
+                                {
+                                    EventId = eId,
+                                    WorkflowId = wId,
+                                    CounterpartId = cId,
+                                    Type = type
+                                };
+                            _historyTestList.Add(model);
+                            return _historyTestList.IndexOf(model);
+                        });
                     }
                 ).Verifiable();
 
@@ -129,13 +137,14 @@ namespace Event.Tests.ControllersTests
             Assert.AreEqual(@event.OwnUri, eventInList.OwnUri);
             Assert.AreEqual(@event.Pending, eventInList.Pending);
         }
-        
+
         [Test]
-        public async void TestDeleteEvent() {
+        public async void TestDeleteEvent()
+        {
             //Setup.
             var @event = CreateTestEvent();
             _eventTestList.Add(@event);
- 
+
             //Execute.
             await _toTest.DeleteEvent(")(!&lkjasdkøåøæ+*¨´           $$§§", ")(!&lkjasdkøåøæ+*¨´           $$§§");
 
@@ -161,7 +170,7 @@ namespace Event.Tests.ControllersTests
 
             //Execute.
             var test = await _toTest.GetEvent(")(!&lkjasdkøåøæ+*¨´           $$§§", ")(!&lkjasdkøåøæ+*¨´           $$§§");
-            
+
             //Assert.
             Assert.DoesNotThrow(async () => await _toTest.GetEvent("notExisting", "notExistingEither"));
             Assert.DoesNotThrow(async () => await _toTest.GetEvent(null, null));

@@ -35,12 +35,6 @@ namespace Event.Tests.ControllersTests
         #region Constructor & Dispose
 
         [Test]
-        public void StateControllerTests_Constructor_Runs()
-        {
-            new StateController();
-        }
-
-        [Test]
         public void StateControllerTests_Constructor_Runs_With_Argument()
         {
             new StateController(_stateLogicMock.Object, _historyLogicMock.Object);

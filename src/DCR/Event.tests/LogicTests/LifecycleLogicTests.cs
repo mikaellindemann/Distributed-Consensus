@@ -16,14 +16,23 @@ namespace Event.Tests.LogicTests
     [TestFixture]
     class LifecycleLogicTests
     {
+        private Mock<IEventStorage> _storageMock;
+        private Mock<IEventStorageForReset> _resetStorageMock;
+        private Mock<ILockingLogic> _lockingLogicMock;
+        private LifecycleLogic _lifecycleLogic;
 
         #region Setup
 
         [TestFixtureSetUp]
         public void Setup()
         {
+            _storageMock = new Mock<IEventStorage>(MockBehavior.Strict);
 
+            _resetStorageMock = new Mock<IEventStorageForReset>(MockBehavior.Strict);
 
+            _lockingLogicMock = new Mock<ILockingLogic>(MockBehavior.Strict);
+
+            _lifecycleLogic = new LifecycleLogic(_storageMock.Object, _resetStorageMock.Object, _lockingLogicMock.Object);
         }
 
         #endregion
@@ -36,11 +45,10 @@ namespace Event.Tests.LogicTests
         public async Task CreateEvent_CalledWithNullEventDto()
         {
             // Arrange
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
             var uri = new Uri("http://www.dr.dk");
 
             // Act
-            await lifecycleLogic.CreateEvent(null, uri);
+            await _lifecycleLogic.CreateEvent(null, uri);
         }
 
         [Test]
@@ -48,7 +56,6 @@ namespace Event.Tests.LogicTests
         public async Task CreateEvent_CalledWithNullUri()
         {
             // Arrange
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
             var eventDto = new EventDto
             {
                 Conditions = new List<EventAddressDto>(),
@@ -65,7 +72,7 @@ namespace Event.Tests.LogicTests
             };
 
             // Act
-            await lifecycleLogic.CreateEvent(eventDto, null);
+            await _lifecycleLogic.CreateEvent(eventDto, null);
         }
 
         [Test]
@@ -120,20 +127,16 @@ namespace Event.Tests.LogicTests
         [ExpectedException(typeof(ArgumentNullException))]
         public async void DeleteEvent_WorkflowIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.DeleteEvent(null, "eventId");
+            await _lifecycleLogic.DeleteEvent(null, "eventId");
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public async void DeleteEvent_EvendIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.DeleteEvent("workflowid", null);
+            await _lifecycleLogic.DeleteEvent("workflowid", null);
         }
 
         [Test]
@@ -181,20 +184,16 @@ namespace Event.Tests.LogicTests
         [ExpectedException(typeof(ArgumentNullException))]
         public async void ResetEvent_WorkflowIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.ResetEvent(null, "eventId");
+            await _lifecycleLogic.ResetEvent(null, "eventId");
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public async void ResetEvent_EvendIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.ResetEvent("workflowid", null);
+            await _lifecycleLogic.ResetEvent("workflowid", null);
         }
 
         #endregion
@@ -222,20 +221,16 @@ namespace Event.Tests.LogicTests
         [ExpectedException(typeof(ArgumentNullException))]
         public async void GetEvent_WorkflowIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.GetEventDto(null, "eventId");
+            await _lifecycleLogic.GetEventDto(null, "eventId");
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public async void GetEvent_EvendIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.GetEventDto("workflowid", null);
+            await _lifecycleLogic.GetEventDto("workflowid", null);
         }
 
         [Test]

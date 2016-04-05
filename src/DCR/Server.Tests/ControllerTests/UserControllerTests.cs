@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Common.DTO.Event;
-using Common.DTO.History;
 using Common.DTO.Server;
 using Common.Exceptions;
 using Moq;
@@ -22,15 +21,13 @@ namespace Server.Tests.ControllerTests
     {
         private Mock<IServerLogic> _logicMock;
         private UsersController _usersController;
-        private Mock<IWorkflowHistoryLogic> _historyLogic;
 
         [SetUp]
         public void SetUp()
         {
             _logicMock = new Mock<IServerLogic>();
-            _historyLogic = new Mock<IWorkflowHistoryLogic>();
-            
-            _usersController = new UsersController(_logicMock.Object, _historyLogic.Object) {Request = new HttpRequestMessage()};
+
+            _usersController = new UsersController(_logicMock.Object) {Request = new HttpRequestMessage()};
         }
 
         private IEnumerable<WorkflowRole> GetSomeRoles()

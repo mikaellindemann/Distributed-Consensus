@@ -95,15 +95,6 @@ namespace Event.Tests.StorageTests
         }
 
         #region Constructor and Dispose
-        [Test]
-        public void Constructor_NoArguments()
-        {
-            // Act
-            var storage = new EventStorage();
-
-            // Assert
-            Assert.IsNotNull(storage);
-        }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

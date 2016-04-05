@@ -266,7 +266,7 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Returns(Task.FromResult(3)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
@@ -276,7 +276,7 @@ namespace Event.Tests.CommunicatorTests
 
             //Assert
             Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            mock.Verify(t => t.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
         #endregion
 
@@ -323,7 +323,7 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
@@ -333,7 +333,7 @@ namespace Event.Tests.CommunicatorTests
 
             //Assert
             Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            mock.Verify(t => t.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
         #endregion
 
@@ -381,7 +381,7 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
@@ -391,7 +391,7 @@ namespace Event.Tests.CommunicatorTests
 
             //Assert
             Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            mock.Verify(t => t.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
         #endregion
 
@@ -439,7 +439,7 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
@@ -449,7 +449,7 @@ namespace Event.Tests.CommunicatorTests
 
             //Assert
             Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<LockDto>()), Times.Once);
+            mock.Verify(t => t.Create<LockDto, int>(It.IsAny<string>(), It.IsAny<LockDto>()), Times.Once);
         }
         #endregion
 
@@ -497,7 +497,7 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Delete(It.IsAny<string>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Delete(It.IsAny<string>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
@@ -507,7 +507,7 @@ namespace Event.Tests.CommunicatorTests
 
             //Assert
             Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Delete(It.IsAny<string>()), Times.Once);
+            mock.Verify(t => t.Delete<int>(It.IsAny<string>()), Times.Once);
         }
         #endregion
     }

@@ -65,7 +65,7 @@ namespace Server.Tests.LogicTests
             Assert.IsTrue(_testModelList.Any());
             Assert.AreEqual(testHistory.WorkflowId, result.WorkflowId);
             Assert.AreEqual(testHistory.EventId, result.EventId);
-            Assert.AreEqual(testHistory.CounterPartId, result.CounterPartId);
+            Assert.AreEqual(testHistory.CounterpartId, result.CounterpartId);
             Assert.AreEqual(1, result.TimeStamp);
         }
 
@@ -116,7 +116,7 @@ namespace Server.Tests.LogicTests
                 EventId = @"&%¤#æøå*¨^´`?",
                 WorkflowId = @"&%¤#æøå*¨^´`?",
                 Id = 1,
-                CounterPartId = @"&%¤#æøå*¨^´`?",
+                CounterpartId = @"&%¤#æøå*¨^´`?",
                 Type = ActionType.Excludes
             };
         }

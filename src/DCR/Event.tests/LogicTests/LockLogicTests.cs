@@ -14,7 +14,7 @@ namespace Event.Tests.LogicTests
     [TestFixture]
     class LockLogicTests
     {
-
+        private int _lockNumber;
         #region Setup
 
         /// <summary>
@@ -526,7 +526,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -611,7 +611,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -716,7 +716,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -821,7 +821,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -856,7 +856,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -875,7 +875,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -895,7 +895,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -936,7 +936,7 @@ namespace Event.Tests.LogicTests
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(new Exception());
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -956,11 +956,11 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), "fails"))
                 .Throws(new Exception());
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -980,7 +980,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
             mockEventCommunicator.Setup(m => m.Lock(It.IsAny<Uri>(), It.IsAny<LockDto>(), It.IsAny<string>(), "fails"))
                 .Throws(new Exception());
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -1074,7 +1074,7 @@ namespace Event.Tests.LogicTests
             // Arrange
             var mockStorage = new Mock<IEventStorage>();
             mockStorage.Setup(m => m.GetInclusions(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => (HashSet<RelationToOtherEventModel>) null));
+                .Returns(Task.FromResult((HashSet<RelationToOtherEventModel>) null));
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
 
@@ -1252,7 +1252,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -1337,7 +1337,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -1442,7 +1442,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,
@@ -1547,7 +1547,7 @@ namespace Event.Tests.LogicTests
 
             var mockEventCommunicator = new Mock<IEventFromEvent>();
             mockEventCommunicator.Setup(m => m.Unlock(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Delay(0));
+                .Returns(Task.FromResult(++_lockNumber));
 
             ILockingLogic lockingLogic = new LockingLogic(
                 mockStorage.Object,

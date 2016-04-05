@@ -136,7 +136,7 @@ namespace Client.Tests.ViewModels
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    CounterPartId = "counterpartId",
+                    CounterpartId = "counterpartId",
                     TimeStamp = 1
                 });
             }
@@ -168,7 +168,7 @@ namespace Client.Tests.ViewModels
                     {
                         WorkflowId = "workflowId",
                         EventId = "eventId",
-                        CounterPartId = "counterpartId",
+                        CounterpartId = "counterpartId",
                         TimeStamp = 1
                     });
                 }

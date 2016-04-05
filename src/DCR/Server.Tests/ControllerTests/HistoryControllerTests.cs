@@ -43,7 +43,7 @@ namespace Server.Tests.ControllerTests
         public void Constructor_No_Parameters()
         {
             // Act
-            var controller = new HistoryController();
+            var controller = new HistoryController(_historyLogicMock.Object);
 
             // Assert
             Assert.IsNotNull(controller);
@@ -77,7 +77,7 @@ namespace Server.Tests.ControllerTests
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    CounterPartId = "counterpartId",
+                    CounterpartId = "counterpartId",
                     TimeStamp = 1
                 });
             }

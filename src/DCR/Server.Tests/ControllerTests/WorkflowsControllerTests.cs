@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Common.DTO.Event;
-using Common.DTO.History;
 using Common.DTO.Shared;
 using Moq;
 using NUnit.Framework;
@@ -22,18 +21,15 @@ namespace Server.Tests.ControllerTests
     {
         private Mock<IServerLogic> _mock;
         private WorkflowsController _controller;
-        private Mock<IWorkflowHistoryLogic> _historyLogic;
 
         [SetUp]
         public void SetUp()
         {
             _mock = new Mock<IServerLogic>();
-            _historyLogic = new Mock<IWorkflowHistoryLogic>();
-            _historyLogic.Setup(h => h.SaveHistory(It.IsAny<ActionModel>())).Returns((ActionModel model) => Task.Run(() => 1+1));
 
             _mock.Setup(logic => logic.Dispose());
 
-            _controller = new WorkflowsController(_mock.Object, _historyLogic.Object) { Request = new HttpRequestMessage() };
+            _controller = new WorkflowsController(_mock.Object) { Request = new HttpRequestMessage() };
         }
 
         #region GET Workflows

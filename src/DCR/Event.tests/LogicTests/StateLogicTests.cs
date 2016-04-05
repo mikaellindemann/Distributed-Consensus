@@ -27,6 +27,8 @@ namespace Event.Tests.LogicTests
         private Mock<IEventHistoryLogic> _eventHistoryMock;
         private HashSet<RelationToOtherEventModel> _conditions, _responses, _inclusions, _exclusions;
 
+        private int _timestamp;
+
         [SetUp]
         public void SetUp()
         {
@@ -61,32 +63,24 @@ namespace Event.Tests.LogicTests
             _authLogicMock.Setup(a => a.IsAuthorized(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(true);
 
             _eventCommunicatorMock = new Mock<IEventFromEvent>(MockBehavior.Strict);
-            _eventCommunicatorMock.Setup(ec => ec.SendPending(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
-            _eventCommunicatorMock.Setup(ec => ec.SendExcluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
-            _eventCommunicatorMock.Setup(ec => ec.SendIncluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
-            _eventCommunicatorMock.Setup(ec => ec.CheckCondition(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+            _eventCommunicatorMock.Setup(ec => ec.SendPending(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(++_timestamp));
+            _eventCommunicatorMock.Setup(ec => ec.SendExcluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(++_timestamp));
+            _eventCommunicatorMock.Setup(ec => ec.SendIncluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(++_timestamp));
+            _eventCommunicatorMock.Setup(ec => ec.CheckCondition(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new ConditionDto
+            {
+                Condition = true
+            });
             _eventCommunicatorMock.Setup(ec => ec.IsExecuted(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
             _eventCommunicatorMock.Setup(ec => ec.IsIncluded(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
             _eventHistoryMock = new Mock<IEventHistoryLogic>(MockBehavior.Strict);
 
-            _eventHistoryMock.Setup(ev => ev.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
+            _eventHistoryMock.Setup(ev => ev.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(++_timestamp));
 
             _stateLogic = new StateLogic(_eventStorageMock.Object, _lockingLogicMock.Object, _authLogicMock.Object, _eventCommunicatorMock.Object, _eventHistoryMock.Object);
         }
 
         #region Constructors and Dispose
-
-        [Test]
-        public void Constructor_NoArguments()
-        {
-            // Act
-            var logic = new StateLogic();
-
-            // Assert
-            Assert.IsNotNull(logic);
-        }
-
         [Test, ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullArguments()
         {
