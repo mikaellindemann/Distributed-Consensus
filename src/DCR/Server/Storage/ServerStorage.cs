@@ -18,9 +18,9 @@ namespace Server.Storage
     {
         private readonly IServerContext _db;
 
-        public ServerStorage(IServerContext context = null)
+        public ServerStorage(IServerContext context)
         {
-            _db = context ?? new StorageContext();
+            _db = context;
         }
 
         public async Task<ServerUserModel> GetUser(string username, string password)

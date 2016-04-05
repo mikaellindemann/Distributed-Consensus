@@ -7,7 +7,7 @@ namespace Server
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            UnityConfig.RegisterComponents();
+            GlobalConfiguration.Configure(UnityConfig.RegisterComponents);
         }
     }
 }

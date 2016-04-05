@@ -16,14 +16,6 @@ namespace Server.Logic
         private readonly IServerHistoryStorage _storage;
 
         /// <summary>
-        /// Default constructor. 
-        /// </summary>
-        public WorkflowHistoryLogic()
-        {
-            _storage = new ServerStorage();
-        }
-
-        /// <summary>
         /// Dependency injection constructor for testing purposes. 
         /// </summary>
         public WorkflowHistoryLogic(IServerHistoryStorage storage)

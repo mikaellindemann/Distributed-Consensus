@@ -20,13 +20,6 @@ namespace Event.Storage
         private readonly IEventContext _context;
 
         /// <summary>
-        /// Default constructor to be used in the application. Ties this instance to a hardcoded database-context. 
-        /// </summary>
-        public EventStorage()
-        {
-            _context = new EventContext();
-        }
-        /// <summary>
         /// Constructor used for dependency injection (used for testing purposes)
         /// </summary>
         /// <param name="context">Context to be used by EventStorage</param>
