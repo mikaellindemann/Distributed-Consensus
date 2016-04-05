@@ -25,6 +25,8 @@ namespace Server
                 .RegisterType<IServerStorage, ServerStorage>(new HierarchicalLifetimeManager())
                 .RegisterType<IServerHistoryStorage, ServerStorage>(new HierarchicalLifetimeManager())
 
+                .RegisterType<IServerContext, StorageContext>(new HierarchicalLifetimeManager())
+
                 .RegisterType<HttpClientToolbox>(new HierarchicalLifetimeManager(), new InjectionConstructor());
             
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
