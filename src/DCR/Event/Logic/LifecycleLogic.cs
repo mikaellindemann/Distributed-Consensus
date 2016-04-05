@@ -9,7 +9,6 @@ using Event.Exceptions;
 using Event.Interfaces;
 using Event.Models;
 using Event.Models.UriClasses;
-using Event.Storage;
 
 namespace Event.Logic
 {
@@ -21,17 +20,6 @@ namespace Event.Logic
         private readonly IEventStorage _storage;
         private readonly IEventStorageForReset _resetStorage;
         private readonly ILockingLogic _lockLogic;
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public LifecycleLogic()
-        {
-            var context = new EventContext();
-            _storage = new EventStorage(context);
-            _resetStorage = new EventStorageForReset(context);
-            _lockLogic = new LockingLogic(_storage, new EventCommunicator());
-        }
 
         /// <summary>
         /// Constructor to be used for dependency-injection

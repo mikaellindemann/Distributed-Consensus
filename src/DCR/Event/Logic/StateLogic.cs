@@ -4,11 +4,9 @@ using Common.DTO.Event;
 using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
-using Event.Communicators;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;
-using Event.Storage;
 
 namespace Event.Logic
 {
@@ -24,25 +22,13 @@ namespace Event.Logic
         private readonly IEventHistoryLogic _historyLogic;
 
         /// <summary>
-        /// Runtime Constructor.
-        /// Uses default implementations of IEventStorage, ILockingLogic, IAuthLogic and IEventFromEvent.
-        /// </summary>
-        public StateLogic()
-        {
-            _storage = new EventStorage();
-            _eventCommunicator = new EventCommunicator();
-            _lockingLogic = new LockingLogic(_storage, _eventCommunicator);
-            _authLogic = new AuthLogic(_storage);
-            _historyLogic = new EventHistoryLogic(); // HACK, retrieve this through constructor injection.
-        }
-
-        /// <summary>
         /// Constructor used for dependency injection.
         /// </summary>
         /// <param name="storage">An implementation of IEventStorage</param>
         /// <param name="lockingLogic">An implementation of ILockingLogic</param>
         /// <param name="authLogic">An implementation of IAuthLogic</param>
         /// <param name="eventCommunicator">An implementation of IEventFromEvent</param>
+        /// <param name="eventHistory"></param>
         public StateLogic(IEventStorage storage, ILockingLogic lockingLogic, IAuthLogic authLogic, IEventFromEvent eventCommunicator, IEventHistoryLogic eventHistory)
         {
             if (storage == null || lockingLogic == null || authLogic == null || eventCommunicator == null || eventHistory == null)
@@ -167,6 +153,7 @@ namespace Event.Logic
         /// </summary>
         /// <param name="workflowId">EventId of the workflow, the Event belongs to</param>
         /// <param name="eventId">EventId of the Event</param>
+        /// <param name="log"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if any of the arguments are null</exception>
         private async Task<bool> IsExecutable(string workflowId, string eventId, bool log)

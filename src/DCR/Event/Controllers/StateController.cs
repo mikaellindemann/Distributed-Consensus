@@ -23,16 +23,6 @@ namespace Event.Controllers
         private readonly IEventHistoryLogic _historyLogic;
 
         /// <summary>
-        /// Runtime Constructor of StateController.
-        /// Uses default implementation of IStateLogic and dependencies.
-        /// </summary>
-        public StateController()
-        {
-            _logic = new StateLogic();
-            _historyLogic = new EventHistoryLogic();
-        }
-
-        /// <summary>
         /// Constructor used for Dependency injection.
         /// </summary>
         /// <param name="logic">An implementation of IStateLogic.</param>

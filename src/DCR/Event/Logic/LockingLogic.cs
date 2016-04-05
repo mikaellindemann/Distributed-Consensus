@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.DTO.History;
 using Common.Exceptions;
 using Event.Interfaces;
 using Event.Models;
@@ -29,11 +28,11 @@ namespace Event.Logic
         /// <param name="storage">Implementation of IEventStorage</param>
         /// <param name="eventCommunicator">Instance of IEventFromEvent, that will be used for communication
         /// to another Event.</param>
-        public LockingLogic(IEventStorage storage, IEventFromEvent eventCommunicator)
+        public LockingLogic(IEventStorage storage, IEventFromEvent eventCommunicator, IEventHistoryLogic historyLogic)
         {
             _storage = storage;
             _eventCommunicator = eventCommunicator;
-            _historyLogic = new EventHistoryLogic();
+            _historyLogic = historyLogic;
         }
 
 
@@ -47,8 +46,6 @@ namespace Event.Logic
         /// <exception cref="LockedException">Thrown if the specified Event is already locked down</exception>
         /// <exception cref="ArgumentNullException">Thrown if any of the provided arguments are null</exception>
         /// <exception cref="ArgumentException">Thrown if the arguments are non-sensible</exception>
-
-
         private void AddToQueue(string workflowId, string eventId, LockDto lockDto)
         {
             var eventDictionary = LockQueue.GetOrAdd(workflowId, new ConcurrentDictionary<string, ConcurrentQueue<LockDto>>());

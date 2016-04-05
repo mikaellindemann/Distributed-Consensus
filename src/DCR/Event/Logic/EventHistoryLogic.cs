@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common.DTO.History;
 using Event.Interfaces;
-using Event.Storage;
 
 namespace Event.Logic
 {
@@ -18,9 +17,9 @@ namespace Event.Logic
         /// <summary>
         /// Default constructor
         /// </summary>
-        public EventHistoryLogic()
+        public EventHistoryLogic(IEventHistoryStorage storage)
         {
-            _storage = new EventStorage();
+            _storage = storage;
         }
 
         public Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId = "")

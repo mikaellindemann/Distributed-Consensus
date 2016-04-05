@@ -19,14 +19,6 @@ namespace Server.Controllers
         private readonly IWorkflowHistoryLogic _historyLogic;
 
         /// <summary>
-        /// Default constructor used during runtime.
-        /// </summary>
-        public HistoryController()
-        {
-            _historyLogic = new WorkflowHistoryLogic();
-        }
-
-        /// <summary>
         /// Used for dependency-injection
         /// </summary>
         /// <param name="historyLogic">Implementation of IWorkflowHistoryLogic</param>
@@ -34,9 +26,7 @@ namespace Server.Controllers
         {
             _historyLogic = historyLogic;
         }
-
         
-
         /// <summary>
         /// Get the entire History for a given Workflow.
         /// </summary>

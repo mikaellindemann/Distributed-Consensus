@@ -21,15 +21,6 @@ namespace Event.Controllers
         private readonly IEventHistoryLogic _historyLogic;
 
         /// <summary>
-        /// Default constructor. Will be used by ASP.NET during runtime.
-        /// </summary>
-        public LifecycleController()
-        {
-            _logic = new LifecycleLogic();
-            _historyLogic = new EventHistoryLogic();
-        }
-
-        /// <summary>
         /// Constructor used for dependency-injection
         /// </summary>
         /// <param name="logic">Logic-layer implementing the ILifecycleLogic interface</param>

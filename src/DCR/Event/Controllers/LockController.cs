@@ -22,15 +22,6 @@ namespace Event.Controllers
         private readonly IEventHistoryLogic _historyLogic;
 
         /// <summary>
-        /// Default controller used by framework during runtime
-        /// </summary>
-        public LockController()
-        {
-            _lockLogic = new LockingLogic(new EventStorage(new EventContext()), new EventCommunicator());
-            _historyLogic = new EventHistoryLogic();
-        }
-
-        /// <summary>
         /// Controller used to dependency-inject during testing
         /// </summary>
         /// <param name="lockLogic">LockLogic-layer implementing the ILockingLogic interface</param>

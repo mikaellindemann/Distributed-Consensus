@@ -9,7 +9,6 @@ using Event.Logic;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
-using Newtonsoft.Json;
 using Action = HistoryConsensus.Action;
 
 namespace Event.Controllers
@@ -21,15 +20,6 @@ namespace Event.Controllers
     {
         private readonly IEventHistoryLogic _historyLogic;
         private readonly ILifecycleLogic _lifecycleLogic;
-
-        /// <summary>
-        /// Default constructor; should be used during runtime
-        /// </summary>
-        public HistoryController()
-        {
-            _historyLogic = new EventHistoryLogic();
-            _lifecycleLogic = new LifecycleLogic();
-        }
 
         /// <summary>
         /// Constructor used for dependency-injection
