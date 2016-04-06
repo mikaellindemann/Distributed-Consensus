@@ -47,7 +47,7 @@ namespace Server.Tests.LogicTests
         }
 
         [Test]
-        public async void GetHistoryForWorkflowTest()
+        public async Task GetHistoryForWorkflowTest()
         {
             //Setup.
             var testHistory = CreateTestHistory();
@@ -60,8 +60,8 @@ namespace Server.Tests.LogicTests
 
             //Assert.
             _storageMock.Verify(m => m.GetHistoryForWorkflow(It.IsAny<string>()), Times.Once);
-            Assert.Throws<ArgumentNullException>(async () => await _toTest.GetHistoryForWorkflow(null));
-            Assert.DoesNotThrow(async () => await _toTest.GetHistoryForWorkflow(@"&%¤#æøå*¨^´`?"));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _toTest.GetHistoryForWorkflow(null));
+            Assert.DoesNotThrowAsync(async () => await _toTest.GetHistoryForWorkflow(@"&%¤#æøå*¨^´`?"));
             Assert.IsTrue(_testModelList.Any());
             Assert.AreEqual(testHistory.WorkflowId, result.WorkflowId);
             Assert.AreEqual(testHistory.EventId, result.EventId);
@@ -76,10 +76,10 @@ namespace Server.Tests.LogicTests
             var testHistory = CreateTestHistory();
 
             //Execute.
-            Assert.DoesNotThrow(async () => await _toTest.SaveHistory(testHistory));
+            Assert.DoesNotThrowAsync(async () => await _toTest.SaveHistory(testHistory));
 
             //Assert.
-            Assert.Throws<ArgumentNullException>(async () => await _toTest.SaveHistory(null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _toTest.SaveHistory(null));
             _storageMock.Verify(m => m.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
             Assert.IsTrue(_testModelList.Any());
         }
@@ -90,10 +90,10 @@ namespace Server.Tests.LogicTests
             var testHistory = CreateTestHistory();
 
             //Execute.
-            Assert.DoesNotThrow(async () => await _toTest.SaveNoneWorkflowSpecificHistory(testHistory));
+            Assert.DoesNotThrowAsync(async () => await _toTest.SaveNoneWorkflowSpecificHistory(testHistory));
 
             //Assert.
-            Assert.Throws<ArgumentNullException>(async () => await _toTest.SaveNoneWorkflowSpecificHistory(null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _toTest.SaveNoneWorkflowSpecificHistory(null));
             _storageMock.Verify(m => m.SaveNonWorkflowSpecificHistory(It.IsAny<ActionModel>()), Times.Once);
             Assert.IsTrue(_testModelList.Any());
         }

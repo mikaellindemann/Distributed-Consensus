@@ -127,10 +127,10 @@ namespace Server.Tests.ControllerTests
             _logicMock.Setup(m => m.Login(It.IsAny<LoginDto>())).ThrowsAsync((Exception) exceptionType.GetConstructors().First().Invoke(null));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.Login(loginDto));
+            var testDelegate = new AsyncTestDelegate(async () => await _usersController.Login(loginDto));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         //[TestCase(typeof(UnauthorizedException))]
@@ -178,10 +178,10 @@ namespace Server.Tests.ControllerTests
             _logicMock.Setup(l => l.Login(It.IsAny<LoginDto>())).Throws<ArgumentNullException>();
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.Login(null));
+            var testDelegate = new AsyncTestDelegate(async () => await _usersController.Login(null));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         //[Test]
@@ -192,10 +192,10 @@ namespace Server.Tests.ControllerTests
         //        .Callback((ActionModel model) => {});
 
         //    // Act
-        //    var testDelegate = new TestDelegate(async () => await _usersController.Login(null));
+        //    var testDelegate = new AsyncTestDelegate(async () => await _usersController.Login(null));
 
         //    // Assert
-        //    Assert.Throws<HttpResponseException>(testDelegate);
+        //    Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         //}
 
         #endregion
@@ -208,10 +208,10 @@ namespace Server.Tests.ControllerTests
             _logicMock.Setup(l => l.AddUser(It.IsAny<UserDto>())).Throws<ArgumentNullException>();
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.CreateUser(null));
+            var testDelegate = new AsyncTestDelegate(async () => await _usersController.CreateUser(null));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         //[Test]
@@ -271,10 +271,10 @@ namespace Server.Tests.ControllerTests
             };
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.CreateUser(argumentToProvide));
+            var testDelegate = new AsyncTestDelegate(async () => await _usersController.CreateUser(argumentToProvide));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         //[TestCase(typeof(ArgumentNullException))]
@@ -390,10 +390,10 @@ namespace Server.Tests.ControllerTests
             _usersController.ModelState.AddModelError("Role",new ArgumentNullException());
             var rolesList = GetSomeRoles();
             // Act
-            var testDelegate = new TestDelegate(async() => await _usersController.AddRolesToUser("Hanne", GetSomeRoles()));
+            var testDelegate = new AsyncTestDelegate(async() => await _usersController.AddRolesToUser("Hanne", GetSomeRoles()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         //[Test]
@@ -451,10 +451,10 @@ namespace Server.Tests.ControllerTests
             const string user = "Hanne";
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _usersController.AddRolesToUser(user, rolesList));
+            var testDelegate = new AsyncTestDelegate(async () => await _usersController.AddRolesToUser(user, rolesList));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
 

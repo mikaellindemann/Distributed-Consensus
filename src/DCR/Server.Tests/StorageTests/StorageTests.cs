@@ -71,10 +71,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddEventToWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddEventToWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -88,10 +88,10 @@ namespace Server.Tests.StorageTests
             };
             
             // Act
-            var testDelegate = new TestDelegate(async() => await storage.AddEventToWorkflow(eventModel));
+            var testDelegate = new AsyncTestDelegate(async() => await storage.AddEventToWorkflow(eventModel));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -106,10 +106,10 @@ namespace Server.Tests.StorageTests
             };
 
             // Act
-            var testDelegate = new TestDelegate(async() => await storage.AddEventToWorkflow(eventModel));
+            var testDelegate = new AsyncTestDelegate(async() => await storage.AddEventToWorkflow(eventModel));
 
             // Assert
-            Assert.Throws<EventExistsException>(testDelegate);
+            Assert.ThrowsAsync<EventExistsException>(testDelegate);
         }
 
         [Test]
@@ -147,10 +147,10 @@ namespace Server.Tests.StorageTests
             };
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddEventToWorkflow(eventModel));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddEventToWorkflow(eventModel));
 
             // Assert
-            Assert.Throws<IllegalStorageStateException>(testDelegate);
+            Assert.ThrowsAsync<IllegalStorageStateException>(testDelegate);
         }
 
         #endregion
@@ -164,10 +164,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddNewWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddNewWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -178,10 +178,10 @@ namespace Server.Tests.StorageTests
             var workflowModel = new ServerWorkflowModel {Id = "1", Name = "TestingName"};
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddNewWorkflow(workflowModel));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddNewWorkflow(workflowModel));
 
             // Assert
-            Assert.Throws<WorkflowAlreadyExistsException>(testDelegate);
+            Assert.ThrowsAsync<WorkflowAlreadyExistsException>(testDelegate);
         }
         #endregion
 
@@ -205,10 +205,10 @@ namespace Server.Tests.StorageTests
             
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddRolesToUser(username, roles));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddRolesToUser(username, roles));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -224,10 +224,10 @@ namespace Server.Tests.StorageTests
             var username = "NonExistingUser";
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddRolesToUser(username, roles));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddRolesToUser(username, roles));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -240,10 +240,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddRolesToWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddRolesToWorkflow(null));
             
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -256,10 +256,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddUser(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddUser(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -270,10 +270,10 @@ namespace Server.Tests.StorageTests
             var userToAdd = new ServerUserModel {Name = "TestingName"};
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.AddUser(userToAdd));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.AddUser(userToAdd));
 
             // Assert
-            Assert.Throws<UserExistsException>(testDelegate);
+            Assert.ThrowsAsync<UserExistsException>(testDelegate);
         }
 
         #endregion
@@ -289,10 +289,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async() => await storage.EventExists(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async() => await storage.EventExists(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase("1","1",true)]
@@ -367,10 +367,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetEventsFromWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetEventsFromWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -380,10 +380,10 @@ namespace Server.Tests.StorageTests
             var storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetEventsFromWorkflow("NonExistingWorkflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetEventsFromWorkflow("NonExistingWorkflowId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -416,10 +416,10 @@ namespace Server.Tests.StorageTests
             IServerHistoryStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetHistoryForWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetHistoryForWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -429,10 +429,10 @@ namespace Server.Tests.StorageTests
             var storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetHistoryForWorkflow("NonExistingWorkflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetHistoryForWorkflow("NonExistingWorkflowId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -446,10 +446,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetRole(rolename,workflowId));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetRole(rolename,workflowId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -459,10 +459,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetRole("Patient","nonexistingworkflowid"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetRole("Patient","nonexistingworkflowid"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -513,10 +513,10 @@ namespace Server.Tests.StorageTests
             var toTest = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await toTest.GetUser("", ""));
+            var testDelegate = new AsyncTestDelegate(async () => await toTest.GetUser("", ""));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -559,10 +559,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -572,10 +572,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.GetWorkflow("NonexistingWorkflow"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.GetWorkflow("NonexistingWorkflow"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -608,10 +608,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.Login(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.Login(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         #endregion
@@ -627,10 +627,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RemoveEventFromWorkflow(workflowId,eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.RemoveEventFromWorkflow(workflowId,eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase("nonExistingWorkflow","1")]
@@ -641,10 +641,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RemoveEventFromWorkflow("nonExistingWorkflow", "1"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.RemoveEventFromWorkflow("nonExistingWorkflow", "1"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -656,10 +656,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RemoveWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.RemoveWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -669,10 +669,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RemoveWorkflow("nonExistingWorkflow"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.RemoveWorkflow("nonExistingWorkflow"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -700,10 +700,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RemoveWorkflow("1"));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.RemoveWorkflow("1"));
 
             // Assert
-            Assert.Throws<IllegalStorageStateException>(testDelegate);
+            Assert.ThrowsAsync<IllegalStorageStateException>(testDelegate);
         }
         #endregion
 
@@ -716,10 +716,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.RoleExists(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.RoleExists(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase("1", "1", true)]            // Both role and workflow exist 
@@ -752,10 +752,10 @@ namespace Server.Tests.StorageTests
             IServerHistoryStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.SaveHistory(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.SaveHistory(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -770,10 +770,10 @@ namespace Server.Tests.StorageTests
             };
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.SaveHistory(argument));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.SaveHistory(argument));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -788,10 +788,10 @@ namespace Server.Tests.StorageTests
             };
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.SaveHistory(argument));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.SaveHistory(argument));
 
             // Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
         #endregion
 
@@ -803,10 +803,10 @@ namespace Server.Tests.StorageTests
             IServerHistoryStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.SaveNonWorkflowSpecificHistory(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.SaveNonWorkflowSpecificHistory(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -818,10 +818,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.UpdateWorkflow(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.UpdateWorkflow(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -836,10 +836,10 @@ namespace Server.Tests.StorageTests
             };
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.UpdateWorkflow(argument));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.UpdateWorkflow(argument));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -852,10 +852,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.UserExists(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.UserExists(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase("TestingName", true)]
@@ -883,10 +883,10 @@ namespace Server.Tests.StorageTests
             IServerStorage storage = new ServerStorage(_context);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await storage.WorkflowExists(null));
+            var testDelegate = new AsyncTestDelegate(async () => await storage.WorkflowExists(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase("1", true)]

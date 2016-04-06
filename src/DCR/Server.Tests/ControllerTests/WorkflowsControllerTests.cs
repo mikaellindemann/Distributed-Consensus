@@ -84,7 +84,7 @@ namespace Server.Tests.ControllerTests
         #region POST Workflow
 
         [Test]
-        public async void PostWorkflowAddsANewWorkflow()
+        public async Task PostWorkflowAddsANewWorkflow()
         {
             var list = new List<WorkflowDto>();
             // Arrange
@@ -108,7 +108,7 @@ namespace Server.Tests.ControllerTests
         [Test]
         [TestCase("testWorkflow1")]
         [TestCase("IdMedSværeBogstaverÅØOgTegn$")]
-        public async void PostWorkflow_id_that_does_not_exist(string workflowId)
+        public async Task PostWorkflow_id_that_does_not_exist(string workflowId)
         {
             var list = new List<ServerWorkflowModel>();
             _mock.Setup(logic => logic.AddNewWorkflow(It.IsAny<WorkflowDto>()))
@@ -129,7 +129,7 @@ namespace Server.Tests.ControllerTests
         [TestCase("NonexistentWorkflowId")]
         [TestCase("EtAndetWorkflowSomIkkeEksisterer")]
         [TestCase(null)]
-        public async void PostWorkflow_id_already_exists(string workflowId)
+        public async Task PostWorkflow_id_already_exists(string workflowId)
         {
             // Arrange
             var dto = new WorkflowDto { Id = workflowId, Name = "Workflow Name" };
@@ -178,7 +178,7 @@ namespace Server.Tests.ControllerTests
 
             var dto = new WorkflowDto { Id = "DoesExist", Name = "lol"};
 
-            Assert.DoesNotThrow(async () => await _controller.DeleteWorkflow(dto.Id));
+            Assert.DoesNotThrowAsync(async () => await _controller.DeleteWorkflow(dto.Id));
             Assert.IsEmpty(list.Where(w => w.Id == "DoesExist"));
         }
 
@@ -197,7 +197,7 @@ namespace Server.Tests.ControllerTests
 
             var dto = new WorkflowDto { Id = "SomeDto", Name = "lol" };
 
-            Assert.DoesNotThrow(async () => await _controller.DeleteWorkflow(dto.Id));
+            Assert.DoesNotThrowAsync(async () => await _controller.DeleteWorkflow(dto.Id));
             Assert.IsNotEmpty(list.Where(w => w.Id == "DoesNotExist"));
         }
 

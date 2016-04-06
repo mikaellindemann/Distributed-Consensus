@@ -98,10 +98,10 @@ namespace Server.Tests.ControllerTests
                 .ThrowsAsync(new ArgumentNullException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _controller.GetHistory("workflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _controller.GetHistory("workflowId"));
 
             // Assert
-            var responseException = Assert.Throws<HttpResponseException>(testDelegate);
+            var responseException = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest, responseException.Response.StatusCode);
         }
 
@@ -113,10 +113,10 @@ namespace Server.Tests.ControllerTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _controller.GetHistory("workflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _controller.GetHistory("workflowId"));
 
             // Assert
-            var responseException = Assert.Throws<HttpResponseException>(testDelegate);
+            var responseException = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.NotFound, responseException.Response.StatusCode);
         }
 
@@ -130,10 +130,10 @@ namespace Server.Tests.ControllerTests
                 .ThrowsAsync((Exception) exceptionType.GetConstructors().First().Invoke(null));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _controller.GetHistory("workflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _controller.GetHistory("workflowId"));
 
             // Assert
-            var responseException = Assert.Throws<HttpResponseException>(testDelegate);
+            var responseException = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.InternalServerError, responseException.Response.StatusCode);
         }
         #endregion
