@@ -10,7 +10,14 @@
         Title="HistorySelectView" Height="280" Width="500"
         d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}" WindowStartupLocation="CenterScreen">
     <StackPanel Orientation="Vertical">
-        <TextBlock Text="History Creation" HorizontalAlignment="Center" FontSize="24" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="188.8"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="History Creation" Margin="10,5,0,5" FontSize="24" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
+            <TextBlock Grid.Column="1" Text="{Binding Status}" Margin="5,0" TextAlignment="Right" TextWrapping="Wrap" Foreground="Red" FontSize="16" />
+        </Grid>
         <Button Content="Produce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">

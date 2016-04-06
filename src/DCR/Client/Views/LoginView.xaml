@@ -14,7 +14,7 @@
             <PasswordBox Name="Password" Style="{StaticResource PasswordBoxWatermark}" Margin="10,10,10,0" PasswordChanged="Password_PasswordChanged"/>
         </StackPanel>
         <TextBlock VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Style="{StaticResource HeaderTextBlockStyle}" FontStyle="Italic" Text="{Binding Status}" Margin="10,0,10,0"/>
-        <Button Name="Login" Style="{StaticResource ButtonDefaultStyle}"  Content="Login" Margin="10,56,10.333,10.333" Height="Auto">
+        <Button Name="Login" Style="{StaticResource ButtonDefaultStyle}"  Content="Login" IsDefault="True" Margin="10,56,10.333,10.333" Height="Auto">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding Mode=OneWay}" MethodName="Login"/>

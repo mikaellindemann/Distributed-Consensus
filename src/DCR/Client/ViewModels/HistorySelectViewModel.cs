@@ -7,6 +7,16 @@ namespace Client.ViewModels
     public class HistorySelectViewModel : ViewModelBase
     {
         public EventViewModel EventViewModel { get; set; }
+        private string _status = "";
+        public string Status
+        {
+            get { return _status; }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
 
         public bool CanPressButtons
         {
@@ -38,6 +48,7 @@ namespace Client.ViewModels
         public async void Produce()
         {
             CanPressButtons = false;
+            Status = "Attempting to produce history - your pdf reader will open when done";
             try
             {
                 var json =
@@ -50,6 +61,11 @@ namespace Client.ViewModels
 
                 Program.Main(new[] { file });
                 File.Delete(file);
+                Status = "";
+            }
+            catch
+            {
+                Status = "Something went wrong";
             }
             finally
             {
@@ -60,6 +76,7 @@ namespace Client.ViewModels
         public async void Collapse()
         {
             CanPressButtons = false;
+            Status = "Attempting to produce and collapse history - your pdf reader will open when done";
             try
             {
                 var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
@@ -69,6 +86,11 @@ namespace Client.ViewModels
 
                 Program.Main(new[] { file });
                 File.Delete(file);
+                Status = "";
+            }
+            catch
+            {
+                Status = "Something went wrong";
             }
             finally
             {
@@ -79,6 +101,7 @@ namespace Client.ViewModels
         public async void Create()
         {
             CanPressButtons = false;
+            Status = "Attempting to produc, collapse and reduce history - your pdf reader will open when done";
             try
             {
 
@@ -89,6 +112,11 @@ namespace Client.ViewModels
 
                 Program.Main(new[] { file });
                 File.Delete(file);
+                Status = "";
+            }
+            catch
+            {
+                Status = "Something went wrong";
             }
             finally
             {
