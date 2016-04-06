@@ -137,7 +137,7 @@ module Graph =
                 let rest = Set.remove immediateSuccessor edges
                 if Set.isEmpty rest
                 then (currentExecution, Some <| immediateSuccessor)
-                else (Set.add (Seq.find (fun t -> true) rest) currentExecution, Some immediateSuccessor)
+                else (Set.add (Seq.head rest) currentExecution, Some immediateSuccessor)
 
         let rec findSingleExecution actionId result =
             let newResult = (Set.add actionId result)
