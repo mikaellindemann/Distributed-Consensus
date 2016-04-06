@@ -9,22 +9,22 @@
         mc:Ignorable="d"
         Title="HistorySelectView" Height="300" Width="300"
         d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}">
-    <StackPanel Orientation="Vertical">
-        <Button Content="Produce">
+    <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+        <Button Content="Produce" Margin="5">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding}" MethodName="Produce"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <Button Content="Produce + Collapse">
+        <Button Content="Produce + Collapse" Margin="5">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding}" MethodName="Collapse"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <Button Content="Produce + Collapse + Reduce">
+        <Button Content="Produce + Collapse + Reduce" Margin="5">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding}" MethodName="Create"/>

@@ -101,8 +101,7 @@ module Graph =
                     ) graphSource graphSource.Nodes
             ) graph graph.Nodes
 
-    (*
-        
+      
     let transitiveReduction beginningNodes graph =
         let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
         // the beginning nodes - goes over all of them -> probably egts updated from the next function.
@@ -124,8 +123,6 @@ module Graph =
                                        then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode.Id endNode.Id accGraph)
                                        else endNodesFun endNodesRest (unionListWithoutDuplicates [endNode] newNeighbours) fromNode newFromNodes accGraph
         fromNodesFun beginningNodes graph
-        
-    *)
 
     let collapse graph =
         let createMapForSingleExecution actions newActionId map = 
@@ -157,16 +154,29 @@ module Graph =
                 Set.empty
                 (Map.filter (fun _ action -> action.Type = ExecuteStart) graph.Nodes) 
 
+
         let mapOfCollapsedExecutions =
             let uncollapsed = Set.map (fun startActionId -> startActionId, findSingleExecution startActionId Set.empty) startExecutions
+            
             Set.fold 
                 (fun map (startActionId,execution) -> createMapForSingleExecution execution startActionId map)
                 Map.empty
                 uncollapsed
 
+        let rec findStartExecution actionId =
+            let node = getNode graph actionId
+            if (node.Type = ExecuteStart) then Some actionId
+            elif (Set.isEmpty node.Edges)
+            then None
+            else findStartExecution (Seq.head node.Edges)
+
         let getEdgesThatAreNotYourself actionId (newActionId : ActionId) map =
             let action = getNode graph actionId
-            let newIds = Set.map (fun oldId -> Map.find oldId map) action.Edges
+            let newIds = Set.ofSeq <| 
+                            Seq.choose (fun oldId ->
+                                            match Map.tryFind oldId map with
+                                            | Some id -> Some id
+                                            | None -> findStartExecution oldId) action.Edges
             Set.remove newActionId newIds
             
         Map.fold 
@@ -179,7 +189,8 @@ module Graph =
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let collapsedExecutions = collapse graph
-        let transReduction = simpleTransitiveReduction collapsedExecutions
+        let beginningNodes = getBeginningNodes collapsedExecutions
+        let transReduction = transitiveReduction beginningNodes collapsedExecutions
         transReduction
 
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
