@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Client.Connections;
 using Client.Exceptions;
 using Common.DTO.Event;
@@ -56,7 +57,7 @@ namespace Client.Tests.Connections
         }
 
         [Test]
-        public async void GetWorkflows_Ok()
+        public async Task GetWorkflows_Ok()
         {
             // Arrange
             _workflowDtos.Add(new WorkflowDto
@@ -85,14 +86,14 @@ namespace Client.Tests.Connections
             _toolboxMock.Setup(t => t.ReadList<WorkflowDto>(It.IsAny<string>())).ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetWorkflows());
+            AsyncTestDelegate testDelegate = async () => await _connection.GetWorkflows();
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
         }
 
         [Test]
-        public async void GetWorkflows_Empty()
+        public async Task GetWorkflows_Empty()
         {
             // Arrange
             _toolboxMock.Setup(t => t.ReadList<WorkflowDto>(It.IsAny<string>())).ReturnsAsync(new List<WorkflowDto>());
@@ -106,7 +107,7 @@ namespace Client.Tests.Connections
         }
 
         [Test]
-        public async void Login_Success()
+        public async Task Login_Success()
         {
             // Arrange
             var rolesOnWorkflows = new Dictionary<string, ICollection<string>>
@@ -143,10 +144,10 @@ namespace Client.Tests.Connections
                 .ThrowsAsync(new UnauthorizedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.Login("wrongUsername", "wrongPassword"));
+            AsyncTestDelegate testDelegate = async () => await _connection.Login("wrongUsername", "wrongPassword");
 
             // Assert
-            Assert.Throws<LoginFailedException>(testDelegate);
+            Assert.ThrowsAsync<LoginFailedException>(testDelegate);
         }
 
         [Test]
@@ -157,14 +158,14 @@ namespace Client.Tests.Connections
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.Login("wrongUsername", "wrongPassword"));
+            AsyncTestDelegate testDelegate = async () => await _connection.Login("wrongUsername", "wrongPassword");
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
         }
 
         [Test]
-        public async void GetEventsFromWorkflow_Returns_Events()
+        public async Task GetEventsFromWorkflow_Returns_Events()
         {
             // Arrange
             _eventAddressDtos.Add(new EventAddressDto
@@ -192,7 +193,7 @@ namespace Client.Tests.Connections
         }
 
         [Test]
-        public async void GetEventsFromWorkflow_Returns_Empty()
+        public async Task GetEventsFromWorkflow_Returns_Empty()
         {
             // Arrange
 
@@ -212,14 +213,14 @@ namespace Client.Tests.Connections
                 .Throws(new HttpRequestException()); //no message, we expect the HostNotFoundException exception
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetEventsFromWorkflow("course"));
+            AsyncTestDelegate testDelegate = async () => await _connection.GetEventsFromWorkflow("course");
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
         }
 
         [Test]
-        public async void GetHistory_Ok()
+        public async Task GetHistory_Ok()
         {
             // Arrange
             _historyDtos.Add(new ActionDto
@@ -243,14 +244,14 @@ namespace Client.Tests.Connections
             _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetHistory("workflowId"));
+            AsyncTestDelegate testDelegate = async () => await _connection.GetHistory("workflowId");
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
         }
 
         [Test]
-        public async void GetHistory_Empty()
+        public async Task GetHistory_Empty()
         {
             // Arrange
             _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ReturnsAsync(new List<ActionDto>());

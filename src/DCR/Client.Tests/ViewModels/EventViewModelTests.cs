@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using Client.Connections;
 using Client.Exceptions;
@@ -21,6 +23,13 @@ namespace Client.Tests.ViewModels
         private Mock<IWorkflowViewModel> _workflowViewModelMock;
         private Mock<IEventConnection> _eventConnectionMock;
 
+        [OneTimeSetUp]
+        public void MagicHappensHere()
+        {
+            PackUriHelper.Create(new Uri("reliable://0"));
+            Application.ResourceAssembly = typeof(App).Assembly;
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -34,20 +43,21 @@ namespace Client.Tests.ViewModels
             _eventConnectionMock.Setup(
                 connection => connection.GetState(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(
-                    (Uri uri, string workflowId, string eventId) => Task.FromResult(new EventStateDto {Id = eventId}));
+                    (Uri uri, string workflowId, string eventId) => Task.FromResult(new EventStateDto { Id = eventId }));
 
             _model = new EventViewModel(_eventConnectionMock.Object, _eventAddressDto, _workflowViewModelMock.Object);
         }
 
         #region Constructor
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+
+        [Test]
         public void Constructor_NullArguments()
         {
             // Act
-            var eventViewModel = new EventViewModel(null, null);
+            TestDelegate testdelegate = () => new EventViewModel(null, null);
 
-            // Assert
-            Assert.IsNull(eventViewModel);
+        // Assert
+            Assert.Throws<ArgumentNullException>(testdelegate);
         }
 
         [Test]

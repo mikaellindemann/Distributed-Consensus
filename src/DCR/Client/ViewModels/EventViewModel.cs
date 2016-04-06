@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Client.Connections;
@@ -23,15 +25,11 @@ namespace Client.ViewModels
         {
             // Create the brushes, and Freeze them so the UI-thread can access them.
             // Pending
-            var path = Path.Combine(Environment.CurrentDirectory, "Assets", "Pending.png");
-            var uri = new Uri(path);
-            PendingBrush = new ImageBrush(new BitmapImage(uri));
+            PendingBrush = new ImageBrush(new BitmapImage(new Uri($"pack://application:,,,/Client;component/Assets/Pending.png", UriKind.Absolute)));
             PendingBrush.Freeze();
 
             // Executed
-            path = Path.Combine(Environment.CurrentDirectory, "Assets", "Executed.png");
-            uri = new Uri(path);
-            ExecutedBrush = new ImageBrush(new BitmapImage(uri));
+            ExecutedBrush = new ImageBrush(new BitmapImage(new Uri($"pack://application:,,,/Client;component/Assets/Executed.png", UriKind.Absolute)));
             ExecutedBrush.Freeze();
 
             // Included

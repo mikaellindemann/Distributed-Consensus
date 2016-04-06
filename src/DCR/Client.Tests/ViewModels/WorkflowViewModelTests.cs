@@ -46,14 +46,12 @@ namespace Client.Tests.ViewModels
 
         #region Constructors
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void Test_ConstructorWithNullArguments()
         {
             //Act
-            var workflowViewModel = new WorkflowViewModel(null, null, null);
-
             //Assert
-            Assert.IsNull(workflowViewModel);
+            Assert.Throws<ArgumentNullException>(() => new WorkflowViewModel(null, null, null));
         }
 
         [Test]

@@ -32,14 +32,11 @@ namespace Client.Tests.ViewModels
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullParameter()
         {
             // Act
-            var model = new HistoryViewModel(null);
-
             // Assert
-            Assert.Fail(); // Should never run.
+            Assert.Throws<ArgumentNullException>(() => new HistoryViewModel(null));
         }
 
         [Test]

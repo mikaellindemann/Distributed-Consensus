@@ -1,7 +1,4 @@
-﻿using System.IO;
-using Newtonsoft.Json;
-
-namespace Client
+﻿namespace Client
 {
     class Settings
     {
@@ -10,19 +7,21 @@ namespace Client
 
         public static Settings LoadSettings()
         {
-            var settings = 
-                !File.Exists("settings.json") 
-                ? new Settings() 
-                : JsonConvert.DeserializeObject<Settings>(File.ReadAllText("settings.json"));
+            var settings = new Settings
+            {
+                ServerAddress = Properties.Settings.Default.ServerAddress,
+                Username = Properties.Settings.Default.Username
+            };
 
-            settings.ServerAddress = settings.ServerAddress ?? "http://flowit.azurewebsites.net/";
-            settings.Username = settings.Username ?? "";
             return settings;
         }
 
         public void SaveSettings()
         {
-            File.WriteAllText("settings.json", JsonConvert.SerializeObject(this, Formatting.Indented));
+            Properties.Settings.Default.ServerAddress = ServerAddress;
+            Properties.Settings.Default.Username = Username;
+
+            Properties.Settings.Default.Save();
         }
     }
 }

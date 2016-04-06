@@ -83,10 +83,10 @@ namespace Client.Tests.Connections
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetState(new Uri("http://uri.uri"), "workflow", "event"));
+            AsyncTestDelegate testDelegate = async () => await _connection.GetState(new Uri("http://uri.uri"), "workflow", "event");
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
             _toolboxMock.Verify(t => t.Read<EventStateDto>(It.IsAny<string>()), Times.Once);
         }
 
@@ -103,10 +103,10 @@ namespace Client.Tests.Connections
                 .ThrowsAsync(exception);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetState(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()));
+            AsyncTestDelegate testDelegate = async () => await _connection.GetState(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
-            var thrown = Assert.Throws(exceptionType, testDelegate);
+            var thrown = Assert.ThrowsAsync(exceptionType, testDelegate);
             Assert.AreSame(exception, thrown);
         }
         #endregion
@@ -144,10 +144,10 @@ namespace Client.Tests.Connections
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetHistory(new Uri("http://uri.uri"), "workflow", "event"));
+            AsyncTestDelegate testDelegate = async () => await _connection.GetHistory(new Uri("http://uri.uri"), "workflow", "event");
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
             _toolboxMock.Verify(t => t.ReadList<ActionDto>(It.IsAny<string>()), Times.Once);
         }
 
@@ -164,10 +164,10 @@ namespace Client.Tests.Connections
                 .ThrowsAsync(exception);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.GetHistory(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()));
+            AsyncTestDelegate testDelegate = async () => await _connection.GetHistory(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
-            var thrown = Assert.Throws(exceptionType, testDelegate);
+            var thrown = Assert.ThrowsAsync(exceptionType, testDelegate);
             Assert.AreSame(exception, thrown);
         }
         #endregion
@@ -195,10 +195,10 @@ namespace Client.Tests.Connections
                 .Throws(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.ResetEvent(new Uri("http://uri.uri"), "workflow", "event"));
+            AsyncTestDelegate testDelegate = async () => await _connection.ResetEvent(new Uri("http://uri.uri"), "workflow", "event");
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
             _toolboxMock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -215,10 +215,10 @@ namespace Client.Tests.Connections
                 .Throws(exception);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.ResetEvent(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()));
+            AsyncTestDelegate testDelegate = async () => await _connection.ResetEvent(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
-            var thrown = Assert.Throws(exceptionType, testDelegate);
+            var thrown = Assert.ThrowsAsync(exceptionType, testDelegate);
             Assert.AreSame(exception, thrown);
             _toolboxMock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
@@ -249,10 +249,10 @@ namespace Client.Tests.Connections
                 .Throws(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.Execute(new Uri("http://uri.uri"), "workflow", "event", new List<string>()));
+            AsyncTestDelegate testDelegate = async () => await _connection.Execute(new Uri("http://uri.uri"), "workflow", "event", new List<string>());
 
             // Assert
-            Assert.Throws<HostNotFoundException>(testDelegate);
+            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
             _toolboxMock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<RoleDto>()), Times.Once);
         }
 
@@ -269,10 +269,10 @@ namespace Client.Tests.Connections
                 .Throws(exception);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _connection.Execute(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), new List<string>()));
+            AsyncTestDelegate testDelegate = async () => await _connection.Execute(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), new List<string>());
 
             // Assert
-            var thrown = Assert.Throws(exceptionType, testDelegate);
+            var thrown = Assert.ThrowsAsync(exceptionType, testDelegate);
             Assert.AreSame(exception, thrown);
             _toolboxMock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<RoleDto>()), Times.Once);
         }

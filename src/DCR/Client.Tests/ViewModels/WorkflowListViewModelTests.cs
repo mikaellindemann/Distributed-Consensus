@@ -61,15 +61,12 @@ namespace Client.Tests.ViewModels
             Assert.IsNotNull(model);
         }
 
-        [Test,
-         ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void WorkflowListViewModel_WithArguments_NullArgumentException()
         {
             // Act
-            var model = new WorkflowListViewModel(null);
-
             // Assert
-            Assert.Fail(); // This should never be called.
+            Assert.Throws<ArgumentNullException>(() => new WorkflowListViewModel(null));
         }
 
         [Test]
