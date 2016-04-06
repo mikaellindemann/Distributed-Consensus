@@ -7,38 +7,40 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         mc:Ignorable="d"
-        Title="HistorySelectView" Height="280" Width="500"
+        Title="HistorySelectView" Height="360" Width="500"
         d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}" WindowStartupLocation="CenterScreen">
-    <StackPanel Orientation="Vertical">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="188.8"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="History Creation" Margin="10,5,0,5" FontSize="24" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
-            <TextBlock Grid.Column="1" Text="{Binding Status}" Margin="5,0" TextAlignment="Right" TextWrapping="Wrap" Foreground="Red" FontSize="16" />
-        </Grid>
-        <Button Content="Produce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Click">
-                    <ei:CallMethodAction TargetObject="{Binding}" MethodName="Produce"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Button>
-        <Button Content="Produce + Collapse" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Click">
-                    <ei:CallMethodAction TargetObject="{Binding}" MethodName="Collapse"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Button>
-        <Button Content="Produce + Collapse + Reduce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Click">
-                    <ei:CallMethodAction TargetObject="{Binding}" MethodName="Create"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Button>
-        <Label Content="{Binding EventViewModel.Name}" HorizontalAlignment="Center" Style="{StaticResource TextLabelStyle}"></Label>
-    </StackPanel>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <TextBlock DockPanel.Dock="Left" Text="History Creation" Margin="10,5,0,5" FontSize="24" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
+            <TextBlock DockPanel.Dock="Right" Text="{Binding Status}" Margin="5,0" TextAlignment="Right" TextWrapping="Wrap" Foreground="Red" FontSize="16" />
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom">
+            <Label DockPanel.Dock="Left" Content="{Binding EventViewModel.Name}" HorizontalAlignment="Left" Style="{StaticResource TextLabelStyle}" />
+            <Label DockPanel.Dock="Right" Content="{Binding ExecutionTime}" HorizontalAlignment="Right" Style="{StaticResource TextLabelStyle}" ></Label>
+        </DockPanel>
+        <StackPanel Orientation="Vertical">
+
+            <Button Content="Produce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <ei:CallMethodAction TargetObject="{Binding}" MethodName="Produce"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Content="Produce + Collapse" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <ei:CallMethodAction TargetObject="{Binding}" MethodName="Collapse"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Content="Produce + Collapse + Reduce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <ei:CallMethodAction TargetObject="{Binding}" MethodName="Create"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+        </StackPanel>
+    </DockPanel>
 </Window>

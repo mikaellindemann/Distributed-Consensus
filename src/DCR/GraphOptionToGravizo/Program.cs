@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using HistoryConsensus;
 using Microsoft.FSharp.Core;
 using Newtonsoft.Json;
@@ -14,18 +15,23 @@ namespace GraphOptionToGravizo
     {
         public static void Main(string[] args)
         {
+            DoTheStuff(args);
+        }
+
+        public static Process DoTheStuff(string[] args)
+        {
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: GraphOptionToGravizo FileToRead [FileToWrite]");
                 Console.WriteLine("\tIf no FileToWrite is supplied, temporary files will be created and deleted.");
                 Console.WriteLine("\tIf FileToWrite is specified, the files will be created and stored on the disk.");
-                return;
+                return null;
             }
 
             if (!File.Exists(args[0]))
             {
                 Console.WriteLine("The specified in-file does not exist!");
-                return;
+                return null;
             }
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
@@ -53,9 +59,9 @@ namespace GraphOptionToGravizo
                 Console.WriteLine("If you had Graphviz installed in path the produced graph would have been displayed!");
                 Console.Write("Press any key to exit...");
                 Console.Read();
-                return;
+                return null;
             }
-            ShowPdf($"{dotFileName}.pdf", randomFile);
+            return ShowPdf($"{dotFileName}.pdf", randomFile);
         }
 
         private static string ActionToString(Action.ActionType type)
@@ -99,15 +105,30 @@ namespace GraphOptionToGravizo
             writer.WriteLine("}");
         }
 
-        private static void ShowPdf(string fileToShow, string fileToDelete)
+        private static Process ShowPdf(string fileToShow, string fileToDelete)
         {
             var pdfProcess = Process.Start(fileToShow);
             if (fileToDelete != null && pdfProcess != null)
             {
-                pdfProcess.WaitForExit();
-                File.Delete(fileToDelete);
-                File.Delete($"{fileToDelete}.pdf");
+                pdfProcess.EnableRaisingEvents = true;
+                pdfProcess.Exited += (sender, args) =>
+                {
+                    try
+                    {
+                        Task.Run(async () =>
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(5));
+                            File.Delete(fileToDelete);
+                            File.Delete($"{fileToDelete}.pdf");
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        //Ignore
+                    }
+                };
             }
+            return pdfProcess;
         }
     }
 }

@@ -190,7 +190,6 @@ module Graph =
 
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let collapsedExecutions = collapse graph
-        let beginningNodes = getBeginningNodes collapsedExecutions
         let transReduction = simpleTransitiveReduction collapsedExecutions
         transReduction
 

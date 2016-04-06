@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Client.Connections;
 using GraphOptionToGravizo;
 
@@ -14,7 +18,7 @@ namespace Client.ViewModels
             set
             {
                 _status = value;
-                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged();
             }
         }
 
@@ -29,8 +33,20 @@ namespace Client.ViewModels
             }
         }
 
+        public string ExecutionTime
+        {
+            get { return _executionTime; }
+            set
+            {
+                if (value == _executionTime) return;
+                _executionTime = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private readonly IEventConnection _connection;
         private bool _canPressButtons;
+        private string _executionTime;
 
         public HistorySelectViewModel(EventViewModel eventViewModel)
         {
@@ -51,25 +67,30 @@ namespace Client.ViewModels
             Status = "Attempting to produce history - pdf result will open when done";
             try
             {
+                var tokenSource = new CancellationTokenSource();
+
+                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
                 var json =
                     await
                         _connection.Produce(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId,
                             EventViewModel.Id);
+                tokenSource.Cancel();
 
                 var file = Path.GetTempFileName();
                 File.WriteAllText(file, json);
 
-                Program.Main(new[] { file });
-                File.Delete(file);
+                var process = Program.DoTheStuff(new[] { file });
+                process.Exited += (sender, args) =>
+                {
+                    File.Delete(file);
+                    CanPressButtons = true;
+                };
+
                 Status = "";
             }
-            catch
+            catch (Exception)
             {
                 Status = "Something went wrong";
-            }
-            finally
-            {
-                CanPressButtons = true;
             }
         }
 
@@ -79,22 +100,26 @@ namespace Client.ViewModels
             Status = "Attempting to produce+collapse history - pdf result will open when done";
             try
             {
+                var tokenSource = new CancellationTokenSource();
+
+                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
                 var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
+                tokenSource.Cancel();
 
                 var file = Path.GetTempFileName();
                 File.WriteAllText(file, json);
 
-                Program.Main(new[] { file });
-                File.Delete(file);
+                var process = Program.DoTheStuff(new[] { file });
+                process.Exited += (sender, args) =>
+                {
+                    File.Delete(file);
+                    CanPressButtons = true;
+                };
                 Status = "";
             }
-            catch
+            catch (Exception)
             {
                 Status = "Something went wrong";
-            }
-            finally
-            {
-                CanPressButtons = true;
             }
         }
 
@@ -102,25 +127,42 @@ namespace Client.ViewModels
         {
             CanPressButtons = false;
             Status = "Attempting to create history - pdf result will open when done";
+            
+
             try
             {
+                var tokenSource = new CancellationTokenSource();
 
+                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
                 var json = await _connection.Create(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
-
+                tokenSource.Cancel();
+                
                 var file = Path.GetTempFileName();
                 File.WriteAllText(file, json);
 
-                Program.Main(new[] { file });
-                File.Delete(file);
+                var process = Program.DoTheStuff(new[] { file });
+                process.Exited += (sender, args) =>
+                {
+                    File.Delete(file);
+                    CanPressButtons = true;
+                };
+                
                 Status = "";
             }
-            catch
+            catch (Exception)
             {
                 Status = "Something went wrong";
             }
-            finally
+        }
+
+        public async void DoAsyncTimerUpdate(CancellationToken token, DateTime start, TimeSpan timeout)
+        {
+            while (!token.IsCancellationRequested)
             {
-                CanPressButtons = true;
+                if (timeout > TimeSpan.Zero)
+                    await Task.Delay(timeout);
+
+                ExecutionTime = DateTime.Now.Subtract(start).ToString(@"h\:mm\:ss\.ff", new DateTimeFormatInfo());
             }
         }
     }
