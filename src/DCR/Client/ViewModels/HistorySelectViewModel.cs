@@ -48,7 +48,7 @@ namespace Client.ViewModels
         public async void Produce()
         {
             CanPressButtons = false;
-            Status = "Attempting to produce history - your pdf reader will open when done";
+            Status = "Attempting to produce history - pdf result will open when done";
             try
             {
                 var json =
@@ -76,7 +76,7 @@ namespace Client.ViewModels
         public async void Collapse()
         {
             CanPressButtons = false;
-            Status = "Attempting to produce and collapse history - your pdf reader will open when done";
+            Status = "Attempting to produce+collapse history - pdf result will open when done";
             try
             {
                 var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
@@ -101,7 +101,7 @@ namespace Client.ViewModels
         public async void Create()
         {
             CanPressButtons = false;
-            Status = "Attempting to produc, collapse and reduce history - your pdf reader will open when done";
+            Status = "Attempting to create history - pdf result will open when done";
             try
             {
 
