@@ -91,13 +91,13 @@ namespace Event.Tests.LogicTests
         [TestCase("AnotherWid","Eid")]
         [TestCase("Wid", "AnotherEid")]
         [TestCase("AnotherWid", "AnotherEid")]
-        public async void WaitForMyTurn_Succes_OtherLocksOnOtherWorkflowsExist(string alreadyWid, string alreadyEid)
+        public async Task WaitForMyTurn_Succes_OtherLocksOnOtherWorkflowsExist(string alreadyWid, string alreadyEid)
         {
             //Arrange
             ILockingLogic lockingLogic = SetupDefaultLockingLogic();
 
-            string eventId = "Eid";
-            string workflowId = "Wid";
+            const string eventId = "Eid";
+            const string workflowId = "Wid";
 
             var eventDictionary = LockingLogic.LockQueue.GetOrAdd(alreadyWid, new ConcurrentDictionary<string, ConcurrentQueue<LockDto>>());
             var queue = eventDictionary.GetOrAdd(alreadyEid, new ConcurrentQueue<LockDto>());
@@ -113,7 +113,7 @@ namespace Event.Tests.LogicTests
         }
         
         [Test]
-        public async void WaitForMyTurn_Succes_EmptyQueueLockEntersAndLeaves()
+        public async Task WaitForMyTurn_Succes_EmptyQueueLockEntersAndLeaves()
         {
             //Arrange
             ILockingLogic lockingLogic = SetupDefaultLockingLogic();
@@ -127,7 +127,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void WaitForMyTurn_Succes_QueueHasAnElementWhichGetsRemovedAfter5Seconds()
+        public async Task WaitForMyTurn_Succes_QueueHasAnElementWhichGetsRemovedAfter5Seconds()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -181,7 +181,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void WaitForMyTurn_Succes_AlreadyLockedBySelf()
+        public async Task WaitForMyTurn_Succes_AlreadyLockedBySelf()
         {
             //Arrange
             string eventId = "Eid";
@@ -223,9 +223,9 @@ namespace Event.Tests.LogicTests
             ILockingLogic lockingLogic = SetupDefaultLockingLogic();
             LockDto lockDto = new LockDto{ EventId = eventId, LockOwner = "LockOwner", WorkflowId = workflowId};
             //Act
-            var testDelegate = new TestDelegate(async () => await lockingLogic.WaitForMyTurn(workflowId, eventId, lockDto));
+            var testDelegate = new AsyncTestDelegate(async () => await lockingLogic.WaitForMyTurn(workflowId, eventId, lockDto));
             //Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
             //Cleanup
             LockingLogic.LockQueue.Clear();
         }
@@ -235,9 +235,9 @@ namespace Event.Tests.LogicTests
             //Arrange
             var lockingLogic = SetupDefaultLockingLogic();
             //Act
-            var testDelegate = new TestDelegate(async () => await lockingLogic.WaitForMyTurn("Wid", "Eid", null));
+            var testDelegate = new AsyncTestDelegate(async () => await lockingLogic.WaitForMyTurn("Wid", "Eid", null));
             //Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
             //Cleanup
             LockingLogic.LockQueue.Clear();
         }
@@ -253,9 +253,9 @@ namespace Event.Tests.LogicTests
             ILockingLogic lockingLogic = SetupDefaultLockingLogic();
             LockDto lockDto = new LockDto { EventId = "Eid", LockOwner = lockOwner, WorkflowId = "Wid" };
             //Act
-            var testDelegate = new TestDelegate(async () => await lockingLogic.WaitForMyTurn("Wid", "Eid", lockDto));
+            var testDelegate = new AsyncTestDelegate(async () => await lockingLogic.WaitForMyTurn("Wid", "Eid", lockDto));
             //Assert
-            Assert.Throws<ArgumentException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentException>(testDelegate);
             //Cleanup
             LockingLogic.LockQueue.Clear();
         }
@@ -290,9 +290,9 @@ namespace Event.Tests.LogicTests
 
             LockDto lockDto = new LockDto { EventId = eventId, LockOwner = "LockOwner", WorkflowId = workflowId };
             //Act
-            var testDelegate = new TestDelegate(async () => await lockingLogic.WaitForMyTurn(workflowId, eventId, lockDto));
+            var testDelegate = new AsyncTestDelegate(async () => await lockingLogic.WaitForMyTurn(workflowId, eventId, lockDto));
             //Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             //Cleanup
             LockingLogic.LockQueue.Clear();
         }
@@ -378,10 +378,10 @@ namespace Event.Tests.LogicTests
             ILockingLogic logic = SetupDefaultLockingLogic();
 
             // Act
-            var testDelegate = new TestDelegate(async () => await logic.IsAllowedToOperate(null, null, "EventA"));
+            var testDelegate = new AsyncTestDelegate(async () => await logic.IsAllowedToOperate(null, null, "EventA"));
             
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -390,10 +390,10 @@ namespace Event.Tests.LogicTests
             ILockingLogic logic = SetupDefaultLockingLogic();
 
             // Act
-            var testDelegate = new TestDelegate(async () => await logic.IsAllowedToOperate("workflowId", "someEvent", null));
+            var testDelegate = new AsyncTestDelegate(async () => await logic.IsAllowedToOperate("workflowId", "someEvent", null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         #endregion 
@@ -425,7 +425,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void LockAllForExecute_Success_EmptyRelationLists()
+        public async Task LockAllForExecute_Success_EmptyRelationLists()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -469,7 +469,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, false, true, true)]
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
-        public async void LockAllForExecute_Success_1OtherElementInRelations(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task LockAllForExecute_Success_1OtherElementInRelations(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -554,7 +554,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, false, true, true)]
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
-        public async void LockAllForExecute_Success_TheSameEventInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task LockAllForExecute_Success_TheSameEventInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -639,7 +639,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, false, true, true)]
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
-        public async void LockAllForExecute_Success_ManyOtherElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task LockAllForExecute_Success_ManyOtherElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -745,7 +745,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
         [Test]
-        public async void LockAllForExecute_Success_ManySameElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task LockAllForExecute_Success_ManySameElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -838,7 +838,7 @@ namespace Event.Tests.LogicTests
         #region LockList
 
         [Test]
-        public async void LockAll_Success_EmptyRelationList()
+        public async Task LockAll_Success_EmptyRelationList()
         {
             //Arrange
             ILockingLogic logic = SetupDefaultLockingLogic();
@@ -849,7 +849,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void LockAll_Success_1ElementRelationList()
+        public async Task LockAll_Success_1ElementRelationList()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -881,9 +881,9 @@ namespace Event.Tests.LogicTests
                 mockStorage.Object,
                 mockEventCommunicator.Object);
             //Act
-            TestDelegate testDelegate = async()=>await lockingLogic.LockList(new SortedDictionary<string, RelationToOtherEventModel> { { "testId", new RelationToOtherEventModel() } }, null);
+            AsyncTestDelegate testDelegate = async()=>await lockingLogic.LockList(new SortedDictionary<string, RelationToOtherEventModel> { { "testId", new RelationToOtherEventModel() } }, null);
             //Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase(null)]
@@ -901,9 +901,9 @@ namespace Event.Tests.LogicTests
                 mockStorage.Object,
                 mockEventCommunicator.Object);
             //Act
-            TestDelegate testDelegate = async () => await lockingLogic.LockList(null, eventId);
+            AsyncTestDelegate testDelegate = async () => await lockingLogic.LockList(null, eventId);
             //Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -921,13 +921,13 @@ namespace Event.Tests.LogicTests
                 mockEventCommunicator.Object);
 
             //Act
-            TestDelegate testDelegate = async () => await lockingLogic.LockList(new SortedDictionary<string, RelationToOtherEventModel>{{"testId", new RelationToOtherEventModel()}}, null);
+            AsyncTestDelegate testDelegate = async () => await lockingLogic.LockList(new SortedDictionary<string, RelationToOtherEventModel>{{"testId", new RelationToOtherEventModel()}}, null);
             //Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
-        public async void LockAll_Succes_FailsToLockAllEventsReturnsFalse()
+        public async Task LockAll_Succes_FailsToLockAllEventsReturnsFalse()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -949,7 +949,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void LockAll_Succes_TwoElementsSecondFails()
+        public async Task LockAll_Succes_TwoElementsSecondFails()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -973,7 +973,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test] 
-        public async void LockAll_Succes_TwoElementsSecondFailsAndUnlockFails()
+        public async Task LockAll_Succes_TwoElementsSecondFailsAndUnlockFails()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -1006,10 +1006,10 @@ namespace Event.Tests.LogicTests
             ILockingLogic logic = SetupDefaultLockingLogic();
 
             // Act
-            TestDelegate testDelegate = async () => await logic.LockSelf("Wid", "Eid", new LockDto{LockOwner="LockOwner"});
+            AsyncTestDelegate testDelegate = async () => await logic.LockSelf("Wid", "Eid", new LockDto{LockOwner="LockOwner"});
 
             // Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
 
         [Test]
@@ -1019,10 +1019,10 @@ namespace Event.Tests.LogicTests
             var logic = SetupDefaultLockingLogic();
 
             // Act 
-            var testDelegate = new TestDelegate(async () => await logic.LockSelf("workflowId", "testA", null));
+            var testDelegate = new AsyncTestDelegate(async () => await logic.LockSelf("workflowId", "testA", null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -1039,10 +1039,10 @@ namespace Event.Tests.LogicTests
             };
 
             // Act 
-            var testDelegate = new TestDelegate(async () => await logic.LockSelf(null, null,lockDto));
+            var testDelegate = new AsyncTestDelegate(async () => await logic.LockSelf(null, null,lockDto));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
 
@@ -1118,7 +1118,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void UnlockAllForExecute_Success_EmptyRelationLists()
+        public async Task UnlockAllForExecute_Success_EmptyRelationLists()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -1148,7 +1148,7 @@ namespace Event.Tests.LogicTests
         }
 
         [Test]
-        public async void UnlockAllForExecute_Success_ReturnFalseWhenSecondElementFailsTo()
+        public async Task UnlockAllForExecute_Success_ReturnFalseWhenSecondElementFailsTo()
         {
             //Arrange
             var mockStorage = new Mock<IEventStorage>();
@@ -1195,7 +1195,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, false, true, true)]
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
-        public async void UnlockAllForExecute_Success_1OtherElementInRelations(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task UnlockAllForExecute_Success_1OtherElementInRelations(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -1280,7 +1280,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, false, true, true)]
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
-        public async void UnlockAllForExecute_Success_TheSameEventInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task UnlockAllForExecute_Success_TheSameEventInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -1365,7 +1365,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, false, true, true)]
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
-        public async void UnlockAllForExecute_Success_ManyOtherElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task UnlockAllForExecute_Success_ManyOtherElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -1471,7 +1471,7 @@ namespace Event.Tests.LogicTests
         [TestCase(true, true, false, true)]
         [TestCase(true, true, true, true)]
         [Test]
-        public async void UnlockAllForExecute_Success_ManySameElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
+        public async Task UnlockAllForExecute_Success_ManySameElementsInResponses(bool conditions, bool exclusions, bool responses, bool inclusions)
         {
             //Arrange
             string eventId = "Eid";
@@ -1571,10 +1571,10 @@ namespace Event.Tests.LogicTests
             ILockingLogic logic = SetupDefaultLockingLogic();
 
             // Act
-            TestDelegate testDelegate = async ()=> await logic.UnlockSelf("Wid", "Eid", "someEvent");
+            AsyncTestDelegate testDelegate = async ()=> await logic.UnlockSelf("Wid", "Eid", "someEvent");
 
             // Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
 
         [Test]
@@ -1632,10 +1632,10 @@ namespace Event.Tests.LogicTests
                 mockEventCommunicator.Object);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await logic.UnlockSelf("workflowId", "irrelevantId", "Per")); // Notice, we're trying to let Per unlock
+            var testDelegate = new AsyncTestDelegate(async () => await logic.UnlockSelf("workflowId", "irrelevantId", "Per")); // Notice, we're trying to let Per unlock
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
         }
 
         #endregion

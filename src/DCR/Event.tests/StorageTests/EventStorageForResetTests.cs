@@ -33,14 +33,13 @@ namespace Event.Tests.StorageTests
 
         #region Constructor and Dispose
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Null()
         {
             // Act
-            var storageForReset = new EventStorageForReset(null);
+            TestDelegate testDelegate = () => new EventStorageForReset(null);
 
             // Assert
-            Assert.Fail("Constructor did not fail: {0}", storageForReset.GetType()); // Should not be run.
+            Assert.Throws<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -74,10 +73,10 @@ namespace Event.Tests.StorageTests
         public void Exists_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _storageForReset.Exists(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _storageForReset.Exists(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -150,10 +149,10 @@ namespace Event.Tests.StorageTests
         public void ResetToInitialState_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _storageForReset.ResetToInitialState(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _storageForReset.ResetToInitialState(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -163,10 +162,10 @@ namespace Event.Tests.StorageTests
             
             // Act
             var testDelegate =
-                new TestDelegate(async () => await _storageForReset.ResetToInitialState("workflowId", "eventId"));
+                new AsyncTestDelegate(async () => await _storageForReset.ResetToInitialState("workflowId", "eventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -196,10 +195,10 @@ namespace Event.Tests.StorageTests
         public void ClearLock_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _storageForReset.ClearLock(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _storageForReset.ClearLock(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         /// <summary>
@@ -210,10 +209,10 @@ namespace Event.Tests.StorageTests
         public void ClearLock_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _storageForReset.ClearLock("NotId", "NotId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _storageForReset.ClearLock("NotId", "NotId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
     }

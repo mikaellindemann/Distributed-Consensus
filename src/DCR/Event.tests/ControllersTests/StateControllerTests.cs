@@ -93,10 +93,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -107,10 +107,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.NotFound, exception.Response.StatusCode);
         }
@@ -123,10 +123,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -137,10 +137,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetExecuted("workflowId", "eventId", "senderId"));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
@@ -181,10 +181,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -195,10 +195,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.NotFound, exception.Response.StatusCode);
         }
@@ -211,10 +211,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -225,10 +225,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetIncluded("workflowId", "eventId", "senderId"));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
@@ -286,10 +286,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -300,10 +300,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.NotFound, exception.Response.StatusCode);
         }
@@ -316,10 +316,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -330,10 +330,10 @@ namespace Event.Tests.ControllersTests
                 .ThrowsAsync(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.GetState("workflowId", "eventId", "senderId"));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
@@ -368,10 +368,10 @@ namespace Event.Tests.ControllersTests
                 "Could not be deserialised into an EventAddressDto");
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, null));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, null));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -382,10 +382,10 @@ namespace Event.Tests.ControllersTests
                 "Could not be deserialised into an EventAddressDto");
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, null));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, null));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest, exception.Response.StatusCode);
         }
 
@@ -398,11 +398,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -414,11 +414,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.NotFound, exception.Response.StatusCode);
         }
 
@@ -431,11 +431,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -447,11 +447,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdateIncluded("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
         #endregion
@@ -485,10 +485,10 @@ namespace Event.Tests.ControllersTests
                 "Could not be deserialised into an EventAddressDto");
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.UpdatePending("workflowId", "eventId", true, null));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.UpdatePending("workflowId", "eventId", true, null));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -499,10 +499,10 @@ namespace Event.Tests.ControllersTests
                 "Could not be deserialised into an EventAddressDto");
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.UpdatePending("workflowId", "eventId", true, null));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.UpdatePending("workflowId", "eventId", true, null));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest, exception.Response.StatusCode);
         }
 
@@ -515,11 +515,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdatePending("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -531,11 +531,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdatePending("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.NotFound, exception.Response.StatusCode);
         }
 
@@ -548,11 +548,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdatePending("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -564,11 +564,11 @@ namespace Event.Tests.ControllersTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () => await _stateController.UpdatePending("workflowId", "eventId", true, new EventAddressDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
         #endregion
@@ -582,10 +582,10 @@ namespace Event.Tests.ControllersTests
             _stateController.ModelState.AddModelError("roleDto", "RoleDto is empty");
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -595,10 +595,10 @@ namespace Event.Tests.ControllersTests
             _stateController.ModelState.AddModelError("roleDto", "RoleDto is empty");
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest, exception.Response.StatusCode);
         }
 
@@ -610,10 +610,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new UnauthorizedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -624,10 +624,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new UnauthorizedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.Unauthorized, exception.Response.StatusCode);
         }
 
@@ -639,10 +639,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -653,10 +653,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new LockedException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
 
@@ -668,10 +668,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -682,10 +682,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.NotFound, exception.Response.StatusCode);
         }
 
@@ -697,10 +697,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new NotExecutableException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -711,10 +711,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new NotExecutableException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.PreconditionFailed, exception.Response.StatusCode);
         }
 
@@ -726,10 +726,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToLockOtherEventException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -740,10 +740,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToLockOtherEventException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.Conflict, exception.Response.StatusCode);
         }
 
@@ -755,10 +755,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToUnlockOtherEventException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -769,10 +769,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToUnlockOtherEventException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.InternalServerError, exception.Response.StatusCode);
         }
 
@@ -784,10 +784,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToUpdateStateException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -798,10 +798,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToUpdateStateException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.InternalServerError, exception.Response.StatusCode);
         }
 
@@ -813,10 +813,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToUpdateStateAtOtherEventException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            Assert.Throws<HttpResponseException>(testDelegate);
+            Assert.ThrowsAsync<HttpResponseException>(testDelegate);
         }
 
         [Test]
@@ -827,10 +827,10 @@ namespace Event.Tests.ControllersTests
                 .Throws(new FailedToUpdateStateAtOtherEventException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateController.Execute("workflowId", "eventId", new RoleDto()));
 
             // Assert
-            var exception = Assert.Throws<HttpResponseException>(testDelegate);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.InternalServerError, exception.Response.StatusCode);
         }
 

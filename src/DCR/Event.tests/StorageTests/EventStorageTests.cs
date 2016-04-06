@@ -97,14 +97,13 @@ namespace Event.Tests.StorageTests
         #region Constructor and Dispose
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullArgument()
         {
             // Act
-            var storage = new EventStorage(null);
+            TestDelegate testDelegate = () => new EventStorage(null);
 
             // Assert
-            Assert.Fail("This should not happen: {0}", storage.GetType());
+            Assert.Throws<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -159,10 +158,10 @@ namespace Event.Tests.StorageTests
         public void GetExecuted_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetExecuted("notWorkflowId", "notEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetExecuted("notWorkflowId", "notEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -171,10 +170,10 @@ namespace Event.Tests.StorageTests
         public void GetExecuted_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetExecuted(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetExecuted(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -208,10 +207,10 @@ namespace Event.Tests.StorageTests
         public void GetPending_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetPending("notWorkflowId", "notEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetPending("notWorkflowId", "notEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -220,10 +219,10 @@ namespace Event.Tests.StorageTests
         public void GetPending_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetPending(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetPending(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -257,10 +256,10 @@ namespace Event.Tests.StorageTests
         public void GetIncluded_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetIncluded("notWorkflowId", "notEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetIncluded("notWorkflowId", "notEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -269,10 +268,10 @@ namespace Event.Tests.StorageTests
         public void GetIncluded_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetIncluded(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetIncluded(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -304,10 +303,10 @@ namespace Event.Tests.StorageTests
         public void Exists_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.Exists(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.Exists(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -326,10 +325,10 @@ namespace Event.Tests.StorageTests
         public void GetName_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetName("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetName("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -338,10 +337,10 @@ namespace Event.Tests.StorageTests
         public void GetName_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetName(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetName(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -361,10 +360,10 @@ namespace Event.Tests.StorageTests
         public void GetRoles_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetRoles("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetRoles("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -373,10 +372,10 @@ namespace Event.Tests.StorageTests
         public void GetRoles_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetRoles(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetRoles(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -402,10 +401,10 @@ namespace Event.Tests.StorageTests
         public void GetHistoryForEvent_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetHistoryForEvent("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetHistoryForEvent("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -414,10 +413,10 @@ namespace Event.Tests.StorageTests
         public void GetHistoryForEvent_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetHistoryForEvent(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetHistoryForEvent(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -437,10 +436,10 @@ namespace Event.Tests.StorageTests
         public void GetUri_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetUri("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetUri("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -449,10 +448,10 @@ namespace Event.Tests.StorageTests
         public void GetUri_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetUri(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetUri(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -461,10 +460,10 @@ namespace Event.Tests.StorageTests
         public void Reload_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.Reload("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.Reload("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -473,10 +472,10 @@ namespace Event.Tests.StorageTests
         public void Reload_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.Reload(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.Reload(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -523,10 +522,10 @@ namespace Event.Tests.StorageTests
         {
             // Act
             var testDelegate =
-                new TestDelegate(async () => await _eventStorage.DeleteEvent("notWorkflowId", "notEventId"));
+                new AsyncTestDelegate(async () => await _eventStorage.DeleteEvent("notWorkflowId", "notEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, "eventId"),
@@ -536,10 +535,10 @@ namespace Event.Tests.StorageTests
         {
             // Act
             var testDelegate =
-                new TestDelegate(async () => await _eventStorage.DeleteEvent(workflowId, eventId));
+                new AsyncTestDelegate(async () => await _eventStorage.DeleteEvent(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -563,10 +562,10 @@ namespace Event.Tests.StorageTests
         public void SaveHistory_NullArgument()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(null));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SaveHistory(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase(null, "eventId"),
@@ -575,28 +574,28 @@ namespace Event.Tests.StorageTests
         public void SaveHistory_NullIds(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(new ActionModel
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SaveHistory(new ActionModel
             {
                 WorkflowId = workflowId,
                 EventId = eventId
             }));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void SaveHistory_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SaveHistory(new ActionModel
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SaveHistory(new ActionModel
             {
                 WorkflowId = "notWorkflowId",
                 EventId = "notEventId"
             }));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -630,10 +629,10 @@ namespace Event.Tests.StorageTests
         public void GetLockDto_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetLockDto("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetLockDto("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -642,10 +641,10 @@ namespace Event.Tests.StorageTests
         public void GetLockDto_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetLockDto(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetLockDto(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -675,10 +674,10 @@ namespace Event.Tests.StorageTests
         public void GetConditions_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetConditions("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetConditions("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -687,10 +686,10 @@ namespace Event.Tests.StorageTests
         public void GetConditions_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetConditions(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetConditions(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -719,10 +718,10 @@ namespace Event.Tests.StorageTests
         public void GetResponses_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetResponses("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetResponses("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -731,10 +730,10 @@ namespace Event.Tests.StorageTests
         public void GetResponses_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetResponses(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetResponses(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -763,10 +762,10 @@ namespace Event.Tests.StorageTests
         public void GetInclusions_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetInclusions("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetInclusions("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -775,10 +774,10 @@ namespace Event.Tests.StorageTests
         public void GetInclusions_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetInclusions(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetInclusions(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -807,10 +806,10 @@ namespace Event.Tests.StorageTests
         public void GetExclusions_Throws_NotFoundException()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetExclusions("wrongWorkflowId", "wrongEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetExclusions("wrongWorkflowId", "wrongEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -819,10 +818,10 @@ namespace Event.Tests.StorageTests
         public void GetExclusions_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.GetExclusions(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.GetExclusions(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
         #endregion
@@ -861,20 +860,20 @@ namespace Event.Tests.StorageTests
         public void SetExecuted_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetExecuted(workflowId, eventId, true));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetExecuted(workflowId, eventId, true));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void SetExecuted_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetExecuted("notWorkflowId", "notEventId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetExecuted("notWorkflowId", "notEventId", true));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -911,20 +910,20 @@ namespace Event.Tests.StorageTests
         public void SetPending_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetPending(workflowId, eventId, true));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetPending(workflowId, eventId, true));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void SetPending_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetPending("notWorkflowId", "notEventId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetPending("notWorkflowId", "notEventId", true));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -961,20 +960,20 @@ namespace Event.Tests.StorageTests
         public void SetIncluded_ArgumentNull(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetIncluded(workflowId, eventId, true));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetIncluded(workflowId, eventId, true));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void SetIncluded_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetIncluded("notWorkflowId", "notEventId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetIncluded("notWorkflowId", "notEventId", true));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
         #endregion
@@ -1000,10 +999,10 @@ namespace Event.Tests.StorageTests
         public void InitializeNewEvent_NullArgument()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.InitializeNewEvent(null));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.InitializeNewEvent(null));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase(null, null),
@@ -1012,28 +1011,28 @@ namespace Event.Tests.StorageTests
         public void InitializeNewEvent_NullArguments(string workflowId, string eventId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.InitializeNewEvent(new EventModel
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.InitializeNewEvent(new EventModel
             {
                 WorkflowId = workflowId,
                 Id = eventId
             }));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void InitializeNewEvent_EventExists()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.InitializeNewEvent(new EventModel
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.InitializeNewEvent(new EventModel
             {
                 WorkflowId = "workflowId",
                 Id = "eventId"
             }));
 
             // Assert
-            Assert.Throws<EventExistsException>(testDelegate);
+            Assert.ThrowsAsync<EventExistsException>(testDelegate);
         }
         #endregion
 
@@ -1047,20 +1046,20 @@ namespace Event.Tests.StorageTests
             _eventModels.First().LockOwner = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.ClearLock(workflowId, eventId));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.ClearLock(workflowId, eventId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void ClearLock_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.ClearLock("notWorkflowId", "notEventId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.ClearLock("notWorkflowId", "notEventId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
         #endregion
 
@@ -1091,20 +1090,20 @@ namespace Event.Tests.StorageTests
             _eventModels.First().LockOwner = null;
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetLock(workflowId, eventId, lockOwner));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetLock(workflowId, eventId, lockOwner));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void SetLock_NotFound()
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetLock("notWorkflowId", "notEventId", "flow"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetLock("notWorkflowId", "notEventId", "flow"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -1114,10 +1113,10 @@ namespace Event.Tests.StorageTests
             _eventModels.First().LockOwner = "notFlow";
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _eventStorage.SetLock("workflowId", "eventId", "flow"));
+            var testDelegate = new AsyncTestDelegate(async () => await _eventStorage.SetLock("workflowId", "eventId", "flow"));
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
         }
         #endregion
     }

@@ -81,14 +81,14 @@ namespace Event.Tests.LogicTests
         }
 
         #region Constructors and Dispose
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void Constructor_NullArguments()
         {
             // Act
-            var logic = new StateLogic(null, null, null, null, null);
+            TestDelegate testDelegate = () => new StateLogic(null, null, null, null, null);
 
             // Assert
-            Assert.Fail("Should not be run: {0}", logic.GetType());
+            Assert.Throws<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -152,10 +152,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.IsExecuted("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.IsExecuted("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null, null),
@@ -168,10 +168,10 @@ namespace Event.Tests.LogicTests
         public void IsExecuted_Throws_ArgumentNullException(string workflowId, string eventId, string senderId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.IsExecuted(workflowId, eventId, senderId));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.IsExecuted(workflowId, eventId, senderId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -226,10 +226,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.IsIncluded("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.IsIncluded("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null, null),
@@ -242,10 +242,10 @@ namespace Event.Tests.LogicTests
         public void IsIncluded_Throws_ArgumentNullException(string workflowId, string eventId, string senderId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.IsIncluded(workflowId, eventId, senderId));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.IsIncluded(workflowId, eventId, senderId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -322,10 +322,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.GetStateDto("workflowId", "eventId", "senderId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.GetStateDto("workflowId", "eventId", "senderId"));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null, null),
@@ -338,10 +338,10 @@ namespace Event.Tests.LogicTests
         public void GetStateDto_Throws_ArgumentNullException(string workflowId, string eventId, string senderId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.GetStateDto(workflowId, eventId, senderId));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.GetStateDto(workflowId, eventId, senderId));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -377,10 +377,10 @@ namespace Event.Tests.LogicTests
             _authLogicMock.Setup(a => a.IsAuthorized(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "WrongRole" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "WrongRole" } }));
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
         }
 
         [Test]
@@ -393,10 +393,10 @@ namespace Event.Tests.LogicTests
             _authLogicMock.Setup(a => a.IsAuthorized(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>())).ReturnsAsync(true);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
         }
 
         [Test]
@@ -406,10 +406,10 @@ namespace Event.Tests.LogicTests
             _lockingLogicMock.Setup(l => l.LockAllForExecute(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "Roles" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "Roles" } }));
 
             // Assert
-            Assert.Throws<FailedToLockOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToLockOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -419,10 +419,10 @@ namespace Event.Tests.LogicTests
             _lockingLogicMock.Setup(l => l.UnlockAllForExecute(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "Roles" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "Roles" } }));
 
             // Assert
-            Assert.Throws<FailedToUnlockOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToUnlockOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -432,10 +432,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.SetExecuted(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Throws<Exception>();
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<FailedToUpdateStateAtOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToUpdateStateAtOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -445,10 +445,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.SetPending(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Throws<Exception>();
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<FailedToUpdateStateAtOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToUpdateStateAtOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -468,12 +468,12 @@ namespace Event.Tests.LogicTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () =>
                         await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<FailedToUpdateStateAtOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToUpdateStateAtOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -493,12 +493,12 @@ namespace Event.Tests.LogicTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () =>
                         await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<FailedToUpdateStateAtOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToUpdateStateAtOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -518,12 +518,12 @@ namespace Event.Tests.LogicTests
 
             // Act
             var testDelegate =
-                new TestDelegate(
+                new AsyncTestDelegate(
                     async () =>
                         await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<FailedToUpdateStateAtOtherEventException>(testDelegate);
+            Assert.ThrowsAsync<FailedToUpdateStateAtOtherEventException>(testDelegate);
         }
 
         [Test]
@@ -533,10 +533,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [TestCase(null, null, null),
@@ -556,10 +556,10 @@ namespace Event.Tests.LogicTests
             }
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute(workflowId, eventId, roles));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute(workflowId, eventId, roles));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -606,10 +606,10 @@ namespace Event.Tests.LogicTests
                 .ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "RightRole" } }));
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
         }
         #endregion
 
@@ -655,10 +655,10 @@ namespace Event.Tests.LogicTests
         public void SetPending_Throws_ArgumentNullException(string workflowId, string eventId, string senderId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.SetPending(workflowId, eventId, senderId, true));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.SetPending(workflowId, eventId, senderId, true));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -668,10 +668,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.SetPending("workflowId", "eventId", "senderId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.SetPending("workflowId", "eventId", "senderId", true));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -683,10 +683,10 @@ namespace Event.Tests.LogicTests
                 .ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.SetPending("workflowId", "eventId", "senderId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.SetPending("workflowId", "eventId", "senderId", true));
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
         }
         #endregion
 
@@ -731,10 +731,10 @@ namespace Event.Tests.LogicTests
         public void SetIncluded_Throws_ArgumentNullException(string workflowId, string eventId, string senderId)
         {
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.SetIncluded(workflowId, eventId, senderId, true));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.SetIncluded(workflowId, eventId, senderId, true));
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -744,10 +744,10 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.SetIncluded("workflowId", "eventId", "senderId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.SetIncluded("workflowId", "eventId", "senderId", true));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -759,10 +759,10 @@ namespace Event.Tests.LogicTests
                 .ReturnsAsync(false);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _stateLogic.SetIncluded("workflowId", "eventId", "senderId", true));
+            var testDelegate = new AsyncTestDelegate(async () => await _stateLogic.SetIncluded("workflowId", "eventId", "senderId", true));
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
         }
         #endregion
     }
