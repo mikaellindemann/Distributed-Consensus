@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Common.Tools
 {
-    class HttpClientWrapper : IHttpClient
+    public class HttpClientWrapper : IHttpClient
     {
         private readonly HttpClient _httpClient;
 

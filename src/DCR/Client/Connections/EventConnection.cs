@@ -19,7 +19,8 @@ namespace Client.Connections
         /// </summary>
         public EventConnection()
         {
-            _httpClient = new HttpClientToolbox();
+            var client = new HttpClient {Timeout = TimeSpan.FromHours(1)};
+            _httpClient = new HttpClientToolbox(new HttpClientWrapper(client));
         }
 
 
