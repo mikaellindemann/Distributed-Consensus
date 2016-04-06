@@ -48,9 +48,10 @@ module Graph =
     let hasEdge (fromAction:Action) (toActionId:ActionId) = Set.exists (fun id -> id=toActionId) fromAction.Edges
     
     let hasPath sourceNode toNodeId graph = 
-        let rec checkNodes node =         
-            if hasEdge sourceNode node then true
-            else Set.fold (fun acc i -> acc || checkNodes i) false (getNode graph node).Edges    
+        let rec checkNodes nodeId =    
+            let node = getNode graph nodeId     
+            if hasEdge node toNodeId then true
+            else Set.fold (fun acc i -> acc || checkNodes i) false node.Edges    
         checkNodes sourceNode.Id
     
     //Retrieve a collection of nodes from given ActionIds.
@@ -190,7 +191,7 @@ module Graph =
     let simplify (graph:Graph) (actionType:ActionType) : Graph =
         let collapsedExecutions = collapse graph
         let beginningNodes = getBeginningNodes collapsedExecutions
-        let transReduction = transitiveReduction beginningNodes collapsedExecutions
+        let transReduction = simpleTransitiveReduction collapsedExecutions
         transReduction
 
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
