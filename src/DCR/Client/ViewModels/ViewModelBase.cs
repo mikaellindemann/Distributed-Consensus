@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Client.Annotations;
 
 namespace Client.ViewModels
 {
@@ -10,14 +12,10 @@ namespace Client.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// Sends a notification to listeners/binders that the property with name of the parameter.
-        /// If an empty string is provided in the parameter, all bindings to the datacontext will be updated.
-        /// </summary>
-        /// <param name="info">The name of the property which has been updated.</param>
-        public void NotifyPropertyChanged(String info)
+        [NotifyPropertyChangedInvocator]
+        protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

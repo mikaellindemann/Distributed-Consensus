@@ -8,50 +8,92 @@ namespace Client.ViewModels
     {
         public EventViewModel EventViewModel { get; set; }
 
+        public bool CanPressButtons
+        {
+            get { return _canPressButtons; }
+            set
+            {
+                if (_canPressButtons == value) return;
+                _canPressButtons = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private readonly IEventConnection _connection;
+        private bool _canPressButtons;
 
         public HistorySelectViewModel(EventViewModel eventViewModel)
         {
+            CanPressButtons = true;
             EventViewModel = eventViewModel;
             _connection = new EventConnection();
         }
 
         public HistorySelectViewModel()
         {
+            CanPressButtons = true;
             _connection = new EventConnection();
         }
 
         public async void Produce()
         {
-            var json = await _connection.Produce(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
+            CanPressButtons = false;
+            try
+            {
+                var json =
+                    await
+                        _connection.Produce(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId,
+                            EventViewModel.Id);
 
-            var file = Path.GetTempFileName();
-            File.WriteAllText(file, json);
+                var file = Path.GetTempFileName();
+                File.WriteAllText(file, json);
 
-            Program.Main(new [] {file});
-            File.Delete(file);
+                Program.Main(new[] { file });
+                File.Delete(file);
+            }
+            finally
+            {
+                CanPressButtons = true;
+            }
         }
 
         public async void Collapse()
         {
-            var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
+            CanPressButtons = false;
+            try
+            {
+                var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
 
-            var file = Path.GetTempFileName();
-            File.WriteAllText(file, json);
+                var file = Path.GetTempFileName();
+                File.WriteAllText(file, json);
 
-            Program.Main(new[] { file });
-            File.Delete(file);
+                Program.Main(new[] { file });
+                File.Delete(file);
+            }
+            finally
+            {
+                CanPressButtons = true;
+            }
         }
 
         public async void Create()
         {
-            var json = await _connection.Create(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
+            CanPressButtons = false;
+            try
+            {
 
-            var file = Path.GetTempFileName();
-            File.WriteAllText(file, json);
+                var json = await _connection.Create(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
 
-            Program.Main(new[] { file });
-            File.Delete(file);
+                var file = Path.GetTempFileName();
+                File.WriteAllText(file, json);
+
+                Program.Main(new[] { file });
+                File.Delete(file);
+            }
+            finally
+            {
+                CanPressButtons = true;
+            }
         }
     }
 }

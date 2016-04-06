@@ -11,21 +11,21 @@
         d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}" WindowStartupLocation="CenterScreen">
     <StackPanel Orientation="Vertical">
         <TextBlock Text="History Creation" HorizontalAlignment="Center" FontSize="24" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
-        <Button Content="Produce" Margin="5" Style="{StaticResource ButtonDefaultStyle}">
+        <Button Content="Produce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding}" MethodName="Produce"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <Button Content="Produce + Collapse" Margin="5" Style="{StaticResource ButtonDefaultStyle}">
+        <Button Content="Produce + Collapse" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding}" MethodName="Collapse"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <Button Content="Produce + Collapse + Reduce" Margin="5" Style="{StaticResource ButtonDefaultStyle}">
+        <Button Content="Produce + Collapse + Reduce" Margin="5" Style="{StaticResource ButtonDefaultStyle}" IsEnabled="{Binding CanPressButtons}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding}" MethodName="Create"/>

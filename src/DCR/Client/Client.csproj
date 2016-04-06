@@ -125,6 +125,7 @@
     <Compile Include="Connections\IServerConnection.cs" />
     <Compile Include="Connections\ServerConnection.cs" />
     <Compile Include="Exceptions\LoginFailedException.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
