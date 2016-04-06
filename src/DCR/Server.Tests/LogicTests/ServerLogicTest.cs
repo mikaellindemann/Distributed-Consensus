@@ -21,7 +21,7 @@ namespace Server.Tests.LogicTests
         private Mock _mock;
         private ServerLogic _toTest;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             Setup();

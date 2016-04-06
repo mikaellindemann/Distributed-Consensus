@@ -17,7 +17,7 @@ namespace Server.Tests.LogicTests
         private List<ActionModel> _testModelList;
         private IWorkflowHistoryLogic _toTest;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             var mock = new Mock<IServerHistoryStorage>();
