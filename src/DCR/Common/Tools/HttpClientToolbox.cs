@@ -202,6 +202,7 @@ namespace Common.Tools
         /// T and the URI string must match.
         /// </summary>
         /// <typeparam name="T"> An object matching the expected object at the address (baseaddress + URI)</typeparam>
+        /// <typeparam name="TResult"></typeparam>
         /// <param name="uri">A URI to the API (baseaddress + uri) where objects of type T are stored.</param>
         /// <param name="toUpdate"> The type of object to update at the API.</param>
         /// <exception cref="NotFoundException">If the resource isn't found</exception>

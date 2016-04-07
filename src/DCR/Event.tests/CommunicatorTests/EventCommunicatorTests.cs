@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Common.DTO.Shared;
 using Common.Tools;
 using Event.Communicators;
-using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;

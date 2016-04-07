@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Common.DTO.Event;
-using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Common.DTO.Shared;
 using Event.Models;

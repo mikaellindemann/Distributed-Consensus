@@ -25,7 +25,7 @@ namespace Event.Logic
         public Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId = "")
         {
             // Todo: Remove this method.
-            return Task.Delay(0);/*
+            return Task.CompletedTask;/*
             //Don't save a null reference.
             if (ex == null) return;
 

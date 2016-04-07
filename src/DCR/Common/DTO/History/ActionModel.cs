@@ -8,11 +8,6 @@
         public string CounterpartId { get; set; }
         public int CounterpartTimeStamp { get; set; }
         public ActionType Type { get; set; }
-
-        public ActionModel()
-        {
-            
-        }
     }
 
     public enum ActionType

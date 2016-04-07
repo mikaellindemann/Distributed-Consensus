@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Event.Exceptions;
 using Common.DTO.Shared;
 using Event.Exceptions.ServerInteraction;
 

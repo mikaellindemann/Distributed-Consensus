@@ -230,7 +230,7 @@ namespace Server.Tests.ControllerTests
         //}
 
         [Test]
-        public void CreateUser_WillForwardUserDtoUnAffectedToLogicLayer()
+        public async Task CreateUser_WillForwardUserDtoUnAffectedToLogicLayer()
         {
             // Arrange
             var catchArgumentList = new List<UserDto>();
@@ -245,7 +245,14 @@ namespace Server.Tests.ControllerTests
             };
 
             // Act
-            var testDelegate = _usersController.CreateUser(argumentToProvide);
+            try
+            {
+                await _usersController.CreateUser(argumentToProvide);
+            }
+            catch (Exception)
+            {
+                //Should be fine
+            }
 
             // Assert
             var actualElementThatWasPassedOn = catchArgumentList.First();
@@ -316,23 +323,19 @@ namespace Server.Tests.ControllerTests
         //    Assert.IsTrue(logWasCalled);
         //}
 
-        [Test]
-        public void CreateUser_WillHandleArgumentExceptionCorrectly_1()
+        [TestCase("Conflicting name")]
+        public void CreateUser_WillHandleArgumentExceptionCorrectly_1(string user)
         {
             // Arrange
-            var exceptionToBeThrown = new ArgumentException("Conflicting name", "user");
+            var exceptionToBeThrown = new ArgumentException(user, nameof(user));
             _logicMock.Setup(m => m.AddUser(It.IsAny<UserDto>())).Throws(exceptionToBeThrown);
             var provideDto = new UserDto();
 
             // Act
-            var task = _usersController.CreateUser(provideDto);
+            AsyncTestDelegate testDelegate = async () => await _usersController.CreateUser(provideDto);
 
             // Assert
-            var exception = task.Exception.InnerException as HttpResponseException;
-            if (exception == null)
-            {
-                Assert.Fail();
-            }
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.Conflict,exception.Response.StatusCode);
         }
@@ -346,14 +349,11 @@ namespace Server.Tests.ControllerTests
             UserDto provideDto = GetValidUserDto();
 
             // Act
-            var task = _usersController.CreateUser(provideDto);
+            AsyncTestDelegate testDelegate = async () => await _usersController.CreateUser(provideDto);
 
             // Assert
-            var exception = task.Exception.InnerException as HttpResponseException;
-            if (exception == null)
-            {
-                Assert.Fail();
-            }
+
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, exception.Response.StatusCode);
         }
@@ -367,16 +367,10 @@ namespace Server.Tests.ControllerTests
             var userDto = new UserDto();
 
             // Act
-            var task = _usersController.CreateUser(userDto);
-
-            var exception = task.Exception.InnerException as HttpResponseException;
-            if (exception == null)
-            {
-                Assert.Fail();
-            }
+            AsyncTestDelegate testDelegate = async () => await _usersController.CreateUser(userDto);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseException>(exception);
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest,exception.Response.StatusCode);
         }
         #endregion
@@ -388,7 +382,7 @@ namespace Server.Tests.ControllerTests
         {
             // Arrange
             _usersController.ModelState.AddModelError("Role",new ArgumentNullException());
-            var rolesList = GetSomeRoles();
+
             // Act
             var testDelegate = new AsyncTestDelegate(async() => await _usersController.AddRolesToUser("Hanne", GetSomeRoles()));
 
@@ -467,17 +461,13 @@ namespace Server.Tests.ControllerTests
             _logicMock.Setup(m => m.AddRolesToUser(It.IsAny<string>(), It.IsAny<IEnumerable<WorkflowRole>>()))
                 .Throws((Exception)exceptionType.GetConstructors().First().Invoke(null));
             var rolesList = GetSomeRoles();
-            var user = "Hanne";
+            const string user = "Hanne";
 
             // Act
-            var task = _usersController.AddRolesToUser(user, rolesList);
+            AsyncTestDelegate testDelegate = async () => await _usersController.AddRolesToUser(user, rolesList);
 
             // Assert
-            var exception = task.Exception.InnerException as HttpResponseException;
-            if (exception == null)
-            {
-                Assert.Fail();
-            }
+            var exception = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
 
             Assert.AreEqual(statuscode,exception.Response.StatusCode);
         }

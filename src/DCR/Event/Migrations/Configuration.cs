@@ -1,11 +1,8 @@
 namespace Event.Migrations
 {
-    using System;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
-    using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Event.Storage.EventContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Storage.EventContext>
     {
         public Configuration()
         {
@@ -13,7 +10,7 @@ namespace Event.Migrations
             ContextKey = "Event.Storage.EventContext";
         }
 
-        protected override void Seed(Event.Storage.EventContext context)
+        protected override void Seed(Storage.EventContext context)
         {
             //  This method will be called after migrating to the latest version.
 
