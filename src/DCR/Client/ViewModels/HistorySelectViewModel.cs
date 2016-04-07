@@ -72,7 +72,7 @@ namespace Client.ViewModels
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
                 var json =
                     await
-                        _connection.Produce(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId,
+                        _connection.Produce(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
                             EventViewModel.Id);
                 tokenSource.Cancel();
 
@@ -91,6 +91,7 @@ namespace Client.ViewModels
             catch (Exception)
             {
                 Status = "Something went wrong";
+                CanPressButtons = true;
             }
         }
 
@@ -103,7 +104,7 @@ namespace Client.ViewModels
                 var tokenSource = new CancellationTokenSource();
 
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
+                var json = await _connection.Collapse(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId, EventViewModel.Id);
                 tokenSource.Cancel();
 
                 var file = Path.GetTempFileName();
@@ -120,6 +121,7 @@ namespace Client.ViewModels
             catch (Exception)
             {
                 Status = "Something went wrong";
+                CanPressButtons = true;
             }
         }
 
@@ -134,7 +136,7 @@ namespace Client.ViewModels
                 var tokenSource = new CancellationTokenSource();
 
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json = await _connection.Create(EventViewModel.Uri, EventViewModel._eventAddressDto.WorkflowId, EventViewModel.Id);
+                var json = await _connection.Create(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId, EventViewModel.Id);
                 tokenSource.Cancel();
                 
                 var file = Path.GetTempFileName();
@@ -152,6 +154,7 @@ namespace Client.ViewModels
             catch (Exception)
             {
                 Status = "Something went wrong";
+                CanPressButtons = true;
             }
         }
 
@@ -160,6 +163,7 @@ namespace Client.ViewModels
             while (!token.IsCancellationRequested)
             {
                 if (timeout > TimeSpan.Zero)
+                    // ReSharper disable once MethodSupportsCancellation
                     await Task.Delay(timeout);
 
                 ExecutionTime = DateTime.Now.Subtract(start).ToString(@"h\:mm\:ss\.ff", new DateTimeFormatInfo());

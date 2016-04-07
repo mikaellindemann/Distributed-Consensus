@@ -70,12 +70,11 @@ namespace Client
 
         #region Implementation
 
-        static void OnIsMonitoringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnIsMonitoringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TextBox)
+            var txtBox = d as TextBox;
+            if (txtBox != null)
             {
-                TextBox txtBox = d as TextBox;
-
                 if ((bool)e.NewValue)
                     txtBox.TextChanged += TextChanged;
                 else
@@ -83,7 +82,7 @@ namespace Client
             }
             else if (d is PasswordBox)
             {
-                PasswordBox passBox = d as PasswordBox;
+                var passBox = (PasswordBox) d;
 
                 if ((bool)e.NewValue)
                     passBox.PasswordChanged += PasswordChanged;
@@ -92,16 +91,16 @@ namespace Client
             }
         }
 
-        static void TextChanged(object sender, TextChangedEventArgs e)
+        private static void TextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox txtBox = sender as TextBox;
+            var txtBox = sender as TextBox;
             if (txtBox == null) return;
             SetTextLength(txtBox, txtBox.Text.Length);
         }
 
-        static void PasswordChanged(object sender, RoutedEventArgs e)
+        private static void PasswordChanged(object sender, RoutedEventArgs e)
         {
-            PasswordBox passBox = sender as PasswordBox;
+            var passBox = sender as PasswordBox;
             if (passBox == null) return;
             SetTextLength(passBox, passBox.Password.Length);
         }

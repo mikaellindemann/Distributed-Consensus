@@ -26,7 +26,7 @@ namespace Client.ViewModels
             set
             {
                 _actionDto.WorkflowId = value;
-                NotifyPropertyChanged("WorkflowId");
+                NotifyPropertyChanged();
             }
         }
 
@@ -36,7 +36,7 @@ namespace Client.ViewModels
             set
             {
                 _actionDto.EventId = value;
-                NotifyPropertyChanged("EventId");
+                NotifyPropertyChanged();
             }
         }
 
@@ -46,7 +46,7 @@ namespace Client.ViewModels
             set
             {
                 _actionDto.CounterpartId = value;
-                NotifyPropertyChanged("CounterpartId");
+                NotifyPropertyChanged();
             }
         }
 
@@ -60,7 +60,7 @@ namespace Client.ViewModels
             set
             {
                 _title = value;
-                NotifyPropertyChanged("Title");
+                NotifyPropertyChanged();
             }
         }
 
@@ -70,7 +70,7 @@ namespace Client.ViewModels
             set
             {
                 _actionDto.TimeStamp = value;
-                NotifyPropertyChanged("TimeStamp"); }
+                NotifyPropertyChanged(); }
         }
         
         #endregion

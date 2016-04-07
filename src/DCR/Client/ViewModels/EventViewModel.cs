@@ -1,8 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Client.Connections;
@@ -15,7 +12,7 @@ namespace Client.ViewModels
 {
     public class EventViewModel : ViewModelBase
     {
-        internal readonly EventAddressDto _eventAddressDto;
+        internal readonly EventAddressDto EventAddressDto;
         private EventStateDto _eventStateDto;
         private readonly IWorkflowViewModel _parent;
         private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush;
@@ -25,11 +22,11 @@ namespace Client.ViewModels
         {
             // Create the brushes, and Freeze them so the UI-thread can access them.
             // Pending
-            PendingBrush = new ImageBrush(new BitmapImage(new Uri($"pack://application:,,,/Client;component/Assets/Pending.png", UriKind.Absolute)));
+            PendingBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/Pending.png", UriKind.Absolute)));
             PendingBrush.Freeze();
 
             // Executed
-            ExecutedBrush = new ImageBrush(new BitmapImage(new Uri($"pack://application:,,,/Client;component/Assets/Executed.png", UriKind.Absolute)));
+            ExecutedBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/Executed.png", UriKind.Absolute)));
             ExecutedBrush.Freeze();
 
             // Included
@@ -47,7 +44,7 @@ namespace Client.ViewModels
             {
                 throw new ArgumentNullException();
             }
-            _eventAddressDto = eventAddressDto;
+            EventAddressDto = eventAddressDto;
             _parent = workflow;
             _eventStateDto = new EventStateDto();
             _eventConnection = new EventConnection();
@@ -58,7 +55,7 @@ namespace Client.ViewModels
         {
             _parent = parent;
             _eventStateDto = new EventStateDto();
-            _eventAddressDto = eventAddressDto;
+            EventAddressDto = eventAddressDto;
             _eventConnection = eventConnection;
         }
 
@@ -66,11 +63,11 @@ namespace Client.ViewModels
 
         public string Id
         {
-            get { return _eventAddressDto.Id; }
+            get { return EventAddressDto.Id; }
             set
             {
-                _eventAddressDto.Id = value;
-                NotifyPropertyChanged("Id");
+                EventAddressDto.Id = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -83,17 +80,17 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Name = value;
-                NotifyPropertyChanged("Name");
+                NotifyPropertyChanged();
             }
         }
 
         public Uri Uri
         {
-            get { return _eventAddressDto.Uri; }
+            get { return EventAddressDto.Uri; }
             set
             {
-                _eventAddressDto.Uri = value;
-                NotifyPropertyChanged("Uri");
+                EventAddressDto.Uri = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -103,8 +100,8 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Pending = value;
-                NotifyPropertyChanged("Pending");
-                NotifyPropertyChanged("PendingColor");
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(PendingColor));
             }
         }
 
@@ -116,8 +113,8 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Executed = value;
-                NotifyPropertyChanged("Executed");
-                NotifyPropertyChanged("ExecutedColor");
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ExecutedColor));
             }
         }
 
@@ -129,8 +126,8 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Included = value;
-                NotifyPropertyChanged("Included");
-                NotifyPropertyChanged("IncludedColor");
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IncludedColor));
             }
         }
 
@@ -142,7 +139,7 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Executable = value;
-                NotifyPropertyChanged("Executable");
+                NotifyPropertyChanged();
             }
         }
 
@@ -197,7 +194,7 @@ namespace Client.ViewModels
             await _parent.DisableExecuteButtons();
             try
             {
-                await _eventConnection.Execute(_eventAddressDto.Uri, _parent.WorkflowId, _eventAddressDto.Id, _parent.Roles);
+                await _eventConnection.Execute(EventAddressDto.Uri, _parent.WorkflowId, EventAddressDto.Id, _parent.Roles);
                 _parent.RefreshEvents();
             }
             catch (NotFoundException)

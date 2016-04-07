@@ -61,7 +61,7 @@ namespace Client.ViewModels
             set
             {
                 _workflowId = value;
-                NotifyPropertyChanged("WorkflowId");
+                NotifyPropertyChanged();
             }
         }
 
@@ -75,7 +75,7 @@ namespace Client.ViewModels
             set
             {
                 _status = value;
-                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged();
             }
         }
 
