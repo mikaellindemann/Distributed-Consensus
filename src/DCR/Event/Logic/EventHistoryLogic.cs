@@ -47,8 +47,10 @@ namespace Event.Logic
 
         public async Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "", int senderTimeStamp = -1)
         {
+            var timestamp = senderTimeStamp != -1 ? await GetNextTimestamp(workflowId, eventId, senderTimeStamp) : await GetNextTimestamp(workflowId,eventId);
             var toSave = new ActionModel
             {
+                Id = timestamp,
                 WorkflowId = workflowId,
                 EventId = eventId,
                 CounterpartId = senderId,
@@ -58,6 +60,17 @@ namespace Event.Logic
 
             await _storage.SaveHistory(toSave);
             return toSave.Id;
+        }
+
+        public async Task<int> GetNextTimestamp(string workflowId, string eventId, int counterPartTimestamp)
+        {
+            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Id);
+            return Math.Max(currentMax, counterPartTimestamp) + 1;
+        }
+        public async Task<int> GetNextTimestamp(string workflowId, string eventId)
+        {
+            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Id);
+            return currentMax + 1;
         }
 
         public void Dispose()
