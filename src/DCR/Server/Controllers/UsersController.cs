@@ -23,7 +23,6 @@ namespace Server.Controllers
         /// Constructor used for dependency-injection during testing
         /// </summary>
         /// <param name="logic"></param>
-        /// <param name="historyLogic"></param>
         public UsersController(IServerLogic logic)
         {
             _logic = logic;

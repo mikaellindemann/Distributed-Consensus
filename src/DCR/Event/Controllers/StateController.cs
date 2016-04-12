@@ -10,7 +10,6 @@ using Common.Exceptions;
 using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
-using Event.Logic;
 
 namespace Event.Controllers
 {

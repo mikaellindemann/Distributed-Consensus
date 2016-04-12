@@ -53,7 +53,7 @@ namespace Client.ViewModels
             set
             {
                 _selecteWorkflowViewModel = value;
-                NotifyPropertyChanged("SelectedWorkflowViewModel");
+                NotifyPropertyChanged();
             }
         }
 
@@ -63,7 +63,7 @@ namespace Client.ViewModels
             set
             {
                 _status = value;
-                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged();
             }
         }
 

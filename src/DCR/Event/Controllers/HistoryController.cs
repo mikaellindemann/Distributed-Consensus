@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Common.DTO.History;
 using Event.Interfaces;
-using Event.Logic;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
@@ -147,7 +146,7 @@ namespace Event.Controllers
                 .Union(eventDto.Responses)
                 .Union(eventDto.Inclusions)
                 .Union(eventDto.Exclusions)
-                .Where(relation => !traceList.Contains(relation.Id))
+                .Where(relation => !traceList.Contains(relation.Id) && relation.Id != eventId)
                 .Select(relation => $"{relation.Uri.ToString()}history/{relation.WorkflowId}/{relation.Id}");
             
             return History.produce(workflowId, eventId, ToFSharpList(traceList), ToFSharpList(relations), localHistoryGraph);

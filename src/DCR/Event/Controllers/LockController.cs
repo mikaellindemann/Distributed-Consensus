@@ -3,13 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Common.DTO.History;
 using Common.Exceptions;
-using Event.Communicators;
 using Event.Interfaces;
-using Event.Logic;
 using Event.Models;
-using Event.Storage;
 
 namespace Event.Controllers
 {

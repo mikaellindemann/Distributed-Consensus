@@ -55,7 +55,7 @@ namespace Client.ViewModels
             set
             {
                 _workflowDto.Name = value;
-                NotifyPropertyChanged("Name");
+                NotifyPropertyChanged();
             }
         }
 
@@ -69,7 +69,7 @@ namespace Client.ViewModels
             set
             {
                 _selectedEventViewModel = value;
-                NotifyPropertyChanged("SelectedEventViewModel");
+                NotifyPropertyChanged();
             }
         }
 

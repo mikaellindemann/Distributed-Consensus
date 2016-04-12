@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.DTO.History;
 using Common.Exceptions;
 using Event.Interfaces;
 using Event.Models;
@@ -133,6 +134,8 @@ namespace Event.Tests.StorageTests
                 InitialIncluded = initialIncluded,
                 InitialPending = initialPending
             });
+
+            _contextMock.Setup(m => m.History).Returns(new FakeDbSet<ActionModel>(new EnumerableQuery<ActionModel>(new List<ActionModel>())).Object);
 
             // Act
             await _storageForReset.ResetToInitialState("workflowId", "eventId");
