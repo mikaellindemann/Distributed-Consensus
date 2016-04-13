@@ -23,23 +23,6 @@ namespace Event.Logic
             _storage = storage;
         }
 
-        public Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId = "")
-        {
-            // Todo: Remove this method.
-            return Task.CompletedTask;/*
-            //Don't save a null reference.
-            if (ex == null) return;
-
-            var toSave = new ActionModel
-            {
-                WorkflowId = workflowId,
-                EventId = eventId,
-                CounterpartId = null
-            };
-
-            await _storage.SaveHistory(toSave);*/
-        }
-
         public async Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId)
         {
             var models = (await _storage.GetHistoryForEvent(workflowId, eventId)).ToList();

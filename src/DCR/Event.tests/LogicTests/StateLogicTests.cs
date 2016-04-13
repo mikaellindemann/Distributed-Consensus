@@ -589,6 +589,12 @@ namespace Event.Tests.LogicTests
             _inclusions.Add(relationModel);
             _exclusions.Add(relationModel);
 
+            _eventHistoryMock.Setup(
+                h => h.ReserveNext(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new ActionDto());
+
+            _eventHistoryMock.Setup(h => h.UpdateAction(It.IsAny<ActionDto>())).Returns(Task.CompletedTask);
+
             // Act
             await _stateLogic.Execute("workflowId", "eventId", new RoleDto { Roles = new List<string> { "Roles" } });
 

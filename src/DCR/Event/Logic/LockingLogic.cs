@@ -363,7 +363,7 @@ namespace Event.Logic
                 }
                 catch (Exception)
                 {
-                    // TODO: Find out what to do if you cant even unlock. Even.
+                    // Find out what to do if you cant even unlock. Even.
                 }
             }
         }
