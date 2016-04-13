@@ -46,9 +46,9 @@ namespace Event.Logic
             return models.Select(model => model.ToActionDto());
         }
 
-        public async Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "", int senderTimeStamp = -1)
+        public async Task<int> SaveSuccesfullCall(ActionType type, string eventId, string workflowId, string senderId, int senderTimeStamp)
         {
-            var timestamp = senderTimeStamp != -1 ? await GetNextTimestamp(workflowId, eventId, senderTimeStamp) : await GetNextTimestamp(workflowId,eventId);
+            var timestamp = senderTimeStamp != -1 ? await GetNextTimestamp(workflowId, eventId, senderTimeStamp) : await GetNextTimestamp(workflowId, eventId);
             var toSave = new ActionModel
             {
                 Timestamp = timestamp,

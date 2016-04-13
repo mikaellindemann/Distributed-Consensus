@@ -14,6 +14,7 @@ namespace Common.DTO.Shared
 
         [Required]
         public Uri Uri { get; set; }
+        public int Timestamp { get; set; }
 
         public IEnumerable<string> Roles { get; set; } 
     }

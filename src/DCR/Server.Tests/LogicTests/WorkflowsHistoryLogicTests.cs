@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Server.Interfaces;
 using Server.Logic;
+using Server.Models;
 
 namespace Server.Tests.LogicTests
 {
@@ -115,7 +116,7 @@ namespace Server.Tests.LogicTests
             {
                 EventId = @"&%¤#æøå*¨^´`?",
                 WorkflowId = @"&%¤#æøå*¨^´`?",
-                Id = 1,
+                Timestamp = 1,
                 CounterpartId = @"&%¤#æøå*¨^´`?",
                 Type = ActionType.Excludes
             };

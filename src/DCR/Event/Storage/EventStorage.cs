@@ -546,17 +546,15 @@ namespace Event.Storage
             await _context.SaveChangesAsync();
         }
 
-        public Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
+        public async Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
         {
-            return _context.History
+            return await _context.History
                 .Where(
                     action =>
                         action.WorkflowId == workflowId 
                         && action.EventId == eventId 
                         && action.CounterpartId == counterpartId)
-                .Select(action => action.CounterpartTimeStamp)
-                .OrderByDescending(timeStamp => timeStamp)
-                .FirstOrDefaultAsync();
+                .MaxAsync(action => (int?)action.Timestamp) ?? 0;
         }
     }
 }

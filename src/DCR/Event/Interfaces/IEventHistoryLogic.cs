@@ -38,7 +38,7 @@ namespace Event.Interfaces
         /// <param name="counterpartId"></param>
         /// <param name="senderTimeStamp"></param>
         /// <returns></returns>
-        Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "", int senderTimeStamp = -1);
+        Task<int> SaveSuccesfullCall(ActionType type, string eventId, string workflowId, string counterpartId, int senderTimeStamp);
 
         Task<ActionDto> ReserveNext(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "");
         Task UpdateAction(ActionDto dto);

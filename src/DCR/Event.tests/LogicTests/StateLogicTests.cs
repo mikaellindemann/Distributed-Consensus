@@ -66,7 +66,7 @@ namespace Event.Tests.LogicTests
             _eventCommunicatorMock.Setup(ec => ec.SendPending(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(++_timestamp));
             _eventCommunicatorMock.Setup(ec => ec.SendExcluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(++_timestamp));
             _eventCommunicatorMock.Setup(ec => ec.SendIncluded(It.IsAny<Uri>(), It.IsAny<EventAddressDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(++_timestamp));
-            _eventCommunicatorMock.Setup(ec => ec.CheckCondition(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new ConditionDto
+            _eventCommunicatorMock.Setup(ec => ec.CheckCondition(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new ConditionDto
             {
                 Condition = true
             });

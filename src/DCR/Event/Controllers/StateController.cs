@@ -75,6 +75,16 @@ namespace Event.Controllers
         [HttpGet]
         public async Task<ConditionDto> GetCondition(string workflowId, string eventId, string senderId, int timestamp)
         {
+            if (
+                !await
+                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, senderId,
+                        timestamp))
+            {
+                var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "UpdateIncluded: EventAddressDto Timestamp was lower than a previous timestamp from this event"));
+                //await _historyLogic.SaveException(toThrow, "PUT", "UpdateIncluded", eventId, workflowId);
+                throw toThrow;
+            }
             try
             {
                 var included = await _logic.IsIncluded(workflowId, eventId, senderId);
@@ -214,12 +224,22 @@ namespace Event.Controllers
                 //await _historyLogic.SaveException(toThrow, "PUT", "UpdateIncluded", eventId, workflowId);
                 throw toThrow;
             }
+            if (
+                !await
+                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, eventAddressDto.Id,
+                        eventAddressDto.Timestamp))
+            {
+                var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "UpdateIncluded: EventAddressDto Timestamp was lower than a previous timestamp from this event"));
+                //await _historyLogic.SaveException(toThrow, "PUT", "UpdateIncluded", eventId, workflowId);
+                throw toThrow;
+            }
 
             try
             {
                 await _logic.SetIncluded(workflowId, eventId, eventAddressDto.Id, boolValueForIncluded);
                 var timestamp = await _historyLogic.SaveSuccesfullCall(boolValueForIncluded ? ActionType.IncludedBy : ActionType.ExcludedBy, 
-                    eventId, workflowId, eventAddressDto.Id);
+                    eventId, workflowId, eventAddressDto.Id, eventAddressDto.Timestamp);
 
                 return timestamp;
             }
@@ -270,11 +290,21 @@ namespace Event.Controllers
                 //await _historyLogic.SaveException(toThrow, "PUT", "UpdatePending", eventId, workflowId);
                 throw toThrow;
             }
+            if (
+                !await
+                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, eventAddressDto.Id,
+                        eventAddressDto.Timestamp))
+            {
+                var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "UpdateIncluded: EventAddressDto Timestamp was lower than a previous timestamp from this event"));
+                //await _historyLogic.SaveException(toThrow, "PUT", "UpdateIncluded", eventId, workflowId);
+                throw toThrow;
+            }
 
             try
             {
                 await _logic.SetPending(workflowId, eventId, eventAddressDto.Id, boolValueForPending);
-                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.SetPendingBy, eventId, workflowId, eventAddressDto.Id);
+                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.SetPendingBy, eventId, workflowId, eventAddressDto.Id, eventAddressDto.Timestamp);
                 return timestamp;
             }
             catch (ArgumentNullException)
@@ -329,9 +359,9 @@ namespace Event.Controllers
             }
             try
             {
-                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId);
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
                 await _logic.Execute(workflowId, eventId, executeDto);
-                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId);
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId, "", -1);
             }
             catch (NotFoundException)
             {

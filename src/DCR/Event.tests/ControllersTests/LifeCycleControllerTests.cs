@@ -36,7 +36,7 @@ namespace Event.Tests.ControllersTests
                {
                    var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
                    var dtos = new List<ActionDto>();
-                   models.ForEach(x => dtos.Add(new ActionDto(x)));
+                   models.ForEach(x => dtos.Add(x.ToActionDto()));
                    return dtos.AsEnumerable();
                })).Verifiable();
 
