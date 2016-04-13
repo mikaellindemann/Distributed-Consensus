@@ -115,6 +115,7 @@
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\LifecycleController.cs" />
     <Compile Include="Controllers\LockController.cs" />
+    <Compile Include="Controllers\MaliciousController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Exceptions\FailedToCreateEventException.cs" />
     <Compile Include="Exceptions\ServerInteraction\FailedToDeleteEventFromServerException.cs" />
