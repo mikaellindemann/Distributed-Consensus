@@ -311,19 +311,10 @@ namespace Event.Logic
                 };
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
-<<<<<<< HEAD
-                    var timestamp =
-                        await
-                            _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
-                    await
-                        _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId,
-                            timestamp);
-=======
                     var action = await _historyLogic.ReserveNext(ActionType.SetsPending, eventId, workflowId, pending.EventId);
                     addressDto.Timestamp = action.TimeStamp;
                     action.CounterpartTimeStamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
                     await _historyLogic.UpdateAction(action);
->>>>>>> cb22fcb1fbfa33bb54ee5c134f3d0bdbcd9e84d6
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
