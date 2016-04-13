@@ -116,6 +116,7 @@
     <Compile Include="Logic\ServerLogic.cs" />
     <Compile Include="Exceptions\WorkflowAlreadyExistsException.cs" />
     <Compile Include="Logic\WorkflowHistoryLogic.cs" />
+    <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\ServerEventModel.cs" />
     <Compile Include="Models\ServerRoleModel.cs" />
     <Compile Include="Models\ServerUserModel.cs" />

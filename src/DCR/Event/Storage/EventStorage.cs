@@ -8,6 +8,7 @@ using Common.Exceptions;
 using Event.Exceptions;
 using Event.Interfaces;
 using Event.Models;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Storage
 {
@@ -504,6 +505,45 @@ namespace Event.Storage
             }
 
             return _context.History.Where(h => h.EventId == eventId && h.WorkflowId == workflowId);
+        }
+
+        public async Task<ActionModel> ReserveNext(ActionModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            if (!await Exists(model.WorkflowId, model.EventId))
+            {
+                throw new NotFoundException();
+            }
+
+            model.Timestamp = (await GetHistoryForEvent(model.WorkflowId, model.EventId)).Max(m => m.Timestamp) + 1;
+
+            _context.History.Add(model);
+            await _context.SaveChangesAsync();
+            
+            return model;
+        }
+
+        public async Task UpdateHistory(ActionModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            if (!await Exists(model.WorkflowId, model.EventId))
+            {
+                throw new NotFoundException();
+            }
+
+            var dbModel =
+                await
+                    (await GetHistoryForEvent(model.WorkflowId, model.EventId)).SingleOrDefaultAsync(
+                        m => m.Timestamp == model.Timestamp && m.CounterpartId == model.CounterpartId && m.Type == model.Type);
+            dbModel.CounterpartTimeStamp = model.CounterpartTimeStamp;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

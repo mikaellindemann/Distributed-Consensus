@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.DTO.History;
+using Event.Models;
 
 namespace Event.Interfaces
 {
@@ -39,5 +40,8 @@ namespace Event.Interfaces
         /// <param name="senderTimeStamp"></param>
         /// <returns></returns>
         Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "", int senderTimeStamp = -1);
+
+        Task<ActionDto> ReserveNext(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "");
+        Task UpdateAction(ActionDto dto);
     }
 }

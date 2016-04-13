@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common.DTO.History;
 using Event.Interfaces;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Logic
 {
@@ -42,7 +43,7 @@ namespace Event.Logic
         public async Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId)
         {
             var models = (await _storage.GetHistoryForEvent(workflowId, eventId)).ToList();
-            return models.Select(model => new ActionDto(model));
+            return models.Select(model => model.ToActionDto());
         }
 
         public async Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "", int senderTimeStamp = -1)
@@ -50,7 +51,7 @@ namespace Event.Logic
             var timestamp = senderTimeStamp != -1 ? await GetNextTimestamp(workflowId, eventId, senderTimeStamp) : await GetNextTimestamp(workflowId,eventId);
             var toSave = new ActionModel
             {
-                Id = timestamp,
+                Timestamp = timestamp,
                 WorkflowId = workflowId,
                 EventId = eventId,
                 CounterpartId = senderId,
@@ -59,18 +60,44 @@ namespace Event.Logic
             };
 
             await _storage.SaveHistory(toSave);
-            return toSave.Id;
+            return toSave.Timestamp;
         }
 
         public async Task<int> GetNextTimestamp(string workflowId, string eventId, int counterPartTimestamp)
         {
-            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Id);
+            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Timestamp);
             return Math.Max(currentMax, counterPartTimestamp) + 1;
         }
         public async Task<int> GetNextTimestamp(string workflowId, string eventId)
         {
-            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Id);
+            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Timestamp);
             return currentMax + 1;
+        }
+
+        public async Task<ActionDto> ReserveNext(ActionType type, string workflowId = "", string eventId = "", string counterpartId = "")
+        {
+            var model = await _storage.ReserveNext(new ActionModel
+            {
+                Type = type,
+                WorkflowId = workflowId,
+                EventId = eventId,
+                CounterpartId = counterpartId
+            });
+
+            return model.ToActionDto();
+        }
+
+        public Task UpdateAction(ActionDto dto)
+        {
+            return _storage.UpdateHistory(new ActionModel
+            {
+                Timestamp = dto.TimeStamp,
+                EventId = dto.EventId,
+                WorkflowId = dto.WorkflowId,
+                CounterpartTimeStamp = dto.CounterpartTimeStamp,
+                CounterpartId = dto.CounterpartId,
+                Type = dto.Type
+            });
         }
 
         public void Dispose()

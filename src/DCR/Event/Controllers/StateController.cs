@@ -71,24 +71,24 @@ namespace Event.Controllers
 
         }
 
-        [Route("events/{workflowId}/{eventId}/condition/{senderId}")]
+        [Route("events/{workflowId}/{eventId}/condition")]
         [HttpGet]
-        public async Task<ConditionDto> GetCondition(string workflowId, string senderId, string eventId)
+        public async Task<ConditionDto> GetCondition(string workflowId, string eventId, string senderId, int timestamp)
         {
             try
             {
                 var included = await _logic.IsIncluded(workflowId, eventId, senderId);
                 var executed = await _logic.IsExecuted(workflowId, eventId, senderId);
 
-                var timestamp = await _historyLogic.SaveSuccesfullCall(ActionType.CheckedConditon, eventId, workflowId, senderId);
+                var localTimestamp = await _historyLogic.SaveSuccesfullCall(ActionType.CheckedConditon, eventId, workflowId, senderId, timestamp);
 
                 if (included && !executed)
                 {
-                    return new ConditionDto {Condition = false, TimeStamp = timestamp};
+                    return new ConditionDto {Condition = false, TimeStamp = localTimestamp};
                 }
 
                 //await _historyLogic.SaveSuccesfullCall("GET", "GetIncluded", eventId, workflowId);
-                return new ConditionDto {Condition = true, TimeStamp = timestamp};
+                return new ConditionDto {Condition = true, TimeStamp = localTimestamp};
             }
             catch (NotFoundException)
             {

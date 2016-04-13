@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.DTO.History;
 using Common.Exceptions;
 using Server.Exceptions;
 using Server.Interfaces;

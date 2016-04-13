@@ -146,6 +146,7 @@
       <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\EventRoleModel.cs" />
     <Compile Include="Models\RelationToOtherEventModel.cs" />
     <Compile Include="Models\UriClasses\ConditionUri.cs" />

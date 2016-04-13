@@ -175,14 +175,17 @@ namespace Event.Logic
             {
                 if (log)
                 {
+                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksConditon, eventId, workflowId,
+                        condition.EventId);
+
                     var cond =
                         await
                             _eventCommunicator.CheckCondition(condition.Uri, condition.WorkflowId, condition.EventId,
-                                eventId);
+                                eventId, actionDto.TimeStamp);
 
-                    await
-                        _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId,
-                            condition.EventId, cond.TimeStamp);
+                    actionDto.CounterpartTimeStamp = cond.TimeStamp;
+
+                    await _historyLogic.UpdateAction(actionDto);
 
                     // If the condition-event is not executed and currently included.
                     if (!cond.Condition) return false;

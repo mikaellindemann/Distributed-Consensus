@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Common.DTO.History;
 using Event.Models;
 using Event.Models.UriClasses;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Interfaces
 {

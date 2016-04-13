@@ -3,6 +3,7 @@ using Common.DTO.History;
 using Event.Interfaces;
 using Event.Models;
 using Event.Models.UriClasses;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Storage
 {
