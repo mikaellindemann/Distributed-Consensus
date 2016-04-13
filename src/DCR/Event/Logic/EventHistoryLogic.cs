@@ -43,8 +43,16 @@ namespace Event.Logic
                 Type = type
             };
 
-            await _storage.SaveHistory(toSave);
-            return toSave.Timestamp;
+            try
+            {
+                await _storage.SaveHistory(toSave);
+                return toSave.Timestamp;
+            }
+
+            catch (Exception)
+            {
+                throw new FailedToSaveHistoryException($"Failed to save history for action type: {type}");
+            }
         }
 
         public async Task<int> GetNextTimestamp(string workflowId, string eventId, int counterPartTimestamp)

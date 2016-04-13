@@ -295,9 +295,13 @@ namespace Event.Logic
             }
 
             var allOk = true;
-            FailedToUpdateStateAtOtherEventException exception = null;
+            Exception exception = null;
             try
             {
+                //Save beginning execution to history after locking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
+
+                //Execute.
                 var addressDto = new EventAddressDto
                 {
                     WorkflowId = workflowId,
@@ -307,10 +311,19 @@ namespace Event.Logic
                 };
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
+<<<<<<< HEAD
+                    var timestamp =
+                        await
+                            _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
+                    await
+                        _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId,
+                            timestamp);
+=======
                     var action = await _historyLogic.ReserveNext(ActionType.SetsPending, eventId, workflowId, pending.EventId);
                     addressDto.Timestamp = action.TimeStamp;
                     action.CounterpartTimeStamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
                     await _historyLogic.UpdateAction(action);
+>>>>>>> cb22fcb1fbfa33bb54ee5c134f3d0bdbcd9e84d6
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
@@ -336,7 +349,18 @@ namespace Event.Logic
 
                 await _storage.SetExecuted(workflowId, eventId, true);
                 await _storage.SetPending(workflowId, eventId, false);
+
+                //Save execution finished before unlocking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId, "", -1);
             }
+            catch (FailedToSaveHistoryException e)
+            {
+                allOk = false;
+                exception = e;
+            }
+
+            //If one of the Update exceptions occured, this is thrown instead of the save history exception,
+            //since the failure of an update is more severe. 
             catch (Exception)
             {
                 /*  This will catch any of FailedToUpdate<Excluded|Pending|Executed>AtAnotherEventExceptions
@@ -350,11 +374,8 @@ namespace Event.Logic
                 // If we cannot even unlock, we give up!
                 throw new FailedToUnlockOtherEventException();
             }
-            if (allOk)
-            {
-                return;
-            }
-            throw exception;
+
+            if (!allOk) throw exception;
         }
 
         public void Dispose()

@@ -303,9 +303,7 @@ namespace Event.Controllers
             }
             try
             {
-                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
                 await _logic.Execute(workflowId, eventId, executeDto);
-                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId, "", -1);
             }
             catch (NotFoundException)
             {
