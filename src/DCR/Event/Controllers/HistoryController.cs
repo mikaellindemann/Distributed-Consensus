@@ -93,7 +93,7 @@ namespace Event.Controllers
                 return history;
             }
 
-           return FSharpOption<Graph.Graph>.Some(Graph.simplify(history.Value, Action.ActionType.ExecuteFinish));
+           return FSharpOption<Graph.Graph>.Some(History.simplify(history.Value));
         }
 
         [HttpGet]
@@ -107,7 +107,7 @@ namespace Event.Controllers
                 return history;
             }
 
-            return FSharpOption<Graph.Graph>.Some(Graph.collapse(history.Value));
+            return FSharpOption<Graph.Graph>.Some(History.collapse(history.Value));
         }
 
         [HttpPost]

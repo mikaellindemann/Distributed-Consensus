@@ -88,8 +88,8 @@ namespace GraphOptionToGravizo
                     action =>
                         new
                         {
-                            ActionString = $"{action.Id.Item2}[label=\"{action.Id.Item1}, {ActionToString(action.Type)}];",
-                            EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item2}->{edge.Item2};")
+                            ActionString = $"{action.Id.Item1 + action.Id.Item2}[label=\"{action.Id.Item1}, {ActionToString(action.Type)}];",
+                            EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item1 + action.Id.Item2}->{edge.Item1 + edge.Item2};")
                         });
 
             writer.WriteLine("digraph G {");

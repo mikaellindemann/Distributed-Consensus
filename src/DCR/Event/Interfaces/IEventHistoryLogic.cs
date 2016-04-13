@@ -29,7 +29,7 @@ namespace Event.Interfaces
         /// <returns></returns>
         Task<int> SaveSuccesfullCall(ActionType type, string eventId, string workflowId, string counterpartId, int senderTimeStamp);
 
-        Task<ActionDto> ReserveNext(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "");
+        Task<ActionDto> ReserveNext(ActionType type, string workflowId, string eventId, string counterpartId);
         Task UpdateAction(ActionDto dto);
         Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp);
     }

@@ -57,16 +57,16 @@ namespace Event.Logic
 
         public async Task<int> GetNextTimestamp(string workflowId, string eventId, int counterPartTimestamp)
         {
-            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync();
+            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync(model => model.Timestamp);
             return Math.Max(currentMax, counterPartTimestamp) + 1;
         }
         public async Task<int> GetNextTimestamp(string workflowId, string eventId)
         {
-            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync();
+            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync(model => model.Timestamp);
             return currentMax + 1;
         }
 
-        public async Task<ActionDto> ReserveNext(ActionType type, string workflowId = "", string eventId = "", string counterpartId = "")
+        public async Task<ActionDto> ReserveNext(ActionType type, string workflowId, string eventId, string counterpartId)
         {
             var model = await _storage.ReserveNext(new ActionModel
             {
@@ -94,7 +94,12 @@ namespace Event.Logic
 
         public async Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp)
         {
-            return await _storage.GetHighestCounterpartTimeStamp(workflowId, eventId, counterpartId) < timestamp;
+            var highestTimestampForCounterpart = await _storage.GetHighestCounterpartTimeStamp(workflowId, eventId, counterpartId);
+            if (eventId == counterpartId)
+            {
+                return highestTimestampForCounterpart <= timestamp;
+            }
+            return highestTimestampForCounterpart < timestamp;
         }
 
         public void Dispose()

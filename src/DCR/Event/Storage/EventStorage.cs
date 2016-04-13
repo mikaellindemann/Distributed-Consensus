@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Common.DTO.History;
 using Common.Exceptions;
 using Event.Exceptions;
 using Event.Interfaces;
@@ -14,9 +14,9 @@ namespace Event.Storage
 {
     public static class HistoryExtension
     {
-        public static async Task<int> MaxOrDefaultAsync(this IQueryable<ActionModel> source)
+        public static async Task<int> MaxOrDefaultAsync<T>(this IQueryable<T> source, Expression<Func<T, int>> selector)
         {
-            return await source.MaxAsync(action => (int?)action.Timestamp) ?? 0;
+            return await source.Select(selector).MaxAsync(i => (int?) i) ?? default(int);
         }
     }
     /// <summary>
@@ -525,7 +525,7 @@ namespace Event.Storage
                 throw new NotFoundException();
             }
 
-            model.Timestamp = (await GetHistoryForEvent(model.WorkflowId, model.EventId)).Max(m => m.Timestamp) + 1;
+            model.Timestamp = await (await GetHistoryForEvent(model.WorkflowId, model.EventId)).MaxOrDefaultAsync(action => action.Timestamp) + 1;
 
             _context.History.Add(model);
             await _context.SaveChangesAsync();
@@ -553,16 +553,15 @@ namespace Event.Storage
             await _context.SaveChangesAsync();
         }
 
-        public async Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
+        public Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
         {
-            return await _context.History
+            return _context.History
                 .Where(
                     action =>
                         action.WorkflowId == workflowId
                         && action.EventId == eventId
                         && action.CounterpartId == counterpartId)
-                .MaxOrDefaultAsync();
+                .MaxOrDefaultAsync(action => action.CounterpartTimeStamp);
         }
-        
     }
 }
