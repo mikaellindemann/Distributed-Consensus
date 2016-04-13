@@ -210,7 +210,7 @@ module Graph =
         let addToUsedActions action corner = Set.add action.Id corner
 
         let hasRelation first second corner =
-            (fst first.Id <> fst second.Id)
+            (first.Id <> second.Id)
                 && hasRelation first second
                 && not <| Set.contains second.Id corner
 
@@ -219,14 +219,14 @@ module Graph =
 
         let findFirstRelation action corner = Seq.tryFind (fun action' -> hasRelation action action' corner) combinedGraphAsSeq
 
-        let edgesList,_ =
-            Seq.fold (fun (newEdgesList,corner) action ->
+        let edgesSet,_ =
+            Seq.fold (fun (newEdgesSet,corner) action ->
                     match findFirstRelation action corner with
-                    | Some action' -> ((action, action') :: newEdgesList, addToUsedActions action' corner)
-                    | None -> newEdgesList,corner
-                ) ([], Set.empty) combinedGraphAsSeq
+                    | Some action' -> (Set.add (action, action') newEdgesSet, addToUsedActions action' corner)
+                    | None -> newEdgesSet,corner
+                ) (Set.empty, Set.empty) combinedGraphAsSeq
 
-        Some <| List.fold (fun graph (fromNode, toNode) -> addEdge fromNode.Id toNode.Id graph) combinedGraph edgesList
+        Some <| Set.fold (fun graph (fromNode, toNode) -> addEdge fromNode.Id toNode.Id graph) combinedGraph edgesSet
 
     let cycleCheck node graph =
         let rec cycleThrough visitedNodes remaining =
