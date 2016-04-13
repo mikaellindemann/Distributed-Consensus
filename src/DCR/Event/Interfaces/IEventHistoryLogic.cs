@@ -17,17 +17,6 @@ namespace Event.Interfaces
         /// <param name="eventId">EventId of the specified Event.</param>
         /// <returns></returns>
         Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId);
-
-        /// <summary>
-        /// Will save a thrown Exception for this event. Should be used if an operation throws an exception.   
-        /// </summary>
-        /// <param name="ex">Exception that was thrown.</param>
-        /// <param name="type">Type of the action to save.</param>
-        /// <param name="eventId">EventId of the Event, that was involved in the operation that caused the exception.</param>
-        /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
-        /// <param name="counterpartId"></param>
-        /// <returns></returns>
-        Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId  = "");
         
         /// <summary>
         /// Will save a succesfull method call for this event. Should be used when an operation was carried out succesfully.
