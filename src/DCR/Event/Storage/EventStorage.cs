@@ -12,6 +12,13 @@ using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Storage
 {
+    public static class HistoryExtension
+    {
+        public static async Task<int> MaxOrDefaultAsync(this IQueryable<ActionModel> source)
+        {
+            return await source.MaxAsync(action => (int?)action.Timestamp) ?? 0;
+        }
+    }
     /// <summary>
     /// EventStorage is the application-layer that rests on top of the actual storage-facility (a database)
     /// EventStorage implements IEventStorage and IEventHistoryStorage interfaces.
@@ -551,10 +558,11 @@ namespace Event.Storage
             return await _context.History
                 .Where(
                     action =>
-                        action.WorkflowId == workflowId 
-                        && action.EventId == eventId 
+                        action.WorkflowId == workflowId
+                        && action.EventId == eventId
                         && action.CounterpartId == counterpartId)
-                .MaxAsync(action => (int?)action.Timestamp) ?? 0;
+                .MaxOrDefaultAsync();
         }
+        
     }
 }
