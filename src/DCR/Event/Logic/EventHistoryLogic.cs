@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common.DTO.History;
 using Event.Interfaces;
+using Event.Storage;
 using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Logic
@@ -48,12 +49,12 @@ namespace Event.Logic
 
         public async Task<int> GetNextTimestamp(string workflowId, string eventId, int counterPartTimestamp)
         {
-            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Timestamp);
+            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync();
             return Math.Max(currentMax, counterPartTimestamp) + 1;
         }
         public async Task<int> GetNextTimestamp(string workflowId, string eventId)
         {
-            var currentMax = (await _storage.GetHistoryForEvent(workflowId, eventId)).Max(model => model.Timestamp);
+            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync();
             return currentMax + 1;
         }
 
