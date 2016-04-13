@@ -79,7 +79,7 @@ module Graph =
         // Find all actions, that are not referenced in the graph.
         List.except toNodes allNodes
 
-    let simpleTransitiveReduction (graph: Graph) : Graph =
+    let transitiveReduction (graph: Graph) : Graph =
         let ifTransitiveClosureThenReduce sourceNodeId sourceNodeAction neighbourNodeAction destinationNodeId graphDestination =
             if (hasEdge neighbourNodeAction destinationNodeId && hasEdge sourceNodeAction destinationNodeId)
             then removeEdge sourceNodeId destinationNodeId graphDestination
@@ -101,97 +101,6 @@ module Graph =
                         ifEdgeThenCheckFurther sourceNodeId sourceAction neighbourNodeId neighbourAction graphNeighbour
                     ) graphSource graphSource.Nodes
             ) graph graph.Nodes
-
-      
-    let transitiveReduction beginningNodes graph =
-        let unionListWithoutDuplicates firstList secondList = Set.union (Set.ofList firstList) (Set.ofList secondList) |> Set.toList
-        // the beginning nodes - goes over all of them -> probably egts updated from the next function.
-        let rec fromNodesFun (fromNodes:Action list) accGraph =
-            match fromNodes with
-            | [] -> accGraph
-            | fromNode::fromNodesRest -> neighboursFun (getNodes accGraph (Set.toList fromNode.Edges)) fromNode fromNodesRest accGraph
-        // Goes over all the neighbours of the fromNode -> neighbours can get updated from the next function. Update fromNodes list with each neighbour
-        and neighboursFun (neighbours:Action list) (fromNode:Action) (newFromNodes:Action list) (accGraph:Graph) =
-            match neighbours with
-            | [] -> fromNodesFun newFromNodes accGraph
-            | neighbour::neighboursRest ->
-                endNodesFun (getNodes accGraph (Set.toList neighbour.Edges)) neighboursRest fromNode (unionListWithoutDuplicates [neighbour] newFromNodes) accGraph
-        // Goes over all the neighbours of the neighbour in the previous function. -> If there is an edge from fromNode to endNode remove it. Otherwise add the endNode to neighbours in the previous function.
-        and endNodesFun (endNodes:Action list) (newNeighbours:Action list) (fromNode:Action) (newFromNodes:Action list) (accGraph:Graph) : Graph =
-            match endNodes with
-            | [] -> neighboursFun newNeighbours fromNode newFromNodes accGraph
-            | endNode::endNodesRest -> if (Set.exists (fun id -> id = endNode.Id) fromNode.Edges)
-                                       then endNodesFun endNodesRest newNeighbours fromNode newFromNodes (removeEdge fromNode.Id endNode.Id accGraph)
-                                       else endNodesFun endNodesRest (unionListWithoutDuplicates [endNode] newNeighbours) fromNode newFromNodes accGraph
-        fromNodesFun beginningNodes graph
-
-    let collapse graph =
-        let createMapForSingleExecution actions newActionId map = 
-            Set.fold (fun map actionId -> Map.add actionId newActionId map) map actions
-
-        let findSuccessorOnEvent actionId currentExecution =
-            let edges = (getNode graph actionId).Edges
-            if Set.isEmpty edges
-            then (currentExecution, None)
-            else
-                let immediateSuccessor = Seq.find (fun (neighborEventId,_) -> (fst actionId) = neighborEventId) edges
-                let rest = Set.remove immediateSuccessor edges
-                if Set.isEmpty rest
-                then (currentExecution, Some <| immediateSuccessor)
-                else (Set.add (Seq.head rest) currentExecution, Some immediateSuccessor)
-
-        let rec findSingleExecution actionId result =
-            let newResult = (Set.add actionId result)
-            let action = getNode graph actionId
-            if action.Type = ExecuteFinish
-            then newResult
-            else 
-                match findSuccessorOnEvent actionId newResult with
-                | (currentExecution, None) -> currentExecution
-                | (currentExecution, Some successor) -> findSingleExecution successor currentExecution
-
-        let startExecutions = 
-            Map.fold (fun set actionId _ -> Set.add actionId set)
-                Set.empty
-                (Map.filter (fun _ action -> action.Type = ExecuteStart) graph.Nodes) 
-
-
-        let mapOfCollapsedExecutions =
-            let uncollapsed = Set.map (fun startActionId -> startActionId, findSingleExecution startActionId Set.empty) startExecutions
-            
-            Set.fold 
-                (fun map (startActionId,execution) -> createMapForSingleExecution execution startActionId map)
-                Map.empty
-                uncollapsed
-
-        let rec findStartExecution actionId =
-            let node = getNode graph actionId
-            if (node.Type = ExecuteStart) then Some actionId
-            elif (Set.isEmpty node.Edges)
-            then None
-            else findStartExecution (Seq.head node.Edges)
-
-        let getEdgesThatAreNotYourself actionId (newActionId : ActionId) map =
-            let action = getNode graph actionId
-            let newIds = Set.ofSeq <| 
-                            Seq.choose (fun oldId ->
-                                            match Map.tryFind oldId map with
-                                            | Some id -> Some id
-                                            | None -> findStartExecution oldId) action.Edges
-            Set.remove newActionId newIds
-            
-        Map.fold 
-            (fun newGraph oldId newId ->
-                let edgeSet = getEdgesThatAreNotYourself oldId newId mapOfCollapsedExecutions
-                let action = Action.create newId newId ActionType.ExecuteFinish edgeSet
-                addNode action newGraph)
-            empty
-            mapOfCollapsedExecutions
-
-    let simplify (graph:Graph) (actionType:ActionType) : Graph =
-        let collapsedExecutions = collapse graph
-        let transReduction = simpleTransitiveReduction collapsedExecutions
-        transReduction
 
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool =
