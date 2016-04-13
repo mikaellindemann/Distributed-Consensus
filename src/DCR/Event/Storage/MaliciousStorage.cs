@@ -22,5 +22,11 @@ namespace Event.Storage
             }
             _context = context;
         }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+
+        }
     }
 }

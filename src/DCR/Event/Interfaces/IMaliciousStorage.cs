@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Event.Interfaces
 {
-    public interface IMaliciousStorage
+    public interface IMaliciousStorage : IDisposable
     {
     }
 }

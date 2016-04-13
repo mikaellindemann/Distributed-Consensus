@@ -8,5 +8,15 @@ namespace Event.Logic
 {
     public class MaliciousLogic : IMaliciousLogic
     {
+        private readonly IMaliciousStorage _storage;
+
+        public MaliciousLogic(IMaliciousStorage storage)
+        {
+            _storage = storage;
+        }
+        public void Dispose()
+        {
+            _storage.Dispose();
+        }
     }
 }
