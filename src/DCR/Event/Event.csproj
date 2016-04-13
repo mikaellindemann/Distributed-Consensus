@@ -145,6 +145,10 @@
     <Compile Include="Migrations\201603211037260_InitialCreate.Designer.cs">
       <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604130849131_13-04-2016-Wind2.cs" />
+    <Compile Include="Migrations\201604130849131_13-04-2016-Wind2.Designer.cs">
+      <DependentUpon>201604130849131_13-04-2016-Wind2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\EventRoleModel.cs" />
@@ -195,6 +199,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201603211037260_InitialCreate.resx">
       <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604130849131_13-04-2016-Wind2.resx">
+      <DependentUpon>201604130849131_13-04-2016-Wind2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

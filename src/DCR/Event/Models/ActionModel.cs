@@ -5,7 +5,6 @@ namespace Event.Models
 {
     public class ActionModel
     {
-        [Key]
         public int Timestamp { get; set; }
         public string EventId { get; set; }
         public string WorkflowId { get; set; }
