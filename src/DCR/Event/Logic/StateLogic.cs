@@ -298,6 +298,10 @@ namespace Event.Logic
             FailedToUpdateStateAtOtherEventException exception = null;
             try
             {
+                //Save beginning execution to history after locking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
+
+                //Execute.
                 var addressDto = new EventAddressDto
                 {
                     WorkflowId = workflowId,
@@ -329,6 +333,9 @@ namespace Event.Logic
 
                 await _storage.SetExecuted(workflowId, eventId, true);
                 await _storage.SetPending(workflowId, eventId, false);
+
+                //Save execution finished before unlocking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId, "", -1);
             }
             catch (Exception)
             {
@@ -343,11 +350,8 @@ namespace Event.Logic
                 // If we cannot even unlock, we give up!
                 throw new FailedToUnlockOtherEventException();
             }
-            if (allOk)
-            {
-                return;
-            }
-            throw exception;
+
+            if (!allOk) throw exception;
         }
 
         public void Dispose()
