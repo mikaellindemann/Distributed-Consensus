@@ -40,19 +40,6 @@ namespace Event.Tests.ControllersTests
                    return dtos.AsEnumerable();
                })).Verifiable();
 
-            _historyMock.Setup(l => l.SaveException(It.IsAny<Exception>(), It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((Exception e, ActionType type, string eId, string wId, string cId) =>
-                    {
-                        return Task.Run(() => _historyTestList.Add(new ActionModel
-                        {
-                            EventId = eId,
-                            WorkflowId = wId,
-                            Type = type,
-                            CounterpartId = cId
-                        }));
-                    }
-                ).Verifiable();
-
             _historyMock.Setup(l => l.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
                 .Returns((ActionType type, string eId, string wId, string cId) =>
                     {
