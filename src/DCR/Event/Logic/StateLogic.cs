@@ -295,7 +295,7 @@ namespace Event.Logic
             }
 
             var allOk = true;
-            FailedToUpdateStateAtOtherEventException exception = null;
+            Exception exception = null;
             try
             {
                 //Save beginning execution to history after locking.
@@ -310,22 +310,30 @@ namespace Event.Logic
                 };
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
-                    var timestamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId, timestamp);
+                    var timestamp =
+                        await
+                            _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
+                    await
+                        _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId,
+                            timestamp);
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
                     var timestamp = await
                         _eventCommunicator.SendIncluded(inclusion.Uri, addressDto, inclusion.WorkflowId,
                             inclusion.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Includes, eventId, workflowId, inclusion.EventId, timestamp);
+                    await
+                        _historyLogic.SaveSuccesfullCall(ActionType.Includes, eventId, workflowId, inclusion.EventId,
+                            timestamp);
                 }
                 foreach (var exclusion in await _storage.GetExclusions(workflowId, eventId))
                 {
                     var timestamp = await
                         _eventCommunicator.SendExcluded(exclusion.Uri, addressDto, exclusion.WorkflowId,
                             exclusion.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Excludes, eventId, workflowId, exclusion.EventId, timestamp);
+                    await
+                        _historyLogic.SaveSuccesfullCall(ActionType.Excludes, eventId, workflowId, exclusion.EventId,
+                            timestamp);
                 }
                 // There might have been made changes on the entity itself in another controller-call
                 // Therefore we have to reload the state from database.
@@ -337,6 +345,14 @@ namespace Event.Logic
                 //Save execution finished before unlocking.
                 await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId, "", -1);
             }
+            catch (FailedToSaveHistoryException e)
+            {
+                allOk = false;
+                exception = e;
+            }
+
+            //If one of the Update exceptions occured, this is thrown instead of the save history exception,
+            //since the failure of an update is more severe. 
             catch (Exception)
             {
                 /*  This will catch any of FailedToUpdate<Excluded|Pending|Executed>AtAnotherEventExceptions
