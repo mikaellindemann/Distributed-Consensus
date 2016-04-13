@@ -293,14 +293,14 @@ namespace Event.Logic
             Exception exception = null;
             try
             {
+                //Save beginning execution to history after locking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
+
                 // Check whether Event can be executed at the moment
                 if (!await IsExecutable(workflowId, eventId, true))
                 {
                     throw new NotExecutableException();
                 }
-
-                //Save beginning execution to history after locking.
-                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
 
                 //Execute.
                 var addressDto = new EventAddressDto
