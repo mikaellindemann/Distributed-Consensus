@@ -100,6 +100,11 @@ namespace Event.Logic
             });
         }
 
+        public async Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp)
+        {
+            return await _storage.GetHighestCounterpartTimeStamp(workflowId, eventId, counterpartId) < timestamp;
+        }
+
         public void Dispose()
         {
             _storage.Dispose();

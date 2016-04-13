@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.DTO.History;
-using Event.Models;
 
 namespace Event.Interfaces
 {
@@ -43,5 +42,6 @@ namespace Event.Interfaces
 
         Task<ActionDto> ReserveNext(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "");
         Task UpdateAction(ActionDto dto);
+        Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp);
     }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Exceptions;
-using Common.DTO.History;
 using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Interfaces
@@ -31,5 +30,7 @@ namespace Event.Interfaces
 
         Task<ActionModel> ReserveNext(ActionModel model);
         Task UpdateHistory(ActionModel actionModel);
+
+        Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId);
     }
 }
