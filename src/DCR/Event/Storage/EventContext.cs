@@ -37,6 +37,9 @@ namespace Event.Storage
                 .HasRequired(c => c.Event)
                 .WithMany(e => e.ExclusionUris)
                 .HasForeignKey(c => new { c.WorkflowId, c.EventId });
+
+            modelBuilder.Entity<ActionModel>()
+                .HasKey(model => new {model.Timestamp, model.EventId});
         }
 
         public DbSet<EventModel> Events { get; set; }
