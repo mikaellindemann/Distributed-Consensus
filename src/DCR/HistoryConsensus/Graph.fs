@@ -196,7 +196,7 @@ module Graph =
     ///Determine whether there is a relation between two nodes by checking their individual Ids and Edges.
     let hasRelation (fromNode:Action) (toNode:Action) : bool =
         let checkID =
-            fromNode.CounterpartId = toNode.Id && fst fromNode.Id = fst toNode.CounterpartId
+            fromNode.CounterpartId = toNode.Id && fromNode.Id = toNode.CounterpartId
         let checkRelation fromType toType =
             match fromType, toType with
             | ChecksConditon, CheckedConditon   -> true
