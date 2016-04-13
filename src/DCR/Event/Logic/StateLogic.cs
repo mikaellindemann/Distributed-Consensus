@@ -175,7 +175,7 @@ namespace Event.Logic
             {
                 if (log)
                 {
-                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksConditon, eventId, workflowId,
+                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksConditon, workflowId, eventId,
                         condition.EventId);
 
                     var cond =
@@ -282,11 +282,6 @@ namespace Event.Logic
             {
                 throw new LockedException();
             }
-            // Check whether Event can be executed at the moment
-            if (!await IsExecutable(workflowId, eventId, true))
-            {
-                throw new NotExecutableException();
-            }
 
             // Lock all dependent Events (including one-self)
             if (!await _lockingLogic.LockAllForExecute(workflowId, eventId))
@@ -298,6 +293,12 @@ namespace Event.Logic
             Exception exception = null;
             try
             {
+                // Check whether Event can be executed at the moment
+                if (!await IsExecutable(workflowId, eventId, true))
+                {
+                    throw new NotExecutableException();
+                }
+
                 //Save beginning execution to history after locking.
                 await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
 
@@ -311,14 +312,14 @@ namespace Event.Logic
                 };
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
-                    var action = await _historyLogic.ReserveNext(ActionType.SetsPending, eventId, workflowId, pending.EventId);
+                    var action = await _historyLogic.ReserveNext(ActionType.SetsPending, workflowId, eventId, pending.EventId);
                     addressDto.Timestamp = action.TimeStamp;
                     action.CounterpartTimeStamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
                     await _historyLogic.UpdateAction(action);
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
-                    var action = await _historyLogic.ReserveNext(ActionType.Includes, eventId, workflowId, inclusion.EventId);
+                    var action = await _historyLogic.ReserveNext(ActionType.Includes, workflowId, eventId, inclusion.EventId);
                     addressDto.Timestamp = action.TimeStamp;
                     action.CounterpartTimeStamp = await
                         _eventCommunicator.SendIncluded(inclusion.Uri, addressDto, inclusion.WorkflowId,
@@ -327,7 +328,7 @@ namespace Event.Logic
                 }
                 foreach (var exclusion in await _storage.GetExclusions(workflowId, eventId))
                 {
-                    var action = await _historyLogic.ReserveNext(ActionType.Excludes, eventId, workflowId, exclusion.EventId);
+                    var action = await _historyLogic.ReserveNext(ActionType.Excludes, workflowId, eventId, exclusion.EventId);
                     addressDto.Timestamp = action.TimeStamp;
                     action.CounterpartTimeStamp = await
                         _eventCommunicator.SendExcluded(exclusion.Uri, addressDto, exclusion.WorkflowId,
