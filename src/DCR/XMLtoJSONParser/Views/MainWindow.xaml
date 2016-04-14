@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:XMLtoJSONParser.ViewModels"
         mc:Ignorable="d"
-        Title="DCR Graph Parser and Upload Tool" Height="475" Width="450" MinHeight="475" MinWidth="440">
+        Title="DCR Graph Parser and Upload Tool" Height="500" Width="450" MinHeight="475" MinWidth="440">
     <Grid>
         <Grid.DataContext>
             <viewModels:ParsingViewModel/>
