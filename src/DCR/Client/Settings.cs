@@ -27,7 +27,11 @@
 
         public void SaveSettings()
         {
+#if DEBUG
+            Properties.Settings.Default.ServerAddressDebug = ServerAddress;
+#else
             Properties.Settings.Default.ServerAddress = ServerAddress;
+#endif
             Properties.Settings.Default.Username = Username;
 
             Properties.Settings.Default.Save();
