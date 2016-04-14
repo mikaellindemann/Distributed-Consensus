@@ -29,6 +29,8 @@ namespace Event.Models
         public virtual ICollection<ExclusionUri> ExclusionUris { get; set; }
         public virtual ICollection<ConditionUri> ConditionUris { get; set; }
         public string LockOwner { get; set; }
+        public bool IsEvil { get; set; }
+        public virtual ICollection<string> TypesOfCheating { get; set; } 
 
         public bool InitialPending { get; set; }
         public bool InitialExecuted { get; set; }

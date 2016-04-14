@@ -63,6 +63,7 @@ namespace Event.Storage
             @event.Executed = @event.InitialExecuted;
             @event.Included = @event.InitialIncluded;
             @event.Pending = @event.InitialPending;
+            @event.IsEvil = false;
 
             _context.History.RemoveRange(
                 _context.History.Where(hist => hist.EventId == eventId && hist.WorkflowId == workflowId));

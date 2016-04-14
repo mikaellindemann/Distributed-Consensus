@@ -134,6 +134,7 @@ namespace Event.Logic
             var executed = await _storage.GetExecuted(workflowId, eventId);
             var included = await _storage.GetIncluded(workflowId, eventId);
             var pending = await _storage.GetPending(workflowId, eventId);
+            var isEvil = await _storage.GetIsEvil(workflowId, eventId);
 
             var eventStateDto = new EventStateDto
             {
@@ -142,6 +143,7 @@ namespace Event.Logic
                 Executed = executed,
                 Included = included,
                 Pending = pending,
+                IsEvil = isEvil,
                 Executable = await IsExecutable(workflowId, eventId, false)
             };
 

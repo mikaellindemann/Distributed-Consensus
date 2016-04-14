@@ -248,6 +248,22 @@ namespace Event.Storage
             return (await _context.Events.SingleAsync(model => model.WorkflowId == workflowId && model.Id == eventId)).Pending;
         }
 
+        public async Task<bool> GetIsEvil(string workflowId, string eventId)
+        {
+            if (workflowId == null || eventId == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (!await Exists(workflowId, eventId))
+            {
+                throw new NotFoundException();
+            }
+
+            await EventIsInALegalState(workflowId, eventId);
+
+            return (await _context.Events.SingleAsync(model => model.WorkflowId == workflowId && model.Id == eventId)).IsEvil;
+        }
+
         public async Task SetPending(string workflowId, string eventId, bool pendingValue)
         {
             if (workflowId == null || eventId == null)
