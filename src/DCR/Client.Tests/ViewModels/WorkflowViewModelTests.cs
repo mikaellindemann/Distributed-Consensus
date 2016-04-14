@@ -45,15 +45,6 @@ namespace Client.Tests.ViewModels
         }
 
         #region Constructors
-
-        [Test]
-        public void Test_ConstructorWithNullArguments()
-        {
-            //Act
-            //Assert
-            Assert.Throws<ArgumentNullException>(() => new WorkflowViewModel(null, null, null, null, null, null));
-        }
-
         [Test]
         public void Test_ConstructorWithLegalArguments()
         {
