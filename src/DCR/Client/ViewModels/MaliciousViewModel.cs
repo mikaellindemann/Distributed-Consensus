@@ -65,7 +65,8 @@ namespace Client.ViewModels
 
         public void Test()
         {
-            Status = "Button Pressed";
+            Status = "Now the event is evil (locally and temporarily)";
+            EventViewModel.IsEvil = true; // todo remove
         }
         #endregion
 

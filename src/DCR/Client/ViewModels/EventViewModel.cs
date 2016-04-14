@@ -152,7 +152,7 @@ namespace Client.ViewModels
             get { return _eventStateDto.IsEvil; }
             set
             {
-                _eventStateDto.Pending = value;
+                _eventStateDto.IsEvil = value;
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(IsEvilColor));
             }
