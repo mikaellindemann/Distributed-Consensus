@@ -46,5 +46,17 @@ namespace Client.Properties {
                 this["ServerAddress"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:13768")]
+        public string ServerAddressDebug {
+            get {
+                return ((string)(this["ServerAddressDebug"]));
+            }
+            set {
+                this["ServerAddressDebug"] = value;
+            }
+        }
     }
 }

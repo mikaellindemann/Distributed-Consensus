@@ -8,5 +8,8 @@
     <Setting Name="ServerAddress" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://flowit.azurewebsites.net</Value>
     </Setting>
+    <Setting Name="ServerAddressDebug" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:13768</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
