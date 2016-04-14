@@ -280,6 +280,7 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.GetExecuted("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetIncluded("workflowId", "eventId")).ReturnsAsync(true);
             _eventStorageMock.Setup(s => s.GetPending("workflowId", "eventId")).ReturnsAsync(false);
+            _eventStorageMock.Setup(s => s.GetIsEvil("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetName("workflowId", "eventId")).ReturnsAsync("Event Name");
 
             // Act
@@ -289,6 +290,7 @@ namespace Event.Tests.LogicTests
             Assert.IsFalse(result.Executed);
             Assert.IsTrue(result.Included);
             Assert.IsFalse(result.Pending);
+            Assert.IsFalse(result.IsEvil);
             Assert.IsTrue(result.Executable);
             Assert.AreEqual("Event Name", result.Name);
             Assert.AreEqual("eventId", result.Id);
@@ -301,6 +303,7 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.GetExecuted("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetIncluded("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetPending("workflowId", "eventId")).ReturnsAsync(false);
+            _eventStorageMock.Setup(s => s.GetIsEvil("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetName("workflowId", "eventId")).ReturnsAsync("Event Name");
 
             // Act
@@ -310,6 +313,7 @@ namespace Event.Tests.LogicTests
             Assert.IsFalse(result.Executed);
             Assert.IsFalse(result.Included);
             Assert.IsFalse(result.Pending);
+            Assert.IsFalse(result.IsEvil);
             Assert.IsFalse(result.Executable);
             Assert.AreEqual("Event Name", result.Name);
             Assert.AreEqual("eventId", result.Id);
@@ -351,6 +355,7 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.GetExecuted("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetIncluded("workflowId", "eventId")).ReturnsAsync(true);
             _eventStorageMock.Setup(s => s.GetPending("workflowId", "eventId")).ReturnsAsync(false);
+            _eventStorageMock.Setup(s => s.GetIsEvil("workflowId", "eventId")).ReturnsAsync(false);
             _eventStorageMock.Setup(s => s.GetName("workflowId", "eventId")).ReturnsAsync("Event Name");
 
             _lockingLogicMock.Setup(

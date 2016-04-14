@@ -352,6 +352,11 @@ namespace Event.Logic
                 allOk = false;
                 exception = e;
             }
+            catch (NotExecutableException e)
+            {
+                allOk = false;
+                exception = e;
+            }
 
             //If one of the Update exceptions occured, this is thrown instead of the save history exception,
             //since the failure of an update is more severe. 
