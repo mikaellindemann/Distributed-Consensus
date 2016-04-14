@@ -135,6 +135,8 @@
     <Compile Include="Interfaces\IEventStorageForReset.cs" />
     <Compile Include="Interfaces\ILifecycleLogic.cs" />
     <Compile Include="Interfaces\ILockingLogic.cs" />
+    <Compile Include="Interfaces\IMaliciousLogic.cs" />
+    <Compile Include="Interfaces\IMaliciousStorage.cs" />
     <Compile Include="Interfaces\IStateLogic.cs" />
     <Compile Include="Exceptions\FailedToUpdateStateException.cs" />
     <Compile Include="Logic\EventHistoryLogic.cs" />
@@ -142,6 +144,7 @@
     <Compile Include="Logic\LifecycleLogic.cs" />
     <Compile Include="Logic\AuthLogic.cs" />
     <Compile Include="Logic\LockingLogic.cs" />
+    <Compile Include="Logic\MaliciousLogic.cs" />
     <Compile Include="Logic\StateLogic.cs" />
     <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\EventRoleModel.cs" />
@@ -164,6 +167,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communicators\ServerCommunicator.cs" />
     <Compile Include="Storage\EventStorageForReset.cs" />
+    <Compile Include="Storage\MaliciousStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

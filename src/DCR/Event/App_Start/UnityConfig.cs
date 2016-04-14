@@ -25,10 +25,12 @@ namespace Event
                 .RegisterType<IAuthLogic, AuthLogic>(new HierarchicalLifetimeManager())
                 .RegisterType<ILockingLogic, LockingLogic>(new HierarchicalLifetimeManager())
                 .RegisterType<IStateLogic, StateLogic>(new HierarchicalLifetimeManager())
+                .RegisterType<IMaliciousLogic, MaliciousLogic>(new HierarchicalLifetimeManager())
 
                 .RegisterType<IEventStorage, EventStorage>(new HierarchicalLifetimeManager())
                 .RegisterType<IEventStorageForReset, EventStorageForReset>(new HierarchicalLifetimeManager())
                 .RegisterType<IEventHistoryStorage, EventStorage>(new HierarchicalLifetimeManager())
+                .RegisterType<IMaliciousStorage, MaliciousStorage>(new HierarchicalLifetimeManager())
 
                 .RegisterType<IEventFromEvent, EventCommunicator>(new HierarchicalLifetimeManager())
                 .RegisterType<IServerFromEvent, ServerCommunicator>(new HierarchicalLifetimeManager())
