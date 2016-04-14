@@ -15,7 +15,7 @@ namespace Client.ViewModels
         internal readonly EventAddressDto EventAddressDto;
         private EventStateDto _eventStateDto;
         private readonly IWorkflowViewModel _parent;
-        private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush;
+        private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush, IsEvilBrush;
         private readonly IEventConnection _eventConnection;
 
         static EventViewModel()
@@ -28,6 +28,9 @@ namespace Client.ViewModels
             // Executed
             ExecutedBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/Executed.png", UriKind.Absolute)));
             ExecutedBrush.Freeze();
+
+            IsEvilBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/IsEvil.png", UriKind.Absolute)));
+            IsEvilBrush.Freeze();
 
             // Included
             IncludedBrush = new SolidColorBrush(Colors.DeepSkyBlue);
@@ -142,6 +145,20 @@ namespace Client.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+
+        public bool IsEvil
+        {
+            get { return _eventStateDto.IsEvil; }
+            set
+            {
+                _eventStateDto.Pending = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IsEvilColor));
+            }
+        }
+
+        public Brush IsEvilColor => IsEvil ? IsEvilBrush : WhiteBrush;
 
         public string Status
         {

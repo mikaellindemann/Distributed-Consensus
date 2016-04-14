@@ -50,10 +50,11 @@
                     <DataTemplate DataType="viewModels:EventViewModel">
                         <UniformGrid Rows="1" Columns="3">
                             <Label Content="{Binding Name}" HorizontalAlignment="Left"/>
-                            <UniformGrid Rows="1" Columns="3">
+                            <UniformGrid Rows="1" Columns="4">
                                 <Rectangle Height="20" Width="20" Fill="{Binding PendingColor, Mode=OneWay}" Stroke="Black" ToolTip="Pending" />
                                 <Rectangle Height="20" Width="20" Fill="{Binding IncludedColor, Mode=OneWay}" Stroke="Black" ToolTip="Included" />
                                 <Rectangle Height="20" Width="20" Fill="{Binding ExecutedColor, Mode=OneWay}" Stroke="Black" ToolTip="Executed" />
+                                <Rectangle Height="20" Width="20" Fill="{Binding IsEvilColor, Mode=OneWay}" Stroke="Black" ToolTip="Is Evil" />
                             </UniformGrid>
                             <Button IsEnabled="{Binding Executable, Mode=OneWay}" HorizontalAlignment="Right" Content="Execute" VerticalAlignment="Center" Width="110" Height="34" >
                                 <i:Interaction.Triggers>
