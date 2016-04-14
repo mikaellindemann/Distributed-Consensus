@@ -7,6 +7,7 @@ using Common.DTO.Event;
 using Common.DTO.History;
 using Common.Exceptions;
 using Common.Tools;
+using HistoryConsensus;
 
 namespace Client.Connections
 {
@@ -73,6 +74,18 @@ namespace Client.Connections
                 throw new HostNotFoundException(e);
             }
             
+        }
+
+        public async Task<string> GetLocalHistory(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/local");
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
         }
 
         /// <summary>

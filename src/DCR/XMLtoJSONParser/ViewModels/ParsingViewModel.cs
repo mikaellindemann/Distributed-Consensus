@@ -38,7 +38,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _xmlFilePath = value;
-                NotifyPropertyChanged("XmlFilePath");
+                NotifyPropertyChanged();
             }
         }
 
@@ -48,7 +48,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _workflowId = value;
-                NotifyPropertyChanged("WorkflowId");
+                NotifyPropertyChanged();
             }
         }
 
@@ -58,7 +58,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _workflowName = value;
-                NotifyPropertyChanged("WorkflowName");
+                NotifyPropertyChanged();
             }
         }
 
@@ -68,7 +68,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _serverUri = value;
-                NotifyPropertyChanged("ServerUri");
+                NotifyPropertyChanged();
             }
         }
 
@@ -78,7 +78,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _defaultPassword = value;
-                NotifyPropertyChanged("DefaultPassword");
+                NotifyPropertyChanged();
             }
         }
 
@@ -88,7 +88,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _eventUris = value;
-                NotifyPropertyChanged("EventUris");
+                NotifyPropertyChanged();
             }
         }
 
@@ -98,7 +98,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _createWorkflow = value;
-                NotifyPropertyChanged("CreateWorkflow");
+                NotifyPropertyChanged();
             }
         }
 
@@ -108,7 +108,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _createUsers = value;
-                NotifyPropertyChanged("CreateUsers");
+                NotifyPropertyChanged();
             }
         }
 
@@ -118,7 +118,7 @@ namespace XMLtoJSONParser.ViewModels
             set
             {
                 _uploadButtonActive = value;
-                NotifyPropertyChanged("UploadButtonActive");
+                NotifyPropertyChanged();
             }
         }
 

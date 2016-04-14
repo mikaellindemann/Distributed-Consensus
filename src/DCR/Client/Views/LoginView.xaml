@@ -8,13 +8,18 @@
     <Window.DataContext>
         <viewModels:LoginViewModel/>
     </Window.DataContext>
-    <UniformGrid Rows="3" Margin="10,10,10,10">
-        <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-            <xctk:WatermarkTextBox Name="Username" Style="{StaticResource FillTextBoxStyle}" Watermark="Username" Margin="10,10,10,0 " TextWrapping="Wrap" Text="{Binding Username}" />
-            <PasswordBox Name="Password" Style="{StaticResource PasswordBoxWatermark}" Margin="10,10,10,0" PasswordChanged="Password_PasswordChanged"/>
-        </StackPanel>
+    <UniformGrid Rows="5" Margin="10,10,10,10">
+        <xctk:WatermarkTextBox Height="50" Name="Username" Style="{StaticResource FillTextBoxStyle}" Watermark="Username" Margin="10,10,10,0 " TextWrapping="Wrap" Text="{Binding Username}" />
+        <PasswordBox Name="Password" Height="50" Style="{StaticResource PasswordBoxWatermark}" Margin="10,10,10,0" PasswordChanged="Password_PasswordChanged"/>
         <TextBlock VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Style="{StaticResource HeaderTextBlockStyle}" FontStyle="Italic" Text="{Binding Status}" Margin="10,0,10,0"/>
-        <Button Name="Login" Style="{StaticResource ButtonDefaultStyle}"  Content="Login" IsDefault="True" Margin="10,56,10.333,10.333" Height="Auto">
+        <Button Name="Parser" Style="{StaticResource ButtonDefaultStyle}" Content="Open Parser" Margin="10,0,10.333,10.333" Height="50">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <ei:CallMethodAction TargetObject="{Binding Mode=OneWay}" MethodName="OpenParser"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+        <Button Name="Login" Style="{StaticResource ButtonDefaultStyle}"  Content="Login" IsDefault="True" Margin="10,0,10.333,10.333" Height="50">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Click">
                     <ei:CallMethodAction TargetObject="{Binding Mode=OneWay}" MethodName="Login"/>

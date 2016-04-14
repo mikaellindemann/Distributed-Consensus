@@ -4,6 +4,7 @@ using System.Globalization;
 
 namespace GraphOptionToGravizo
 {
+    [TypeConverter(typeof(Tuple<string, int>))]
     public class TupleConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

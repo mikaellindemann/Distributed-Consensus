@@ -55,7 +55,7 @@
                         EventName="Click">
                         <ei:CallMethodAction 
                             TargetObject="{Binding}" 
-                            MethodName="Produce"/>
+                            MethodName="ProduceLocal"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
@@ -69,7 +69,7 @@
                         EventName="Click">
                         <ei:CallMethodAction 
                             TargetObject="{Binding}" 
-                            MethodName="Collapse"/>
+                            MethodName="CollapseLocal"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
@@ -83,7 +83,7 @@
                         EventName="Click">
                         <ei:CallMethodAction 
                             TargetObject="{Binding}" 
-                            MethodName="Create"/>
+                            MethodName="CreateLocal"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>

@@ -22,20 +22,6 @@ namespace Client.ViewModels
 
         public string WorkflowId => _workflowDto.Id;
 
-        public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles)
-        {
-            if (parent == null || workflowDto == null || roles == null)
-            {
-                throw new ArgumentNullException();
-            }
-            _parent = parent;
-            EventList = new ObservableCollection<EventViewModel>();
-            _workflowDto = workflowDto;
-            Roles = roles;
-            _eventConnection = new EventConnection();
-            _serverConnection = new ServerConnection(new Uri(Settings.LoadSettings().ServerAddress));
-        }
-
         public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles,
             IEventConnection eventConnection, IServerConnection serverConnection, ObservableCollection<EventViewModel> eventList)
         {
@@ -120,7 +106,7 @@ namespace Client.ViewModels
         {
             if (EventList != null && EventList.Count != 0)
             {
-                var history = new HistorySelectView(new HistorySelectViewModel(SelectedEventViewModel));
+                var history = new HistorySelectView(new HistorySelectViewModel(SelectedEventViewModel, _serverConnection, _eventConnection));
                 history.ShowDialog();
                 //var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
                 //historyView.Show();

@@ -51,7 +51,7 @@ namespace Client.Tests.ViewModels
         {
             //Act
             //Assert
-            Assert.Throws<ArgumentNullException>(() => new WorkflowViewModel(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new WorkflowViewModel(null, null, null, null, null, null));
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace Client.Tests.ViewModels
             var workflowDto = new WorkflowDto();
 
             //Act
-            var workflowViewModel = new WorkflowViewModel(workflowListViewModel, workflowDto, new List<string>());
+            var workflowViewModel = new WorkflowViewModel(workflowListViewModel, workflowDto, new List<string>(), _eventConnectionMock.Object, _serverConnectionMock.Object, _eventList);
 
             //Assert
             Assert.IsNotNull(workflowViewModel);

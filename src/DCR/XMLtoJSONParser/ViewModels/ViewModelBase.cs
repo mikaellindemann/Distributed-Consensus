@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using XMLtoJSONParser.Annotations;
 
 namespace XMLtoJSONParser.ViewModels
 {
@@ -7,9 +9,10 @@ namespace XMLtoJSONParser.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void NotifyPropertyChanged(string info)
+        [NotifyPropertyChangedInvocator]
+        protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

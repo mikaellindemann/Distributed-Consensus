@@ -5,6 +5,7 @@ using Client.Exceptions;
 using Common.DTO.Event;
 using Common.DTO.History;
 using Common.Exceptions;
+using HistoryConsensus;
 
 namespace Client.Connections
 {
@@ -31,6 +32,8 @@ namespace Client.Connections
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
         Task<IEnumerable<ActionDto>> GetHistory(Uri uri, string workflowId, string eventId);
+
+        Task<string> GetLocalHistory(Uri uri, string workflowId, string eventId);
 
         /// <summary>
         /// Reset an event. Only to be used for testing!

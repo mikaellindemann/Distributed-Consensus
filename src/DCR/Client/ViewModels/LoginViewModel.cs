@@ -110,6 +110,9 @@ namespace Client.ViewModels
 
         #endregion
 
-
+        public void OpenParser()
+        {
+            new XMLtoJSONParser.Views.MainWindow().Show();
+        }
     }
 }

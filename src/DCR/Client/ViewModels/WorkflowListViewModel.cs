@@ -17,6 +17,7 @@ namespace Client.ViewModels
         private string _status;
         private readonly Dictionary<string, ICollection<string>> _rolesForWorkflows;
         private readonly IServerConnection _serverConnection;
+        private readonly IEventConnection _eventConnection;
 
         public WorkflowListViewModel()
         {
@@ -35,6 +36,7 @@ namespace Client.ViewModels
             _rolesForWorkflows = rolesForWorkflows;
 
             _serverConnection = new ServerConnection(new Uri(settings.ServerAddress));
+            _eventConnection = new EventConnection();
 
             GetWorkflows();
         }
@@ -109,7 +111,7 @@ namespace Client.ViewModels
                     // The user has no roles associated with this workflow.
                     continue;
                 }
-                WorkflowList.Add(new WorkflowViewModel(this, workflowDto, roles));
+                WorkflowList.Add(new WorkflowViewModel(this, workflowDto, roles, _eventConnection, _serverConnection, new ObservableCollection<EventViewModel>()));
             }
 
             SelectedWorkflowViewModel = WorkflowList.FirstOrDefault();

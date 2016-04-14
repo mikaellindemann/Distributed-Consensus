@@ -110,9 +110,9 @@ namespace Event.Controllers
             return FSharpOption<Graph.Graph>.Some(History.collapse(history.Value));
         }
 
-        [HttpPost]
-        [Route("history/{workflowId}/{eventId}/produce")]
-        public async Task<FSharpOption<Graph.Graph>> Produce(string workflowId, string eventId, IEnumerable<string> traceList)
+        [HttpGet]
+        [Route("history/{workflowId}/{eventId}/local")]
+        public async Task<Graph.Graph> GetLocal(string workflowId, string eventId)
         {
             var localHistory = (await GetHistory(workflowId, eventId)).Select(Convert).ToArray();
 
@@ -124,6 +124,15 @@ namespace Event.Controllers
                 if (i - 1 >= 0)
                     localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
             }
+
+            return localHistoryGraph;
+        }
+
+        [HttpPost]
+        [Route("history/{workflowId}/{eventId}/produce")]
+        public async Task<FSharpOption<Graph.Graph>> Produce(string workflowId, string eventId, IEnumerable<string> traceList)
+        {
+            var localHistoryGraph = await GetLocal(workflowId, eventId);
 
             // HACK: We should have another way of fetching relations.
             var eventDto = await _lifecycleLogic.GetEventDto(workflowId, eventId);
