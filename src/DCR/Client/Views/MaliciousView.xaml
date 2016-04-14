@@ -1,0 +1,81 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Views"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:ViewModels="clr-namespace:Client.ViewModels" x:Class="Client.Views.MaliciousView"
+        mc:Ignorable="d"
+        Title="MaliciousView" Height="600" Width="500" WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <ViewModels:MaliciousViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <DockPanel 
+			DockPanel.Dock="Top">
+            <TextBlock 
+				DockPanel.Dock="Left" 
+				Text="Malicious Master Controls" 
+				Margin="10,5,0,5" 
+				FontSize="24" 
+				Style="{StaticResource HeaderTextBlockStyle}" />
+            <TextBlock 
+				DockPanel.Dock="Right" 
+				Text="{Binding Status}" 
+				Margin="5,0" 
+				TextAlignment="Right" 
+				TextWrapping="Wrap" 
+				Foreground="Red" 
+				FontSize="16" />
+        </DockPanel>
+        <StackPanel 
+            Margin="10,0"
+			Orientation="Vertical" 
+			VerticalAlignment="Top">
+            <Button 
+				Content="More Executions" 
+				Margin="5" 
+				Style="{StaticResource ButtonDefaultStyle}" 
+				IsEnabled="{Binding CanPressButtons}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger 
+						EventName="Click">
+                        <ei:CallMethodAction 
+							TargetObject="{Binding}" 
+							MethodName="Test"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button 
+				Content="Fewer Executions" 
+				Margin="5" 
+				Style="{StaticResource ButtonDefaultStyle}" 
+				IsEnabled="{Binding CanPressButtons}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger 
+						EventName="Click">
+                        <ei:CallMethodAction 
+							TargetObject="{Binding}" 
+							MethodName="Test"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button 
+				Content="Create Cycle" 
+				Margin="5" 
+				Style="{StaticResource ButtonDefaultStyle}" 
+				IsEnabled="{Binding CanPressButtons}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger 
+						EventName="Click">
+                        <ei:CallMethodAction 
+							TargetObject="{Binding}" 
+							MethodName="Test"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+        </StackPanel>
+    </DockPanel>
+</Window>

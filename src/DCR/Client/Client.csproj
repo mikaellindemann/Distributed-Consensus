@@ -140,6 +140,7 @@
     <Compile Include="ViewModels\IWorkflowListViewModel.cs" />
     <Compile Include="ViewModels\IWorkflowViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MaliciousViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\WorkflowListViewModel.cs" />
     <Compile Include="ViewModels\WorkflowViewModel.cs" />
@@ -158,6 +159,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\MaliciousView.xaml.cs">
+      <DependentUpon>MaliciousView.xaml</DependentUpon>
     </Compile>
     <Compile Include="WaterMarkTextHelper.cs" />
     <Page Include="StringResources.xaml">
@@ -179,6 +183,10 @@
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MaliciousView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

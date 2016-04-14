@@ -113,6 +113,18 @@ namespace Client.ViewModels
             }
         }
 
+        /// <summary>
+        /// Creates a new window with the log of the workflow
+        /// </summary>
+        public void OpenMaliciousWindow()
+        {
+            if (EventList != null && EventList.Count != 0)
+            {
+                var maliciousWindow = new MaliciousView(new MaliciousViewModel(SelectedEventViewModel, _serverConnection, _eventConnection) );
+                maliciousWindow.ShowDialog();
+            }
+        }
+
         public async Task DisableExecuteButtons()
         {
             await Task.WhenAll(EventList.Select(e => Task.Run(() => e.Executable = false)));
