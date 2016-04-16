@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Common;
 using Common.DTO.Event;
 using Common.DTO.Shared;
 using Newtonsoft.Json;
 
-namespace XMLtoJSONParser
+namespace Client.Services
 {
     public class DcrParser
     {

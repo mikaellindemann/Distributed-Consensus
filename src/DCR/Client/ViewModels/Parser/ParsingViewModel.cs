@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using Client.Services;
 using Microsoft.Win32;
 
-namespace XMLtoJSONParser.ViewModels
+namespace Client.ViewModels.Parser
 {
     public class ParsingViewModel : ViewModelBase
     {
@@ -20,16 +21,7 @@ namespace XMLtoJSONParser.ViewModels
         public ParsingViewModel()
         {
             _uploadButtonActive = true;
-#if DEBUG
-            _serverUri = "http://localhost:13768";
-            _eventUris = "http://localhost:13752";
-#else
-            _serverUri = "http://flowit.azurewebsites.net";
-            _eventUris = "http://flowites1.azurewebsites.net,http://flowites2.azurewebsites.net";
-            _defaultPassword = "Password";
-            _createUsers = true;
-            _createWorkflow = true;
-#endif
+            ClearFields();
         }
 
         public string XmlFilePath
@@ -231,8 +223,17 @@ namespace XMLtoJSONParser.ViewModels
         private void ClearFields()
         {
             XmlFilePath = "";
-            EventUris = "";
-            ServerUri = "";
+
+            DefaultPassword = "Password";
+            CreateUsers = true;
+            CreateWorkflow = true;
+#if DEBUG
+            ServerUri = "http://localhost:13768";
+            EventUris = "http://localhost:13752";
+#else
+            ServerUri = "http://flowit.azurewebsites.net";
+            EventUris = "http://flowites1.azurewebsites.net,http://flowites2.azurewebsites.net";
+#endif
             WorkflowId = "";
             WorkflowName = "";
         }

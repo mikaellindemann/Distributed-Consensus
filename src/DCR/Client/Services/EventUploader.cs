@@ -6,7 +6,7 @@ using Common.DTO.Server;
 using Common.Exceptions;
 using Common.Tools;
 
-namespace XMLtoJSONParser
+namespace Client.Services
 {
     public class EventUploader
     {

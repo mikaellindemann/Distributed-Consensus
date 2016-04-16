@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace XMLtoJSONParser.Views
+namespace Client.Views.Parser
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

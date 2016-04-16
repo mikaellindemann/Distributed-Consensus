@@ -87,6 +87,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -132,6 +133,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Services\DcrParser.cs" />
+    <Compile Include="Services\EventUploader.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\HistoryListViewModel.cs" />
@@ -141,6 +144,7 @@
     <Compile Include="ViewModels\IWorkflowViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MaliciousViewModel.cs" />
+    <Compile Include="ViewModels\Parser\ParsingViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\WorkflowListViewModel.cs" />
     <Compile Include="ViewModels\WorkflowViewModel.cs" />
@@ -162,6 +166,9 @@
     </Compile>
     <Compile Include="Views\MaliciousView.xaml.cs">
       <DependentUpon>MaliciousView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parser\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WaterMarkTextHelper.cs" />
     <Page Include="StringResources.xaml">
@@ -187,6 +194,10 @@
     <Page Include="Views\MaliciousView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Parser\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -215,10 +226,6 @@
     <ProjectReference Include="..\HistoryConsensus\HistoryConsensus.fsproj">
       <Project>{5e6bb204-f6dc-4b14-b20d-2244cf6e48dc}</Project>
       <Name>HistoryConsensus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XMLtoJSONParser\XMLtoJSONParser.csproj">
-      <Project>{11e938ab-31b1-42a8-9f6e-3af4507db350}</Project>
-      <Name>XMLtoJSONParser</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

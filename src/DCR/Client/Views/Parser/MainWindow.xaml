@@ -1,11 +1,11 @@
-﻿<Window x:Class="XMLtoJSONParser.Views.MainWindow"
+﻿<Window x:Class="Client.Views.Parser.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:viewModels="clr-namespace:XMLtoJSONParser.ViewModels"
+        xmlns:viewModels="clr-namespace:Client.ViewModels.Parser"
         mc:Ignorable="d"
         Title="DCR Graph Parser and Upload Tool" Height="500" Width="450" MinHeight="475" MinWidth="440">
     <Grid>

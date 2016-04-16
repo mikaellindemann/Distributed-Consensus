@@ -112,7 +112,7 @@ namespace Client.ViewModels
 
         public void OpenParser()
         {
-            new XMLtoJSONParser.Views.MainWindow().Show();
+            new Views.Parser.MainWindow().Show();
         }
     }
 }
