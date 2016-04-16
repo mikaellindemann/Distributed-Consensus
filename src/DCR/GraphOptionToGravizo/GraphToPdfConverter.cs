@@ -11,8 +11,6 @@ using Action = HistoryConsensus.Action;
 
 namespace GraphOptionToGravizo
 {
-
-
     public class GraphToPdfConverter
     {
         public static void Main(string[] args)
