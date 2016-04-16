@@ -16,3 +16,4 @@ module Graph =
     val empty : Graph
     val getNode : Graph -> ActionId -> Action
     val transitiveReduction : Graph -> Graph
+    val getBeginningNodes : Graph -> Action list
