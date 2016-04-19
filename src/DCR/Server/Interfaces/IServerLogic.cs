@@ -54,7 +54,7 @@ namespace Server.Interfaces
         /// <param name="workflowToAttachToId">Id of the workflow that the Event should be added to.</param>
         /// <param name="eventToBeAddedDto">Contains information about the Event that is to be added.</param>
         /// <returns></returns>
-        Task AddEventToWorkflow(string workflowToAttachToId, EventAddressDto eventToBeAddedDto);
+        Task AddEventToWorkflow(string workflowToAttachToId, ServerEventDto eventToBeAddedDto);
 
         /// <summary>
         /// Will delete an Event from a specified workflow. 

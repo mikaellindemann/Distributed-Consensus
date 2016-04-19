@@ -8,6 +8,7 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Server.Interfaces;
 using Server.Models;
+using Server.Models.UriClasses;
 
 namespace Server.Logic
 {
@@ -165,7 +166,7 @@ namespace Server.Logic
                         });
         }
 
-        public async Task AddEventToWorkflow(string workflowToAttachToId, EventAddressDto eventToBeAddedDto)
+        public async Task AddEventToWorkflow(string workflowToAttachToId, ServerEventDto eventToBeAddedDto)
         {
             if (workflowToAttachToId == null || eventToBeAddedDto == null)
             {
@@ -180,14 +181,45 @@ namespace Server.Logic
                 Id = role,
                 ServerWorkflowModelId = workflowToAttachToId
             }))).ToList();
+            var conditions = eventToBeAddedDto.Conditions.Select(relation => new ConditionUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
+            var inclusions = eventToBeAddedDto.Inclusions.Select(relation => new InclusionUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
+            var exclusions = eventToBeAddedDto.Exclusions.Select(relation => new ExclusionUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
+            var responses = eventToBeAddedDto.Responses.Select(relation => new ResponseUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
 
             await _storage.AddEventToWorkflow(new ServerEventModel
             {
-                Id = eventToBeAddedDto.Id,
+                Id = eventToBeAddedDto.EventId,
                 Uri = eventToBeAddedDto.Uri.ToString(),
                 ServerWorkflowModelId = workflowToAttachToId,
                 ServerWorkflowModel = workflow,
-                ServerRolesModels = roles
+                ServerRolesModels = roles,
+                ConditionUris = conditions,
+                InclusionUris = inclusions,
+                ExclusionUris = exclusions,
+                ResponseUris = responses,
+                InitialExecuted = eventToBeAddedDto.Executed,
+                InitialIncluded = eventToBeAddedDto.Included,
+                InitialPending = eventToBeAddedDto.Pending
             });
         }
 

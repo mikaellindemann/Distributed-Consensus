@@ -194,7 +194,7 @@ namespace Server.Controllers
         /// <returns></returns>
         [Route("Workflows/{workflowId}")]
         [HttpPost]
-        public async Task PostEventToWorkFlow(string workflowId, [FromBody] EventAddressDto eventToAddDto)
+        public async Task PostEventToWorkFlow(string workflowId, [FromBody] ServerEventDto eventToAddDto)
         {
             if (!ModelState.IsValid)
             {
