@@ -123,6 +123,11 @@
     <Compile Include="Models\ServerWorkflowModel.cs" />
     <Compile Include="Interfaces\IServerHistoryStorage.cs" />
     <Compile Include="Interfaces\IServerContext.cs" />
+    <Compile Include="Models\UriClasses\ConditionUri.cs" />
+    <Compile Include="Models\UriClasses\ExclusionUri.cs" />
+    <Compile Include="Models\UriClasses\InclusionUri.cs" />
+    <Compile Include="Models\UriClasses\ResponseUri.cs" />
+    <Compile Include="Models\UriClasses\UriRepresentationBase.cs" />
     <Compile Include="Storage\PasswordHasher.cs" />
     <Compile Include="Storage\ServerStorage.cs" />
     <Compile Include="Storage\StorageContext.cs" />
