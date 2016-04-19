@@ -17,3 +17,5 @@ module Graph =
     val getNode : Graph -> ActionId -> Action
     val transitiveReduction : Graph -> Graph
     val getBeginningNodes : Graph -> Action list
+    val fold : ('a -> Action -> 'a) -> 'a -> Graph -> 'a
+    val forall : (Action -> bool) -> Graph -> bool
