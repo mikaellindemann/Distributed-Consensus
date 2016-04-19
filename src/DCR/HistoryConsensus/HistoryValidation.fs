@@ -4,6 +4,15 @@ open Action;
 open Graph;
 
 module HistoryValidation =
+
+    type FailureType =
+        | Maybe
+        | HasWrongOutgoingAction
+        | HasWrongIngoingAction
+        | Malicious
+
+    type FailureT = string list * FailureType
+
     ///A validation result type, either a Success or a Failure.
     type Result<'SuccessType, 'FailureType> = 
         | Success of 'SuccessType
@@ -15,8 +24,7 @@ module HistoryValidation =
         | Success s -> func s
         | Failure f -> Failure f
 
-    let (>>=) resultInput func = 
-        bind func resultInput
+    let (>>=) resultInput func = bind func resultInput
     
     let validationExample = 
         let failureInput = "2 A"
@@ -44,26 +52,26 @@ module HistoryValidation =
         
 
     // If no beginning nodes exist, we have either an empty history, or a history with cycles
-    let hasBeginningNodesValidation (history : Graph) = 
-        match getBeginningNodes history |> List.isEmpty |> not with
+    let hasBeginningNodesValidation (history : Graph) : Result<Graph, FailureT list> = 
+        match Graph.getBeginningNodes history |> List.isEmpty |> not with
         | true -> Success history // Is this always correct?
         | false -> 
             if Map.isEmpty history.Nodes
             then Success history // History is empty, therefore no beginning nodes exist.
-            else Failure history // History has cycles.
+            else Failure [(["Find cycles!"],Malicious)] // History has cycles. TODO: Find them
 
-    let noCycleValidation (history : Graph) =
-        let beginningNodes = getBeginningNodes history
+    let noCycleValidation (history : Graph) : Result<Graph, FailureT list> =
+        let beginningNodes = Graph.getBeginningNodes history
 
-        let rec cycleDfsCheck node trace =
+        let rec cycleDfsCheck node trace : Result<Graph, FailureT list> =
             if List.contains node.Id trace
-            then Failure history
+            then Failure [([(fst node.Id)], Malicious)]
             else 
                 Set.fold 
                     (fun status edge -> 
                         match status with
                         | Failure g -> Failure g
-                        | Success g -> cycleDfsCheck (getNode history edge) (node.Id :: trace))
+                        | Success g -> cycleDfsCheck (Graph.getNode history edge) (node.Id :: trace))
                     (Success history)
                     node.Edges
 
@@ -74,3 +82,33 @@ module HistoryValidation =
                 | Success g -> cycleDfsCheck node [])
             (Success history)
             beginningNodes
+
+
+    // When an events history is returned, the eventID (not counterpart) should ALWAYS be the event itself.
+    let checkLocalHistoryForLocalInformationAboutOthers history eventId : Result<Graph, FailureT> =
+        if Graph.forall (fun action -> (fst action.Id) = eventId) history
+        then Success history
+        else Failure ([eventId], Malicious)
+        
+
+    // Check a single local history if it contacts or are contacted by wrong events.
+    let checkLocalHistoryAgainstRelations history actionId allowedIngoingRelations allowedOutgoingRelations : Result<Graph, FailureT> =
+        let actions = { Nodes = Map.filter (fun id _ -> actionId = id) history.Nodes }
+        Graph.fold 
+            (fun status action -> 
+                match status with
+                | Success i -> 
+                    match action.Type with
+                    | ExecuteStart | ExecuteFinish -> Success i
+                    | Includes | Excludes | SetsPending | ChecksConditon ->
+                        if Set.contains (fst action.CounterpartId) allowedOutgoingRelations
+                        then Success i
+                        else Failure ([fst action.Id], HasWrongOutgoingAction)
+                    | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditon ->
+                        if Set.contains (fst action.CounterpartId) allowedIngoingRelations
+                        then Success i
+                        else Failure ([fst action.Id], HasWrongIngoingAction)
+                | Failure i -> Failure i
+            )
+            (Success history)
+            actions

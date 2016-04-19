@@ -146,3 +146,7 @@ module Graph =
                                else false
         let neighbourNodes = getNodes graph <| Set.toList node.Edges
         cycleThrough [node.Id] neighbourNodes
+
+    let fold folder (state : 'State) graph = Map.fold (fun state _ node -> folder state node) state graph.Nodes
+
+    let forall predicate graph = Map.forall (fun _ node -> predicate node) graph.Nodes
