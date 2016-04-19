@@ -48,12 +48,20 @@ namespace Event.Logic
             }
 
             // #1. Make sure that server will accept our entry
-            var dto = new EventAddressDto
+            var dto = new ServerEventDto
             {
                 WorkflowId = eventDto.WorkflowId,
-                Id = eventDto.EventId,
+                EventId = eventDto.EventId,
+                Name = eventDto.Name,
                 Uri = ownUri,
-                Roles = eventDto.Roles
+                Roles = eventDto.Roles,
+                Included = eventDto.Included,
+                Executed = eventDto.Executed,
+                Pending = eventDto.Pending,
+                Conditions = eventDto.Conditions,
+                Exclusions = eventDto.Exclusions,
+                Inclusions = eventDto.Inclusions,
+                Responses = eventDto.Responses
             };
 
 #if DEBUG
