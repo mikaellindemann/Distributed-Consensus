@@ -55,7 +55,7 @@ namespace Server.Controllers
         /// <returns>IEnumerable of EventAddressDto</returns>
         [Route("workflows/{workflowId}")]
         [HttpGet]
-        public async Task<IEnumerable<EventAddressDto>> Get(string workflowId)
+        public async Task<IEnumerable<ServerEventDto>> Get(string workflowId)
         {
             try
             {

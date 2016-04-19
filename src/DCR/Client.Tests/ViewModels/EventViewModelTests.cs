@@ -18,7 +18,7 @@ namespace Client.Tests.ViewModels
     [TestFixture]
     class EventViewModelTests
     {
-        private EventAddressDto _eventAddressDto;
+        private ServerEventDto _eventAddressDto;
         private EventViewModel _model;
         private Mock<IWorkflowViewModel> _workflowViewModelMock;
         private Mock<IEventConnection> _eventConnectionMock;
@@ -33,7 +33,7 @@ namespace Client.Tests.ViewModels
         [SetUp]
         public void SetUp()
         {
-            _eventAddressDto = new EventAddressDto();
+            _eventAddressDto = new ServerEventDto();
 
             _workflowViewModelMock = new Mock<IWorkflowViewModel>(MockBehavior.Strict);
             _workflowViewModelMock.SetupAllProperties();

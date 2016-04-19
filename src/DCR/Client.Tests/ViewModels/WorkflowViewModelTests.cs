@@ -153,7 +153,7 @@ namespace Client.Tests.ViewModels
         public void RefreshEvents_Calls_Events_in_List()
         {
             // Arrange
-            var addressDto = new EventAddressDto();
+            var addressDto = new ServerEventDto();
             _eventList.Add(new EventViewModel(_eventConnectionMock.Object, addressDto, _model));
 
             _eventConnectionMock.Setup(ec => ec.GetState(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -172,7 +172,7 @@ namespace Client.Tests.ViewModels
             // Arrange
             for (var i = 0; i < 10; i++)
             {
-                _eventList.Add(new EventViewModel(_eventConnectionMock.Object, new EventAddressDto(), _model) { Executable = true});
+                _eventList.Add(new EventViewModel(_eventConnectionMock.Object, new ServerEventDto(), _model) { Executable = true});
             }
 
             // Act
@@ -186,7 +186,7 @@ namespace Client.Tests.ViewModels
         public void ResetWorkflow_Ok()
         {
             // Arrange
-            var eventAddressList = new List<EventAddressDto> {new EventAddressDto()};
+            var eventAddressList = new List<ServerEventDto> {new ServerEventDto()};
 
             _serverConnectionMock.Setup(conn => conn.GetEventsFromWorkflow(It.IsAny<string>()))
                 .ReturnsAsync(eventAddressList).Verifiable();
@@ -206,7 +206,7 @@ namespace Client.Tests.ViewModels
         public void ResetWorkflow_SecondCallReturnsImmediately()
         {
             // Arrange
-            var eventAddressList = new List<EventAddressDto> { new EventAddressDto() };
+            var eventAddressList = new List<ServerEventDto> { new ServerEventDto() };
 
             _serverConnectionMock.Setup(conn => conn.GetEventsFromWorkflow(It.IsAny<string>()))
                 .ReturnsAsync(eventAddressList).Verifiable();
@@ -286,7 +286,7 @@ namespace Client.Tests.ViewModels
         public void ResetWorkflow_EventThrowsNotFoundException()
         {
             // Arrange
-            var eventAddressList = new List<EventAddressDto> { new EventAddressDto() };
+            var eventAddressList = new List<ServerEventDto> { new ServerEventDto() };
 
             _serverConnectionMock.Setup(conn => conn.GetEventsFromWorkflow(It.IsAny<string>()))
                 .ReturnsAsync(eventAddressList).Verifiable();
@@ -307,7 +307,7 @@ namespace Client.Tests.ViewModels
         public void ResetWorkflow_EventThrowsHostNotFoundException()
         {
             // Arrange
-            var eventAddressList = new List<EventAddressDto> { new EventAddressDto() };
+            var eventAddressList = new List<ServerEventDto> { new ServerEventDto() };
 
             _serverConnectionMock.Setup(conn => conn.GetEventsFromWorkflow(It.IsAny<string>()))
                 .ReturnsAsync(eventAddressList).Verifiable();
@@ -328,7 +328,7 @@ namespace Client.Tests.ViewModels
         public void ResetWorkflow_EventThrowsUnknownException()
         {
             // Arrange
-            var eventAddressList = new List<EventAddressDto> {new EventAddressDto()};
+            var eventAddressList = new List<ServerEventDto> {new ServerEventDto()};
 
             _serverConnectionMock.Setup(conn => conn.GetEventsFromWorkflow(It.IsAny<string>()))
                 .ReturnsAsync(eventAddressList).Verifiable();
@@ -351,11 +351,11 @@ namespace Client.Tests.ViewModels
             // Arrange
             _rolesList.Add("Admin");
 
-            var eventAddressList = new List<EventAddressDto>
+            var eventAddressList = new List<ServerEventDto>
             {
-                new EventAddressDto
+                new ServerEventDto
                 {
-                    Id = "eventId",
+                    EventId = "eventId",
                     Roles = new List<string>
                     {
                         "Admin"

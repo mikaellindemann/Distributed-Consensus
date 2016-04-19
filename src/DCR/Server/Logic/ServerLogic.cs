@@ -145,7 +145,7 @@ namespace Server.Logic
             await _storage.AddRolesToUser(username, serverRoles);
         }
 
-        public async Task<IEnumerable<EventAddressDto>> GetEventsOnWorkflow(string workflowId)
+        public async Task<IEnumerable<ServerEventDto>> GetEventsOnWorkflow(string workflowId)
         {
             if (workflowId == null)
             {
@@ -157,12 +157,19 @@ namespace Server.Logic
             return
                 dbList.Select(
                     ev =>
-                        new EventAddressDto
+                        new ServerEventDto
                         {
-                            Id = ev.Id,
+                            EventId = ev.Id,
                             Uri = new Uri(ev.Uri),
                             WorkflowId = workflowId,
-                            Roles = ev.ServerRolesModels.Select(ro => ro.Id).ToList()
+                            Roles = ev.ServerRolesModels.Select(ro => ro.Id).ToList(),
+                            Conditions = ev.ConditionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId}),
+                            Exclusions = ev.ExclusionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Inclusions = ev.InclusionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Responses = ev.ResponseUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Included = ev.InitialIncluded,
+                            Pending = ev.InitialPending,
+                            Executed = ev.InitialExecuted
                         });
         }
 

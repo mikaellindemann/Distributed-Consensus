@@ -85,7 +85,7 @@ namespace Client.ViewModels
 
             foreach (var @event in events)
             {
-                localHistories.Add(JsonConvert.DeserializeObject<Graph.Graph>(await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.Id)));
+                localHistories.Add(JsonConvert.DeserializeObject<Graph.Graph>(await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId)));
             }
 
             var first = localHistories.First();

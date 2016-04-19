@@ -12,7 +12,7 @@ namespace Client.ViewModels
 {
     public class EventViewModel : ViewModelBase
     {
-        internal readonly EventAddressDto EventAddressDto;
+        internal readonly ServerEventDto EventAddressDto;
         private EventStateDto _eventStateDto;
         private readonly IWorkflowViewModel _parent;
         private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush, IsEvilBrush;
@@ -41,7 +41,7 @@ namespace Client.ViewModels
             WhiteBrush.Freeze();
         }
 
-        public EventViewModel(EventAddressDto eventAddressDto, IWorkflowViewModel workflow)
+        public EventViewModel(ServerEventDto eventAddressDto, IWorkflowViewModel workflow)
         {
             if (eventAddressDto == null || workflow == null)
             {
@@ -54,7 +54,7 @@ namespace Client.ViewModels
             GetStateInternal();
         }
 
-        public EventViewModel(IEventConnection eventConnection, EventAddressDto eventAddressDto, IWorkflowViewModel parent)
+        public EventViewModel(IEventConnection eventConnection, ServerEventDto eventAddressDto, IWorkflowViewModel parent)
         {
             _parent = parent;
             _eventStateDto = new EventStateDto();
@@ -66,10 +66,10 @@ namespace Client.ViewModels
 
         public string Id
         {
-            get { return EventAddressDto.Id; }
+            get { return EventAddressDto.EventId; }
             set
             {
-                EventAddressDto.Id = value;
+                EventAddressDto.EventId = value;
                 NotifyPropertyChanged();
             }
         }
@@ -211,7 +211,7 @@ namespace Client.ViewModels
             await _parent.DisableExecuteButtons();
             try
             {
-                await _eventConnection.Execute(EventAddressDto.Uri, _parent.WorkflowId, EventAddressDto.Id, _parent.Roles);
+                await _eventConnection.Execute(EventAddressDto.Uri, _parent.WorkflowId, EventAddressDto.EventId, _parent.Roles);
                 _parent.RefreshEvents();
             }
             catch (NotFoundException)

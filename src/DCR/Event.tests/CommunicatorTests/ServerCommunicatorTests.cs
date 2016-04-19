@@ -44,17 +44,17 @@ namespace Event.Tests.CommunicatorTests
         public void PostEventToServerTestThrowsException()
         {
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Throws(new Exception());
+            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<ServerEventDto>())).Throws(new Exception());
             var toTest = new ServerCommunicator("testingEventId", "testingWorkflowId", mock.Object);
 
-            Assert.ThrowsAsync<FailedToPostEventAtServerException>(async () => await toTest.PostEventToServer(new EventAddressDto()));
+            Assert.ThrowsAsync<FailedToPostEventAtServerException>(async () => await toTest.PostEventToServer(new ServerEventDto()));
         }
 
         [Test]
         public void PostEventToServerTestSuccedes()
         {
-            Assert.DoesNotThrowAsync(async () => await _toTest.PostEventToServer(new EventAddressDto()));
-            _toolBoxMock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            Assert.DoesNotThrowAsync(async () => await _toTest.PostEventToServer(new ServerEventDto()));
+            _toolBoxMock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<ServerEventDto>()), Times.Once);
         }
 
         [Test]

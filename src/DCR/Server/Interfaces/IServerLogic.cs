@@ -46,7 +46,7 @@ namespace Server.Interfaces
         /// <param name="workflowId">Id of the workflow.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if workflowId is null.</exception>
-        Task<IEnumerable<EventAddressDto>> GetEventsOnWorkflow(string workflowId);
+        Task<IEnumerable<ServerEventDto>> GetEventsOnWorkflow(string workflowId);
 
         /// <summary>
         /// Adds an Event to the specified workflow.

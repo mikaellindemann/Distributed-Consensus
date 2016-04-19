@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Server.Interfaces;
 using Server.Logic;
 using Server.Models;
+using Server.Models.UriClasses;
 
 namespace Server.Tests.LogicTests
 {
@@ -101,6 +102,10 @@ namespace Server.Tests.LogicTests
             var w1 = new ServerWorkflowModel { Name = "w1", Id = "1" };
             var w2 = new ServerWorkflowModel { Name = "w2", Id = "2" };
 
+            var responses = new List<ResponseUri>();
+            var conditions = new List<ConditionUri>();
+            var exclusions = new List<ExclusionUri>();
+            var inclusions = new List<InclusionUri>();
             //Ensure that it's REALLY set up this time...
             role.ServerWorkflowModel = w1;
             w1.ServerRolesModels = roles;
@@ -112,7 +117,11 @@ namespace Server.Tests.LogicTests
                 ServerWorkflowModelId = "1",
                 ServerRolesModels = roles,
                 ServerWorkflowModel = w1,
-                Uri = "http://2.2.2.2/"
+                Uri = "http://2.2.2.2/",
+                ConditionUris = conditions,
+                ExclusionUris = exclusions,
+                InclusionUris = inclusions,
+                ResponseUris = responses
             };
 
             //Add the event to one of the events.
@@ -125,11 +134,15 @@ namespace Server.Tests.LogicTests
         [Test]
         public async Task TestAddEventToWorkflow()
         {
-            var toAdd = new EventAddressDto
+            var toAdd = new ServerEventDto
             {
-                Id = "3",
+                EventId = "3",
                 Roles = new List<string> {"lol"},
-                Uri = new Uri("http://1.1.1.1/")
+                Uri = new Uri("http://1.1.1.1/"),
+                Responses = new List<EventAddressDto>(),
+                Conditions = new List<EventAddressDto>(),
+                Exclusions = new List<EventAddressDto>(),
+                Inclusions = new List<EventAddressDto>()
             };
 
             await _toTest.AddEventToWorkflow("1", toAdd);
@@ -157,7 +170,7 @@ namespace Server.Tests.LogicTests
         public void TestAddEventToWorkflow_Throws_ArgumentNull(string workflowId)
         {
             AsyncTestDelegate testDelegate1 = async () => await _toTest.AddEventToWorkflow(workflowId, null);
-            AsyncTestDelegate testDelegate2 = async () => await _toTest.AddEventToWorkflow(null, new EventAddressDto());
+            AsyncTestDelegate testDelegate2 = async () => await _toTest.AddEventToWorkflow(null, new ServerEventDto());
 
             Assert.ThrowsAsync<ArgumentNullException>(testDelegate1);
             Assert.ThrowsAsync<ArgumentNullException>(testDelegate2);
@@ -210,10 +223,10 @@ namespace Server.Tests.LogicTests
         public async Task TestGetEventsOnWorkflow()
         {
             var result = (await _toTest.GetEventsOnWorkflow("1")).ToList();
-            var expectedEvent = result.First(x => x.Id == "1");
+            var expectedEvent = result.First(x => x.EventId == "1");
 
             Assert.IsNotNull(expectedEvent);
-            Assert.AreEqual(expectedEvent.Id, "1");
+            Assert.AreEqual(expectedEvent.EventId, "1");
             Assert.AreEqual(expectedEvent.Uri.AbsoluteUri, "http://2.2.2.2/");
 
         }

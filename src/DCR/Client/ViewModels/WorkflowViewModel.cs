@@ -140,7 +140,7 @@ namespace Client.ViewModels
             if (_resetEventRuns) return;
             _resetEventRuns = true;
 
-            IEnumerable<EventAddressDto> adminEventList;
+            IEnumerable<ServerEventDto> adminEventList;
             try
             {
                 adminEventList = await _serverConnection.GetEventsFromWorkflow(WorkflowId);
@@ -169,7 +169,7 @@ namespace Client.ViewModels
             {
                 foreach (var eventViewModel in adminEventList)
                 {
-                    await _eventConnection.ResetEvent(eventViewModel.Uri, WorkflowId, eventViewModel.Id);
+                    await _eventConnection.ResetEvent(eventViewModel.Uri, WorkflowId, eventViewModel.EventId);
                 }
                 NotifyPropertyChanged("");
                 GetEvents();

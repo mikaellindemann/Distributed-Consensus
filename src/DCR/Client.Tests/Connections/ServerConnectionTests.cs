@@ -22,19 +22,19 @@ namespace Client.Tests.Connections
         private ServerConnection _connection;
         private Mock<HttpClientToolbox> _toolboxMock;
         private List<WorkflowDto> _workflowDtos;
-        private List<EventAddressDto> _eventAddressDtos;
+        private List<ServerEventDto> _eventAddressDtos;
         private List<ActionDto> _historyDtos;
 
         [SetUp]
         public void SetUp()
         {
             _workflowDtos = new List<WorkflowDto>();
-            _eventAddressDtos = new List<EventAddressDto>();
+            _eventAddressDtos = new List<ServerEventDto>();
             _historyDtos = new List<ActionDto>();
 
             _toolboxMock = new Mock<HttpClientToolbox>(MockBehavior.Strict);
             _toolboxMock.Setup(t => t.ReadList<WorkflowDto>(It.IsAny<string>())).ReturnsAsync(_workflowDtos);
-            _toolboxMock.Setup(t => t.ReadList<EventAddressDto>(It.IsAny<string>())).ReturnsAsync(_eventAddressDtos);
+            _toolboxMock.Setup(t => t.ReadList<ServerEventDto>(It.IsAny<string>())).ReturnsAsync(_eventAddressDtos);
             _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ReturnsAsync(_historyDtos);
 
             _connection = new ServerConnection(_toolboxMock.Object);
@@ -168,19 +168,19 @@ namespace Client.Tests.Connections
         public async Task GetEventsFromWorkflow_Returns_Events()
         {
             // Arrange
-            _eventAddressDtos.Add(new EventAddressDto
+            _eventAddressDtos.Add(new ServerEventDto
             {
-                Id = "register",
+                EventId = "register",
                 Uri = new Uri("http://localhost:13752")
             });
-            _eventAddressDtos.Add(new EventAddressDto
+            _eventAddressDtos.Add(new ServerEventDto
             {
-                Id = "pass",
+                EventId = "pass",
                 Uri = new Uri("http://localhost:13753")
             });
-            _eventAddressDtos.Add(new EventAddressDto
+            _eventAddressDtos.Add(new ServerEventDto
             {
-                Id = "fail",
+                EventId = "fail",
                 Uri = new Uri("http://localhost:13754")
             });
             
@@ -209,7 +209,7 @@ namespace Client.Tests.Connections
         public void GetEventsFromWorkflow_Throws_Exception()
         {
             // Arrange
-            _toolboxMock.Setup(t => t.ReadList<EventAddressDto>(It.IsAny<string>()))
+            _toolboxMock.Setup(t => t.ReadList<ServerEventDto>(It.IsAny<string>()))
                 .Throws(new HttpRequestException()); //no message, we expect the HostNotFoundException exception
 
             // Act
