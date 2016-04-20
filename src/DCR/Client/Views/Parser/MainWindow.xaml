@@ -54,7 +54,7 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Button>
-                <Button Content="{DynamicResource UploadToEvent}" x:Name="ButtonUpload" IsEnabled="{Binding UploadButtonActive}" Width="135" Height="30" Margin="10,30,0,0">
+                <Button IsDefault="True"  Content="{DynamicResource UploadToEvent}" x:Name="ButtonUpload" IsEnabled="{Binding UploadButtonActive}" Width="135" Height="30" Margin="10,30,0,0">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <ei:CallMethodAction MethodName="Upload" TargetObject="{Binding Mode=OneWay}"/>

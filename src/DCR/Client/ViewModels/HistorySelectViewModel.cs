@@ -81,11 +81,23 @@ namespace Client.ViewModels
         {
             var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
 
+            var wrongHistories = new List<string>();
             var localHistories = new List<Graph.Graph>();
 
             foreach (var @event in events)
             {
-                localHistories.Add(JsonConvert.DeserializeObject<Graph.Graph>(await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId)));
+                var localHistory = JsonConvert.DeserializeObject<Graph.Graph>(await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
+
+                var bla = LocalHistoryValidation.smallerLocalCheck(localHistory, @event.EventId);
+
+                if (bla.IsSuccess)
+                {
+                    localHistories.Add(localHistory);
+                }
+                else
+                {
+                    wrongHistories.Add(@event.EventId);
+                }
             }
 
             var first = localHistories.First();

@@ -177,7 +177,7 @@ namespace Event.Logic
             {
                 if (log)
                 {
-                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksConditon, workflowId, eventId,
+                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksCondition, workflowId, eventId,
                         condition.EventId);
 
                     var cond =

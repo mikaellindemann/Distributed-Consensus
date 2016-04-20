@@ -6,10 +6,14 @@ open Graph;
 module HistoryValidation =
 
     type FailureType =
-        | Maybe
-        | HasWrongOutgoingAction
-        | HasWrongIngoingAction
-        | Malicious
+        | HistoryAboutOthers
+        | FakeRelationsOut
+        | FakeRelationsIn
+        | LocalTimestampOutOfOrder
+        | IncomingChangesWhileExecuting
+        | PartialOutgoingWhenExecuting
+        | CounterpartTimestampOutOfOrder
+        | Malicious // TODO: Remove
 
     type FailureT = string list * FailureType
 

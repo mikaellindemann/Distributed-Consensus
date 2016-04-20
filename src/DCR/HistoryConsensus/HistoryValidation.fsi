@@ -10,9 +10,13 @@ module HistoryValidation =
         | Failure of 'FailureType
 
     type FailureType =
-        | Maybe
-        | HasWrongOutgoingAction
-        | HasWrongIngoingAction
+        | HistoryAboutOthers
+        | FakeRelationsOut
+        | FakeRelationsIn
+        | LocalTimestampOutOfOrder
+        | IncomingChangesWhileExecuting
+        | PartialOutgoingWhenExecuting
+        | CounterpartTimestampOutOfOrder
         | Malicious
 
     type FailureT = EventId list * FailureType

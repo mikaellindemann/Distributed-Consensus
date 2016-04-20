@@ -14,6 +14,6 @@ namespace Common
         LocalTimestampOutOfOrder,
         IncomingChangesWhileExecuting,
         PartialOutgoingWhenExecuting,
-        ConterpartTimestampOutOfOrder
+        CounterpartTimestampOutOfOrder
     }
 }

@@ -75,7 +75,6 @@ namespace Event.Logic
                             history[0] = history[1];
                             history[1] = temp;
                         }
-                        
                         break;
                     default:
                         break;
