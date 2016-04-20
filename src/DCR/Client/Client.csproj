@@ -121,6 +121,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Connections\IMaliciousConnection.cs" />
+    <Compile Include="Connections\MaliciousConnection.cs" />
     <Compile Include="Exceptions\HostNotFoundException.cs" />
     <Compile Include="Connections\EventConnection.cs" />
     <Compile Include="Connections\IEventConnection.cs" />

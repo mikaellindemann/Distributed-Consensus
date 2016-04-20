@@ -35,7 +35,7 @@
 			Orientation="Vertical" 
 			VerticalAlignment="Top">
             <Button 
-				Content="More Executions" 
+				Content="History about others" 
 				Margin="5" 
 				Style="{StaticResource ButtonDefaultStyle}" 
 				IsEnabled="{Binding CanPressButtons}">
@@ -44,12 +44,12 @@
 						EventName="Click">
                         <ei:CallMethodAction 
 							TargetObject="{Binding}" 
-							MethodName="Test"/>
+							MethodName="HistoryAboutOthers"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
             <Button 
-				Content="Fewer Executions" 
+				Content="Mix up local timestamps" 
 				Margin="5" 
 				Style="{StaticResource ButtonDefaultStyle}" 
 				IsEnabled="{Binding CanPressButtons}">
@@ -58,7 +58,7 @@
 						EventName="Click">
                         <ei:CallMethodAction 
 							TargetObject="{Binding}" 
-							MethodName="Test"/>
+							MethodName="MixUpLocalTimestamp"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>

@@ -10,27 +10,24 @@ namespace Client.ViewModels
 {
     public class MaliciousViewModel : ViewModelBase
     {
-        private readonly IEventConnection _eventConnection;
-        private readonly IServerConnection _serverConnection;
+        private readonly IMaliciousConnection _maliciousConnection;
         private string _status = "";
         private bool _canPressButtons;
-        public MaliciousViewModel(EventViewModel eventViewModel, IServerConnection serverConnection, IEventConnection eventConnection)
+        public MaliciousViewModel(EventViewModel eventViewModel, IMaliciousConnection maliciousConnection)
         {
             CanPressButtons = true;
             EventViewModel = eventViewModel;
-            _serverConnection = serverConnection;
-            _eventConnection = eventConnection;
+            _maliciousConnection = maliciousConnection;
 
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
                 new TypeConverterAttribute(typeof(TupleConverter)));
         }
 
-        public MaliciousViewModel(IServerConnection serverConnection, IEventConnection eventConnection)
+        public MaliciousViewModel(IMaliciousConnection maliciousConnection)
         {
             CanPressButtons = true;
-            _serverConnection = serverConnection;
-            _eventConnection = eventConnection;
+            _maliciousConnection = maliciousConnection;
         }
 
         public MaliciousViewModel()
@@ -63,9 +60,40 @@ namespace Client.ViewModels
 
         #region Actions
 
+        public async void HistoryAboutOthers()
+        {
+            try
+            {
+                await _maliciousConnection.HistoryAboutOthers(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
+                    EventViewModel.Id);
+                EventViewModel.IsEvil = true;
+                Status = "Now the event is evil";
+            }
+            catch (Exception)
+            {
+                Status = "Something went wrong";
+            }
+            
+        }
+
+        public async void MixUpLocalTimestamp()
+        {
+            try
+            {
+                await _maliciousConnection.MixUpLocalTimestamp(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
+                    EventViewModel.Id);
+                EventViewModel.IsEvil = true;
+                Status = "Now the event is evil";
+            }
+            catch (Exception)
+            {
+                Status = "Something went wrong";
+            }
+            
+        }
         public void Test()
         {
-            Status = "Now the event is evil (locally and temporarily)";
+            Status = "Test button";
             EventViewModel.IsEvil = true; // todo remove
         }
         #endregion

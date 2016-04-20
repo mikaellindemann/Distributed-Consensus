@@ -26,7 +26,7 @@ namespace Event.Controllers
             await _maliciousLogic.HistoryAboutOthers(workflowId, eventId);
         }
 
-        [Route("event/malicious/{workflowId}/{eventId}/HistoryAboutOthers")]
+        [Route("event/malicious/{workflowId}/{eventId}/MixUpLocalTimestamp")]
         [HttpPut]
         public async Task MixUpLocalTimestamp(string workflowId, string eventId)
         {
