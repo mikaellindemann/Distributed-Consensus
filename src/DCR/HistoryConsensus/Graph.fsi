@@ -19,3 +19,4 @@ module Graph =
     val getBeginningNodes : Graph -> Action list
     val fold : ('a -> Action -> 'a) -> 'a -> Graph -> 'a
     val forall : (Action -> bool) -> Graph -> bool
+    val exists : (Action -> bool) -> Graph -> bool

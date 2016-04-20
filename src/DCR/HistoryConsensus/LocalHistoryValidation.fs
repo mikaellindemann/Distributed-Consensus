@@ -9,10 +9,97 @@ module LocalHistoryValidation =
         if Graph.forall (fun action -> (fst action.Id) = eventId) history
         then Success history
         else Failure [([eventId], Malicious)]
-        
+
+    // Checks a local history against allowed incoming actions.
+    // This means, that if an incoming action occurs, then every other incoming action from the same counterpart must
+    // also occur.
+    // The function furthermore requires a map of allowed incoming relations for the local history, which tells whether or not
+    // a given relation are allowed to contact this event. If not, this event must be emitting malicious information.
+    let checkLocalHistoryAgainstIncomingRelations allowedIngoingRelations history : Result<Graph, FailureT list> =
+        let ingoing = allowedIngoingRelations()
+        let historyAsList = Map.toList history.Nodes
+
+        let rec hasRequired actions counterpartId remaindingRelations : (ActionId * Action) list option =
+            match remaindingRelations with
+            | [] -> Some actions
+            | _ -> 
+                match actions with
+                | [] -> None
+                | (_,action) :: rest ->
+                    if List.contains action.Type remaindingRelations
+                    then hasRequired rest counterpartId (List.filter (fun actionType -> actionType <> action.Type) remaindingRelations)
+                    else None
+
+        let rec checker nodes =
+            match nodes with
+            | [] -> Success history
+            | (_, node) :: rest ->
+                match node.Type with
+                | IncludedBy | ExcludedBy | SetPendingBy | CheckedCondition ->
+                    let counterpart = fst node.CounterpartId
+                    if not <| Map.containsKey counterpart ingoing
+                    then Failure [([fst node.Id], Malicious)]
+                    else 
+                        match hasRequired nodes counterpart (Map.find counterpart ingoing) with
+                        | None -> Failure [([fst node.Id], Malicious)]
+                        | Some rest -> checker rest // All required relations were found
+                | _ -> checker rest // This is not of our interest in this check
+
+        checker historyAsList        
+
+    let checkLocalHistoryAgainstOutgoingRelations allowedOutgoingRelations history : Result<Graph, FailureT list> =
+        // Lazy initialization of this calculation.
+        let outgoing = allowedOutgoingRelations()
+        let historyAsList = Map.toList history.Nodes
+
+        let rec hasRequired actions (remainingRelations : (EventId * ActionType) list) : (ActionId * Action) list option =
+            match remainingRelations with
+            // If we have no more required relations
+            | [] ->
+                match actions with
+                // Then the current action must be an execute finish, because no more outgoing relations should be in the history.
+                | (_, action) :: rest when action.Type = ExecuteFinish -> Some rest
+                | _ -> None // There should be no more relations. Is this correct?
+
+            // If there are more required relations
+            | _ ->
+                match actions with
+                // And we have no more history, then there is a problem with the local history.
+                | [] -> None
+                // If we have more history
+                | (_, action) :: rest ->
+                    // The type of the action (together with the counterpart who initiated it) should exist in the remaining relations.
+                    if List.contains (fst action.CounterpartId, action.Type) remainingRelations
+                    // If this is the case we continue to scan for more required relations.
+                    then hasRequired rest (List.filter (fun actionType -> actionType <> (fst action.CounterpartId, action.Type)) remainingRelations)
+                    // Otherwise we have a problem.
+                    else None
+
+        let rec checker nodes =
+            match nodes with
+            // If we have an empty history or rest, this means that all rules so far has been fulfilled.
+            // Therefore we have a success case.
+            | [] -> Success history
+            | (_,action) :: rest -> 
+                match action.Type with
+                // If we find an ExecuteStart, then we should call the helper function which checks that all outgoing relations
+                // required by the DCR-Graph are located in this history.
+                | ExecuteStart -> 
+                    match hasRequired rest outgoing with
+                    | None -> Failure [([fst action.Id], Malicious)]
+                    | Some rest' -> checker rest'
+                // If one of these occurs, then they have happened without the correct relations following from an ExecuteStart
+                | Includes | Excludes | SetsPending | ChecksCondition | ExecuteFinish -> Failure [([fst action.Id], Malicious)]
+                // We don't care about ingoing relations in this check.
+                | _ -> checker rest
+
+        checker historyAsList
+            
 
     // Check a single local history if it contacts or are contacted by wrong events.
     let checkLocalHistoryAgainstRelations allowedIngoingRelations allowedOutgoingRelations history : Result<Graph, FailureT list> =
+        let ingoing = allowedIngoingRelations()
+        let outgoing = allowedOutgoingRelations()
         Graph.fold 
             (fun status action -> 
                 match status with
@@ -22,12 +109,12 @@ module LocalHistoryValidation =
                     // and also check that if one relation comes from another event, then all of its outgoing relations
                     // must be in the execution as well.
                     | ExecuteStart | ExecuteFinish -> Success i
-                    | Includes | Excludes | SetsPending | ChecksConditon ->
-                        if Set.contains (fst action.CounterpartId) allowedOutgoingRelations
+                    | Includes | Excludes | SetsPending | ChecksCondition ->
+                        if Set.contains (fst action.CounterpartId) ingoing
                         then Success i
                         else Failure [([fst action.Id], HasWrongOutgoingAction)]
-                    | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditon ->
-                        if Set.contains (fst action.CounterpartId) allowedIngoingRelations
+                    | IncludedBy | ExcludedBy | SetPendingBy | CheckedCondition ->
+                        if Set.contains (fst action.CounterpartId) outgoing
                         then Success i
                         else Failure [([fst action.Id], HasWrongIngoingAction)]
                 | Failure i -> Failure i
@@ -55,6 +142,8 @@ module LocalHistoryValidation =
         checkOrder firstActionId -1
 
     // Check that no ingoing actions can appear when executing.
+    
+
 
     // Check that all relations appears inside execution
 
