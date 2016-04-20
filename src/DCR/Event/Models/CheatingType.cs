@@ -4,20 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using Common;
 
 namespace Event.Models
 {
-    public enum CheatingTypeEnum
-    {
-        HistoryAboutOthers,
-        FakeRelationsOut,
-        FakeRelationsIn,
-        LocalTimestampOutOfOrder,
-        IncomingChangesWhileExecuting,
-        PartialOutgoingWhenExecuting,
-        ConterpartTimestampOutOfOrder
-    }
-
     public class CheatingType
     {
         [Key, Column(Order = 0)]

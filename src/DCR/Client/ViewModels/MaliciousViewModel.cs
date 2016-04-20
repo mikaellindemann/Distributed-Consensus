@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Client.Connections;
+using Common;
 
 namespace Client.ViewModels
 {
@@ -64,8 +65,8 @@ namespace Client.ViewModels
         {
             try
             {
-                await _maliciousConnection.HistoryAboutOthers(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
-                    EventViewModel.Id);
+                await _maliciousConnection.ApplyCheatingType(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
+                    EventViewModel.Id, CheatingTypeEnum.HistoryAboutOthers);
                 EventViewModel.IsEvil = true;
                 Status = "Now the event is evil";
             }
@@ -80,8 +81,8 @@ namespace Client.ViewModels
         {
             try
             {
-                await _maliciousConnection.MixUpLocalTimestamp(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
-                    EventViewModel.Id);
+                await _maliciousConnection.ApplyCheatingType(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
+                    EventViewModel.Id, CheatingTypeEnum.LocalTimestampOutOfOrder);
                 EventViewModel.IsEvil = true;
                 Status = "Now the event is evil";
             }

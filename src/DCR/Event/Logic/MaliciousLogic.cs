@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Common;
 using Common.DTO.History;
+using Common.DTO.Shared;
 using Event.Interfaces;
 using Event.Models;
 
@@ -43,17 +45,21 @@ namespace Event.Logic
             return history;
         }
 
-        public async Task HistoryAboutOthers(string workflowId, string eventId)
+        public async Task ApplyCheatingType(string workflowId, string eventId, CheatingDto cheatingDto)
         {
             var eventModel = await _storage.GetEvent(workflowId, eventId);
             eventModel.IsEvil = true;
-            await _storage.SaveEvent(eventModel);
-        }
-
-        public async Task MixUpLocalTimestamp(string workflowId, string eventId)
-        {
-            var eventModel = await _storage.GetEvent(workflowId, eventId);
-            eventModel.IsEvil = true;
+            // Check if the cheatingType is not already added on the event
+            if (eventModel.TypesOfCheating.All(type => type.Type != cheatingDto.CheatingTypeEnum))
+            {
+                eventModel.TypesOfCheating.Add(new CheatingType
+                {
+                    Event = eventModel,
+                    WorkflowId = workflowId,
+                    EventId = eventId,
+                    Type = cheatingDto.CheatingTypeEnum
+                });
+            }
             await _storage.SaveEvent(eventModel);
         }
     }

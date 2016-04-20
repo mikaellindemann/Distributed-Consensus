@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.DTO.History;
+using Common.DTO.Shared;
 
 namespace Event.Interfaces
 {
@@ -11,8 +12,7 @@ namespace Event.Interfaces
     {
         Task<bool> IsMalicious(string workflowId, string eventId);
         Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IEnumerable<ActionDto> history);
-        Task HistoryAboutOthers(string workflowId, string eventId);
-        Task MixUpLocalTimestamp(string workflowId, string eventId);
+        Task ApplyCheatingType(string workflowId, string eventId, CheatingDto cheatingDto);
 
     }
 }

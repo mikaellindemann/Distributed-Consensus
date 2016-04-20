@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Client.Exceptions;
+using Common;
+using Common.DTO.Shared;
 using Common.Tools;
 
 namespace Client.Connections
@@ -30,27 +32,20 @@ namespace Client.Connections
             _httpClient = toolbox;
         }
 
-        public async Task HistoryAboutOthers(Uri uri, string workflowId, string eventId)
+        public async Task ApplyCheatingType(Uri uri, string workflowId, string eventId, CheatingTypeEnum cheatingType)
         {
             try
             {
-                await _httpClient.Update($"{uri}event/malicious/{workflowId}/{eventId}/HistoryAboutOthers", (object)null);
+                var cheatingDto = new CheatingDto {CheatingTypeEnum = cheatingType};
+                await _httpClient.Update($"{uri}event/malicious/{workflowId}/{eventId}", cheatingDto);
             }
             catch (HttpRequestException e)
             {
                 throw new HostNotFoundException(e);
             }
-        }
-
-        public async Task MixUpLocalTimestamp(Uri uri, string workflowId, string eventId)
-        {
-            try
+            catch (Exception e)
             {
-                await _httpClient.Update($"{uri}event/malicious/{workflowId}/{eventId}/MixUpLocalTimestamp", (object)null);
-            }
-            catch (HttpRequestException e)
-            {
-                throw new HostNotFoundException(e);
+                throw e;
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Common.DTO.Shared;
 using Event.Interfaces;
 using Event.Logic;
 
@@ -19,18 +20,11 @@ namespace Event.Controllers
             _maliciousLogic = logic;
         }
 
-        [Route("event/malicious/{workflowId}/{eventId}/HistoryAboutOthers")]
+        [Route("event/malicious/{workflowId}/{eventId}")]
         [HttpPut]
-        public async Task HistoryAboutOthers(string workflowId, string eventId)
+        public async Task ApplyCheatingType(string workflowId, string eventId, [FromBody] CheatingDto cheatingDto)
         {
-            await _maliciousLogic.HistoryAboutOthers(workflowId, eventId);
-        }
-
-        [Route("event/malicious/{workflowId}/{eventId}/MixUpLocalTimestamp")]
-        [HttpPut]
-        public async Task MixUpLocalTimestamp(string workflowId, string eventId)
-        {
-            await MixUpLocalTimestamp(workflowId,eventId);
+            await _maliciousLogic.ApplyCheatingType(workflowId, eventId, cheatingDto);
         }
 
         protected override void Dispose(bool disposing)
