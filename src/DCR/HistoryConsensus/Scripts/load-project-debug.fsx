@@ -10,3 +10,4 @@
       "../History.fs"
       "../HistoryValidation.fsi"
       "../HistoryValidation.fs"
+      "../LocalHistoryValidation.fs"
