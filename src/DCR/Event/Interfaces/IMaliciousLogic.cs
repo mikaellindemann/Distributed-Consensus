@@ -11,5 +11,8 @@ namespace Event.Interfaces
     {
         Task<bool> IsMalicious(string workflowId, string eventId);
         Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IEnumerable<ActionDto> history);
+        Task HistoryAboutOthers(string workflowId, string eventId);
+        Task MixUpLocalTimestamp(string workflowId, string eventId);
+
     }
 }

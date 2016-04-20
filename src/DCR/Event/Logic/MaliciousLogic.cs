@@ -42,5 +42,19 @@ namespace Event.Logic
             }
             return history;
         }
+
+        public async Task HistoryAboutOthers(string workflowId, string eventId)
+        {
+            var eventModel = await _storage.GetEvent(workflowId, eventId);
+            eventModel.IsEvil = true;
+            await _storage.SaveEvent(eventModel);
+        }
+
+        public async Task MixUpLocalTimestamp(string workflowId, string eventId)
+        {
+            var eventModel = await _storage.GetEvent(workflowId, eventId);
+            eventModel.IsEvil = true;
+            await _storage.SaveEvent(eventModel);
+        }
     }
 }

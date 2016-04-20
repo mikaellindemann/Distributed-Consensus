@@ -23,14 +23,14 @@ namespace Event.Controllers
         [HttpPut]
         public async Task HistoryAboutOthers(string workflowId, string eventId)
         {
-            
+            await _maliciousLogic.HistoryAboutOthers(workflowId, eventId);
         }
 
         [Route("event/malicious/{workflowId}/{eventId}/HistoryAboutOthers")]
         [HttpPut]
         public async Task MixUpLocalTimestamp(string workflowId, string eventId)
         {
-
+            await MixUpLocalTimestamp(workflowId,eventId);
         }
 
         protected override void Dispose(bool disposing)

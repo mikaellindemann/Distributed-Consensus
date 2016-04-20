@@ -11,5 +11,7 @@ namespace Event.Interfaces
     {
         Task<bool> IsMalicious(string workflowId, string eventId);
         Task<IEnumerable<CheatingType>> GetTypesOfCheating(string workflowId, string eventId);
+        Task<EventModel> GetEvent(string workflowId, string eventId);
+        Task SaveEvent(EventModel eventModel);
     }
 }
