@@ -47,7 +47,7 @@ namespace Event.Controllers
             var history = await _historyLogic.GetHistoryForEvent(workflowId, eventId);
             if (await _maliciousLogic.IsMalicious(workflowId, eventId))
             {
-                history = await _maliciousLogic.ApplyCheating(workflowId, eventId, history);
+                history = await _maliciousLogic.ApplyCheating(workflowId, eventId, history.ToList());
             }
             return history;
         }

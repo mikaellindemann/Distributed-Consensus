@@ -11,7 +11,7 @@ namespace Event.Interfaces
     public interface IMaliciousLogic : IDisposable
     {
         Task<bool> IsMalicious(string workflowId, string eventId);
-        Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IEnumerable<ActionDto> history);
+        Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IList<ActionDto> history);
         Task ApplyCheatingType(string workflowId, string eventId, CheatingDto cheatingDto);
 
     }

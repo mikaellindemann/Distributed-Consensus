@@ -29,14 +29,53 @@ namespace Event.Logic
             return await _storage.IsMalicious(workflowId, eventId);
         }
 
-        public async Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IEnumerable<ActionDto> history)
+        public async Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IList<ActionDto> history)
         {
             var cheatingTypes = (await _storage.GetTypesOfCheating(workflowId, eventId)).Select(type => type.Type);
             foreach (var cheatingType in cheatingTypes)
             {
                 switch (cheatingType)
                 {
-                    case CheatingTypeEnum.ConterpartTimestampOutOfOrder:
+                    case CheatingTypeEnum.HistoryAboutOthers:
+                        history.Add(new ActionDto
+                        {
+                            WorkflowId = workflowId,
+                            Type = ActionType.Excludes,
+                            CounterpartId = eventId,
+                            TimeStamp = 100,
+                            CounterpartTimeStamp = 101,
+                            EventId = "Cheating"
+                        });
+                        break;
+                    case CheatingTypeEnum.LocalTimestampOutOfOrder:
+                        if (history.Count < 2)
+                        {
+                            history.Add(new ActionDto
+                            {
+                                WorkflowId = workflowId,
+                                Type = ActionType.Excludes,
+                                CounterpartId = eventId,
+                                TimeStamp = 100,
+                                CounterpartTimeStamp = 101,
+                                EventId = "Cheating"
+                            });
+                            history.Add(new ActionDto
+                            {
+                                WorkflowId = eventId,
+                                Type = ActionType.Excludes,
+                                CounterpartId = eventId,
+                                TimeStamp = 98,
+                                CounterpartTimeStamp = 102,
+                                EventId = "Cheating"
+                            });
+                        }
+                        else
+                        {
+                            var temp = history[0];
+                            history[0] = history[1];
+                            history[1] = temp;
+                        }
+                        
                         break;
                     default:
                         break;
