@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Event.Interfaces;
 using Event.Logic;
@@ -16,6 +17,20 @@ namespace Event.Controllers
         public MaliciousController(IMaliciousLogic logic)
         {
             _maliciousLogic = logic;
+        }
+
+        [Route("event/malicious/{workflowId}/{eventId}/HistoryAboutOthers")]
+        [HttpPut]
+        public async Task HistoryAboutOthers(string workflowId, string eventId)
+        {
+            
+        }
+
+        [Route("event/malicious/{workflowId}/{eventId}/HistoryAboutOthers")]
+        [HttpPut]
+        public async Task MixUpLocalTimestamp(string workflowId, string eventId)
+        {
+
         }
 
         protected override void Dispose(bool disposing)

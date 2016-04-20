@@ -30,7 +30,7 @@ namespace Event.Models
         public virtual ICollection<ConditionUri> ConditionUris { get; set; }
         public string LockOwner { get; set; }
         public bool IsEvil { get; set; }
-        public virtual ICollection<string> TypesOfCheating { get; set; } 
+        public virtual ICollection<CheatingType> TypesOfCheating { get; set; } 
 
         public bool InitialPending { get; set; }
         public bool InitialExecuted { get; set; }
