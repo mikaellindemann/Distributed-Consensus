@@ -1,5 +1,6 @@
 ﻿namespace HistoryConsensus
 
+open Action
 open Graph
 
 module HistoryValidation =
@@ -14,7 +15,7 @@ module HistoryValidation =
         | HasWrongIngoingAction
         | Malicious
 
-    type FailureT = string list * FailureType
+    type FailureT = EventId list * FailureType
 
     ///Check a given Result and call the given function on it, if it is a Success.
     val bind : ('a -> Result<'b,'c>) -> Result<'a,'c> -> Result<'b,'c>

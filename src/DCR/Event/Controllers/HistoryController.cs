@@ -60,9 +60,9 @@ namespace Event.Controllers
                 case ActionType.SetPendingBy:
                     return Action.ActionType.SetPendingBy;
                 case ActionType.CheckedConditon:
-                    return Action.ActionType.CheckedConditon;
+                    return Action.ActionType.CheckedCondition;
                 case ActionType.ChecksConditon:
-                    return Action.ActionType.ChecksConditon;
+                    return Action.ActionType.ChecksCondition;
                 case ActionType.ExecuteStart:
                     return Action.ActionType.ExecuteStart;
                 case ActionType.ExecuteFinished:
