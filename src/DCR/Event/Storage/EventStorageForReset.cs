@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Exceptions;
 using Event.Interfaces;
+using Event.Models;
 
 namespace Event.Storage
 {
@@ -63,6 +65,7 @@ namespace Event.Storage
             @event.Executed = @event.InitialExecuted;
             @event.Included = @event.InitialIncluded;
             @event.Pending = @event.InitialPending;
+            @event.TypesOfCheating = new List<CheatingType>();
             @event.IsEvil = false;
 
             _context.History.RemoveRange(
