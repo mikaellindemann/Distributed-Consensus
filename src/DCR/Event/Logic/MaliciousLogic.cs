@@ -32,50 +32,96 @@ namespace Event.Logic
         public async Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IList<ActionDto> history)
         {
             var cheatingTypes = (await _storage.GetTypesOfCheating(workflowId, eventId)).Select(type => type.Type);
+            var eventModel = await _storage.GetEvent(workflowId, eventId);
+
+            var relationOut = FindARelationOutType(eventModel);
+            var relationIn = FindARelationInType(history);
             foreach (var cheatingType in cheatingTypes)
             {
+                
                 switch (cheatingType)
                 {
                     case CheatingTypeEnum.HistoryAboutOthers:
+                        // maybe do so that it is placed in an execution.
                         history.Add(new ActionDto
                         {
                             WorkflowId = workflowId,
-                            Type = ActionType.Excludes,
-                            CounterpartId = eventId,
-                            TimeStamp = 100,
-                            CounterpartTimeStamp = 101,
+                            Type = relationOut.Item2,
+                            CounterpartId = relationOut.Item1,
+                            TimeStamp = history.Max(dto => dto.TimeStamp)+1,
+                            CounterpartTimeStamp = history.Max(dto => dto.CounterpartTimeStamp)+1,
                             EventId = "Cheating"
                         });
                         break;
                     case CheatingTypeEnum.LocalTimestampOutOfOrder:
-                        if (history.Count < 2)
+                        history.Add(new ActionDto
                         {
-                            history.Add(new ActionDto
-                            {
-                                WorkflowId = workflowId,
-                                Type = ActionType.Excludes,
-                                CounterpartId = eventId,
-                                TimeStamp = 100,
-                                CounterpartTimeStamp = 101,
-                                EventId = "Cheating"
-                            });
-                            history.Add(new ActionDto
-                            {
-                                WorkflowId = eventId,
-                                Type = ActionType.Excludes,
-                                CounterpartId = eventId,
-                                TimeStamp = 98,
-                                CounterpartTimeStamp = 102,
-                                EventId = "Cheating"
-                            });
-                        }
-                        else
+                            WorkflowId = workflowId,
+                            Type = relationOut.Item2,
+                            CounterpartId = relationOut.Item1,
+                            TimeStamp = history.Max(dto => dto.TimeStamp)+2,
+                            CounterpartTimeStamp = history.Max(dto => dto.CounterpartTimeStamp) + 1,
+                            EventId = eventId
+                        });
+                        history.Add(new ActionDto
                         {
-                            var temp = history[0];
-                            history[0] = history[1];
-                            history[1] = temp;
-                        }
-                        
+                            WorkflowId = workflowId,
+                            Type = relationOut.Item2,
+                            CounterpartId = relationOut.Item1,
+                            TimeStamp = history.Max(dto => dto.TimeStamp)+1,
+                            CounterpartTimeStamp = history.Max(dto => dto.CounterpartTimeStamp) + 2,
+                            EventId = eventId
+                        });
+                        break;
+                    case CheatingTypeEnum.ConterpartTimestampOutOfOrder:
+                        history.Add(new ActionDto
+                        {
+                            WorkflowId = workflowId,
+                            Type = relationOut.Item2,
+                            CounterpartId = relationOut.Item1,
+                            TimeStamp = history.Max(dto => dto.TimeStamp) + 1,
+                            CounterpartTimeStamp = history.Max(dto => dto.CounterpartTimeStamp) + 2,
+                            EventId = eventId
+                        });
+                        history.Add(new ActionDto
+                        {
+                            WorkflowId = workflowId,
+                            Type = relationOut.Item2,
+                            CounterpartId = relationOut.Item1,
+                            TimeStamp = history.Max(dto => dto.TimeStamp) + 2,
+                            CounterpartTimeStamp = history.Max(dto => dto.CounterpartTimeStamp) + 1,
+                            EventId = eventId
+                        });
+                        break;
+                    case CheatingTypeEnum.IncomingChangesWhileExecuting:
+                        history.Add(new ActionDto
+                        {
+                            WorkflowId = workflowId,
+                            Type = ActionType.ExecuteStart,
+                            CounterpartId = "",
+                            TimeStamp = history.Max(dto => dto.TimeStamp) + 1,
+                            CounterpartTimeStamp = -1,
+                            EventId = eventId
+                        });
+                        var time = Math.Max(history.Max(dto => dto.TimeStamp), history.Max(dto => dto.CounterpartTimeStamp))+2;
+                        history.Add(new ActionDto
+                        {
+                            WorkflowId = workflowId,
+                            Type = relationIn.Item2,
+                            CounterpartId = relationIn.Item1,
+                            TimeStamp = time+1,
+                            CounterpartTimeStamp = time,
+                            EventId = eventId
+                        });
+                        history.Add(new ActionDto
+                        {
+                            WorkflowId = workflowId,
+                            Type = ActionType.ExecuteFinished,
+                            CounterpartId = "",
+                            TimeStamp = time+2,
+                            CounterpartTimeStamp = -1,
+                            EventId = eventId
+                        });
                         break;
                     default:
                         break;
@@ -83,6 +129,68 @@ namespace Event.Logic
             }
             return history;
         }
+
+        private Tuple<string, ActionType> FindARelationOutType(EventModel eventModel)
+        {
+            ActionType type = ActionType.ExecuteStart;
+            string id = null;
+            if (eventModel.ConditionUris.Count != 0)
+            {
+                type = ActionType.ChecksConditon;
+                id = eventModel.ConditionUris.ToList()[0].EventId;
+            }
+            else if (eventModel.InclusionUris.Count != 0)
+            {
+                type = ActionType.Includes;
+                id = eventModel.ConditionUris.ToList()[0].EventId;
+            }
+            else if (eventModel.ExclusionUris.Count != 0)
+            {
+                type = ActionType.Excludes;
+                id = eventModel.ConditionUris.ToList()[0].EventId;
+            }
+            else if (eventModel.ResponseUris.Count != 0)
+            {
+                type = ActionType.SetsPending;
+                id = eventModel.ConditionUris.ToList()[0].EventId;
+            }
+            return new Tuple<string, ActionType>(id,type);
+        }
+        private Tuple<string, ActionType> FindARelationInType(IList<ActionDto> history)
+        {
+            ActionType type = ActionType.ExecuteStart;
+            string id = null;
+            var actions = history.Where(dto => dto.Type == ActionType.CheckedConditon).ToList();
+            if (actions.Count()!=0)
+            {
+                type = ActionType.ChecksConditon;
+                id = actions[0].EventId;
+                return new Tuple<string, ActionType>(id,type);
+            }
+            actions = history.Where(dto => dto.Type == ActionType.IncludedBy).ToList();
+            if (actions.Count() != 0)
+            {
+                type = ActionType.Includes;
+                id = actions[0].EventId;
+                return new Tuple<string, ActionType>(id, type);
+            }
+            actions = history.Where(dto => dto.Type == ActionType.ExcludedBy).ToList();
+            if (actions.Count() != 0)
+            {
+                type = ActionType.Excludes;
+                id = actions[0].EventId;
+                return new Tuple<string, ActionType>(id, type);
+            }
+            actions = history.Where(dto => dto.Type == ActionType.SetPendingBy).ToList();
+            if (actions.Count() != 0)
+            {
+                type = ActionType.SetsPending;
+                id = actions[0].EventId;
+                return new Tuple<string, ActionType>(id, type);
+            }
+            return new Tuple<string, ActionType>(id, type);
+        }
+
 
         public async Task ApplyCheatingType(string workflowId, string eventId, CheatingDto cheatingDto)
         {
