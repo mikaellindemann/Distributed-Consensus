@@ -19,15 +19,19 @@ namespace Event.Controllers
     {
         private readonly IEventHistoryLogic _historyLogic;
         private readonly ILifecycleLogic _lifecycleLogic;
+        private readonly IMaliciousLogic _maliciousLogic;
 
         /// <summary>
         /// Constructor used for dependency-injection
         /// </summary>
         /// <param name="historyLogic">Logic-layer implementing the IEventHistory interface</param>
-        public HistoryController(IEventHistoryLogic historyLogic, ILifecycleLogic lifecycleLogic)
+        /// <param name="lifecycleLogic">Logic-layer implementing the ILifecycleLogic interface</param>
+        /// <param name="maliciousLogic">Logic-layer implementing the IMaliciousLogic interface</param>
+        public HistoryController(IEventHistoryLogic historyLogic, ILifecycleLogic lifecycleLogic, IMaliciousLogic maliciousLogic)
         {
             _historyLogic = historyLogic;
             _lifecycleLogic = lifecycleLogic;
+            _maliciousLogic = maliciousLogic;
         }
 
         /// <summary>
@@ -40,7 +44,12 @@ namespace Event.Controllers
         [HttpGet]
         public async Task<IEnumerable<ActionDto>> GetHistory(string workflowId, string eventId)
         {
-            return await _historyLogic.GetHistoryForEvent(workflowId, eventId);
+            var history = await _historyLogic.GetHistoryForEvent(workflowId, eventId);
+            if (await _maliciousLogic.IsMalicious(workflowId, eventId))
+            {
+                history = await _maliciousLogic.ApplyCheating(workflowId, eventId, history.ToList());
+            }
+            return history;
         }
 
         private static Action.ActionType ConvertType(ActionType type)
@@ -60,9 +69,9 @@ namespace Event.Controllers
                 case ActionType.SetPendingBy:
                     return Action.ActionType.SetPendingBy;
                 case ActionType.CheckedConditon:
-                    return Action.ActionType.CheckedConditon;
+                    return Action.ActionType.CheckedCondition;
                 case ActionType.ChecksConditon:
-                    return Action.ActionType.ChecksConditon;
+                    return Action.ActionType.ChecksCondition;
                 case ActionType.ExecuteStart:
                     return Action.ActionType.ExecuteStart;
                 case ActionType.ExecuteFinished:

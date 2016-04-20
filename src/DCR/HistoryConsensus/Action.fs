@@ -13,8 +13,8 @@ module Action =
         | ExcludedBy
         | SetsPending
         | SetPendingBy
-        | CheckedConditon// of bool
-        | ChecksConditon// of bool
+        | CheckedCondition// of bool
+        | ChecksCondition// of bool
         | ExecuteStart
         | ExecuteFinish
     
