@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Event.Interfaces;
+using Event.Models;
 
 namespace Event.Storage
 {
@@ -27,6 +29,17 @@ namespace Event.Storage
         {
             _context.Dispose();
 
+        }
+
+        public async Task<bool> IsMalicious(string workflowId, string eventId)
+        {
+            return (await _context.Events.FindAsync(workflowId, eventId)).IsEvil;
+        }
+
+        public async Task<IEnumerable<CheatingType>> GetTypesOfCheating(string workflowId, string eventId)
+        {
+            var eventModel = (await _context.Events.FindAsync(workflowId, eventId));
+            return eventModel.TypesOfCheating;
         }
     }
 }
