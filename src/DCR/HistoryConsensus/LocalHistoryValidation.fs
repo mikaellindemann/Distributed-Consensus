@@ -149,17 +149,17 @@ module LocalHistoryValidation =
             // From a given ExecuteStart Action take following Actions in the history until an ExecutionFinish is found or the history is empty.
             let rec takeNodesUntilExecuteFinish action acc = 
                 if (action.Type = ExecuteFinish || action.Edges.IsEmpty) then action::acc
-                else let newAcc = action::acc
-                     let act = (Graph.getNode history action.Edges.MinimumElement)
-                     takeNodesUntilExecuteFinish act newAcc
+                else let appendedAcc = action::acc
+                     let next = (Graph.getNode history action.Edges.MinimumElement)
+                     takeNodesUntilExecuteFinish next appendedAcc
 
             // When an ExecuteStart is encountered, generate a chunk of Actions until the next ExectuteFinish is encountered.
             let generateChunkIfExecuteStart action acc : Map<Action, Action list> = 
                 if action.Type = ExecuteStart 
                 then Map.add action <| takeNodesUntilExecuteFinish action [] <| acc
-                else acc    
+                else acc
 
-            // Generate a list if execution chunks from the given history.
+            // Generate a list of execution chunks from the given history.
             Map.fold (fun acc actionId _ -> generateChunkIfExecuteStart <| Graph.getNode history actionId <| acc) Map.empty history.Nodes
                 |> Map.toList
                 |> List.map snd
@@ -171,9 +171,9 @@ module LocalHistoryValidation =
             | _                                                          -> true
 
         // Check a list of execution chunks for validity.
-        let rec checkChunks (chunks:Action list list) = 
+        let rec checkChunks chunks = 
             // Check Action types in a chunk for validity.
-            let checkChunk (chunk:Action list) = 
+            let checkChunk chunk = 
                 List.forall (fun a -> hasValidType a.Type) chunk
             
             // Check every chunk for validity. If an illegal chunk is discovered, add a Failure to the list of failures.
