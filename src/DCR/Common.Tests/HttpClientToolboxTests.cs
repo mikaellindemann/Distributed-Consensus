@@ -142,10 +142,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -156,10 +156,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -170,10 +170,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -184,10 +184,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -198,10 +198,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -212,10 +212,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("Internal Server Error")});
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.Throws<Exception>(testDelegate);
+            Assert.ThrowsAsync<Exception>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -227,10 +227,10 @@ namespace Common.Tests
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create("", new object());
 
             // Assert
-            Assert.Throws<HttpRequestException>(testDelegate);
+            Assert.ThrowsAsync<HttpRequestException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
         #endregion
@@ -263,10 +263,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create<object, object>("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create<object, object>("", new object());
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -277,10 +277,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create<object, object>("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create<object, object>("", new object());
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -291,10 +291,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create<object, object>("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create<object, object>("", new object());
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -305,10 +305,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create<object, object>("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create<object, object>("", new object());
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -319,10 +319,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("Internal Server Error") });
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create<object, object>("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create<object, object>("", new object());
 
             // Assert
-            Assert.Throws<Exception>(testDelegate);
+            Assert.ThrowsAsync<Exception>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -334,10 +334,10 @@ namespace Common.Tests
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Create<object, object>("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Create<object, object>("", new object());
 
             // Assert
-            Assert.Throws<HttpRequestException>(testDelegate);
+            Assert.ThrowsAsync<HttpRequestException>(testDelegate);
             _clientMock.Verify(c => c.PostAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
         #endregion
@@ -369,10 +369,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Read<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Read<object>("");
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -383,10 +383,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Read<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Read<object>("");
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -397,10 +397,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Read<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Read<object>("");
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -411,10 +411,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Read<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Read<object>("");
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -425,10 +425,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("Internal Server Error") });
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Read<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Read<object>("");
 
             // Assert
-            Assert.Throws<Exception>(testDelegate);
+            Assert.ThrowsAsync<Exception>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -440,10 +440,10 @@ namespace Common.Tests
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Read<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Read<object>("");
 
             // Assert
-            Assert.Throws<HttpRequestException>(testDelegate);
+            Assert.ThrowsAsync<HttpRequestException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
         #endregion
@@ -475,10 +475,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.ReadList<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.ReadList<object>("");
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -489,10 +489,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.ReadList<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.ReadList<object>("");
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -503,10 +503,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.ReadList<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.ReadList<object>("");
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -517,10 +517,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.ReadList<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.ReadList<object>("");
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -531,10 +531,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("Internal Server Error") });
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.ReadList<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.ReadList<object>("");
 
             // Assert
-            Assert.Throws<Exception>(testDelegate);
+            Assert.ThrowsAsync<Exception>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -546,10 +546,10 @@ namespace Common.Tests
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.ReadList<object>(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.ReadList<object>("");
 
             // Assert
-            Assert.Throws<HttpRequestException>(testDelegate);
+            Assert.ThrowsAsync<HttpRequestException>(testDelegate);
             _clientMock.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
         }
         #endregion
@@ -561,10 +561,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -575,10 +575,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -589,10 +589,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -603,10 +603,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -617,10 +617,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -631,10 +631,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("Internal Server Error") });
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.Throws<Exception>(testDelegate);
+            Assert.ThrowsAsync<Exception>(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
 
@@ -646,10 +646,10 @@ namespace Common.Tests
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Update("", new object()));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Update("", new object());
 
             // Assert
-            Assert.Throws<HttpRequestException>(testDelegate);
+            Assert.ThrowsAsync<HttpRequestException>(testDelegate);
             _clientMock.Verify(c => c.PutAsJsonAsync(It.IsAny<string>(), It.IsAny<object>()), Times.Once);
         }
         #endregion
@@ -661,10 +661,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.DeleteAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -675,10 +675,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.DeleteAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -689,10 +689,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.DeleteAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -703,10 +703,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.DeleteAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.Conflict));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -717,10 +717,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.DeleteAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.Throws<NotExecutableException>(testDelegate);
+            Assert.ThrowsAsync<NotExecutableException>(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -731,10 +731,10 @@ namespace Common.Tests
             _clientMock.Setup(c => c.DeleteAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("Internal Server Error") });
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.Throws<Exception>(testDelegate);
+            Assert.ThrowsAsync<Exception>(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
 
@@ -746,10 +746,10 @@ namespace Common.Tests
                 .ThrowsAsync(new HttpRequestException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _toolbox.Delete(""));
+            AsyncTestDelegate testDelegate = async () => await _toolbox.Delete("");
 
             // Assert
-            Assert.Throws<HttpRequestException>(testDelegate);
+            Assert.ThrowsAsync<HttpRequestException>(testDelegate);
             _clientMock.Verify(c => c.DeleteAsync(It.IsAny<string>()), Times.Once);
         }
         #endregion

@@ -9,8 +9,6 @@ using Common.DTO.Server;
 using Common.Exceptions;
 using Server.Exceptions;
 using Server.Interfaces;
-using Server.Logic;
-using Server.Storage;
 
 namespace Server.Controllers
 {
@@ -20,26 +18,14 @@ namespace Server.Controllers
     public class UsersController : ApiController
     {
         private readonly IServerLogic _logic;
-        //private readonly IWorkflowHistoryLogic _historyLogic;
-
-        /// <summary>
-        /// Default constructor used during runtime
-        /// </summary>
-        public UsersController()
-        {
-            _logic = new ServerLogic(new ServerStorage());
-          //  _historyLogic = new WorkflowHistoryLogic();
-        }
 
         /// <summary>
         /// Constructor used for dependency-injection during testing
         /// </summary>
         /// <param name="logic"></param>
-        /// <param name="historyLogic"></param>
-        public UsersController(IServerLogic logic, IWorkflowHistoryLogic historyLogic)
+        public UsersController(IServerLogic logic)
         {
             _logic = logic;
-            //_historyLogic = historyLogic;
         }
 
  

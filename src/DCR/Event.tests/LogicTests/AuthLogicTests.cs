@@ -84,10 +84,10 @@ namespace Event.Tests.LogicTests
             });
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _logic.IsAuthorized("workflowId", "eventId", null));
+            AsyncTestDelegate testDelegate = async () => await _logic.IsAuthorized("workflowId", "eventId", null);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -97,14 +97,14 @@ namespace Event.Tests.LogicTests
             _storageMock.Setup(s => s.GetRoles(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _logic.IsAuthorized("workflowId", "eventId", new HashSet<string>
+            var testDelegate = new AsyncTestDelegate(async () => await _logic.IsAuthorized("workflowId", "eventId", new HashSet<string>
             {
                 "Student",
                 "Teacher"
             }));
 
             // Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
     }
 }

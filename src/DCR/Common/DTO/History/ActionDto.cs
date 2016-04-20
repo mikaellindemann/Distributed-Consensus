@@ -13,14 +13,5 @@
         {
             
         }
-        public ActionDto(ActionModel model)
-        {
-            TimeStamp = model.Id;
-            EventId = model.EventId;
-            WorkflowId = model.WorkflowId;
-            CounterpartId = model.CounterpartId;
-            CounterpartTimeStamp = model.CounterpartTimeStamp;
-            Type = model.Type;
-        }
     }
 }

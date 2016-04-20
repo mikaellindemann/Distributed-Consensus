@@ -9,8 +9,6 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Server.Exceptions;
 using Server.Interfaces;
-using Server.Logic;
-using Server.Storage;
 
 namespace Server.Controllers
 {
@@ -20,27 +18,14 @@ namespace Server.Controllers
     public class WorkflowsController : ApiController
     {
         private readonly IServerLogic _logic;
-        //private readonly IWorkflowHistoryLogic _historyLogic;
-
-        /// <summary>
-        /// Default constructor used during runtime
-        /// </summary>
-        public WorkflowsController()
-        {
-            _logic = new ServerLogic(new ServerStorage());
-            //_historyLogic = new WorkflowHistoryLogic();
-        }
 
         /// <summary>
         /// Constructor used for dependency-injection udring testing
         /// </summary>
         /// <param name="logic">Logic that handles logic for workflows operations</param>
-        /// <param name="historyLogic">Logic that handles logic for history operations, i.e. recording successfull
-        /// or non-successfull operations happening at Server</param>
-        public WorkflowsController(IServerLogic logic, IWorkflowHistoryLogic historyLogic)
+        public WorkflowsController(IServerLogic logic)
         {
             _logic = logic;
-            //_historyLogic = historyLogic;
         }
 
         #region GET requests
@@ -70,7 +55,7 @@ namespace Server.Controllers
         /// <returns>IEnumerable of EventAddressDto</returns>
         [Route("workflows/{workflowId}")]
         [HttpGet]
-        public async Task<IEnumerable<EventAddressDto>> Get(string workflowId)
+        public async Task<IEnumerable<ServerEventDto>> Get(string workflowId)
         {
             try
             {
@@ -209,7 +194,7 @@ namespace Server.Controllers
         /// <returns></returns>
         [Route("Workflows/{workflowId}")]
         [HttpPost]
-        public async Task PostEventToWorkFlow(string workflowId, [FromBody] EventAddressDto eventToAddDto)
+        public async Task PostEventToWorkFlow(string workflowId, [FromBody] ServerEventDto eventToAddDto)
         {
             if (!ModelState.IsValid)
             {

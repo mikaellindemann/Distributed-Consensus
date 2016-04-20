@@ -61,7 +61,7 @@ namespace Client.ViewModels
             set
             {
                 _workflowId = value;
-                NotifyPropertyChanged("WorkflowId");
+                NotifyPropertyChanged();
             }
         }
 
@@ -75,7 +75,7 @@ namespace Client.ViewModels
             set
             {
                 _status = value;
-                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged();
             }
         }
 
@@ -91,7 +91,7 @@ namespace Client.ViewModels
             HistoryViewModelList.Clear();
             NotifyPropertyChanged("");
 
-            IEnumerable<EventAddressDto> eventAddresses;
+            IEnumerable<ServerEventDto> eventAddresses;
             ConcurrentBag<HistoryViewModel> history;
 
             try
@@ -125,8 +125,8 @@ namespace Client.ViewModels
             var tasks = eventAddresses.Select(async dto =>
             {
                 var list =
-                    (await _eventConnection.GetHistory(dto.Uri, WorkflowId, dto.Id)).Select(
-                        historyDto => new HistoryViewModel(historyDto) { Title = dto.Id });
+                    (await _eventConnection.GetHistory(dto.Uri, WorkflowId, dto.EventId)).Select(
+                        historyDto => new HistoryViewModel(historyDto) { Title = dto.EventId });
                 list.ToList().ForEach(history.Add);
             });
 

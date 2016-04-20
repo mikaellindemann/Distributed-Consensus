@@ -61,15 +61,12 @@ namespace Client.Tests.ViewModels
             Assert.IsNotNull(model);
         }
 
-        [Test,
-         ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void WorkflowListViewModel_WithArguments_NullArgumentException()
         {
             // Act
-            var model = new WorkflowListViewModel(null);
-
             // Assert
-            Assert.Fail(); // This should never be called.
+            Assert.Throws<ArgumentNullException>(() => new WorkflowListViewModel(null));
         }
 
         [Test]
@@ -138,11 +135,11 @@ namespace Client.Tests.ViewModels
             _workflowViewModels.Add(new WorkflowViewModel(_model, new WorkflowDto(), new List<string> { "Admin" }, _eventConnectionMock.Object, _serverConnectionMock.Object, _eventViewModels));
 
             _serverConnectionMock.Setup(s => s.GetEventsFromWorkflow(It.IsAny<string>()))
-                .ReturnsAsync(new List<EventAddressDto> { new EventAddressDto { Roles = new List<string> { "Admin" } } }).Verifiable();
+                .ReturnsAsync(new List<ServerEventDto> { new ServerEventDto { Roles = new List<string> { "Admin" } } }).Verifiable();
 
             _model.SelectedWorkflowViewModel = _workflowViewModels.First();
 
-            _eventViewModels.Add(new EventViewModel(_eventConnectionMock.Object, new EventAddressDto(), _model.SelectedWorkflowViewModel));
+            _eventViewModels.Add(new EventViewModel(_eventConnectionMock.Object, new ServerEventDto(), _model.SelectedWorkflowViewModel));
 
             // Act
             _model.GetEventsOnWorkflow();

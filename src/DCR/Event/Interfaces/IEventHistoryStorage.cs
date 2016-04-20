@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Exceptions;
-using Common.DTO.History;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Interfaces
 {
@@ -27,5 +27,10 @@ namespace Event.Interfaces
         /// <returns></returns>
         /// <exception cref="NotFoundException">Thrown if the specified Event does not exist.</exception>
         Task<IQueryable<ActionModel>> GetHistoryForEvent(string workflowId, string eventId);
+
+        Task<ActionModel> ReserveNext(ActionModel model);
+        Task UpdateHistory(ActionModel actionModel);
+
+        Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId);
     }
 }

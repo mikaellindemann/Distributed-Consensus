@@ -48,7 +48,7 @@ namespace Event.Communicators
             HttpClient = httpClient;
         }
 
-        public async Task PostEventToServer(EventAddressDto addressDto)
+        public async Task PostEventToServer(ServerEventDto addressDto)
         {
             var path = $"workflows/{_workflowId}";
             try

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Common.DTO.Event;
-using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Common.DTO.Shared;
 using Event.Models;
@@ -24,7 +23,7 @@ namespace Event.Interfaces
         /// <exception cref="FailedToGetExecutedFromAnotherEventException">Thrown if method fails to retrieve Executed value from the target Event</exception>
         Task<bool> IsExecuted(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
 
-        Task<ConditionDto> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
+        Task<ConditionDto> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId, int timestamp);
 
         /// <summary>
         /// Will determine if the target event is included (true) or not (false). 

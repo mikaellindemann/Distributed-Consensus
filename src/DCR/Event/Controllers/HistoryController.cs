@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Common.DTO.History;
 using Event.Interfaces;
-using Event.Logic;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
-using Newtonsoft.Json;
 using Action = HistoryConsensus.Action;
 
 namespace Event.Controllers
@@ -21,15 +19,6 @@ namespace Event.Controllers
     {
         private readonly IEventHistoryLogic _historyLogic;
         private readonly ILifecycleLogic _lifecycleLogic;
-
-        /// <summary>
-        /// Default constructor; should be used during runtime
-        /// </summary>
-        public HistoryController()
-        {
-            _historyLogic = new EventHistoryLogic();
-            _lifecycleLogic = new LifecycleLogic();
-        }
 
         /// <summary>
         /// Constructor used for dependency-injection
@@ -51,21 +40,7 @@ namespace Event.Controllers
         [HttpGet]
         public async Task<IEnumerable<ActionDto>> GetHistory(string workflowId, string eventId)
         {
-            //try 
-            //{
-            var toReturn = await _historyLogic.GetHistoryForEvent(workflowId, eventId);
-            //await _historyLogic.SaveSuccesfullCall("GET", "GetHistory", eventId, workflowId);
-
-
-            return toReturn;
-            //}
-
-            //catch (Exception e) 
-            //{
-            //    await _historyLogic.SaveException(e, "GET", "GetHistory", eventId, workflowId);
-
-            //    throw;
-            //}
+            return await _historyLogic.GetHistoryForEvent(workflowId, eventId);
         }
 
         private static Action.ActionType ConvertType(ActionType type)
@@ -88,14 +63,6 @@ namespace Event.Controllers
                     return Action.ActionType.CheckedConditon;
                 case ActionType.ChecksConditon:
                     return Action.ActionType.ChecksConditon;
-                case ActionType.Locks:
-                    return Action.ActionType.Locks;
-                case ActionType.LockedBy:
-                    return Action.ActionType.LockedBy;
-                case ActionType.Unlocks:
-                    return Action.ActionType.Unlocks;
-                case ActionType.UnlockedBy:
-                    return Action.ActionType.UnlockedBy;
                 case ActionType.ExecuteStart:
                     return Action.ActionType.ExecuteStart;
                 case ActionType.ExecuteFinished:
@@ -126,12 +93,26 @@ namespace Event.Controllers
                 return history;
             }
 
-           return FSharpOption<Graph.Graph>.Some(Graph.simplify(history.Value, Action.ActionType.ExecuteFinish));
+           return FSharpOption<Graph.Graph>.Some(History.simplify(history.Value));
         }
 
-        [HttpPost]
-        [Route("history/{workflowId}/{eventId}/produce")]
-        public async Task<FSharpOption<Graph.Graph>> Produce(string workflowId, string eventId, IEnumerable<string> traceList)
+        [HttpGet]
+        [Route("history/{workflowId}/{eventId}/collapse")]
+        public async Task<FSharpOption<Graph.Graph>> Collapse(string workflowId, string eventId)
+        {
+            var history = await Produce(workflowId, eventId, new List<string>());
+
+            if (FSharpOption<Graph.Graph>.get_IsNone(history))
+            {
+                return history;
+            }
+
+            return FSharpOption<Graph.Graph>.Some(History.collapse(history.Value));
+        }
+
+        [HttpGet]
+        [Route("history/{workflowId}/{eventId}/local")]
+        public async Task<Graph.Graph> GetLocal(string workflowId, string eventId)
         {
             var localHistory = (await GetHistory(workflowId, eventId)).Select(Convert).ToArray();
 
@@ -144,6 +125,15 @@ namespace Event.Controllers
                     localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
             }
 
+            return localHistoryGraph;
+        }
+
+        [HttpPost]
+        [Route("history/{workflowId}/{eventId}/produce")]
+        public async Task<FSharpOption<Graph.Graph>> Produce(string workflowId, string eventId, IEnumerable<string> traceList)
+        {
+            var localHistoryGraph = await GetLocal(workflowId, eventId);
+
             // HACK: We should have another way of fetching relations.
             var eventDto = await _lifecycleLogic.GetEventDto(workflowId, eventId);
             var relations =
@@ -151,7 +141,7 @@ namespace Event.Controllers
                 .Union(eventDto.Responses)
                 .Union(eventDto.Inclusions)
                 .Union(eventDto.Exclusions)
-                .Where(relation => !traceList.Contains(relation.Id))
+                .Where(relation => !traceList.Contains(relation.Id) && relation.Id != eventId)
                 .Select(relation => $"{relation.Uri.ToString()}history/{relation.WorkflowId}/{relation.Id}");
             
             return History.produce(workflowId, eventId, ToFSharpList(traceList), ToFSharpList(relations), localHistoryGraph);

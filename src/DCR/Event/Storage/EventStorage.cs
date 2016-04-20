@@ -2,15 +2,23 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Common.DTO.History;
 using Common.Exceptions;
 using Event.Exceptions;
 using Event.Interfaces;
 using Event.Models;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Storage
 {
+    public static class HistoryExtension
+    {
+        public static async Task<int> MaxOrDefaultAsync<T>(this IQueryable<T> source, Expression<Func<T, int>> selector)
+        {
+            return await source.Select(selector).MaxAsync(i => (int?) i) ?? default(int);
+        }
+    }
     /// <summary>
     /// EventStorage is the application-layer that rests on top of the actual storage-facility (a database)
     /// EventStorage implements IEventStorage and IEventHistoryStorage interfaces.
@@ -19,13 +27,6 @@ namespace Event.Storage
     {
         private readonly IEventContext _context;
 
-        /// <summary>
-        /// Default constructor to be used in the application. Ties this instance to a hardcoded database-context. 
-        /// </summary>
-        public EventStorage()
-        {
-            _context = new EventContext();
-        }
         /// <summary>
         /// Constructor used for dependency injection (used for testing purposes)
         /// </summary>
@@ -245,6 +246,22 @@ namespace Event.Storage
             await EventIsInALegalState(workflowId, eventId);
 
             return (await _context.Events.SingleAsync(model => model.WorkflowId == workflowId && model.Id == eventId)).Pending;
+        }
+
+        public async Task<bool> GetIsEvil(string workflowId, string eventId)
+        {
+            if (workflowId == null || eventId == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (!await Exists(workflowId, eventId))
+            {
+                throw new NotFoundException();
+            }
+
+            await EventIsInALegalState(workflowId, eventId);
+
+            return (await _context.Events.SingleAsync(model => model.WorkflowId == workflowId && model.Id == eventId)).IsEvil;
         }
 
         public async Task SetPending(string workflowId, string eventId, bool pendingValue)
@@ -511,6 +528,56 @@ namespace Event.Storage
             }
 
             return _context.History.Where(h => h.EventId == eventId && h.WorkflowId == workflowId);
+        }
+
+        public async Task<ActionModel> ReserveNext(ActionModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            if (!await Exists(model.WorkflowId, model.EventId))
+            {
+                throw new NotFoundException();
+            }
+
+            model.Timestamp = await (await GetHistoryForEvent(model.WorkflowId, model.EventId)).MaxOrDefaultAsync(action => action.Timestamp) + 1;
+
+            _context.History.Add(model);
+            await _context.SaveChangesAsync();
+            
+            return model;
+        }
+
+        public async Task UpdateHistory(ActionModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            if (!await Exists(model.WorkflowId, model.EventId))
+            {
+                throw new NotFoundException();
+            }
+
+            var dbModel =
+                await
+                    (await GetHistoryForEvent(model.WorkflowId, model.EventId)).SingleOrDefaultAsync(
+                        m => m.Timestamp == model.Timestamp && m.CounterpartId == model.CounterpartId && m.Type == model.Type);
+            dbModel.CounterpartTimeStamp = model.CounterpartTimeStamp;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
+        {
+            return _context.History
+                .Where(
+                    action =>
+                        action.WorkflowId == workflowId
+                        && action.EventId == eventId
+                        && action.CounterpartId == counterpartId)
+                .MaxOrDefaultAsync(action => action.CounterpartTimeStamp);
         }
     }
 }

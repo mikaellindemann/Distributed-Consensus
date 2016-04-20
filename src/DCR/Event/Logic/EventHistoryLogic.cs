@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Common.DTO.History;
 using Event.Interfaces;
 using Event.Storage;
+using ActionModel = Event.Models.ActionModel;
 
 namespace Event.Logic
 {
@@ -18,38 +19,23 @@ namespace Event.Logic
         /// <summary>
         /// Default constructor
         /// </summary>
-        public EventHistoryLogic()
+        public EventHistoryLogic(IEventHistoryStorage storage)
         {
-            _storage = new EventStorage();
-        }
-
-        public Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId = "")
-        {
-            // Todo: Remove this method.
-            return Task.Delay(0);/*
-            //Don't save a null reference.
-            if (ex == null) return;
-
-            var toSave = new ActionModel
-            {
-                WorkflowId = workflowId,
-                EventId = eventId,
-                CounterpartId = null
-            };
-
-            await _storage.SaveHistory(toSave);*/
+            _storage = storage;
         }
 
         public async Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId)
         {
             var models = (await _storage.GetHistoryForEvent(workflowId, eventId)).ToList();
-            return models.Select(model => new ActionDto(model));
+            return models.Select(model => model.ToActionDto());
         }
 
-        public async Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string senderId = "", int senderTimeStamp = -1)
+        public async Task<int> SaveSuccesfullCall(ActionType type, string eventId, string workflowId, string senderId, int senderTimeStamp)
         {
+            var timestamp = senderTimeStamp != -1 ? await GetNextTimestamp(workflowId, eventId, senderTimeStamp) : await GetNextTimestamp(workflowId, eventId);
             var toSave = new ActionModel
             {
+                Timestamp = timestamp,
                 WorkflowId = workflowId,
                 EventId = eventId,
                 CounterpartId = senderId,
@@ -57,8 +43,63 @@ namespace Event.Logic
                 Type = type
             };
 
-            await _storage.SaveHistory(toSave);
-            return toSave.Id;
+            try
+            {
+                await _storage.SaveHistory(toSave);
+                return toSave.Timestamp;
+            }
+
+            catch (Exception)
+            {
+                throw new FailedToSaveHistoryException($"Failed to save history for action type: {type}");
+            }
+        }
+
+        public async Task<int> GetNextTimestamp(string workflowId, string eventId, int counterPartTimestamp)
+        {
+            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync(model => model.Timestamp);
+            return Math.Max(currentMax, counterPartTimestamp) + 1;
+        }
+        public async Task<int> GetNextTimestamp(string workflowId, string eventId)
+        {
+            var currentMax = await (await _storage.GetHistoryForEvent(workflowId, eventId)).MaxOrDefaultAsync(model => model.Timestamp);
+            return currentMax + 1;
+        }
+
+        public async Task<ActionDto> ReserveNext(ActionType type, string workflowId, string eventId, string counterpartId)
+        {
+            var model = await _storage.ReserveNext(new ActionModel
+            {
+                Type = type,
+                WorkflowId = workflowId,
+                EventId = eventId,
+                CounterpartId = counterpartId
+            });
+
+            return model.ToActionDto();
+        }
+
+        public Task UpdateAction(ActionDto dto)
+        {
+            return _storage.UpdateHistory(new ActionModel
+            {
+                Timestamp = dto.TimeStamp,
+                EventId = dto.EventId,
+                WorkflowId = dto.WorkflowId,
+                CounterpartTimeStamp = dto.CounterpartTimeStamp,
+                CounterpartId = dto.CounterpartId,
+                Type = dto.Type
+            });
+        }
+
+        public async Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp)
+        {
+            var highestTimestampForCounterpart = await _storage.GetHighestCounterpartTimeStamp(workflowId, eventId, counterpartId);
+            if (eventId == counterpartId)
+            {
+                return highestTimestampForCounterpart <= timestamp;
+            }
+            return highestTimestampForCounterpart < timestamp;
         }
 
         public void Dispose()

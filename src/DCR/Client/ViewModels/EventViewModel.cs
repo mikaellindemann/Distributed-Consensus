@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -13,26 +12,25 @@ namespace Client.ViewModels
 {
     public class EventViewModel : ViewModelBase
     {
-        private readonly EventAddressDto _eventAddressDto;
+        internal readonly ServerEventDto EventAddressDto;
         private EventStateDto _eventStateDto;
         private readonly IWorkflowViewModel _parent;
-        private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush;
+        private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush, IsEvilBrush;
         private readonly IEventConnection _eventConnection;
 
         static EventViewModel()
         {
             // Create the brushes, and Freeze them so the UI-thread can access them.
             // Pending
-            var path = Path.Combine(Environment.CurrentDirectory, "Assets", "Pending.png");
-            var uri = new Uri(path);
-            PendingBrush = new ImageBrush(new BitmapImage(uri));
+            PendingBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/Pending.png", UriKind.Absolute)));
             PendingBrush.Freeze();
 
             // Executed
-            path = Path.Combine(Environment.CurrentDirectory, "Assets", "Executed.png");
-            uri = new Uri(path);
-            ExecutedBrush = new ImageBrush(new BitmapImage(uri));
+            ExecutedBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/Executed.png", UriKind.Absolute)));
             ExecutedBrush.Freeze();
+
+            IsEvilBrush = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Client;component/Assets/IsEvil.png", UriKind.Absolute)));
+            IsEvilBrush.Freeze();
 
             // Included
             IncludedBrush = new SolidColorBrush(Colors.DeepSkyBlue);
@@ -43,24 +41,24 @@ namespace Client.ViewModels
             WhiteBrush.Freeze();
         }
 
-        public EventViewModel(EventAddressDto eventAddressDto, IWorkflowViewModel workflow)
+        public EventViewModel(ServerEventDto eventAddressDto, IWorkflowViewModel workflow)
         {
             if (eventAddressDto == null || workflow == null)
             {
                 throw new ArgumentNullException();
             }
-            _eventAddressDto = eventAddressDto;
+            EventAddressDto = eventAddressDto;
             _parent = workflow;
             _eventStateDto = new EventStateDto();
             _eventConnection = new EventConnection();
             GetStateInternal();
         }
 
-        public EventViewModel(IEventConnection eventConnection, EventAddressDto eventAddressDto, IWorkflowViewModel parent)
+        public EventViewModel(IEventConnection eventConnection, ServerEventDto eventAddressDto, IWorkflowViewModel parent)
         {
             _parent = parent;
             _eventStateDto = new EventStateDto();
-            _eventAddressDto = eventAddressDto;
+            EventAddressDto = eventAddressDto;
             _eventConnection = eventConnection;
         }
 
@@ -68,11 +66,11 @@ namespace Client.ViewModels
 
         public string Id
         {
-            get { return _eventAddressDto.Id; }
+            get { return EventAddressDto.EventId; }
             set
             {
-                _eventAddressDto.Id = value;
-                NotifyPropertyChanged("Id");
+                EventAddressDto.EventId = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -85,17 +83,17 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Name = value;
-                NotifyPropertyChanged("Name");
+                NotifyPropertyChanged();
             }
         }
 
         public Uri Uri
         {
-            get { return _eventAddressDto.Uri; }
+            get { return EventAddressDto.Uri; }
             set
             {
-                _eventAddressDto.Uri = value;
-                NotifyPropertyChanged("Uri");
+                EventAddressDto.Uri = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -105,8 +103,8 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Pending = value;
-                NotifyPropertyChanged("Pending");
-                NotifyPropertyChanged("PendingColor");
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(PendingColor));
             }
         }
 
@@ -118,8 +116,8 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Executed = value;
-                NotifyPropertyChanged("Executed");
-                NotifyPropertyChanged("ExecutedColor");
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ExecutedColor));
             }
         }
 
@@ -131,8 +129,8 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Included = value;
-                NotifyPropertyChanged("Included");
-                NotifyPropertyChanged("IncludedColor");
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IncludedColor));
             }
         }
 
@@ -144,9 +142,23 @@ namespace Client.ViewModels
             set
             {
                 _eventStateDto.Executable = value;
-                NotifyPropertyChanged("Executable");
+                NotifyPropertyChanged();
             }
         }
+
+
+        public bool IsEvil
+        {
+            get { return _eventStateDto.IsEvil; }
+            set
+            {
+                _eventStateDto.IsEvil = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IsEvilColor));
+            }
+        }
+
+        public Brush IsEvilColor => IsEvil ? IsEvilBrush : WhiteBrush;
 
         public string Status
         {
@@ -199,7 +211,7 @@ namespace Client.ViewModels
             await _parent.DisableExecuteButtons();
             try
             {
-                await _eventConnection.Execute(_eventAddressDto.Uri, _parent.WorkflowId, _eventAddressDto.Id, _parent.Roles);
+                await _eventConnection.Execute(EventAddressDto.Uri, _parent.WorkflowId, EventAddressDto.EventId, _parent.Roles);
                 _parent.RefreshEvents();
             }
             catch (NotFoundException)

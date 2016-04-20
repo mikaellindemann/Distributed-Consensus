@@ -22,20 +22,6 @@ namespace Client.ViewModels
 
         public string WorkflowId => _workflowDto.Id;
 
-        public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles)
-        {
-            if (parent == null || workflowDto == null || roles == null)
-            {
-                throw new ArgumentNullException();
-            }
-            _parent = parent;
-            EventList = new ObservableCollection<EventViewModel>();
-            _workflowDto = workflowDto;
-            Roles = roles;
-            _eventConnection = new EventConnection();
-            _serverConnection = new ServerConnection(new Uri(Settings.LoadSettings().ServerAddress));
-        }
-
         public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles,
             IEventConnection eventConnection, IServerConnection serverConnection, ObservableCollection<EventViewModel> eventList)
         {
@@ -55,7 +41,7 @@ namespace Client.ViewModels
             set
             {
                 _workflowDto.Name = value;
-                NotifyPropertyChanged("Name");
+                NotifyPropertyChanged();
             }
         }
 
@@ -69,7 +55,7 @@ namespace Client.ViewModels
             set
             {
                 _selectedEventViewModel = value;
-                NotifyPropertyChanged("SelectedEventViewModel");
+                NotifyPropertyChanged();
             }
         }
 
@@ -120,8 +106,22 @@ namespace Client.ViewModels
         {
             if (EventList != null && EventList.Count != 0)
             {
-                var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
-                historyView.Show();
+                var history = new HistorySelectView(new HistorySelectViewModel(SelectedEventViewModel, _serverConnection, _eventConnection));
+                history.ShowDialog();
+                //var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
+                //historyView.Show();
+            }
+        }
+
+        /// <summary>
+        /// Creates a new window with the log of the workflow
+        /// </summary>
+        public void OpenMaliciousWindow()
+        {
+            if (EventList != null && EventList.Count != 0)
+            {
+                var maliciousWindow = new MaliciousView(new MaliciousViewModel(SelectedEventViewModel, _serverConnection, _eventConnection) );
+                maliciousWindow.ShowDialog();
             }
         }
 
@@ -140,7 +140,7 @@ namespace Client.ViewModels
             if (_resetEventRuns) return;
             _resetEventRuns = true;
 
-            IEnumerable<EventAddressDto> adminEventList;
+            IEnumerable<ServerEventDto> adminEventList;
             try
             {
                 adminEventList = await _serverConnection.GetEventsFromWorkflow(WorkflowId);
@@ -169,7 +169,7 @@ namespace Client.ViewModels
             {
                 foreach (var eventViewModel in adminEventList)
                 {
-                    await _eventConnection.ResetEvent(eventViewModel.Uri, WorkflowId, eventViewModel.Id);
+                    await _eventConnection.ResetEvent(eventViewModel.Uri, WorkflowId, eventViewModel.EventId);
                 }
                 NotifyPropertyChanged("");
                 GetEvents();

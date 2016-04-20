@@ -1,0 +1,57 @@
+% !TeX root = ../DistributedConsensus.tex
+% !TeX spellcheck = en_GB
+\chapter{Related Work}\label{chap:related-work}
+	\section{Dynamic Condition Response Graphs}
+	DCR graphs function as a good domain for developing an algorithm for finding an order of execution in distributed systems. Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
+	Furthermore DCR graphs specify several types of directed edges in the graph, which provide useful information for determining order of execution.
+	
+	\newpar DCR graphs are in \cite{6975351} defined as: 
+		\begin{quotation}	
+		A DCR Graph is a tuple $(E, l R, M)$ where
+		\begin{itemize}
+			\item $E$ is a finite set of events (nodes of the graph)
+			\item $l$ is a labelling function, assigning a label to each event
+			\item $R$ is a finite set of relations between events (edges of the graph). These are partitioned into five kinds; conditions (\condition), responses (\response), milestones ($\rightarrow\!\!\!\diamond$), inclusions(\inclusion) and exclusion (\exclusion).
+			\item $M$ is the marking of the graph. A marking represent the state of the process and is a triple ($Ex,Re,In$) of sets of events, respectively the executed ($Ex$), the pending ($Re$), and the included ($In$) events.
+		\end{itemize}
+		A DCR Graph with data is a tuple $(E,l,R,Md,g,V)$ where $V$ is a set of data variables, $Md = (M,ev), (E,l,R,M)$ is a DCR Graph, $ev$ is an evaluation function mapping data variables to values, and $g$ is a (partial) relation guard mapping from (some of) the relations to boolean expressions over variables.
+		
+		Events are atomic and can represent the start or the end of an activity, or an atomic event. 
+	\end{quotation}
+	
+	\newpar For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
+	
+	A DCR graph can model a \textit{workflow}, which represents a work process. The DCR graph can then be used to represent the current state of the process, to see what parts of the process have been completed and what parts of the process remain to be completed or \textit{executed}. 
+	
+	The partitioning of the five types of relations in DCR graph makes modelling interconnected events possible, e.g. having an event in a process that makes another event non-executable. This is made possible by the \textit{exclusion} (\exclusion) relation, that excludes the other event and therefore makes in non-executable. 
+	
+	Modeling an event that is dependent on the completion of another event is made possible by the \textit{condition} (\condition) relation, which makes it impossible to execute an event, unless the event that has a condition to it has been executed.
+	
+	Modeling an event that can be excluded and then then re-included is made possible by the \textit{inclusion} (\inclusion) relation. 
+	
+	Modeling an event that has to be executed in order for the event to be in an accepting state \todo{Find bedre phrasing for 'accepting'.} is made possible by the \textit{response} (\response) relation. If an event has a \textit{response} edge going to it in the DCR graph, the event is in a \textit{pending} state. The pending state signifies that the event should be executed in order for the process to be in an accepting state.
+	
+	Users of a given DCR graph will execute events in order to change the state of the process the DCR graph is modelling. Events will have been executed in a certain order, which have resulted in the current state of the workflow. Several users can execute events concurrently in different locations. The events change state accordingly by communicating with reachable events. 
+	
+	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation. 
+	\section{Distributed Systems}
+	\todo[inline]{Seriel Ækvivalens}
+		\subsection{Consensus}
+		\subsection{Ordering of events}\label{subsec:orderingofevents}
+		In \cite{Lamport:1978:TCO:359545.359563} Leslie Lamport examines and describes the ordering of events (not to be confused with DCR events) in distributed systems based on their occurrence in time. Applying these concepts is very helpful when determining the order of execution. 
+		
+
+		\newpar \todo{rewrite to strict total order because happens before is irreflexive}Recall that in set theory a total order is an order that is \textit{antisymmetric}, that is if $a \leq b$ and $b \leq a$ then $a = b$, as well as \textit{transitive}, that is if $a \leq b$ and $b \leq c$ then $a \leq c$, in addition to being \textit{total}, that is $a \leq b$ or $b \leq a$. A \textit{strict partial order} is similar to a \textit{strict total order} in that a strict partial order also has the \textit{transitive} and \textit{antisymmetry} properties, but instead of \textit{totality} the strict partial order has the \textit{irreflexivity} property, that is $not$ $a < a$. 
+		
+		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that makes it possible to determine the order of events in a distributed system. The clocks are \textit{logical} in the sense that they do not represent \textit{physical} time, since syncronising time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each message sent or received on a given event. 
+		
+		\newpar Lamport argues that if a given system is not distributed, it is possible to create a history of events where the ordering is total, due to the fact that it is possible for one process to use a logical clock to find out which event happened before another. In a distributed system however, this global ordering is not possible, since events have independent locical clocks that can have the same timestamp, and it is therefore not possible to determine what happened before what, \textbf{unless} the events have exchanged messages, in which case it is possible to determine what happens before what.
+		
+		\newpar Lamport describes these relations between events with the symbol $\rightarrow$ such that if $event$ $a$ happened before $event$ $b$ then $a \rightarrow b$. These relations can be created based on three cases, the first case is: if $event$ $a$ and $b$ happened on the same process and $a$ happened before $b$ measured with the local logical clock then $a \rightarrow b$. The second case: if process $i$ sends a message to process $j$ and $event$ $a$ is the event which initiates the sending and $event$ $b$ is the recieving of the message then $a \rightarrow b$. The third case is based on the transitive property such that if $a \rightarrow b$ and $b \rightarrow c$ then $a \rightarrow c$. If no relation exists between any event $a$ and $b$, the events are \textit{concurrent}, and logically \todo{Måske ikke rigtigt ord.} occur at the same time, even though this might not be the case physically. 
+		
+		\todo[inline]{Rund måske af med seriel ækvivalens}
+		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
+		
+	% Dette afsnit skal højst sandsynligt flyttes
+	\section{Distributed DCR implementation}
+		\todo[inline]{Vi har implementeret vores løsning med locking. Søren siger vi skal kigge på SFEN '12 eller '13.}

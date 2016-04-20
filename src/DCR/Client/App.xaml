@@ -4,6 +4,7 @@
              xmlns:client="clr-namespace:Client"
              StartupUri="Views/LoginView.xaml">
     <Application.Resources>
+        <ResourceDictionary>
         <Style x:Key="FillTextBoxStyle" TargetType="TextBox">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -104,5 +105,9 @@
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="Height" Value="45"/>
         </Style>
+        <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StringResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

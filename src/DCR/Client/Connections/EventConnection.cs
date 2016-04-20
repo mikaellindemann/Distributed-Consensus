@@ -7,6 +7,7 @@ using Common.DTO.Event;
 using Common.DTO.History;
 using Common.Exceptions;
 using Common.Tools;
+using HistoryConsensus;
 
 namespace Client.Connections
 {
@@ -19,7 +20,8 @@ namespace Client.Connections
         /// </summary>
         public EventConnection()
         {
-            _httpClient = new HttpClientToolbox();
+            var client = new HttpClient {Timeout = TimeSpan.FromHours(1)};
+            _httpClient = new HttpClientToolbox(new HttpClientWrapper(client));
         }
 
 
@@ -74,6 +76,18 @@ namespace Client.Connections
             
         }
 
+        public async Task<string> GetLocalHistory(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/local");
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -111,6 +125,46 @@ namespace Client.Connections
                 await
                     _httpClient.Update($"{uri}events/{workflowId}/{eventId}/executed/",
                         new RoleDto {Roles = roles});
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public async Task<string> Produce(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await
+                    _httpClient.Create<object, string>($"{uri}history/{workflowId}/{eventId}/produce/",
+                        new object[0]);
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public async Task<string> Collapse(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await
+                    _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/collapse/");
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public async Task<string> Create(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return await
+                    _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/create/");
             }
             catch (HttpRequestException e)
             {

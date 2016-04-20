@@ -13,15 +13,5 @@ namespace Common.Tests.History
 
             Assert.DoesNotThrow(testDelegate);
         }
-
-        [Test]
-        public void HistoryDto_Takes_HistoryModel_As_Argument()
-        {
-            var historymodel = new ActionModel();
-
-            var testDelegate = new TestDelegate(() => new ActionDto(historymodel));
-
-            Assert.DoesNotThrow(testDelegate);
-        }
     }
 }

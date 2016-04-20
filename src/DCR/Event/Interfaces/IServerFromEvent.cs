@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Event.Exceptions;
 using Common.DTO.Shared;
 using Event.Exceptions.ServerInteraction;
 
@@ -24,6 +23,6 @@ namespace Event.Interfaces
         /// <param name="dto">Contains the information about the Event that is to be posted to Server</param>
         /// <returns></returns>
         /// <exception cref="FailedToPostEventAtServerException">Thrown if posting of Event at Server fails.</exception>
-        Task PostEventToServer(EventAddressDto dto);
+        Task PostEventToServer(ServerEventDto dto);
     }
 }

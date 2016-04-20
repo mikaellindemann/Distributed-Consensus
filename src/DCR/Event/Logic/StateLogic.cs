@@ -4,11 +4,9 @@ using Common.DTO.Event;
 using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
-using Event.Communicators;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;
-using Event.Storage;
 
 namespace Event.Logic
 {
@@ -24,25 +22,13 @@ namespace Event.Logic
         private readonly IEventHistoryLogic _historyLogic;
 
         /// <summary>
-        /// Runtime Constructor.
-        /// Uses default implementations of IEventStorage, ILockingLogic, IAuthLogic and IEventFromEvent.
-        /// </summary>
-        public StateLogic()
-        {
-            _storage = new EventStorage();
-            _eventCommunicator = new EventCommunicator();
-            _lockingLogic = new LockingLogic(_storage, _eventCommunicator);
-            _authLogic = new AuthLogic(_storage);
-            _historyLogic = new EventHistoryLogic(); // HACK, retrieve this through constructor injection.
-        }
-
-        /// <summary>
         /// Constructor used for dependency injection.
         /// </summary>
         /// <param name="storage">An implementation of IEventStorage</param>
         /// <param name="lockingLogic">An implementation of ILockingLogic</param>
         /// <param name="authLogic">An implementation of IAuthLogic</param>
         /// <param name="eventCommunicator">An implementation of IEventFromEvent</param>
+        /// <param name="eventHistory"></param>
         public StateLogic(IEventStorage storage, ILockingLogic lockingLogic, IAuthLogic authLogic, IEventFromEvent eventCommunicator, IEventHistoryLogic eventHistory)
         {
             if (storage == null || lockingLogic == null || authLogic == null || eventCommunicator == null || eventHistory == null)
@@ -148,6 +134,7 @@ namespace Event.Logic
             var executed = await _storage.GetExecuted(workflowId, eventId);
             var included = await _storage.GetIncluded(workflowId, eventId);
             var pending = await _storage.GetPending(workflowId, eventId);
+            var isEvil = await _storage.GetIsEvil(workflowId, eventId);
 
             var eventStateDto = new EventStateDto
             {
@@ -156,6 +143,7 @@ namespace Event.Logic
                 Executed = executed,
                 Included = included,
                 Pending = pending,
+                IsEvil = isEvil,
                 Executable = await IsExecutable(workflowId, eventId, false)
             };
 
@@ -167,6 +155,7 @@ namespace Event.Logic
         /// </summary>
         /// <param name="workflowId">EventId of the workflow, the Event belongs to</param>
         /// <param name="eventId">EventId of the Event</param>
+        /// <param name="log"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if any of the arguments are null</exception>
         private async Task<bool> IsExecutable(string workflowId, string eventId, bool log)
@@ -188,14 +177,17 @@ namespace Event.Logic
             {
                 if (log)
                 {
+                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksConditon, workflowId, eventId,
+                        condition.EventId);
+
                     var cond =
                         await
                             _eventCommunicator.CheckCondition(condition.Uri, condition.WorkflowId, condition.EventId,
-                                eventId);
+                                eventId, actionDto.TimeStamp);
 
-                    await
-                        _historyLogic.SaveSuccesfullCall(ActionType.ChecksConditon, eventId, workflowId,
-                            condition.EventId, cond.TimeStamp);
+                    actionDto.CounterpartTimeStamp = cond.TimeStamp;
+
+                    await _historyLogic.UpdateAction(actionDto);
 
                     // If the condition-event is not executed and currently included.
                     if (!cond.Condition) return false;
@@ -292,11 +284,6 @@ namespace Event.Logic
             {
                 throw new LockedException();
             }
-            // Check whether Event can be executed at the moment
-            if (!await IsExecutable(workflowId, eventId, true))
-            {
-                throw new NotExecutableException();
-            }
 
             // Lock all dependent Events (including one-self)
             if (!await _lockingLogic.LockAllForExecute(workflowId, eventId))
@@ -305,33 +292,50 @@ namespace Event.Logic
             }
 
             var allOk = true;
-            FailedToUpdateStateAtOtherEventException exception = null;
+            Exception exception = null;
             try
             {
+                //Save beginning execution to history after locking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteStart, eventId, workflowId, "", -1);
+
+                // Check whether Event can be executed at the moment
+                if (!await IsExecutable(workflowId, eventId, true))
+                {
+                    throw new NotExecutableException();
+                }
+
+                //Execute.
                 var addressDto = new EventAddressDto
                 {
                     WorkflowId = workflowId,
                     Id = eventId,
-                    Uri = await _storage.GetUri(workflowId, eventId)
+                    Uri = await _storage.GetUri(workflowId, eventId),
+                    Timestamp = -1
                 };
                 foreach (var pending in await _storage.GetResponses(workflowId, eventId))
                 {
-                    var timestamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.SetsPending, eventId, workflowId, pending.EventId, timestamp);
+                    var action = await _historyLogic.ReserveNext(ActionType.SetsPending, workflowId, eventId, pending.EventId);
+                    addressDto.Timestamp = action.TimeStamp;
+                    action.CounterpartTimeStamp = await _eventCommunicator.SendPending(pending.Uri, addressDto, pending.WorkflowId, pending.EventId);
+                    await _historyLogic.UpdateAction(action);
                 }
                 foreach (var inclusion in await _storage.GetInclusions(workflowId, eventId))
                 {
-                    var timestamp = await
+                    var action = await _historyLogic.ReserveNext(ActionType.Includes, workflowId, eventId, inclusion.EventId);
+                    addressDto.Timestamp = action.TimeStamp;
+                    action.CounterpartTimeStamp = await
                         _eventCommunicator.SendIncluded(inclusion.Uri, addressDto, inclusion.WorkflowId,
                             inclusion.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Includes, eventId, workflowId, inclusion.EventId, timestamp);
+                    await _historyLogic.UpdateAction(action);
                 }
                 foreach (var exclusion in await _storage.GetExclusions(workflowId, eventId))
                 {
-                    var timestamp = await
+                    var action = await _historyLogic.ReserveNext(ActionType.Excludes, workflowId, eventId, exclusion.EventId);
+                    addressDto.Timestamp = action.TimeStamp;
+                    action.CounterpartTimeStamp = await
                         _eventCommunicator.SendExcluded(exclusion.Uri, addressDto, exclusion.WorkflowId,
                             exclusion.EventId);
-                    await _historyLogic.SaveSuccesfullCall(ActionType.Excludes, eventId, workflowId, exclusion.EventId, timestamp);
+                    await _historyLogic.UpdateAction(action);
                 }
                 // There might have been made changes on the entity itself in another controller-call
                 // Therefore we have to reload the state from database.
@@ -339,7 +343,23 @@ namespace Event.Logic
 
                 await _storage.SetExecuted(workflowId, eventId, true);
                 await _storage.SetPending(workflowId, eventId, false);
+
+                //Save execution finished before unlocking.
+                await _historyLogic.SaveSuccesfullCall(ActionType.ExecuteFinished, eventId, workflowId, "", -1);
             }
+            catch (FailedToSaveHistoryException e)
+            {
+                allOk = false;
+                exception = e;
+            }
+            catch (NotExecutableException e)
+            {
+                allOk = false;
+                exception = e;
+            }
+
+            //If one of the Update exceptions occured, this is thrown instead of the save history exception,
+            //since the failure of an update is more severe. 
             catch (Exception)
             {
                 /*  This will catch any of FailedToUpdate<Excluded|Pending|Executed>AtAnotherEventExceptions
@@ -353,11 +373,8 @@ namespace Event.Logic
                 // If we cannot even unlock, we give up!
                 throw new FailedToUnlockOtherEventException();
             }
-            if (allOk)
-            {
-                return;
-            }
-            throw exception;
+
+            if (!allOk) throw exception;
         }
 
         public void Dispose()

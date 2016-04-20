@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Common.DTO.Shared;
 using Common.Tools;
 using Event.Communicators;
-using Event.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
 using Event.Models;
@@ -26,7 +25,7 @@ namespace Event.Tests.CommunicatorTests
 
         #endregion
 
-        
+
 
         #region constructor and dispose
         [Test]
@@ -73,7 +72,7 @@ namespace Event.Tests.CommunicatorTests
         #region IsExecuted
 
         [Test]
-        public async void IsExecuted_Succes_BaseAddressGetsSetCorrect()
+        public async Task IsExecuted_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -96,7 +95,7 @@ namespace Event.Tests.CommunicatorTests
         }
 
         [Test]
-        public async void IsExecuted_Succes_EventReturnsTrue()
+        public async Task IsExecuted_Succes_EventReturnsTrue()
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
@@ -106,14 +105,14 @@ namespace Event.Tests.CommunicatorTests
 
             //Act
             var result = await eventCommunicator.IsExecuted(new Uri("http://test.dk/"), "targetWorkflowId", "TargetID", "SenderId");
-            
+
             //Assert
             mock.Verify(t => t.Read<bool>(It.IsAny<string>()), Times.Once);
             Assert.IsTrue(result);
         }
 
         [Test]
-        public async void IsExecuted_Succes_EventReturnsFalse()
+        public async Task IsExecuted_Succes_EventReturnsFalse()
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
@@ -131,26 +130,20 @@ namespace Event.Tests.CommunicatorTests
 
 
         [Test]
-        [ExpectedException(typeof(FailedToGetExecutedFromAnotherEventException))]
         public void IsExecuted_FailsOnUriNotPointingAnEventMachine()
         {
             var eventCommunicator = new EventCommunicator();
 
-            try
-            {
-                var result = eventCommunicator.IsExecuted(new Uri("http://test.dk/"), "targetWorkflowId", "TargetID", "SenderId").Result;
-            }
-            catch (Exception ex)
-            {
-                throw ex.InnerException;
-            }
+            AsyncTestDelegate testDelegate = async () => await eventCommunicator.IsExecuted(new Uri("http://test.dk/"), "targetWorkflowId", "TargetID", "SenderId");
+
+            Assert.ThrowsAsync<FailedToGetExecutedFromAnotherEventException>(testDelegate);
         }
         #endregion
 
         #region IsIncluded
 
         [Test]
-        public async void IsIncluded_Succes_BaseAddressGetsSetCorrect()
+        public async Task IsIncluded_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -207,25 +200,20 @@ namespace Event.Tests.CommunicatorTests
         }
 
         [Test]
-        [ExpectedException(typeof(FailedToGetIncludedFromAnotherEventException))]
         public void IsIncluded_FailsOnWrongUri()
         {
             var eventCommunicator = new EventCommunicator();
-            try
-            {
-                var result = eventCommunicator.IsIncluded(new Uri("http://test.dk/"), "targetWorkflowId", "TargetID", "SenderId").Result;
-            }
-            catch (Exception ex)
-            {
-                throw ex.InnerException;
-            }
+
+            AsyncTestDelegate testDelegate = async () => await eventCommunicator.IsIncluded(new Uri("http://test.dk/"), "targetWorkflowId", "TargetID", "SenderId");
+
+            Assert.ThrowsAsync<FailedToGetIncludedFromAnotherEventException>(testDelegate);
         }
         #endregion
 
         #region SendPending
 
         [Test]
-        public async void SendPending_Succes_BaseAddressGetsSetCorrect()
+        public async Task SendPending_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -236,7 +224,7 @@ namespace Event.Tests.CommunicatorTests
             //Act
             try
             {
-                await eventCommunicator.SendPending(inputUri, new EventAddressDto{WorkflowId = "targetWorkflowId"}, "TargetID", "SenderId");
+                await eventCommunicator.SendPending(inputUri, new EventAddressDto { WorkflowId = "targetWorkflowId" }, "TargetID", "SenderId");
             }
             catch (Exception)
             {
@@ -255,10 +243,10 @@ namespace Event.Tests.CommunicatorTests
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.SendPending(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
-            
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.SendPending(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
+
             //Assert
-            Assert.Throws<FailedToUpdatePendingAtAnotherEventException>(testdelegate);
+            Assert.ThrowsAsync<FailedToUpdatePendingAtAnotherEventException>(testdelegate);
         }
 
         [Test]
@@ -266,23 +254,23 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Returns(Task.FromResult(3)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.SendPending(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.SendPending(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
 
             //Assert
-            Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            Assert.DoesNotThrowAsync(testdelegate);
+            mock.Verify(t => t.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
         #endregion
 
         #region SendIncluded
         [Test]
-        public async void SendIncluded_Succes_BaseAddressGetsSetCorrect()
+        public async Task SendIncluded_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -312,10 +300,10 @@ namespace Event.Tests.CommunicatorTests
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.SendIncluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.SendIncluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
 
             //Assert
-            Assert.Throws<FailedToUpdateIncludedAtAnotherEventException>(testdelegate);
+            Assert.ThrowsAsync<FailedToUpdateIncludedAtAnotherEventException>(testdelegate);
         }
 
         [Test]
@@ -323,23 +311,23 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.SendIncluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.SendIncluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
 
             //Assert
-            Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            Assert.DoesNotThrowAsync(testdelegate);
+            mock.Verify(t => t.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
         #endregion
 
         #region SendExcluded
         [Test]
-        public async void SendExcluded_Succes_BaseAddressGetsSetCorrect()
+        public async Task SendExcluded_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -370,10 +358,10 @@ namespace Event.Tests.CommunicatorTests
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.SendExcluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.SendExcluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
 
             //Assert
-            Assert.Throws<FailedToUpdateExcludedAtAnotherEventException>(testdelegate);
+            Assert.ThrowsAsync<FailedToUpdateExcludedAtAnotherEventException>(testdelegate);
         }
 
         [Test]
@@ -381,23 +369,23 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.SendExcluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.SendExcluded(uri, new EventAddressDto { WorkflowId = "targetWorkflowId", Id = "id", Uri = uri }, "TargetID", "SenderId");
 
             //Assert
-            Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Update(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            Assert.DoesNotThrowAsync(testdelegate);
+            mock.Verify(t => t.Update<EventAddressDto, int>(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
         }
         #endregion
 
         #region Lock
         [Test]
-        public async void Lock_Succes_BaseAddressGetsSetCorrect()
+        public async Task Lock_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -408,7 +396,7 @@ namespace Event.Tests.CommunicatorTests
             //Act
             try
             {
-                await eventCommunicator.Lock(inputUri,new LockDto(), "Wid","Eid");
+                await eventCommunicator.Lock(inputUri, new LockDto(), "Wid", "Eid");
             }
             catch (Exception)
             {
@@ -428,10 +416,10 @@ namespace Event.Tests.CommunicatorTests
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.Lock(uri, new LockDto(), "Wid", "Eid");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.Lock(uri, new LockDto(), "Wid", "Eid");
 
             //Assert
-            Assert.Throws<FailedToLockOtherEventException>(testdelegate);
+            Assert.ThrowsAsync<FailedToLockOtherEventException>(testdelegate);
         }
 
         [Test]
@@ -439,23 +427,23 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<LockDto>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.Lock(uri, new LockDto(), "Wid", "Eid");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.Lock(uri, new LockDto(), "Wid", "Eid");
 
             //Assert
-            Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<LockDto>()), Times.Once);
+            Assert.DoesNotThrowAsync(testdelegate);
+            mock.Verify(t => t.Create<LockDto, int>(It.IsAny<string>(), It.IsAny<LockDto>()), Times.Once);
         }
         #endregion
 
         #region Unlock
         [Test]
-        public async void Unlock_Succes_BaseAddressGetsSetCorrect()
+        public async Task Unlock_Succes_BaseAddressGetsSetCorrect()
         {
             //Arrange
 
@@ -486,10 +474,10 @@ namespace Event.Tests.CommunicatorTests
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.Unlock(uri, "LockOwner", "Wid", "Eid");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.Unlock(uri, "LockOwner", "Wid", "Eid");
 
             //Assert
-            Assert.Throws<FailedToUnlockOtherEventException>(testdelegate);
+            Assert.ThrowsAsync<FailedToUnlockOtherEventException>(testdelegate);
         }
 
         [Test]
@@ -497,17 +485,17 @@ namespace Event.Tests.CommunicatorTests
         {
             //Arrange
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Delete(It.IsAny<string>())).Returns(Task.Delay(0)).Verifiable();
+            mock.Setup(m => m.Delete(It.IsAny<string>())).Returns(Task.FromResult(0)).Verifiable();
 
             IEventFromEvent eventCommunicator = new EventCommunicator(mock.Object);
             Uri uri = new Uri("http://test.dk/");
 
             //Act
-            TestDelegate testdelegate = async () => await eventCommunicator.Unlock(uri, "LockOwner", "Wid", "Eid");
+            AsyncTestDelegate testdelegate = async () => await eventCommunicator.Unlock(uri, "LockOwner", "Wid", "Eid");
 
             //Assert
-            Assert.DoesNotThrow(testdelegate);
-            mock.Verify(t => t.Delete(It.IsAny<string>()), Times.Once);
+            Assert.DoesNotThrowAsync(testdelegate);
+            mock.Verify(t => t.Delete<int>(It.IsAny<string>()), Times.Once);
         }
         #endregion
     }

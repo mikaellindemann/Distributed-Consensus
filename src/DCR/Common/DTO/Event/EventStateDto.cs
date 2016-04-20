@@ -8,5 +8,6 @@
         public bool Executed { get; set; }
         public bool Included { get; set; }
         public bool Executable { get; set; }
+        public bool IsEvil { get; set; }
     }
 }

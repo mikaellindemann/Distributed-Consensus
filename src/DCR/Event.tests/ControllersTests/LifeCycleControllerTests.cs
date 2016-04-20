@@ -24,7 +24,7 @@ namespace Event.Tests.ControllersTests
         private Mock<IEventHistoryLogic> _historyMock;
         private Mock<ILifecycleLogic> _lifecycleMock;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             ResetLists();
@@ -32,35 +32,30 @@ namespace Event.Tests.ControllersTests
             _lifecycleMock = new Mock<ILifecycleLogic>(MockBehavior.Strict);
 
             _historyMock.Setup(l => l.GetHistoryForEvent(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((string wId, string eId) => Task.Run( () => 
-                {
-                    var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
-                    var dtos = new List<ActionDto>();
-                    models.ForEach(x => dtos.Add(new ActionDto(x)));
-                    return dtos.AsEnumerable();
-                })).Verifiable();
+                .Returns((string wId, string eId) => Task.Run(() =>
+               {
+                   var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
+                   var dtos = new List<ActionDto>();
+                   models.ForEach(x => dtos.Add(x.ToActionDto()));
+                   return dtos.AsEnumerable();
+               })).Verifiable();
 
-            _historyMock.Setup(l => l.SaveException(It.IsAny<Exception>(), It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((Exception e, ActionType type, string eId, string wId, string cId) =>
-                    {
-                       return Task.Run( () => _historyTestList.Add(new ActionModel
-                       {
-                           EventId = eId, WorkflowId = wId, Type = type, CounterPartId = cId
-                       }));
-                    }
-                ).Verifiable();
-
-            _historyMock.Setup(l => l.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _historyMock.Setup(l => l.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
                 .Returns((ActionType type, string eId, string wId, string cId) =>
                     {
-                        return Task.Run( () => 
-                        _historyTestList.Add(new ActionModel
+                        return Task.Run(() =>
                         {
-                            EventId = eId,
-                            WorkflowId = wId,
-                            CounterPartId = cId,
-                            Type = type
-                        }));
+                            var model =
+                                new ActionModel
+                                {
+                                    EventId = eId,
+                                    WorkflowId = wId,
+                                    CounterpartId = cId,
+                                    Type = type
+                                };
+                            _historyTestList.Add(model);
+                            return _historyTestList.IndexOf(model);
+                        });
                     }
                 ).Verifiable();
 
@@ -101,7 +96,7 @@ namespace Event.Tests.ControllersTests
         }
 
         [Test]
-        public async void TestCreateEvent()
+        public async Task TestCreateEvent()
         {
             //Setup.
             _toTest.Request = new HttpRequestMessage(HttpMethod.Post, new Uri("http://testing.com/"));
@@ -129,29 +124,30 @@ namespace Event.Tests.ControllersTests
             Assert.AreEqual(@event.OwnUri, eventInList.OwnUri);
             Assert.AreEqual(@event.Pending, eventInList.Pending);
         }
-        
+
         [Test]
-        public async void TestDeleteEvent() {
+        public async Task TestDeleteEvent()
+        {
             //Setup.
             var @event = CreateTestEvent();
             _eventTestList.Add(@event);
- 
+
             //Execute.
             await _toTest.DeleteEvent(")(!&lkjasdkøåøæ+*¨´           $$§§", ")(!&lkjasdkøåøæ+*¨´           $$§§");
 
             //Assert.
             Assert.IsFalse(_eventTestList.Any()); //The list is now empty.
 
-            Assert.DoesNotThrow(async () => await _toTest.DeleteEvent("notExisting", "notExistingEither"));
-            Assert.DoesNotThrow(async () => await _toTest.DeleteEvent(null, null));
-            Assert.DoesNotThrow(async () => await _toTest.DeleteEvent("", ""));
+            Assert.DoesNotThrowAsync(async () => await _toTest.DeleteEvent("notExisting", "notExistingEither"));
+            Assert.DoesNotThrowAsync(async () => await _toTest.DeleteEvent(null, null));
+            Assert.DoesNotThrowAsync(async () => await _toTest.DeleteEvent("", ""));
 
             _lifecycleMock.Verify(m => m.DeleteEvent(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(4));
             //_historyMock.Verify(m => m.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.AtLeast(5));
         }
 
         [Test]
-        public async void TestGetEvent()
+        public async Task TestGetEvent()
         {
             //Setup.
             _toTest.Request = new HttpRequestMessage(HttpMethod.Post, new Uri("http://testing.com/"));
@@ -161,11 +157,11 @@ namespace Event.Tests.ControllersTests
 
             //Execute.
             var test = await _toTest.GetEvent(")(!&lkjasdkøåøæ+*¨´           $$§§", ")(!&lkjasdkøåøæ+*¨´           $$§§");
-            
+
             //Assert.
-            Assert.DoesNotThrow(async () => await _toTest.GetEvent("notExisting", "notExistingEither"));
-            Assert.DoesNotThrow(async () => await _toTest.GetEvent(null, null));
-            Assert.DoesNotThrow(async () => await _toTest.GetEvent("", ""));
+            Assert.DoesNotThrowAsync(async () => await _toTest.GetEvent("notExisting", "notExistingEither"));
+            Assert.DoesNotThrowAsync(async () => await _toTest.GetEvent(null, null));
+            Assert.DoesNotThrowAsync(async () => await _toTest.GetEvent("", ""));
 
             _lifecycleMock.Verify(m => m.GetEventDto(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(4));
             //_historyMock.Verify(m => m.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.AtLeast(9));
@@ -184,7 +180,7 @@ namespace Event.Tests.ControllersTests
         }
 
         [Test]
-        public async void TestResetEvent()
+        public async Task TestResetEvent()
         {
             //Setup.
             _toTest.Request = new HttpRequestMessage(HttpMethod.Post, new Uri("http://testing.com/"));
@@ -193,9 +189,9 @@ namespace Event.Tests.ControllersTests
             await _toTest.ResetEvent(")(!&lkjasdkøåøæ+*¨´           $$§§", ")(!&lkjasdkøåøæ+*¨´           $$§§");
 
             //Assert.
-            Assert.DoesNotThrow(async () => await _toTest.ResetEvent("notExisting", "notExistingEither"));
-            Assert.DoesNotThrow(async () => await _toTest.ResetEvent(null, null));
-            Assert.DoesNotThrow(async () => await _toTest.ResetEvent("", ""));
+            Assert.DoesNotThrowAsync(async () => await _toTest.ResetEvent("notExisting", "notExistingEither"));
+            Assert.DoesNotThrowAsync(async () => await _toTest.ResetEvent(null, null));
+            Assert.DoesNotThrowAsync(async () => await _toTest.ResetEvent("", ""));
 
             _lifecycleMock.Verify(m => m.ResetEvent(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(4));
             //_historyMock.Verify(m => m.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.AtLeast(4));

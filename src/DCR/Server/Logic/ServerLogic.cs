@@ -8,6 +8,7 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Server.Interfaces;
 using Server.Models;
+using Server.Models.UriClasses;
 
 namespace Server.Logic
 {
@@ -144,7 +145,7 @@ namespace Server.Logic
             await _storage.AddRolesToUser(username, serverRoles);
         }
 
-        public async Task<IEnumerable<EventAddressDto>> GetEventsOnWorkflow(string workflowId)
+        public async Task<IEnumerable<ServerEventDto>> GetEventsOnWorkflow(string workflowId)
         {
             if (workflowId == null)
             {
@@ -156,16 +157,23 @@ namespace Server.Logic
             return
                 dbList.Select(
                     ev =>
-                        new EventAddressDto
+                        new ServerEventDto
                         {
-                            Id = ev.Id,
+                            EventId = ev.Id,
                             Uri = new Uri(ev.Uri),
                             WorkflowId = workflowId,
-                            Roles = ev.ServerRolesModels.Select(ro => ro.Id).ToList()
+                            Roles = ev.ServerRolesModels.Select(ro => ro.Id).ToList(),
+                            Conditions = ev.ConditionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId}),
+                            Exclusions = ev.ExclusionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Inclusions = ev.InclusionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Responses = ev.ResponseUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Included = ev.InitialIncluded,
+                            Pending = ev.InitialPending,
+                            Executed = ev.InitialExecuted
                         });
         }
 
-        public async Task AddEventToWorkflow(string workflowToAttachToId, EventAddressDto eventToBeAddedDto)
+        public async Task AddEventToWorkflow(string workflowToAttachToId, ServerEventDto eventToBeAddedDto)
         {
             if (workflowToAttachToId == null || eventToBeAddedDto == null)
             {
@@ -180,14 +188,45 @@ namespace Server.Logic
                 Id = role,
                 ServerWorkflowModelId = workflowToAttachToId
             }))).ToList();
+            var conditions = eventToBeAddedDto.Conditions.Select(relation => new ConditionUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
+            var inclusions = eventToBeAddedDto.Inclusions.Select(relation => new InclusionUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
+            var exclusions = eventToBeAddedDto.Exclusions.Select(relation => new ExclusionUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
+            var responses = eventToBeAddedDto.Responses.Select(relation => new ResponseUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
 
             await _storage.AddEventToWorkflow(new ServerEventModel
             {
-                Id = eventToBeAddedDto.Id,
+                Id = eventToBeAddedDto.EventId,
                 Uri = eventToBeAddedDto.Uri.ToString(),
                 ServerWorkflowModelId = workflowToAttachToId,
                 ServerWorkflowModel = workflow,
-                ServerRolesModels = roles
+                ServerRolesModels = roles,
+                ConditionUris = conditions,
+                InclusionUris = inclusions,
+                ExclusionUris = exclusions,
+                ResponseUris = responses,
+                InitialExecuted = eventToBeAddedDto.Executed,
+                InitialIncluded = eventToBeAddedDto.Included,
+                InitialPending = eventToBeAddedDto.Pending
             });
         }
 

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Common.DTO.Shared;
 using Common.Tools;
 using Event.Communicators;
-using Event.Exceptions;
 using Event.Exceptions.ServerInteraction;
 using Moq;
 using NUnit.Framework;
@@ -16,7 +15,7 @@ namespace Event.Tests.CommunicatorTests
         private ServerCommunicator _toTest;
         private Mock<HttpClientToolbox> _toolBoxMock;
         
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup() {
             var mock = new Mock<HttpClientToolbox>();
 
@@ -45,17 +44,17 @@ namespace Event.Tests.CommunicatorTests
         public void PostEventToServerTestThrowsException()
         {
             var mock = new Mock<HttpClientToolbox>();
-            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<EventAddressDto>())).Throws(new Exception());
+            mock.Setup(m => m.Create(It.IsAny<string>(), It.IsAny<ServerEventDto>())).Throws(new Exception());
             var toTest = new ServerCommunicator("testingEventId", "testingWorkflowId", mock.Object);
 
-            Assert.Throws<FailedToPostEventAtServerException>(async () => await toTest.PostEventToServer(new EventAddressDto()));
+            Assert.ThrowsAsync<FailedToPostEventAtServerException>(async () => await toTest.PostEventToServer(new ServerEventDto()));
         }
 
         [Test]
         public void PostEventToServerTestSuccedes()
         {
-            Assert.DoesNotThrow(async () => await _toTest.PostEventToServer(new EventAddressDto()));
-            _toolBoxMock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<EventAddressDto>()), Times.Once);
+            Assert.DoesNotThrowAsync(async () => await _toTest.PostEventToServer(new ServerEventDto()));
+            _toolBoxMock.Verify(t => t.Create(It.IsAny<string>(), It.IsAny<ServerEventDto>()), Times.Once);
         }
 
         [Test]
@@ -64,13 +63,13 @@ namespace Event.Tests.CommunicatorTests
             mock.Setup(m => m.Delete(It.IsAny<string>())).Throws(new Exception());
             var toTest = new ServerCommunicator("testingEventId", "testingWorkflowId", mock.Object);
 
-            Assert.Throws<FailedToDeleteEventFromServerException>(async () => await toTest.DeleteEventFromServer());
+            Assert.ThrowsAsync<FailedToDeleteEventFromServerException>(async () => await toTest.DeleteEventFromServer());
         }
 
         [Test]
         public void DeleteEventFromServerTestSuccedes()
         {
-            Assert.DoesNotThrow(async () => await _toTest.DeleteEventFromServer());
+            Assert.DoesNotThrowAsync(async () => await _toTest.DeleteEventFromServer());
             _toolBoxMock.Verify(t => t.Delete(It.IsAny<string>()), Times.Once);
         }
 

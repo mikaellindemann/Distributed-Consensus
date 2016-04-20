@@ -9,7 +9,6 @@ using Event.Exceptions;
 using Event.Interfaces;
 using Event.Models;
 using Event.Models.UriClasses;
-using Event.Storage;
 
 namespace Event.Logic
 {
@@ -21,17 +20,6 @@ namespace Event.Logic
         private readonly IEventStorage _storage;
         private readonly IEventStorageForReset _resetStorage;
         private readonly ILockingLogic _lockLogic;
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public LifecycleLogic()
-        {
-            var context = new EventContext();
-            _storage = new EventStorage(context);
-            _resetStorage = new EventStorageForReset(context);
-            _lockLogic = new LockingLogic(_storage, new EventCommunicator());
-        }
 
         /// <summary>
         /// Constructor to be used for dependency-injection
@@ -60,12 +48,20 @@ namespace Event.Logic
             }
 
             // #1. Make sure that server will accept our entry
-            var dto = new EventAddressDto
+            var dto = new ServerEventDto
             {
                 WorkflowId = eventDto.WorkflowId,
-                Id = eventDto.EventId,
+                EventId = eventDto.EventId,
+                Name = eventDto.Name,
                 Uri = ownUri,
-                Roles = eventDto.Roles
+                Roles = eventDto.Roles,
+                Included = eventDto.Included,
+                Executed = eventDto.Executed,
+                Pending = eventDto.Pending,
+                Conditions = eventDto.Conditions,
+                Exclusions = eventDto.Exclusions,
+                Inclusions = eventDto.Inclusions,
+                Responses = eventDto.Responses
             };
 
 #if DEBUG

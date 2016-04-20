@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Exceptions;
-using Common.DTO.History;
+using Server.Models;
 
 namespace Server.Interfaces
 {

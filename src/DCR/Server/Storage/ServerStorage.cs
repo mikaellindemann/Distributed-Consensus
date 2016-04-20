@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.DTO.History;
 using Common.Exceptions;
 using Server.Exceptions;
 using Server.Interfaces;
@@ -18,9 +17,9 @@ namespace Server.Storage
     {
         private readonly IServerContext _db;
 
-        public ServerStorage(IServerContext context = null)
+        public ServerStorage(IServerContext context)
         {
-            _db = context ?? new StorageContext();
+            _db = context;
         }
 
         public async Task<ServerUserModel> GetUser(string username, string password)

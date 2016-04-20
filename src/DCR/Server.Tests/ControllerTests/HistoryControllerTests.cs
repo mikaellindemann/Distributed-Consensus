@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using Server.Controllers;
 using Server.Interfaces;
+using Server.Models;
 
 namespace Server.Tests.ControllerTests
 {
@@ -43,7 +44,7 @@ namespace Server.Tests.ControllerTests
         public void Constructor_No_Parameters()
         {
             // Act
-            var controller = new HistoryController();
+            var controller = new HistoryController(_historyLogicMock.Object);
 
             // Assert
             Assert.IsNotNull(controller);
@@ -77,7 +78,7 @@ namespace Server.Tests.ControllerTests
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    CounterPartId = "counterpartId",
+                    CounterpartId = "counterpartId",
                     TimeStamp = 1
                 });
             }
@@ -98,10 +99,10 @@ namespace Server.Tests.ControllerTests
                 .ThrowsAsync(new ArgumentNullException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _controller.GetHistory("workflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _controller.GetHistory("workflowId"));
 
             // Assert
-            var responseException = Assert.Throws<HttpResponseException>(testDelegate);
+            var responseException = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.BadRequest, responseException.Response.StatusCode);
         }
 
@@ -113,10 +114,10 @@ namespace Server.Tests.ControllerTests
                 .ThrowsAsync(new NotFoundException());
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _controller.GetHistory("workflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _controller.GetHistory("workflowId"));
 
             // Assert
-            var responseException = Assert.Throws<HttpResponseException>(testDelegate);
+            var responseException = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.NotFound, responseException.Response.StatusCode);
         }
 
@@ -130,10 +131,10 @@ namespace Server.Tests.ControllerTests
                 .ThrowsAsync((Exception) exceptionType.GetConstructors().First().Invoke(null));
 
             // Act
-            var testDelegate = new TestDelegate(async () => await _controller.GetHistory("workflowId"));
+            var testDelegate = new AsyncTestDelegate(async () => await _controller.GetHistory("workflowId"));
 
             // Assert
-            var responseException = Assert.Throws<HttpResponseException>(testDelegate);
+            var responseException = Assert.ThrowsAsync<HttpResponseException>(testDelegate);
             Assert.AreEqual(HttpStatusCode.InternalServerError, responseException.Response.StatusCode);
         }
         #endregion

@@ -86,11 +86,11 @@ namespace Client.Connections
         /// <exception cref="NotFoundException">If the resource isn't found</exception>
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
-        public Task<IEnumerable<EventAddressDto>> GetEventsFromWorkflow(string workflowId)
+        public Task<IEnumerable<ServerEventDto>> GetEventsFromWorkflow(string workflowId)
         {
             try
             {
-                return _http.ReadList<EventAddressDto>($"workflows/{workflowId}");
+                return _http.ReadList<ServerEventDto>($"workflows/{workflowId}");
             }
             catch (HttpRequestException ex)
             {

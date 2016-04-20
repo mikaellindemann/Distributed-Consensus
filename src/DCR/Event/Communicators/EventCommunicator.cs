@@ -48,13 +48,13 @@ namespace Event.Communicators
             
         }
 
-        public async Task<ConditionDto> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId)
+        public async Task<ConditionDto> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId, int timestamp)
         {
             HttpClient.SetBaseAddress(targetEventUri);
 
             try
             {
-                return await HttpClient.Read<ConditionDto>($"events/{targetWorkflowId}/{targetEventId}/condition/{ownId}");
+                return await HttpClient.Read<ConditionDto>($"events/{targetWorkflowId}/{targetEventId}/condition/?senderId={ownId}&timestamp={timestamp}");
             }
             catch (Exception)
             {

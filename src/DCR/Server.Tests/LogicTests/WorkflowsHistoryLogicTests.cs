@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Server.Interfaces;
 using Server.Logic;
+using Server.Models;
 
 namespace Server.Tests.LogicTests
 {
@@ -17,7 +18,7 @@ namespace Server.Tests.LogicTests
         private List<ActionModel> _testModelList;
         private IWorkflowHistoryLogic _toTest;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             var mock = new Mock<IServerHistoryStorage>();
@@ -47,7 +48,7 @@ namespace Server.Tests.LogicTests
         }
 
         [Test]
-        public async void GetHistoryForWorkflowTest()
+        public async Task GetHistoryForWorkflowTest()
         {
             //Setup.
             var testHistory = CreateTestHistory();
@@ -60,12 +61,12 @@ namespace Server.Tests.LogicTests
 
             //Assert.
             _storageMock.Verify(m => m.GetHistoryForWorkflow(It.IsAny<string>()), Times.Once);
-            Assert.Throws<ArgumentNullException>(async () => await _toTest.GetHistoryForWorkflow(null));
-            Assert.DoesNotThrow(async () => await _toTest.GetHistoryForWorkflow(@"&%¤#æøå*¨^´`?"));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _toTest.GetHistoryForWorkflow(null));
+            Assert.DoesNotThrowAsync(async () => await _toTest.GetHistoryForWorkflow(@"&%¤#æøå*¨^´`?"));
             Assert.IsTrue(_testModelList.Any());
             Assert.AreEqual(testHistory.WorkflowId, result.WorkflowId);
             Assert.AreEqual(testHistory.EventId, result.EventId);
-            Assert.AreEqual(testHistory.CounterPartId, result.CounterPartId);
+            Assert.AreEqual(testHistory.CounterpartId, result.CounterpartId);
             Assert.AreEqual(1, result.TimeStamp);
         }
 
@@ -76,10 +77,10 @@ namespace Server.Tests.LogicTests
             var testHistory = CreateTestHistory();
 
             //Execute.
-            Assert.DoesNotThrow(async () => await _toTest.SaveHistory(testHistory));
+            Assert.DoesNotThrowAsync(async () => await _toTest.SaveHistory(testHistory));
 
             //Assert.
-            Assert.Throws<ArgumentNullException>(async () => await _toTest.SaveHistory(null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _toTest.SaveHistory(null));
             _storageMock.Verify(m => m.SaveHistory(It.IsAny<ActionModel>()), Times.Once);
             Assert.IsTrue(_testModelList.Any());
         }
@@ -90,10 +91,10 @@ namespace Server.Tests.LogicTests
             var testHistory = CreateTestHistory();
 
             //Execute.
-            Assert.DoesNotThrow(async () => await _toTest.SaveNoneWorkflowSpecificHistory(testHistory));
+            Assert.DoesNotThrowAsync(async () => await _toTest.SaveNoneWorkflowSpecificHistory(testHistory));
 
             //Assert.
-            Assert.Throws<ArgumentNullException>(async () => await _toTest.SaveNoneWorkflowSpecificHistory(null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _toTest.SaveNoneWorkflowSpecificHistory(null));
             _storageMock.Verify(m => m.SaveNonWorkflowSpecificHistory(It.IsAny<ActionModel>()), Times.Once);
             Assert.IsTrue(_testModelList.Any());
         }
@@ -115,8 +116,8 @@ namespace Server.Tests.LogicTests
             {
                 EventId = @"&%¤#æøå*¨^´`?",
                 WorkflowId = @"&%¤#æøå*¨^´`?",
-                Id = 1,
-                CounterPartId = @"&%¤#æøå*¨^´`?",
+                Timestamp = 1,
+                CounterpartId = @"&%¤#æøå*¨^´`?",
                 Type = ActionType.Excludes
             };
         }

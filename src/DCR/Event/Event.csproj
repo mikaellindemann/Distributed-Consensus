@@ -53,8 +53,24 @@
     </Reference>
     <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -81,6 +97,10 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.WebApi, Version=5.2.3.0, Culture=neutral, PublicKeyToken=43da31bc42a85347, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.WebAPI.5.2.3\lib\net45\Unity.WebApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
@@ -89,11 +109,13 @@
     <Content Include="Utilities\WipeLocalEvent.sql" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Communicators\EventCommunicator.cs" />
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\LifecycleController.cs" />
     <Compile Include="Controllers\LockController.cs" />
+    <Compile Include="Controllers\MaliciousController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Exceptions\FailedToCreateEventException.cs" />
     <Compile Include="Exceptions\ServerInteraction\FailedToDeleteEventFromServerException.cs" />
@@ -113,18 +135,18 @@
     <Compile Include="Interfaces\IEventStorageForReset.cs" />
     <Compile Include="Interfaces\ILifecycleLogic.cs" />
     <Compile Include="Interfaces\ILockingLogic.cs" />
+    <Compile Include="Interfaces\IMaliciousLogic.cs" />
+    <Compile Include="Interfaces\IMaliciousStorage.cs" />
     <Compile Include="Interfaces\IStateLogic.cs" />
     <Compile Include="Exceptions\FailedToUpdateStateException.cs" />
     <Compile Include="Logic\EventHistoryLogic.cs" />
+    <Compile Include="Exceptions\FailedToSaveHistoryException.cs" />
     <Compile Include="Logic\LifecycleLogic.cs" />
     <Compile Include="Logic\AuthLogic.cs" />
     <Compile Include="Logic\LockingLogic.cs" />
+    <Compile Include="Logic\MaliciousLogic.cs" />
     <Compile Include="Logic\StateLogic.cs" />
-    <Compile Include="Migrations\201603211037260_InitialCreate.cs" />
-    <Compile Include="Migrations\201603211037260_InitialCreate.Designer.cs">
-      <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\EventRoleModel.cs" />
     <Compile Include="Models\RelationToOtherEventModel.cs" />
     <Compile Include="Models\UriClasses\ConditionUri.cs" />
@@ -145,6 +167,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communicators\ServerCommunicator.cs" />
     <Compile Include="Storage\EventStorageForReset.cs" />
+    <Compile Include="Storage\MaliciousStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -169,11 +192,6 @@
       <Project>{5e6bb204-f6dc-4b14-b20d-2244cf6e48dc}</Project>
       <Name>HistoryConsensus</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201603211037260_InitialCreate.resx">
-      <DependentUpon>201603211037260_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

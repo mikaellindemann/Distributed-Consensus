@@ -91,6 +91,7 @@ namespace Event.Interfaces
         /// <exception cref="ArgumentNullException">Thrown if any of the provided arguments are null</exception>
         /// <exception cref="NotFoundException">Thrown if the event does not exist in the storage</exception>
         Task<bool> GetExecuted(string workflowId, string eventId);
+        Task<bool> GetIsEvil(string workflowId, string eventId);
 
         /// <summary>
         /// Sets the Executed value for the specified Event.

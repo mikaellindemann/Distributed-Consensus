@@ -17,26 +17,20 @@ namespace Event.Interfaces
         /// <param name="eventId">EventId of the specified Event.</param>
         /// <returns></returns>
         Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId);
-
-        /// <summary>
-        /// Will save a thrown Exception for this event. Should be used if an operation throws an exception.   
-        /// </summary>
-        /// <param name="ex">Exception that was thrown.</param>
-        /// <param name="requestType">HTTP-request-type, i.e. POST, GET, PUT or DELETE.</param>
-        /// <param name="method">Should identify the method, that makes call to this method.</param>
-        /// <param name="eventId">EventId of the Event, that was involved in the operation that caused the exception.</param>
-        /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
-        /// <returns></returns>
-        Task SaveException(Exception ex, ActionType type, string eventId = "", string workflowId = "", string counterpartId  = "");
         
         /// <summary>
         /// Will save a succesfull method call for this event. Should be used when an operation was carried out succesfully.
         /// </summary>
-        /// <param name="requestType">HTTP-request-type, i.e. POST, GET, PUT or DELETE.</param>
-        /// <param name="method">Should identify the method, that makes call to this method.</param>
+        /// <param name="type">The type of action to save.</param>
         /// <param name="eventId">>EventId of the Event, that was involved in the operation.</param>
         /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
+        /// <param name="counterpartId"></param>
+        /// <param name="senderTimeStamp"></param>
         /// <returns></returns>
-        Task<int> SaveSuccesfullCall(ActionType type, string eventId = "", string workflowId = "", string counterpartId = "", int senderTimeStamp = -1);
+        Task<int> SaveSuccesfullCall(ActionType type, string eventId, string workflowId, string counterpartId, int senderTimeStamp);
+
+        Task<ActionDto> ReserveNext(ActionType type, string workflowId, string eventId, string counterpartId);
+        Task UpdateAction(ActionDto dto);
+        Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp);
     }
 }

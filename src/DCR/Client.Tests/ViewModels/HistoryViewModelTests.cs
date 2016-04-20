@@ -32,14 +32,11 @@ namespace Client.Tests.ViewModels
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullParameter()
         {
             // Act
-            var model = new HistoryViewModel(null);
-
             // Assert
-            Assert.Fail(); // Should never run.
+            Assert.Throws<ArgumentNullException>(() => new HistoryViewModel(null));
         }
 
         [Test]
@@ -98,14 +95,14 @@ namespace Client.Tests.ViewModels
         {
             // Arrange
             var changed = false;
-            _model.PropertyChanged += (o, s) => { if (s.PropertyName == "CounterPartId") changed = true; };
+            _model.PropertyChanged += (o, s) => { if (s.PropertyName == "CounterpartId") changed = true; };
 
             // Act
-            _model.CounterPartId = counterPartId;
+            _model.CounterpartId = counterPartId;
 
             // Assert
             Assert.IsTrue(changed);
-            Assert.AreEqual(counterPartId, _model.CounterPartId);
+            Assert.AreEqual(counterPartId, _model.CounterpartId);
         }
 
         [TestCase(""),

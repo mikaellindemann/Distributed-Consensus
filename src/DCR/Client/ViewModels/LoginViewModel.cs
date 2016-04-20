@@ -43,7 +43,7 @@ namespace Client.ViewModels
             set
             {
                 _username = value;
-                NotifyPropertyChanged("Username");
+                NotifyPropertyChanged();
             }
         }
 
@@ -54,7 +54,7 @@ namespace Client.ViewModels
             set
             {
                 _status = value;
-                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged();
             }
         }
         private string _password;
@@ -64,7 +64,7 @@ namespace Client.ViewModels
             set
             {
                 _password = value;
-                NotifyPropertyChanged("Password");
+                NotifyPropertyChanged();
             }
         }
         #endregion
@@ -110,6 +110,9 @@ namespace Client.ViewModels
 
         #endregion
 
-
+        public void OpenParser()
+        {
+            new Views.Parser.MainWindow().Show();
+        }
     }
 }

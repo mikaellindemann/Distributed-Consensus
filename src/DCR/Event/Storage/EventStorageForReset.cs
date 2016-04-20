@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using Common.Exceptions;
 using Event.Interfaces;
@@ -62,6 +63,10 @@ namespace Event.Storage
             @event.Executed = @event.InitialExecuted;
             @event.Included = @event.InitialIncluded;
             @event.Pending = @event.InitialPending;
+            @event.IsEvil = false;
+
+            _context.History.RemoveRange(
+                _context.History.Where(hist => hist.EventId == eventId && hist.WorkflowId == workflowId));
 
             // Save changes
             await _context.SaveChangesAsync();

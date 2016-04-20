@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Server.Interfaces;
 using Server.Logic;
 using Server.Models;
+using Server.Models.UriClasses;
 
 namespace Server.Tests.LogicTests
 {
@@ -21,7 +22,7 @@ namespace Server.Tests.LogicTests
         private Mock _mock;
         private ServerLogic _toTest;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             Setup();
@@ -101,6 +102,10 @@ namespace Server.Tests.LogicTests
             var w1 = new ServerWorkflowModel { Name = "w1", Id = "1" };
             var w2 = new ServerWorkflowModel { Name = "w2", Id = "2" };
 
+            var responses = new List<ResponseUri>();
+            var conditions = new List<ConditionUri>();
+            var exclusions = new List<ExclusionUri>();
+            var inclusions = new List<InclusionUri>();
             //Ensure that it's REALLY set up this time...
             role.ServerWorkflowModel = w1;
             w1.ServerRolesModels = roles;
@@ -112,7 +117,11 @@ namespace Server.Tests.LogicTests
                 ServerWorkflowModelId = "1",
                 ServerRolesModels = roles,
                 ServerWorkflowModel = w1,
-                Uri = "http://2.2.2.2/"
+                Uri = "http://2.2.2.2/",
+                ConditionUris = conditions,
+                ExclusionUris = exclusions,
+                InclusionUris = inclusions,
+                ResponseUris = responses
             };
 
             //Add the event to one of the events.
@@ -123,13 +132,17 @@ namespace Server.Tests.LogicTests
 
 
         [Test]
-        public async void TestAddEventToWorkflow()
+        public async Task TestAddEventToWorkflow()
         {
-            var toAdd = new EventAddressDto
+            var toAdd = new ServerEventDto
             {
-                Id = "3",
+                EventId = "3",
                 Roles = new List<string> {"lol"},
-                Uri = new Uri("http://1.1.1.1/")
+                Uri = new Uri("http://1.1.1.1/"),
+                Responses = new List<EventAddressDto>(),
+                Conditions = new List<EventAddressDto>(),
+                Exclusions = new List<EventAddressDto>(),
+                Inclusions = new List<EventAddressDto>()
             };
 
             await _toTest.AddEventToWorkflow("1", toAdd);
@@ -142,7 +155,7 @@ namespace Server.Tests.LogicTests
         }
 
         [Test]
-        public async void TestAddNewWorkflow()
+        public async Task TestAddNewWorkflow()
         {
             await _toTest.AddNewWorkflow(new WorkflowDto { Id = "3", Name = "w3"});
 
@@ -156,27 +169,27 @@ namespace Server.Tests.LogicTests
         [TestCase("")]
         public void TestAddEventToWorkflow_Throws_ArgumentNull(string workflowId)
         {
-            TestDelegate testDelegate1 = async () => await _toTest.AddEventToWorkflow(workflowId, null);
-            TestDelegate testDelegate2 = async () => await _toTest.AddEventToWorkflow(null, new EventAddressDto());
+            AsyncTestDelegate testDelegate1 = async () => await _toTest.AddEventToWorkflow(workflowId, null);
+            AsyncTestDelegate testDelegate2 = async () => await _toTest.AddEventToWorkflow(null, new ServerEventDto());
 
-            Assert.Throws<ArgumentNullException>(testDelegate1);
-            Assert.Throws<ArgumentNullException>(testDelegate2);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate1);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate2);
         }
 
         [Test]
         public void TestAddNewWorkflow_Throws_ArgumentNull()
         {
-            TestDelegate testDelegate = async () => await _toTest.AddNewWorkflow(null);
+            AsyncTestDelegate testDelegate = async () => await _toTest.AddNewWorkflow(null);
 
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
         public void TestRemoveWorkflow_Throws_ArgumentNull()
         {
-            TestDelegate testDelegate = async () => await _toTest.RemoveWorkflow(null);
+            AsyncTestDelegate testDelegate = async () => await _toTest.RemoveWorkflow(null);
 
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [TestCase(null,null)]
@@ -184,9 +197,9 @@ namespace Server.Tests.LogicTests
         [TestCase(null, "")]
         public void TestRemoveEventFromWorkflow_Throws_ArgumentNull(string workflowId, string eventId)
         {
-            TestDelegate testDelegate = async () => await _toTest.RemoveEventFromWorkflow(workflowId, eventId);
+            AsyncTestDelegate testDelegate = async () => await _toTest.RemoveEventFromWorkflow(workflowId, eventId);
 
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -210,19 +223,19 @@ namespace Server.Tests.LogicTests
         public async Task TestGetEventsOnWorkflow()
         {
             var result = (await _toTest.GetEventsOnWorkflow("1")).ToList();
-            var expectedEvent = result.First(x => x.Id == "1");
+            var expectedEvent = result.First(x => x.EventId == "1");
 
             Assert.IsNotNull(expectedEvent);
-            Assert.AreEqual(expectedEvent.Id, "1");
+            Assert.AreEqual(expectedEvent.EventId, "1");
             Assert.AreEqual(expectedEvent.Uri.AbsoluteUri, "http://2.2.2.2/");
 
         }
         [Test]
         public void TestGetEventsOnWorkflow_Throws_NullArgument()
         {
-            TestDelegate testDelegate = async () => await _toTest.GetEventsOnWorkflow(null);
+            AsyncTestDelegate testDelegate = async () => await _toTest.GetEventsOnWorkflow(null);
 
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -237,9 +250,9 @@ namespace Server.Tests.LogicTests
         [Test]
         public void TestGetWorkflow_NullArgument()
         {
-            TestDelegate testDelegate = async () => await _toTest.GetWorkflow(null);
+            AsyncTestDelegate testDelegate = async () => await _toTest.GetWorkflow(null);
 
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
 
@@ -253,7 +266,7 @@ namespace Server.Tests.LogicTests
         }
 
         [Test]
-        public async void TestRemoveWorkflow()
+        public async Task TestRemoveWorkflow()
         {
             Assert.AreEqual(1, _list.Count(x => x.Id == "1"));
             
@@ -265,7 +278,7 @@ namespace Server.Tests.LogicTests
         #region Login
 
         [Test]
-        public async void Login_Succes_UserHasNoRolesReturnEmptyList()
+        public async Task Login_Succes_UserHasNoRolesReturnEmptyList()
         {
             //Arrange
             var mock = new Mock<IServerStorage>();
@@ -280,7 +293,7 @@ namespace Server.Tests.LogicTests
         }
 
         [Test]
-        public async void Login_Succes_UserHasARoleReturnEmptyList()
+        public async Task Login_Succes_UserHasARoleReturnEmptyList()
         {
             //Arrange
             var mock = new Mock<IServerStorage>();
@@ -301,7 +314,7 @@ namespace Server.Tests.LogicTests
         }
 
         [Test]
-        public async void Login_Succes_UserHas2EqualRoleReturnEmptyList()
+        public async Task Login_Succes_UserHas2EqualRoleReturnEmptyList()
         {
             //Arrange
             var mock = new Mock<IServerStorage>();
@@ -333,9 +346,9 @@ namespace Server.Tests.LogicTests
             IServerLogic logic = new ServerLogic(mock.Object);
             var loginDto = new LoginDto() { Username = "Name", Password = "password" };
             //Act
-            TestDelegate testDelegate = async() => await logic.Login(loginDto);
+            AsyncTestDelegate testDelegate = async() => await logic.Login(loginDto);
             //Assert
-            Assert.Throws<UnauthorizedException>(testDelegate);
+            Assert.ThrowsAsync<UnauthorizedException>(testDelegate);
         }
         #endregion
 
@@ -348,9 +361,9 @@ namespace Server.Tests.LogicTests
             mock.Setup(m => m.AddUser(It.IsAny<ServerUserModel>())).Returns(Task.Delay(0));
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddUser(new UserDto{Name = "Name", Password = "Password", Roles = new List<WorkflowRole>()});
+            AsyncTestDelegate testDelegate = async () => await logic.AddUser(new UserDto{Name = "Name", Password = "Password", Roles = new List<WorkflowRole>()});
             //Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
 
         [Test]
@@ -363,9 +376,9 @@ namespace Server.Tests.LogicTests
             mock.Setup(m => m.GetRole(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new ServerRoleModel{Id = "role",ServerWorkflowModelId = "Wid"});
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddUser(new UserDto { Name = "Name", Password = "Password", Roles = new List<WorkflowRole>{new WorkflowRole{Role = "Role",Workflow = "Wid"}} });
+            AsyncTestDelegate testDelegate = async () => await logic.AddUser(new UserDto { Name = "Name", Password = "Password", Roles = new List<WorkflowRole>{new WorkflowRole{Role = "Role",Workflow = "Wid"}} });
             //Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
 
         [Test]
@@ -377,9 +390,9 @@ namespace Server.Tests.LogicTests
             mock.Setup(m => m.RoleExists(It.IsAny<ServerRoleModel>())).ReturnsAsync(false);
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddUser(new UserDto { Name = "Name", Password = "Password", Roles = new List<WorkflowRole> { new WorkflowRole { Role = "Role", Workflow = "Wid" } } });
+            AsyncTestDelegate testDelegate = async () => await logic.AddUser(new UserDto { Name = "Name", Password = "Password", Roles = new List<WorkflowRole> { new WorkflowRole { Role = "Role", Workflow = "Wid" } } });
             //Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -389,9 +402,9 @@ namespace Server.Tests.LogicTests
             var mock = new Mock<IServerStorage>();
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddUser(null);
+            AsyncTestDelegate testDelegate = async () => await logic.AddUser(null);
             //Assert
-            Assert.Throws<ArgumentNullException>(testDelegate);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
         #endregion
 
@@ -401,11 +414,11 @@ namespace Server.Tests.LogicTests
         [TestCase("")]
         public void AddRolesToUser_Throws_NullArgument(string username)
         {
-            TestDelegate testDelegate1 = async () => await _toTest.AddRolesToUser(username, null);
-            TestDelegate testDelegate2 = async () => await _toTest.AddRolesToUser(null, new List<WorkflowRole>());
+            AsyncTestDelegate testDelegate1 = async () => await _toTest.AddRolesToUser(username, null);
+            AsyncTestDelegate testDelegate2 = async () => await _toTest.AddRolesToUser(null, new List<WorkflowRole>());
 
-            Assert.Throws<ArgumentNullException>(testDelegate1);
-            Assert.Throws<ArgumentNullException>(testDelegate2);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate1);
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate2);
         }
 
         [Test]
@@ -419,9 +432,9 @@ namespace Server.Tests.LogicTests
 
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", new List<WorkflowRole>());
+            AsyncTestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", new List<WorkflowRole>());
             //Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
 
         [Test]
@@ -441,9 +454,9 @@ namespace Server.Tests.LogicTests
 
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", roles);
+            AsyncTestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", roles);
             //Assert
-            Assert.DoesNotThrow(testDelegate);
+            Assert.DoesNotThrowAsync(testDelegate);
         }
 
         [Test]
@@ -463,9 +476,9 @@ namespace Server.Tests.LogicTests
 
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", roles);
+            AsyncTestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", roles);
             //Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         [Test]
@@ -478,9 +491,9 @@ namespace Server.Tests.LogicTests
 
             IServerLogic logic = new ServerLogic(mock.Object);
             //Act
-            TestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", new List<WorkflowRole>());
+            AsyncTestDelegate testDelegate = async () => await logic.AddRolesToUser("Wid", new List<WorkflowRole>());
             //Assert
-            Assert.Throws<NotFoundException>(testDelegate);
+            Assert.ThrowsAsync<NotFoundException>(testDelegate);
         }
 
         #endregion

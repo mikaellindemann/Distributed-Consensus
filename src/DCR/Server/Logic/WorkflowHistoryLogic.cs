@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common.DTO.History;
 using Server.Interfaces;
+using Server.Models;
 using Server.Storage;
 
 namespace Server.Logic
@@ -14,14 +15,6 @@ namespace Server.Logic
     public class WorkflowHistoryLogic : IWorkflowHistoryLogic
     {
         private readonly IServerHistoryStorage _storage;
-
-        /// <summary>
-        /// Default constructor. 
-        /// </summary>
-        public WorkflowHistoryLogic()
-        {
-            _storage = new ServerStorage();
-        }
 
         /// <summary>
         /// Dependency injection constructor for testing purposes. 
@@ -39,7 +32,7 @@ namespace Server.Logic
             }
 
             var models = (await _storage.GetHistoryForWorkflow(workflowId)).ToList();
-            return models.Select(model => new ActionDto(model));
+            return models.Select(model => model.ToActionDto());
         }
 
         public async Task SaveHistory(ActionModel toSave)

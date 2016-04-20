@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Web.Http;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Event

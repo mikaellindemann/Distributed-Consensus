@@ -21,7 +21,7 @@ namespace Client.Tests.ViewModels
         private Mock<IServerConnection> _serverConnectionMock;
         private Mock<IEventConnection> _eventConnectionMock;
         private List<ActionDto> _serverHistoryDtos, _eventHistoryDtos;
-        private List<EventAddressDto> _eventAddressDtos;
+        private List<ServerEventDto> _eventAddressDtos;
         private readonly string[] _events = { "eventId", "elj", "hrioargn", "vifhd", "ragæoj", "grnjalgr" };
 
         [SetUp]
@@ -29,7 +29,7 @@ namespace Client.Tests.ViewModels
         {
             _serverHistoryDtos = new List<ActionDto>();
             _eventHistoryDtos = new List<ActionDto>();
-            _eventAddressDtos = new List<EventAddressDto>();
+            _eventAddressDtos = new List<ServerEventDto>();
 
             _serverConnectionMock = new Mock<IServerConnection>(MockBehavior.Strict);
             _serverConnectionMock.Setup(connection => connection.GetEventsFromWorkflow(It.IsAny<string>()))
@@ -136,7 +136,7 @@ namespace Client.Tests.ViewModels
                 {
                     WorkflowId = "workflowId",
                     EventId = "eventId",
-                    CounterPartId = "counterpartId",
+                    CounterpartId = "counterpartId",
                     TimeStamp = 1
                 });
             }
@@ -160,7 +160,7 @@ namespace Client.Tests.ViewModels
             for (var i = 0; i < eventAmount; i++)
             {
                 var eventId = _events[i];
-                _eventAddressDtos.Add(new EventAddressDto { WorkflowId = "workflowId", Id = eventId });
+                _eventAddressDtos.Add(new ServerEventDto { WorkflowId = "workflowId", EventId = eventId });
 
                 for (var j = 0; j < historyAmount; j++)
                 {
@@ -168,7 +168,7 @@ namespace Client.Tests.ViewModels
                     {
                         WorkflowId = "workflowId",
                         EventId = "eventId",
-                        CounterPartId = "counterpartId",
+                        CounterpartId = "counterpartId",
                         TimeStamp = 1
                     });
                 }
@@ -231,7 +231,7 @@ namespace Client.Tests.ViewModels
         public void GetHistory_EventThrowsNotFoundException()
         {
             // Arrange
-            _eventAddressDtos.Add(new EventAddressDto { WorkflowId = "workflowId" });
+            _eventAddressDtos.Add(new ServerEventDto { WorkflowId = "workflowId" });
 
             _eventConnectionMock.Setup(connection => connection.GetHistory(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(new NotFoundException());
@@ -248,7 +248,7 @@ namespace Client.Tests.ViewModels
         public void GetHistory_EventThrowsHostNotFoundException()
         {
             // Arrange
-            _eventAddressDtos.Add(new EventAddressDto{ WorkflowId = "workflowId"});
+            _eventAddressDtos.Add(new ServerEventDto { WorkflowId = "workflowId"});
 
             _eventConnectionMock.Setup(connection => connection.GetHistory(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(new HostNotFoundException(new HttpRequestException()));
@@ -265,7 +265,7 @@ namespace Client.Tests.ViewModels
         public void GetHistory_EventThrowsException()
         {
             // Arrange
-            _eventAddressDtos.Add(new EventAddressDto { WorkflowId = "workflowId" });
+            _eventAddressDtos.Add(new ServerEventDto { WorkflowId = "workflowId" });
 
             _eventConnectionMock.Setup(connection => connection.GetHistory(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception());

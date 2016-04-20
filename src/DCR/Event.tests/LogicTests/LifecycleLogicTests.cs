@@ -16,14 +16,23 @@ namespace Event.Tests.LogicTests
     [TestFixture]
     class LifecycleLogicTests
     {
+        private Mock<IEventStorage> _storageMock;
+        private Mock<IEventStorageForReset> _resetStorageMock;
+        private Mock<ILockingLogic> _lockingLogicMock;
+        private LifecycleLogic _lifecycleLogic;
 
         #region Setup
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
+            _storageMock = new Mock<IEventStorage>(MockBehavior.Strict);
 
+            _resetStorageMock = new Mock<IEventStorageForReset>(MockBehavior.Strict);
 
+            _lockingLogicMock = new Mock<ILockingLogic>(MockBehavior.Strict);
+
+            _lifecycleLogic = new LifecycleLogic(_storageMock.Object, _resetStorageMock.Object, _lockingLogicMock.Object);
         }
 
         #endregion
@@ -32,23 +41,22 @@ namespace Event.Tests.LogicTests
         #region CreateEvent tests
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async Task CreateEvent_CalledWithNullEventDto()
+        public void CreateEvent_CalledWithNullEventDto()
         {
             // Arrange
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
             var uri = new Uri("http://www.dr.dk");
 
             // Act
-            await lifecycleLogic.CreateEvent(null, uri);
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.CreateEvent(null, uri);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async Task CreateEvent_CalledWithNullUri()
+        public void CreateEvent_CalledWithNullUri()
         {
             // Arrange
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
             var eventDto = new EventDto
             {
                 Conditions = new List<EventAddressDto>(),
@@ -65,7 +73,10 @@ namespace Event.Tests.LogicTests
             };
 
             // Act
-            await lifecycleLogic.CreateEvent(eventDto, null);
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.CreateEvent(eventDto, null);
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -117,23 +128,22 @@ namespace Event.Tests.LogicTests
         #region DeleteEvent tests
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async void DeleteEvent_WorkflowIdIsNullWillThrowException()
+        public void DeleteEvent_WorkflowIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.DeleteEvent(null, "eventId");
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.DeleteEvent(null, "eventId");
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async void DeleteEvent_EvendIdIsNullWillThrowException()
+        public void DeleteEvent_EvendIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.DeleteEvent("workflowid", null);
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.DeleteEvent("workflowid", null);
+
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
@@ -167,34 +177,32 @@ namespace Event.Tests.LogicTests
             ILifecycleLogic logic = new LifecycleLogic(mockStorage.Object, mockResetStorage.Object, mockLockingLogic.Object);
 
             // Act
-            var testDelegate = new TestDelegate(async () => await logic.DeleteEvent("workflowId", "Check patient"));
+            AsyncTestDelegate testDelegate = async () => await logic.DeleteEvent("workflowId", "Check patient");
 
 
             // Aseert
-            Assert.Throws<LockedException>(testDelegate);
+            Assert.ThrowsAsync<LockedException>(testDelegate);
         }
         #endregion
 
         #region ResetEvent tests
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async void ResetEvent_WorkflowIdIsNullWillThrowException()
+        public void ResetEvent_WorkflowIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.ResetEvent(null, "eventId");
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.ResetEvent(null, "eventId");
+
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async void ResetEvent_EvendIdIsNullWillThrowException()
+        public void ResetEvent_EvendIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.ResetEvent("workflowid", null);
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.ResetEvent("workflowid", null);
+
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         #endregion
@@ -212,34 +220,32 @@ namespace Event.Tests.LogicTests
             ILifecycleLogic logic = new LifecycleLogic(mockStorage.Object, mockResetStorage.Object, mockLockLogic.Object);
 
             // Act
-            var testdelegate = new TestDelegate(async () => await logic.GetEventDto("workflowId", "someEvent"));
+            AsyncTestDelegate testdelegate = async () => await logic.GetEventDto("workflowId", "someEvent");
 
             // Assert
-            Assert.Throws<NotFoundException>(testdelegate);
+            Assert.ThrowsAsync<NotFoundException>(testdelegate);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async void GetEvent_WorkflowIdIsNullWillThrowException()
+        public void GetEvent_WorkflowIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.GetEventDto(null, "eventId");
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.GetEventDto(null, "eventId");
+
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async void GetEvent_EvendIdIsNullWillThrowException()
+        public void GetEvent_EvendIdIsNullWillThrowException()
         {
-            ILifecycleLogic lifecycleLogic = new LifecycleLogic();
-
             // Act
-            await lifecycleLogic.GetEventDto("workflowid", null);
+            AsyncTestDelegate testDelegate = async () => await _lifecycleLogic.GetEventDto("workflowid", null);
+
+            Assert.ThrowsAsync<ArgumentNullException>(testDelegate);
         }
 
         [Test]
-        public async void GetEvent_ReturnsANewEventDtoWithCorrectInformation()
+        public async Task GetEvent_ReturnsANewEventDtoWithCorrectInformation()
         {
             //Assign
             var mockStorage = new Mock<IEventStorage>();

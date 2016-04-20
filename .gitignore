@@ -344,3 +344,6 @@ fabric.properties
 .vscodeLog
 doc/tex/DCR-Consensus.vscodeLog
 doc/texv2/DistributedConsensus.pdf
+
+.paket/
+paket.*

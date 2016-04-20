@@ -3,14 +3,20 @@
 \usepackage{algpseudocode}
 \usepackage{amsthm}
 \usepackage[english]{babel}
+\usepackage{babelbib}
+\usepackage{cite}
 \usepackage{float}
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage[utf8]{inputenc}
 \usepackage{import}
 \usepackage{multicol}
 \usepackage{pdfpages}
 \usepackage{todonotes}
+\usepackage{tocbibind}
+\usepackage{imakeidx}
+\usepackage[totoc]{idxlayout}
 
 \pdfsuppresswarningpagegroup=1
 
@@ -25,5 +31,8 @@
 \newcommand{\inclusion}{$\rightarrow\!\!\!+$}
 
 \newcommand{\exclusion}{$\rightarrow\!\!\%$}
+
+\newcommand{\algorithmautorefname}{algorithm}
+\newcommand{\definitionautorefname}{definition}
 
 \MakeRobust{\Call}
