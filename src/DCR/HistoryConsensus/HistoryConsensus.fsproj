@@ -60,6 +60,7 @@
     <Compile Include="History.fs" />
     <Compile Include="HistoryValidation.fsi" />
     <Compile Include="HistoryValidation.fs" />
+    <Compile Include="LocalHistoryValidation.fs" />
     <Content Include="packages.config" />
     <Content Include="App.config" />
     <None Include="Scripts\load-references-debug.fsx" />
