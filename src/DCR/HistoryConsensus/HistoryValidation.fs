@@ -42,22 +42,27 @@ module HistoryValidation =
     let noCycleValidation (history : Graph) : Result<Graph, FailureT list> =
         let beginningNodes = Graph.getBeginningNodes history
 
-        let rec cycleDfsCheck node trace : Result<Graph, FailureT list> =
-            if List.contains node.Id trace
-            then Failure [([(fst node.Id)], Malicious)]
-            else 
-                Set.fold 
-                    (fun status edge -> 
-                        match status with
-                        | Failure g -> Failure g
-                        | Success g -> cycleDfsCheck (Graph.getNode history edge) (node.Id :: trace))
-                    (Success history)
-                    node.Edges
+        let rec cycleDfsCheck node trace failures =
+            Set.fold
+                (fun acc edge ->
+                    if List.contains node.Id trace
+                    then
+                        // Todo: Is it correct that it is always the last two that created the cycle?
+                        Set.add ([fst node.Id; fst <| List.head trace], Malicious) acc
+                    else
+                        cycleDfsCheck (Graph.getNode history edge) (node.Id :: trace) acc
+                )
+                failures
+                node.Edges
 
-        List.fold 
-            (fun status node ->
-                match status with
-                | Failure g -> Failure g
-                | Success g -> cycleDfsCheck node [])
-            (Success history)
-            beginningNodes
+        let failureSet = 
+            List.fold 
+                (fun failures node ->
+                    cycleDfsCheck node [] failures
+                )
+                Set.empty
+                beginningNodes
+
+        match Set.toList failureSet with
+        | [] -> Success history
+        | x  -> Failure x

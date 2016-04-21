@@ -26,3 +26,4 @@ module HistoryValidation =
     val (>>=) : Result<'a, 'b> -> ('a -> Result<'c, 'b>) -> Result<'c, 'b>
 
     val hasBeginningNodesValidation : Graph -> Result<Graph, FailureT list>
+    val noCycleValidation : Graph -> Result<Graph, FailureT list>
