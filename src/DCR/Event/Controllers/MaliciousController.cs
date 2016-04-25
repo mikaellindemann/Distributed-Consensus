@@ -24,7 +24,7 @@ namespace Event.Controllers
         [HttpPut]
         public async Task ApplyCheatingType(string workflowId, string eventId, [FromBody] CheatingDto cheatingDto)
         {
-            await _maliciousLogic.ApplyCheatingType(workflowId, eventId, cheatingDto);
+            await _maliciousLogic.AddCheatingType(workflowId, eventId, cheatingDto);
         }
 
         protected override void Dispose(bool disposing)
