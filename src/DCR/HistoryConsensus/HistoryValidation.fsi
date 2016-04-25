@@ -27,3 +27,5 @@ module HistoryValidation =
 
     val hasBeginningNodesValidation : Graph -> Result<Graph, FailureT list>
     val noCycleValidation : Graph -> Result<Graph, FailureT list>
+
+    val agreeOnAmtOfActions : Graph -> Graph -> Result<(Graph*Graph), FailureT list>
