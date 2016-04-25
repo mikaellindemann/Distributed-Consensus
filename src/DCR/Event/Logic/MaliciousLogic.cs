@@ -24,11 +24,24 @@ namespace Event.Logic
             _storage.Dispose();
         }
 
+        /// <summary>
+        /// Checks if the event (workflowId,eventId) is malicious (has any cheatingTypes on it)
+        /// </summary>
+        /// <param name="workflowId"></param>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
         public async Task<bool> IsMalicious(string workflowId, string eventId)
         {
             return await _storage.IsMalicious(workflowId, eventId);
         }
 
+        /// <summary>
+        /// Applies the types of cheating of the event to the history list, implying that data is not modified in the database but only the history which is sent to the requester.
+        /// </summary>
+        /// <param name="workflowId"></param>
+        /// <param name="eventId"></param>
+        /// <param name="history"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<ActionDto>> ApplyCheating(string workflowId, string eventId, IList<ActionDto> history)
         {
             var cheatingTypes = (await _storage.GetTypesOfCheating(workflowId, eventId)).Select(type => type.Type);
@@ -131,6 +144,11 @@ namespace Event.Logic
             return history;
         }
 
+        /// <summary>
+        /// Finds a relation out type (includes, setspending, excludes, checkcondition)
+        /// </summary>
+        /// <param name="eventModel"></param>
+        /// <returns></returns>
         private Tuple<string, ActionType> FindARelationOutType(EventModel eventModel)
         {
             ActionType type = ActionType.ExecuteStart;
@@ -157,6 +175,11 @@ namespace Event.Logic
             }
             return new Tuple<string, ActionType>(id,type);
         }
+        /// <summary>
+        /// Finds a relation in type (includedBy, setPendingBy, excludedBy, checkedConditionBy)
+        /// </summary>
+        /// <param name="history"></param>
+        /// <returns></returns>
         private Tuple<string, ActionType> FindARelationInType(IList<ActionDto> history)
         {
             ActionType type = ActionType.ExecuteStart;
@@ -192,8 +215,14 @@ namespace Event.Logic
             return new Tuple<string, ActionType>(id, type);
         }
 
-
-        public async Task ApplyCheatingType(string workflowId, string eventId, CheatingDto cheatingDto)
+        /// <summary>
+        /// Adds the cheatingType in cheatingDto to the database of event (workflowid,eventid).
+        /// </summary>
+        /// <param name="workflowId"></param>
+        /// <param name="eventId"></param>
+        /// <param name="cheatingDto"></param>
+        /// <returns></returns>
+        public async Task AddCheatingType(string workflowId, string eventId, CheatingDto cheatingDto)
         {
             var eventModel = await _storage.GetEvent(workflowId, eventId);
             eventModel.IsEvil = true;
