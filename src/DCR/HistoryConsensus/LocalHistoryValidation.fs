@@ -11,6 +11,22 @@ module LocalHistoryValidation =
         then Success history
         else Failure [([eventId], HistoryAboutOthers)]
 
+    let hasTwoOrMoreBeginningNodesValidation (history : Graph) : Result<Graph, FailureT list> = 
+        if Map.isEmpty history.Nodes
+        then
+            Success history // History is empty, therefore no beginning nodes exist.
+        else 
+            let beginningNodes = Graph.getBeginningNodes history
+            match beginningNodes |> List.isEmpty |> not with
+            | true -> // has beginning nodes
+                if (Graph.getBeginningNodes history).Length = 1
+                then Success history // There must only be one
+                else Failure [(["Too many beginning nodes"], Malicious)] // History has cycles. TODO: Find them
+            | false -> // no beginning nodes
+                Failure [(["Find cycles!"], Malicious)] // History has cycles. TODO: Find them
+            
+        
+
     // Checks a local history against allowed incoming actions.
     // This means, that if an incoming action occurs, then every other incoming action from the same counterpart must
     // also occur.
