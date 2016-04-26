@@ -192,7 +192,7 @@ module LocalHistoryValidation =
                 then
                     let storedTimestamp = Map.find (fst counterpartId) lastTimestamps
                     let newTimestamp = snd counterpartId
-                    if fst action.Id = fst counterpartId && action.Type = ActionType.CheckedCondition || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy
+                    if fst action.Id = fst counterpartId && (action.Type = ActionType.CheckedCondition || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy)
                     then 
                         // Special case where the local event is also the counterpart.
                         // This means that the actions can be interchangeable, because we also want the local timestamps to be in correct order.
