@@ -12,6 +12,7 @@ using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Newtonsoft.Json;
+using Action = HistoryConsensus.Action;
 
 namespace Client.ViewModels
 {
@@ -173,6 +174,85 @@ namespace Client.ViewModels
 
             return FSharpOption<Graph.Graph>.get_IsSome(finalGraph) ? finalGraph.Value : null;
         }
+
+
+        public async void GenerateHistory()
+        {
+            Status = "Attempting to generate history with the given parameters";
+            var tokenSource = new CancellationTokenSource();
+            CanPressButtons = false;
+
+            try
+            {
+                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
+
+                var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
+                var localHistories = new List<Tuple<string, Graph.Graph>>();
+                var wrongHistories = new List<string>();
+                foreach (var @event in events)
+                {
+                    var localHistory =
+                        JsonConvert.DeserializeObject<Graph.Graph>(
+                            await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
+                    localHistories.Add(new Tuple<string, Graph.Graph>(@event.EventId, localHistory));
+                }
+                if (ShouldValidate)
+                {
+                    foreach (var history in localHistories)
+                    {
+                        var validationResult = LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1);
+                        if (!validationResult.IsSuccess)
+                        {
+                            wrongHistories.Add(history.Item1);
+                        }
+                    }
+                    // todo validation on pairs and all
+                }
+                if (ShouldFilter)
+                {
+                    localHistories = localHistories.Where(tuple => !wrongHistories.Contains(tuple.Item1)).ToList();
+                }
+                Graph.Graph mergedGraph;
+                {
+                    // Merging
+                    var first = localHistories.First().Item2;
+                    var rest =
+                        ToFSharpList(
+                            localHistories.Where(elem => !ReferenceEquals(elem.Item2, first))
+                                .Select(tuple => tuple.Item2));
+
+                    var result = History.stitch(first, rest);
+                    mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
+                }
+                if (ShouldCollapse)
+                {
+                    mergedGraph = History.collapse(mergedGraph);
+                }
+                if (ShouldReduce)
+                {
+                    mergedGraph = History.reduce(mergedGraph);
+                }
+                if (ShouldSimulate)
+                {
+                    //var map = new FSharpMap<string, Tuple<bool, bool, bool>>();
+                    //var rules = new FSharpSet<Tuple<string, string, Action.ActionType>>();
+                    var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, null, null);
+                }
+
+                new GraphToPdfConverter().ConvertAndShow(mergedGraph);
+                Status = "";
+            }
+            catch (Exception)
+            {
+                Status = "Something went wrong";
+            }
+            finally
+            {
+                tokenSource.Cancel();
+                CanPressButtons = true;
+            }
+        }
+
 
         public async Task MakeHistoryLocal(Func<Task<Graph.Graph>> makeHistory)
         {
