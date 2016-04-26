@@ -20,6 +20,11 @@ namespace Client.ViewModels
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
         private bool _canPressButtons;
+        private bool _shouldValidate;
+        private bool _shouldFilter;
+        private bool _shouldCollapse;
+        private bool _shouldReduce;
+        private bool _shouldSimulate;
         private string _executionTime;
         private string _status;
 
@@ -41,6 +46,8 @@ namespace Client.ViewModels
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
         }
+
+        #region Databindings
 
         public EventViewModel EventViewModel { get; set; }
 
@@ -77,6 +84,65 @@ namespace Client.ViewModels
             }
         }
 
+        public bool ShouldValidate
+        {
+            get { return _shouldValidate; }
+            set
+            {
+                if (_shouldValidate == value) return;
+                _shouldValidate = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool ShouldFilter
+        {
+            get { return _shouldFilter; }
+            set
+            {
+                if (_shouldFilter == value) return;
+                _shouldFilter = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool ShouldCollapse
+        {
+            get { return _shouldCollapse; }
+            set
+            {
+                if (_shouldCollapse == value) return;
+                _shouldCollapse = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool ShouldReduce
+        {
+            get { return _shouldReduce; }
+            set
+            {
+                if (_shouldReduce == value) return;
+                _shouldReduce = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool ShouldSimulate
+        {
+            get { return _shouldSimulate; }
+            set
+            {
+                if (_shouldSimulate == value) return;
+                _shouldSimulate = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion Databindings
+
+
+        #region Actions
         private async Task<Graph.Graph> FetchAndMerge()
         {
             var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
@@ -130,7 +196,7 @@ namespace Client.ViewModels
                 CanPressButtons = true;
             }
         }
-
+        
         public async void ProduceLocal()
         {
             Status = "Attempting to produce history - pdf result will open when done";
@@ -259,6 +325,7 @@ namespace Client.ViewModels
         {
             return elements.Reverse().Aggregate(FSharpList<T>.Empty, (current, element) => FSharpList<T>.Cons(element, current));
         }
+        #endregion Actions
     }
 
     public class TupleConverter : TypeConverter
