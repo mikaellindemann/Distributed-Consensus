@@ -64,8 +64,6 @@
     <Compile Include="History.fs" />
     <Content Include="packages.config" />
     <Content Include="App.config" />
-    <None Include="Scripts\load-references-debug.fsx" />
-    <None Include="Scripts\load-project-debug.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Data">
