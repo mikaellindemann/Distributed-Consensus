@@ -96,14 +96,14 @@
 
 	% TODO: Collapsing
 	\subsection{Collapsing}
-	Although it is the receiver that saves the "by"-actions, these actions are still initiated by the performer, and is therefore part of the performers execution. By the use of this idea...\todo{Continue}
+	Although the receiver saves \texttt{By} actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. 
 		
-	When looking at the order of execution, it can be difficult to determine which action should be the canonical representation of the time of an execution. If \texttt{ExecuteFinish} is chosen, it can be difficult to tell which execution happened before the other, due to the fact that related actions happen before the \texttt{ExecuteFinish} action. 
-	The same is true for the \texttt{ExecuteStart} action. It therefore needs to be decided what constitutes an entire execution, and to decide in what order these executions happen.
+	It is necessary to determine what should represent the time of an execution. Possible candidates would be \texttt{ExecuteFinish} and \texttt{ExecuteStart}. Using \texttt{ExecuteFinish}, it is difficult to tell which execution happened before the other, due to the fact that actions that are part of an execution happen before the \texttt{ExecuteFinish} action. 
+	The same applies for the \texttt{ExecuteStart} action, where actions that are part of an execution can happen after the execution.
 	
-	\newpar It is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} is to look at all of the actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connect these events into a single entity, representing an entire execution. 
+	\newpar It then is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} constitutes looking at all actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connecting these events into a single entity, representing an entire execution. 
 	
-	The actions between start and finish might contain relations to other actions located in the local histories of other events. Since a given event is only affected by the effects of other events executing, it is safe to collapse the actions of outgoing relations of an executing event into a single execution. Since an action is always caused by the execution of \textit{some} event, the collapsed execution therefore has the property that no action has happened outside the execution.
+	Actions between start and finish might contain relations to other actions located in the local histories of other events. Since a given event is only affected by the effects of other events executing, it is safe to collapse the \texttt{By} actions from executing events into execution of the executing event. Since an action is always caused by the execution of \textit{some} event, the collapsed execution has the property that no action can happened outside any collapsed execution.
 	
 	An example of this separation of executions can be found in \autoref{fig:before-collapsing}.
 	
@@ -117,9 +117,11 @@
 	\end{figure}
 	\todo{Måske skal denne figur laves ud fra GasWorkflow}
 	
-	\newpar When actions contained in an execution have been found, it is necessary to decide what should happen to the groupings. It is desired to keep all relations intact, and therefore all ingoing edges to the current event are pointed towards a new \textit{collapsed node}, and all outgoing edges are added to the same new node. This new \textit{collapsed node} then represents the entire execution. 
+	\newpar When actions contained in an execution have been found, it is necessary to decide what should happen to the grouping of the actions. It is desired to keep all relations intact, to avoid modifying the history and only simplify it. 
 	
-	In order not to create another type of action, the \texttt{ExecuteFinish} type hqas been chosen to denote a collapsed execution. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
+	By pointing all ingoing edges to the current event towards a new \textit{collapsed node}, and adding all outgoing edges to the new node, this is accomplished. This new \textit{collapsed node} then represents the entire execution. 
+	
+	In the implemented solution the the \texttt{ExecuteFinish} type has been chosen to denote a collapsed execution in order to avoid creating a new action type. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
 	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efter\-følgende}
 	
 	\begin{figure}
@@ -173,9 +175,11 @@
 	\end{algorithm}
 	
 	\subsection{Transitive Reduction}
-	% TODO: Transitive reduction
-	\newpar In the resulting history, redudant edges can still exist. In cases where there exists a path from an action to another action as well as a direct edge from the two, the direct edge is redundant and can be removed. A subgraph of the history with the same ordering and reachability, but as few edges as possible, called a \textit{minimum equivalent graph}, is desired. If there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
-	Finding the minimum equivalent graph is possible by transitive reduction on the original graph, which results in the desired subgraph. 
+	
+	\newpar After collapsing a history, redundant edges might still exist. In cases where a path from an action to another action as well as a direct edge between the two exists, the direct edge is redundant and can be removed. 
+	
+	A subgraph of the history with the same ordering and reachability, but as few edges as possible, called a \textit{minimum equivalent graph}, is desired. If there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
+	It is possible to find the minimum equivalent graph by transitive reduction of the collapsed graph, which results in the desired subgraph containing no redundant edges.
 	
 	\begin{algorithm}
 		\begin{algorithmic}
@@ -200,9 +204,11 @@
 		\caption{Transitive Reduction Algorithm}
 	\end{algorithm}
 	
-	\newpar The transitive reduction algorithm runs in $O(n^3)$ where $n$ is the number of actions. This can be seen by the fact that the algorithm has a triple nested for-loop over all the actions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is constant. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most of the actions.
+	\newpar The implemented algorithm for transitive reduction runs in $O(n^3)$ where $n$ is the number of actions, due to the fact that the algorithm has three nested for-loops over all actions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most actions.
 	
 	\newpar By combining these two collapsing and reduction steps, the order of execution represented as a minimum equivalent graph of the entire history is found. 
 	
-	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot falsify the history. Just like in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. The following chapters describe why this is the case.
+	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot falsify the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
+	
+	\newpar Why this is the case is described in the following chapters.
 	
