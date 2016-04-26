@@ -11,7 +11,7 @@ module LocalHistoryValidation =
         then Success history
         else Failure [([eventId], HistoryAboutOthers)]
 
-    let hasTwoOrMoreBeginningNodesValidation (history : Graph) : Result<Graph, FailureT list> = 
+    let localBeginningNodesValidation (history : Graph) : Result<Graph, FailureT list> = 
         if Map.isEmpty history.Nodes
         then
             Success history // History is empty, therefore no beginning nodes exist.
@@ -114,7 +114,7 @@ module LocalHistoryValidation =
 
     // Check that the correct order is established for single execution
     let checkLocalHistoryForCorrectOrder history : Result<Graph, FailureT list> =
-        // Find beginning node (there can be 0 in an empty local history, and 1 otherwise)
+        // Find beginning node (there can be 0 in an empty local history, and 1 otherwise) there exists a check for this
         let (firstActionId, _)= Seq.minBy (fun (id,_) -> snd id) (Map.toSeq history.Nodes)
 
         let rec checkOrder actionId lastTimestamp =
@@ -192,11 +192,11 @@ module LocalHistoryValidation =
                 then
                     let storedTimestamp = Map.find (fst counterpartId) lastTimestamps
                     let newTimestamp = snd counterpartId
-                    if fst action.Id = fst counterpartId
+                    if fst action.Id = fst counterpartId && action.Type = ActionType.CheckedCondition || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy
                     then 
                         // Special case where the local event is also the counterpart.
                         // This means that the actions can be interchangeable, because we also want the local timestamps to be in correct order.
-                        if abs (storedTimestamp - newTimestamp) >= 1
+                        if storedTimestamp - 1 = newTimestamp
                         then checkCounterpartOrder (getNode history <| Seq.head action.Edges) (Map.add (fst counterpartId) (max storedTimestamp newTimestamp) lastTimestamps)
                         else Failure [([fst action.Id], CounterpartTimestampOutOfOrder)] 
                     else
@@ -214,11 +214,8 @@ module LocalHistoryValidation =
                     then checkCounterpartOrder (getNode history <| Seq.head action.Edges) (Map.add (fst counterpartId) (snd counterpartId) lastTimestamps)
                     else Success history
 
-        checkCounterpartOrder firstAction Map.empty
+        checkCounterpartOrder firstAction Map.empty        
 
-    // Check that no ingoing actions can appear when executing.
-
-        
 
     // Validating
     let giantLocalCheck input eventId allowedIngoingRelations allowedOutgoingRelations =
