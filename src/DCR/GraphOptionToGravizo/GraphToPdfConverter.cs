@@ -157,10 +157,6 @@ namespace GraphOptionToGravizo
             {
                 WriteGraphToDotFile(graph, writer);
             }
-            using (var writer = new StreamWriter(File.OpenWrite(@"C:\Users\mikae\Desktop\graph.gv")))
-            {
-                WriteGraphToDotFile(graph, writer);
-            }
             using (var reader = dot.StandardOutput.BaseStream)
             {
                 using (var writer = File.OpenWrite(pdffile))
