@@ -71,7 +71,7 @@ module HistoryValidation =
     let agreeOnAmtOfActions  (history1 : Graph)   (history2 : Graph)  : Result<(Graph*Graph), FailureT list> =
         let eventId1 = fst (Map.pick (fun x y -> Some x) history1.Nodes)
         let eventId2 = fst (Map.pick (fun x y -> Some x) history2.Nodes)
-        if ((Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes).Count = (Map.filter (fun actionId action -> action.CounterpartId = fst eventId1) history2.Nodes).Count)
+        if ((Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes).Count = (Map.filter (fun actionId action -> fst action.CounterpartId = eventId1) history2.Nodes).Count)
         then
             Success (history1, history2)
         else 
