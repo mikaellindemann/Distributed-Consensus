@@ -1,6 +1,6 @@
 % !TeX root = DistributedConsensus.tex
 % !TeX spellcheck = en_GB
-\chapter{Connecting Histories} % Måske bedre navn. Dette er lidt for Nokia.
+\chapter{Connecting Histories} 
 \label{chap:connecting-histories}
 	This chapter defines the merging of logs across multiple events into one consistent history. Furthermore it describes how it is possible to simplify a graph of logs into an order of execution.
 	
@@ -15,7 +15,10 @@
 	\noindent In this section all the events in the workflow are neighbours of the event responsible for generating the history in the DCR graph.
 	
 	\section{Merging histories} 
-	In order to build a history for the events in the workflow, the actions of the events must be connected somehow in order to (at least) partially order them and thereby determine the global history. Due to the nature of actions being distributed, it is not possible to ensure a total order of actions. For example if action A on event A knows that it has happened before action B on event B, and action C on event C, but there is no relation between event B and C, then we have no way of knowing if action B or C happened first. This case can be seen on \autoref{fig:connect:partialorder}.
+	In order to build a history for the events in the workflow, the actions of the events must be connected and partially ordered somehow. Due to the nature of actions being distributed, it is not possible to ensure a total order of actions. 
+	
+	For example if action $a$ on event $A$ knows that it has happened before action $b$ on event $B$, and action $c$ on event $C$, but there is no relation between event $B$ and $C$, then we have no way of knowing if action $b$ or $c$ happened first. This case can be seen on \autoref{fig:connect:partialorder}.
+	\todo{Evt. Lamport-reference til hvad concurrent events er. }
 	
 	\begin{figure}
 		\centering
@@ -49,7 +52,7 @@
 			\label{def:happensbeforeaction}
 	\end{definition}
 	
-	\newpar Because multiple events can share actions, and also, the types of two actions are not enough to determine whether or not that pair of actions is each others complement. Therefore the actions are also matched by the ID of the counterpart, seen from each side. Because the same event can possibly be executed multiple times, and thereby create multiple pairs of corresponding actions, at least one of the actions must know the local time stamp of the other. In the implementation we have chosen that the performer logs the time stamp of its counterpart as part of its action. With this information pairs of actions can uniquely be identified, eliminating the possibility of creating inconsistent histories due to mispaired \todo{Jeg ved ikke om man kan bruge dette ord, men det bruges omkring DNA kæder hvis de mod\-stående nukleotider ikke passer sammen} data. Furthermore an action can only match with one other action following these rules. This limits the amount of outgoing (and incoming) edges for each action to 0 to 2 (remember that an action is also part of the local history of the event).
+	\newpar Because multiple events can share actions, and also, the types of two actions are not enough to determine whether or not that pair of actions is each others complement. Therefore the actions are also matched by the ID of the counterpart, seen from each side. Because the same event can possibly be executed multiple times, and thereby create multiple pairs of corresponding actions, at least one of the actions must know the local time stamp of the other. In the implementation we have chosen that the performer logs the time stamp of its counterpart as part of its action. With this information pairs of actions can uniquely be identified, eliminating the possibility of creating inconsistent histories due to mispaired data. Furthermore, an action can only match with a single other action following these rules. This limits the amount of both outgoing and incoming edges for each action to at most 2, due to the fact that an action is part of the local history for an event and has at most one mathed relation to an action of another event.
 	
 	Given this functionality provided by the happens before relations, an algorithm can be created to merge two histories together. First of all, every action of the history need to be added to a joined history. To connect actions, for each action of the graph the corresponding action is found by the rules described in the previous section. Whenever a match is found the edge is added from the performing action to the receiving action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
 	
@@ -100,7 +103,7 @@
 	
 	\newpar It is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} is to look at all of the actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connect these events into a single entity, representing an entire execution. 
 	
-	The actions between start and finish might contain relations to other actions located in the local histories of other events. Since events are only affected by other events being executed, it is safe to collapse these actions into a single execution going out from the current event, due to this fact. Since an action is always caused by the execution of \textit{some} event, the property that no action has happened outside the execution of an event is also gained\todo{'Gained' er ikke det rigtige udtryk her.}. 
+	The actions between start and finish might contain relations to other actions located in the local histories of other events. Since a given event is only affected by the effects of other events executing, it is safe to collapse the actions of outgoing relations of an executing event into a single execution. Since an action is always caused by the execution of \textit{some} event, the collapsed execution therefore has the property that no action has happened outside the execution.
 	
 	An example of this separation of executions can be found in \autoref{fig:before-collapsing}.
 	
@@ -114,9 +117,9 @@
 	\end{figure}
 	\todo{Måske skal denne figur laves ud fra GasWorkflow}
 	
-	\newpar When actions contained in an exectuion have been found, it is necessary to decide what should happen to the groupings. It is desired to keep all relations intact, and therefore all ingoing edges to the current event are pointed towards a new \textit{collapsed node}, and all outgoing edges are added to the same new node. This new \textit{collapsed node} then represents the entire execution. 
+	\newpar When actions contained in an execution have been found, it is necessary to decide what should happen to the groupings. It is desired to keep all relations intact, and therefore all ingoing edges to the current event are pointed towards a new \textit{collapsed node}, and all outgoing edges are added to the same new node. This new \textit{collapsed node} then represents the entire execution. 
 	
-	In order not to create another type of action, the \texttt{ExecuteFinish} type was chosen to denote a collapsed execution. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
+	In order not to create another type of action, the \texttt{ExecuteFinish} type hqas been chosen to denote a collapsed execution. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
 	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efter\-følgende}
 	
 	\begin{figure}
@@ -169,12 +172,10 @@
 		\label{alg:collapse}
 	\end{algorithm}
 	
-	\todo[inline]{The following paragraphs is about closures and filtering. Remove?}
-	\newpar After finding the transitive closures between executions it is possible to filter actions depending on their type. If a history describing an order of execution is desired, then every action except for \texttt{Execution finish} must be removed from the history graph. 
-	
 	\subsection{Transitive Reduction}
 	% TODO: Transitive reduction
-	\newpar In the resulting history, redudant edges can still exist. In cases where there exists a path from an action to another action as well as a direct edge from the two, the direct edge is redundant and can be removed.	A subgraph of the history with the same reachability but with as few edges as possible, a minimum equivalent graph, is therefore desired. Finding this is possible by transitive reduction on the original graph, which then results in the minimum equivalent graph. Therefore, if there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
+	\newpar In the resulting history, redudant edges can still exist. In cases where there exists a path from an action to another action as well as a direct edge from the two, the direct edge is redundant and can be removed. A subgraph of the history with the same ordering and reachability, but as few edges as possible, called a \textit{minimum equivalent graph}, is desired. If there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
+	Finding the minimum equivalent graph is possible by transitive reduction on the original graph, which results in the desired subgraph. 
 	
 	\begin{algorithm}
 		\begin{algorithmic}
@@ -199,9 +200,9 @@
 		\caption{Transitive Reduction Algorithm}
 	\end{algorithm}
 	
-	\newpar The transitive reduction algorithm runs in $O(n^3)$ where n is the number of actions. This can be seen by the fact that the algorithm has a triple nested for-loop over all the actions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is constant. Realistically the graph will not be totally connected and therefore the innermost loop will not be executed for most of the actions.
+	\newpar The transitive reduction algorithm runs in $O(n^3)$ where $n$ is the number of actions. This can be seen by the fact that the algorithm has a triple nested for-loop over all the actions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is constant. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most of the actions.
 	
-	\newpar By combining these three steps, transitive closure, filtering and transitive reduction, we find the order of execution represented as a minimum equivalent graph of the entire history. 
+	\newpar By combining these two collapsing and reduction steps, the order of execution represented as a minimum equivalent graph of the entire history is found. 
 	
-	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot falsify the history. Just like in the case where one event represented the workflow, we have no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to eachother. The following chapters go more into depth with why that is the case.
+	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot falsify the history. Just like in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. The following chapters describe why this is the case.
 	
