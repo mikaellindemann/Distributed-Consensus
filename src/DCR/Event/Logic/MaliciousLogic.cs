@@ -184,7 +184,7 @@ namespace Event.Logic
         {
             ActionType type = ActionType.ExecuteStart;
             string id = null;
-            var actions = history.Where(dto => dto.Type == ActionType.CheckedCondition).ToList();
+            var actions = history.Where(dto => dto.Type == ActionType.CheckedConditionBy).ToList();
             if (actions.Count()!=0)
             {
                 type = ActionType.ChecksCondition;

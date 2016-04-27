@@ -108,11 +108,11 @@ module Graph =
             fromNode.CounterpartId = toNode.Id && fromNode.Id = toNode.CounterpartId
         let checkRelation fromType toType =
             match fromType, toType with
-            | ChecksCondition, CheckedCondition -> true
-            | Includes, IncludedBy              -> true
-            | Excludes, ExcludedBy              -> true
-            | SetsPending, SetPendingBy         -> true
-            | _                                 -> false
+            | ChecksCondition, CheckedConditionBy -> true
+            | Includes, IncludedBy                -> true
+            | Excludes, ExcludedBy                -> true
+            | SetsPending, SetPendingBy           -> true
+            | _                                   -> false
         checkID && checkRelation fromNode.Type toNode.Type
 
     let merge localGraph otherGraph =

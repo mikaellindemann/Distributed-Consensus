@@ -8,7 +8,7 @@
         ExcludedBy,
         SetsPending,
         SetPendingBy,
-        CheckedCondition,
+        CheckedConditionBy,
         ChecksCondition,
         ExecuteStart,
         ExecuteFinished

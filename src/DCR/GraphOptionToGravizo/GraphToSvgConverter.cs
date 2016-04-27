@@ -177,12 +177,12 @@ namespace GraphOptionToGravizo
 
         private static string ActionToString(Action.ActionType type)
         {
-            if (type.IsCheckedCondition) return "CheckedCondition\"";
+            if (type.IsCheckedConditionBy) return "CheckedCondition\"";
             if (type.IsChecksCondition) return "ChecksCondition\"";
             if (type.IsExcludedBy) return "ExcludedBy\"";
             if (type.IsExcludes) return "Excludes\"";
-            if (type.IsExecuteFinish) return "ExecuteFinish\",style=filled,fillcolor=green";
-            if (type.IsExecuteStart) return "ExecuteStart\",style=filled,fillcolor=red";
+            if (type.IsExecuteFinish) return "ExecuteFinish\"";
+            if (type.IsExecuteStart) return "ExecuteStart\"";
             if (type.IsIncludedBy) return "IncludedBy\"";
             if (type.IsIncludes) return "Includes\"";
             if (type.IsSetPendingBy) return "SetPendingBy\"";
