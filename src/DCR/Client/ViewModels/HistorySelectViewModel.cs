@@ -219,7 +219,31 @@ namespace Client.ViewModels
                             localHistories[index] = new Tuple<string, Graph.Graph>(history.Item1, failureHistory);
                         }
                     }
-                    // todo validation on pairs and all
+                    // pair validations
+                    var rules = GetRules(serverEventDtos);
+                    for (int index1 = 0; index1 < localHistories.Count; index1++)
+                    {
+                        var history1 = localHistories[index1];
+                        for (int index2 = 0; index2 < localHistories.Count; index2++)
+                        {
+                            var history2 = localHistories[index2];
+                            if (rules.Any(tuple => tuple.Item1 == history1.Item1 && tuple.Item2 == history2.Item1))
+                            {
+                                var validationResult =
+                                    await Task.Run(() => HistoryValidation.pairValidationCheck(history1.Item2, history2.Item2));
+                                if (validationResult.IsFailure)
+                                {
+                                    var failureHistory = validationResult.GetFailure;
+
+                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history1.Item1, FailureTypes.FailureType.Maybe));
+                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history2.Item1, FailureTypes.FailureType.Maybe));
+
+                                    localHistories[index1] = new Tuple<string, Graph.Graph>(history1.Item1, failureHistory.Item1);
+                                    localHistories[index1] = new Tuple<string, Graph.Graph>(history2.Item1, failureHistory.Item2);
+                                }
+                            }
+                        }
+                    }
                 }
                 if (ShouldFilter)
                 {
@@ -248,19 +272,7 @@ namespace Client.ViewModels
                 if (ShouldSimulate)
                 {
                     var initialStates = serverEventDtos.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
-                    var rules = new List<Tuple<string, string, Action.ActionType>>();
-                    foreach (var serverEventDto in serverEventDtos)
-                    {
-                        //conditions
-                        rules.AddRange(serverEventDto.Conditions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
-                        //inclusions
-                        rules.AddRange(serverEventDto.Inclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
-                        //exclusions
-                        rules.AddRange(serverEventDto.Exclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
-                        //responses
-                        rules.AddRange(serverEventDto.Responses.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
-                    }
-
+                    var rules = GetRules(serverEventDtos);
                     var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
 
                     if (result.IsFailure)
@@ -335,6 +347,23 @@ namespace Client.ViewModels
 
                 ExecutionTime = DateTime.Now.Subtract(start).ToString(@"h\:mm\:ss\.ff", new DateTimeFormatInfo());
             }
+        }
+
+        private IList<Tuple<string, string, Action.ActionType>> GetRules(IList<ServerEventDto> serverEventDtos)
+        {
+            var rules = new List<Tuple<string, string, Action.ActionType>>();
+            foreach (var serverEventDto in serverEventDtos)
+            {
+                //conditions
+                rules.AddRange(serverEventDto.Conditions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
+                //inclusions
+                rules.AddRange(serverEventDto.Inclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
+                //exclusions
+                rules.AddRange(serverEventDto.Exclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
+                //responses
+                rules.AddRange(serverEventDto.Responses.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
+            }
+            return rules;
         }
 
         /// <summary>

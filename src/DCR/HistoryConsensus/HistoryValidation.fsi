@@ -20,3 +20,4 @@ module HistoryValidation =
     val (>>=) : Result<'a, 'b> -> ('a -> Result<'c, 'b>) -> Result<'c, 'b>
 
     val agreeOnAmtOfActions : Graph -> Graph -> Result<Graph * Graph, Graph * Graph>
+    val pairValidationCheck : Graph -> Graph -> Result<Graph * Graph, Graph * Graph>

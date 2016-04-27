@@ -52,3 +52,6 @@ module HistoryValidation =
             Success (history1, history2)
         else 
             Failure <| (tagAllActionsWithFailureType Maybe history1, tagAllActionsWithFailureType Maybe history2)
+
+    let pairValidationCheck (history1 : Graph)   (history2 : Graph)  : Result<Graph * Graph, Graph * Graph> =
+        (agreeOnAmtOfActions history1 history2)
