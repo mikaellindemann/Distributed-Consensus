@@ -23,4 +23,8 @@
 	\subsubsection{DCR Rules}
 	A given execution in a DCR graph must abide the rules of the DCR relations. 
 	
-	\todo{Skriv regler her for DCR. }
+	\newpar \textbf{Invalid relations:} A given history for an event, $e1$, must not contain history of another event, $e2$, that it has no relations to. That is, if $e1$ does not have any outgoing DCR relation to $e2$, then the history of $e2$ must not contain a \texttt{By} relation with $e1$ as its counterpart, and vice versa. 
+	
+	\newpar \textbf{Invalid executions:} A given event, $e1$ must affect all of its outgoing relations when executing. That is every event that $e1$ has a relation to must have a \texttt{By} relation in its history after $e1$ has executed.
+
+	\todo[inline]{Uddyb regler og tilføj evt. en figur der viser invalid DCR historik ift. relations der ikke eksisterer. }
