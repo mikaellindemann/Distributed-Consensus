@@ -31,6 +31,7 @@ namespace Client.ViewModels
 
         private string _executionTime;
         private string _status;
+        private Uri _svgPath;
 
         public HistorySelectViewModel(EventViewModel eventViewModel, IServerConnection serverConnection, IEventConnection eventConnection)
         {
@@ -144,42 +145,21 @@ namespace Client.ViewModels
             }
         }
 
+        public Uri SvgPath
+        {
+            get { return _svgPath; }
+            set
+            {
+                if (value == _svgPath) return;
+                _svgPath = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         #endregion Databindings
 
 
         #region Actions
-        private async Task<Graph.Graph> FetchAndMerge()
-        {
-            var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
-
-            var wrongHistories = new List<string>();
-            var localHistories = new List<Graph.Graph>();
-
-            foreach (var @event in events)
-            {
-                var localHistory = JsonConvert.DeserializeObject<Graph.Graph>(await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
-
-                var bla = LocalHistoryValidation.smallerLocalCheck(localHistory, @event.EventId);
-
-                if (bla.IsSuccess)
-                {
-                    localHistories.Add(localHistory);
-                }
-                else
-                {
-                    wrongHistories.Add(@event.EventId);
-                }
-            }
-
-            var first = localHistories.First();
-            var rest = ToFSharpList(localHistories.Where(elem => !ReferenceEquals(elem, first)));
-
-            var finalGraph = History.stitch(first, rest);
-
-            return FSharpOption<Graph.Graph>.get_IsSome(finalGraph) ? finalGraph.Value : null;
-        }
-
-
         public async void GenerateHistory()
         {
             Status = "Attempting to generate history with the given parameters";
@@ -260,7 +240,12 @@ namespace Client.ViewModels
                     }
                 }
 
-                new GraphToPdfConverter().ConvertAndShow(mergedGraph);
+                //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
+                var tempFile = Path.GetTempFileName() + ".svg";
+                new GraphToSvgConverter().ConvertGraphToSvg(mergedGraph, tempFile);
+
+                SvgPath = new Uri(tempFile);
+
                 Status = "";
             }
             catch (Exception)
@@ -270,134 +255,6 @@ namespace Client.ViewModels
             finally
             {
                 tokenSource.Cancel();
-                CanPressButtons = true;
-            }
-        }
-
-
-        public async Task MakeHistoryLocal(Func<Task<Graph.Graph>> makeHistory)
-        {
-            var tokenSource = new CancellationTokenSource();
-            CanPressButtons = false;
-            
-            try
-            {
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var graph = await makeHistory();
-                tokenSource.Cancel();
-
-                new GraphToPdfConverter().ConvertAndShow(graph);
-                
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
-                CanPressButtons = true;
-            }
-        }
-        
-        public async void ProduceLocal()
-        {
-            Status = "Attempting to produce history - pdf result will open when done";
-            await MakeHistoryLocal(FetchAndMerge);
-        }
-
-        public async void CollapseLocal()
-        {
-            Status = "Attempting to produce+collapse history - pdf result will open when done";
-            await MakeHistoryLocal(async () => History.collapse(await FetchAndMerge()));
-        }
-
-        public async void CreateLocal()
-        {
-            Status = "Attempting to create history - pdf result will open when done";
-            await MakeHistoryLocal(async () => History.simplify(await FetchAndMerge()));
-        }
-
-        public async void Produce()
-        {
-            CanPressButtons = false;
-            Status = "Attempting to produce history - pdf result will open when done";
-            try
-            {
-                var tokenSource = new CancellationTokenSource();
-
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json =
-                    await
-                        _eventConnection.Produce(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
-                            EventViewModel.Id);
-                tokenSource.Cancel();
-
-                var file = Path.GetTempFileName();
-                File.WriteAllText(file, json);
-
-                new GraphToPdfConverter().ConvertAndShow(file);
-
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
-                CanPressButtons = true;
-            }
-        }
-
-        public async void Collapse()
-        {
-            CanPressButtons = false;
-            Status = "Attempting to produce+collapse history - pdf result will open when done";
-            try
-            {
-                var tokenSource = new CancellationTokenSource();
-
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json = await _eventConnection.Collapse(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId, EventViewModel.Id);
-                tokenSource.Cancel();
-
-                var file = Path.GetTempFileName();
-                File.WriteAllText(file, json);
-
-                new GraphToPdfConverter().ConvertAndShow(file);
-
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
-                CanPressButtons = true;
-            }
-        }
-
-        public async void Create()
-        {
-            CanPressButtons = false;
-            Status = "Attempting to create history - pdf result will open when done";
-
-
-            try
-            {
-                var tokenSource = new CancellationTokenSource();
-
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json = await _eventConnection.Create(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId, EventViewModel.Id);
-                tokenSource.Cancel();
-
-                var file = Path.GetTempFileName();
-                File.WriteAllText(file, json);
-
-                new GraphToPdfConverter().ConvertAndShow(file);
-
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
                 CanPressButtons = true;
             }
         }
