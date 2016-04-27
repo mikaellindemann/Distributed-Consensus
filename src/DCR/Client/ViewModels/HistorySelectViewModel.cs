@@ -21,11 +21,14 @@ namespace Client.ViewModels
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
         private bool _canPressButtons;
-        private bool _shouldValidate;
-        private bool _shouldFilter;
-        private bool _shouldCollapse;
-        private bool _shouldReduce;
-        private bool _shouldSimulate;
+
+        private bool 
+            _shouldValidate = true,
+            _shouldFilter = true,
+            _shouldCollapse = true,
+            _shouldReduce = true,
+            _shouldSimulate = true;
+
         private string _executionTime;
         private string _status;
 

@@ -45,52 +45,10 @@
         </DockPanel>
         <StackPanel 
             Orientation="Vertical" 
-            VerticalAlignment="Center">
-            <Button 
-                Content="Produce" 
-                Margin="5" 
-                Style="{StaticResource ButtonDefaultStyle}" 
-                IsEnabled="{Binding CanPressButtons}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger 
-                        EventName="Click">
-                        <ei:CallMethodAction 
-                            TargetObject="{Binding}" 
-                            MethodName="ProduceLocal"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button 
-                Content="Produce + Collapse" 
-                Margin="5" 
-                Style="{StaticResource ButtonDefaultStyle}" 
-                IsEnabled="{Binding CanPressButtons}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger 
-                        EventName="Click">
-                        <ei:CallMethodAction 
-                            TargetObject="{Binding}" 
-                            MethodName="CollapseLocal"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button 
-                Content="Produce + Collapse + Reduce" 
-                Margin="5" 
-                Style="{StaticResource ButtonDefaultStyle}" 
-                IsEnabled="{Binding CanPressButtons}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger 
-                        EventName="Click">
-                        <ei:CallMethodAction 
-                            TargetObject="{Binding}" 
-                            MethodName="CreateLocal"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
+            VerticalAlignment="Top">
             <Button 
                 Content="Generate History" 
-                Margin="5" 
+                Margin="10" 
                 Style="{StaticResource ButtonDefaultStyle}" 
                 IsEnabled="{Binding CanPressButtons}">
                 <i:Interaction.Triggers>
