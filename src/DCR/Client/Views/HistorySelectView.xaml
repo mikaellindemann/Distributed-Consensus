@@ -8,8 +8,10 @@
     mc:Ignorable="d"
     xmlns:viewModels="clr-namespace:Client.ViewModels"
     xmlns:toggleSwitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+    xmlns:client="clr-namespace:Client"
     x:Class="Client.Views.HistorySelectView"
-    Title="HistorySelectView" Height="482.873" Width="653.305"
+    Title="HistorySelectView" WindowState="Maximized"
     d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}" 
     WindowStartupLocation="CenterScreen">
     <DockPanel>
@@ -43,45 +45,67 @@
                 HorizontalAlignment="Right" 
                 Style="{StaticResource TextLabelStyle}" />
         </DockPanel>
-        <StackPanel 
-            Orientation="Vertical" 
-            VerticalAlignment="Top">
-            <Button 
-                Content="Generate History" 
-                Margin="10" 
-                Style="{StaticResource ButtonDefaultStyle}" 
-                IsEnabled="{Binding CanPressButtons}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger 
-                        EventName="Click">
-                        <ei:CallMethodAction 
-                            TargetObject="{Binding}" 
-                            MethodName="GenerateHistory"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <StackPanel Orientation="Vertical" Margin="10">
-                    <Label Content="Validation" HorizontalAlignment="Center"/>
-                    <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldValidate, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="10">
-                    <Label Content="Filter malicious Events" HorizontalAlignment="Center"/>
-                    <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="10">
-                    <Label Content="Collapsing" HorizontalAlignment="Center"/>
-                    <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldCollapse, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="10">
-                    <Label Content="Reduction" HorizontalAlignment="Center"/>
-                    <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldReduce, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="10">
-                    <Label Content="Simulation" HorizontalAlignment="Center"/>
-                    <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldSimulate, Mode=TwoWay}" IsEnabled="{Binding ShouldCollapse}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+        <DockPanel>
+            <StackPanel 
+                DockPanel.Dock="Top"
+            Margin="10"
+        		Orientation="Vertical" 
+        		VerticalAlignment="Top">
+                <Button 
+        			Content="Generate History" 
+        			Margin="10" 
+        			Style="{StaticResource ButtonDefaultStyle}" 
+        			IsEnabled="{Binding CanPressButtons}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger 
+        					EventName="Click">
+                            <ei:CallMethodAction 
+        						TargetObject="{Binding}" 
+        						MethodName="GenerateHistory"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <Label Content="Validation" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldValidate, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <Label Content="Filter malicious Events" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <Label Content="Collapsing" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldCollapse, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <Label Content="Reduction" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldReduce, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <Label Content="Simulation" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldSimulate, Mode=TwoWay}" IsEnabled="{Binding ShouldCollapse}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
-        </StackPanel>
+            <Grid
+                Height="{Binding Height, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}"
+                >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <svgc:SvgViewbox
+                    Stretch="UniformToFill"
+                    Margin="10"
+                    Grid.Column="0"
+                    
+                HorizontalAlignment="Center"
+                    AutoSize="True"
+        		client:SvgViewboxAttachedProperties.Source="{Binding SvgPath}">
+                </svgc:SvgViewbox>
+                <ListBox Grid.Column="1" HorizontalAlignment="Right" DockPanel.Dock="Right" MinWidth="200" ></ListBox>
+            </Grid>
+        </DockPanel>
     </DockPanel>
 </Window>

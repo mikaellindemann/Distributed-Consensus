@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "Common.Test
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HistoryConsensus", "HistoryConsensus\HistoryConsensus.fsproj", "{5E6BB204-F6DC-4B14-B20D-2244CF6E48DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphOptionToGravizo", "GraphOptionToGravizo\GraphOptionToGravizo.csproj", "{98CB8062-6A49-4D78-91A6-873C520A22E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphOptionToSvg", "GraphOptionToGravizo\GraphOptionToSvg.csproj", "{98CB8062-6A49-4D78-91A6-873C520A22E8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HistoryConsensus.Tests", "HistoryConsensus.Tests\HistoryConsensus.Tests.fsproj", "{06B74492-1D9E-460A-B160-6B1CE5ED6697}"
 EndProject
