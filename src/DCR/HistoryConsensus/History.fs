@@ -121,7 +121,7 @@ module History =
         Map.fold 
             (fun newGraph oldId newId ->
                 let edgeSet = getEdgesThatAreNotYourself oldId newId mapOfCollapsedExecutions
-                let action = Action.create newId newId ActionType.ExecuteFinish edgeSet
+                let action = { Id = newId; CounterpartId = newId; Type = ExecuteFinish; Edges = edgeSet; FailureTypes = (getNode graph newId).FailureTypes }
                 addNode action newGraph)
             empty
             mapOfCollapsedExecutions
