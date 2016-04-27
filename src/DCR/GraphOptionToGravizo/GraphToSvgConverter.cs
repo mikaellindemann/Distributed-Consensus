@@ -10,7 +10,7 @@ using Microsoft.FSharp.Core;
 using Newtonsoft.Json;
 using Action = HistoryConsensus.Action;
 
-namespace GraphOptionToGravizo
+namespace GraphOptionToSvg
 {
     public class GraphToSvgConverter
     {

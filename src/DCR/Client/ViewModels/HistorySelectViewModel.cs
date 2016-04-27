@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Client.Connections;
 using Common.DTO.Shared;
-using GraphOptionToGravizo;
+using GraphOptionToSvg;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;

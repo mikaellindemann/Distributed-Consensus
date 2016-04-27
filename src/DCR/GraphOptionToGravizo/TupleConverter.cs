@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace GraphOptionToGravizo
+namespace GraphOptionToSvg
 {
     [TypeConverter(typeof(Tuple<string, int>))]
     public class TupleConverter : TypeConverter
