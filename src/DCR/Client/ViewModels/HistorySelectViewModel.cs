@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -40,6 +41,7 @@ namespace Client.ViewModels
             EventViewModel = eventViewModel;
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
+            Failures = new ObservableCollection<string>();
 
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
@@ -51,6 +53,7 @@ namespace Client.ViewModels
             CanPressButtons = true;
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
+            Failures = new ObservableCollection<string>();
         }
 
         #region Databindings
@@ -159,6 +162,7 @@ namespace Client.ViewModels
             }
         }
 
+        public ObservableCollection<string> Failures { get; set; }
         #endregion Databindings
 
 
@@ -175,7 +179,7 @@ namespace Client.ViewModels
 
                 var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
                 var localHistories = new List<Tuple<string, Graph.Graph>>();
-                var wrongHistories = new List<string>();
+                var wrongHistories = new List<Tuple<string, FailureTypes.FailureType>>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
 
                 await
@@ -206,16 +210,20 @@ namespace Client.ViewModels
                             await Task.Run(() => LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
                         if (validationResult.IsFailure)
                         {
-                            wrongHistories.Add(history.Item1);
+                            var failureHistory = validationResult.GetFailure;
 
-                            localHistories[index] = new Tuple<string, Graph.Graph>(history.Item1, validationResult.GetFailure);
+                            var failures = failureHistory.Nodes.First(node => !node.Value.FailureTypes.IsEmpty).Value.FailureTypes;
+    
+                            wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history.Item1, failures.First()));
+
+                            localHistories[index] = new Tuple<string, Graph.Graph>(history.Item1, failureHistory);
                         }
                     }
                     // todo validation on pairs and all
                 }
                 if (ShouldFilter)
                 {
-                    localHistories = localHistories.Where(tuple => !wrongHistories.Contains(tuple.Item1)).ToList();
+                    localHistories = localHistories.Where(tuple => !wrongHistories.Exists(tuple1 => tuple1.Item1 == tuple.Item1)).ToList();
                 }
                 Graph.Graph mergedGraph;
                 {
@@ -261,6 +269,14 @@ namespace Client.ViewModels
                 var tempFile = Path.GetTempFileName() + ".svg";
                 new GraphToSvgConverter().ConvertGraphToSvg(mergedGraph, tempFile);
 
+                // Update the failure list on the right:
+                Failures.Clear();
+                foreach (var wrongHistory in wrongHistories)
+                {
+                    
+                    Failures.Add($"{wrongHistory.Item1} {FailureTypeToString(wrongHistory.Item2)}");
+                }
+
                 SvgPath = new Uri(tempFile);
 
                 Status = "";
@@ -274,6 +290,25 @@ namespace Client.ViewModels
                 tokenSource.Cancel();
                 CanPressButtons = true;
             }
+        }
+
+        private static string FailureTypeToString(FailureTypes.FailureType type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            if (type.IsCounterpartTimestampOutOfOrder) return "had counterpart timestamps out of order";
+            if (type.IsExecutedWithoutProperState) return "executed without proper state";
+            if (type.IsFakeRelationsIn) return "had fake ingoing relations";
+            if (type.IsFakeRelationsOut) return "had fake outgoing relations";
+            if (type.IsHistoryAboutOthers) return "contained history about others";
+            if (type.IsIncomingChangesWhileExecuting) return "had incoming changes while executing";
+            if (type.IsLocalTimestampOutOfOrder) return "had local timestamps out of order";
+            if (type.IsMalicious) return "is somehow malicious";
+            if (type.IsMaybe) return "might be malicious";
+            if (type.IsPartOfCycle) return "is part of cycle";
+            if (type.IsPartialOutgoingWhenExecuting) return "only used some of the outgoing relations when executing";
+
+            throw new ArgumentException("Unknown type", nameof(type));
         }
 
         public async void DoAsyncTimerUpdate(CancellationToken token, DateTime start, TimeSpan timeout)

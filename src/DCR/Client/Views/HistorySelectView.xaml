@@ -107,7 +107,14 @@
                     </svgc:SvgViewbox>
                 </controls:ZoomBorderControl>
 
-                <ListBox Grid.Column="1" HorizontalAlignment="Right" DockPanel.Dock="Right" MinWidth="200" ></ListBox>
+                <ListBox Grid.Column="1" HorizontalAlignment="Right" DockPanel.Dock="Right" MinWidth="200" 
+                         ItemsSource="{Binding Failures}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListBox}}" TextWrapping="Wrap" Text="{Binding}"></TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </DockPanel>
     </DockPanel>
