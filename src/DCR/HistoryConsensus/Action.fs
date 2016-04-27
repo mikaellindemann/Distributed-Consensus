@@ -1,5 +1,7 @@
 ﻿namespace HistoryConsensus
 
+open FailureTypes
+
 module Action =
     type EventId = string
     type LocalTimeStamp = int
@@ -24,10 +26,12 @@ module Action =
             CounterpartId: ActionId;
             Type: ActionType;
             Edges: ActionId Set;
+            FailureTypes: FailureType Set;
         }
 
     let create id counterpartId actionType edges = 
         {   Id = id; 
             CounterpartId = counterpartId; 
             Type = actionType; 
-            Edges = edges}
+            Edges = edges;
+            FailureTypes = Set.empty}

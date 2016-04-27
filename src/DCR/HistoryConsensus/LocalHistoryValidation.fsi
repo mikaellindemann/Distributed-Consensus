@@ -5,5 +5,5 @@ open Graph
 open HistoryValidation
 
 module LocalHistoryValidation =
-    val giantLocalCheck : Graph -> EventId -> (unit -> Map<EventId, ActionType list>) -> (unit -> (EventId * ActionType) list) -> Result<Graph, FailureT list>
-    val smallerLocalCheck : Graph -> EventId -> Result<Graph, FailureT list>
+    val giantLocalCheck : Graph -> EventId -> (unit -> Map<EventId, ActionType list>) -> (unit -> (EventId * ActionType) seq) -> Result<Graph, Graph>
+    val smallerLocalCheck : Graph -> EventId -> Result<Graph, Graph>

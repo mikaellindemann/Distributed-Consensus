@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -113,7 +114,7 @@ namespace GraphOptionToGravizo
                     action =>
                         new
                         {
-                            ActionString = $"{action.Id.Item1 + action.Id.Item2}[label=\"{action.Id.Item1}, {ActionToString(action.Type)}];",
+                            ActionString = $"{action.Id.Item1 + action.Id.Item2}[label=\"{action.Id.Item1}, {ActionToString(action.Type)}, {FailureTypeToDotStyle(action.FailureTypes)}];",
                             EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item1 + action.Id.Item2}->{edge.Item1 + edge.Item2};")
                         });
 
@@ -173,6 +174,27 @@ namespace GraphOptionToGravizo
 
             dot.WaitForExit();
             return true;
+        }
+
+        private static string FailureTypeToDotStyle(IEnumerable<FailureTypes.FailureType> types)
+        {
+            // Todo: Do something sneaky with multiple types
+            var type = types.FirstOrDefault();
+            if (type == null) return "";
+
+            if (type.IsCounterpartTimestampOutOfOrder) return "style=filled,fillcolor=red";
+            if (type.IsExecutedWithoutProperState) return "style=filled,fillcolor=red";
+            if (type.IsFakeRelationsIn) return "style=filled,fillcolor=red";
+            if (type.IsFakeRelationsOut) return "style=filled,fillcolor=red";
+            if (type.IsHistoryAboutOthers) return "style=filled,fillcolor=red";
+            if (type.IsIncomingChangesWhileExecuting) return "style=filled,fillcolor=red";
+            if (type.IsLocalTimestampOutOfOrder) return "style=filled,fillcolor=red";
+            if (type.IsMalicious) return "style=filled,fillcolor=red";
+            if (type.IsMaybe) return "style=filled,fillcolor=darkgoldenrod";
+            if (type.IsPartOfCycle) return "style=filled,fillcolor=darkorange4";
+            if (type.IsPartialOutgoingWhenExecuting) return "style=filled,fillcolor=red";
+
+            throw new ArgumentException("Unknown type", nameof(type));
         }
 
         private static string ActionToString(Action.ActionType type)

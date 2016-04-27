@@ -1,17 +1,18 @@
 ﻿namespace HistoryConsensus
 
 open Action
+open FailureTypes
 open Graph
 open HistoryValidation
 
 module LocalHistoryValidation =
     // When an events history is returned, the eventID (not counterpart) should ALWAYS be the event itself.
-    let checkLocalHistoryForLocalInformationAboutOthers eventId history : Result<Graph, FailureT list> =
+    let checkLocalHistoryForLocalInformationAboutOthers eventId history : Result<Graph, Graph> =
         if Graph.forall (fun action -> (fst action.Id) = eventId) history
         then Success history
-        else Failure [([eventId], HistoryAboutOthers)]
+        else Failure <| tagAllActionsWithFailureType HistoryAboutOthers history
 
-    let localBeginningNodesValidation (history : Graph) : Result<Graph, FailureT list> = 
+    let localBeginningNodesValidation (history : Graph) : Result<Graph, Graph> = 
         if Map.isEmpty history.Nodes
         then
             Success history // History is empty, therefore no beginning nodes exist.
@@ -21,18 +22,16 @@ module LocalHistoryValidation =
             | true -> // has beginning nodes
                 if (Graph.getBeginningNodes history).Length = 1
                 then Success history // There must only be one
-                else Failure [(["Too many beginning nodes"], Malicious)] // History has cycles. TODO: Find them
+                else Failure <| tagAllActionsWithFailureType Malicious history // History has cycles. TODO: Find them
             | false -> // no beginning nodes
-                Failure [(["Find cycles!"], Malicious)] // History has cycles. TODO: Find them
-            
-        
+                Failure <| tagAllActionsWithFailureType Malicious history // History has cycles. TODO: Find them
 
     // Checks a local history against allowed incoming actions.
     // This means, that if an incoming action occurs, then every other incoming action from the same counterpart must
     // also occur.
     // The function furthermore requires a map of allowed incoming relations for the local history, which tells whether or not
     // a given relation are allowed to contact this event. If not, this event must be emitting malicious information.
-    let checkLocalHistoryAgainstIncomingRelations allowedIngoingRelations history : Result<Graph, FailureT list> =
+    let checkLocalHistoryAgainstIncomingRelations allowedIngoingRelations history : Result<Graph, Graph> =
         let ingoing = allowedIngoingRelations()
         let historyAsList = Map.toList history.Nodes
 
@@ -52,21 +51,21 @@ module LocalHistoryValidation =
             | [] -> Success history
             | (_, node) :: rest ->
                 match node.Type with
-                | IncludedBy | ExcludedBy | SetPendingBy | CheckedCondition ->
+                | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditionBy ->
                     let counterpart = fst node.CounterpartId
                     if not <| Map.containsKey counterpart ingoing
-                    then Failure [([fst node.Id], FakeRelationsIn)]
+                    then Failure <| tagAllActionsWithFailureType FakeRelationsIn history
                     else 
                         match hasRequired nodes counterpart (Map.find counterpart ingoing) with
-                        | None -> Failure [([fst node.Id], FakeRelationsIn)]
+                        | None -> Failure <| tagAllActionsWithFailureType FakeRelationsIn history
                         | Some rest -> checker rest // All required relations were found
                 | _ -> checker rest // This is not of our interest in this check
 
         checker historyAsList        
 
-    let checkLocalHistoryAgainstOutgoingRelations allowedOutgoingRelations history : Result<Graph, FailureT list> =
+    let checkLocalHistoryAgainstOutgoingRelations (allowedOutgoingRelations : unit -> (EventId * ActionType) seq) history : Result<Graph, Graph> =
         // Lazy initialization of this calculation.
-        let outgoing = allowedOutgoingRelations()
+        let outgoing = Seq.toList <| allowedOutgoingRelations()
         let historyAsList = Map.toList history.Nodes
 
         let rec hasRequired actions (remainingRelations : (EventId * ActionType) list) : (ActionId * Action) list option =
@@ -103,17 +102,18 @@ module LocalHistoryValidation =
                 // required by the DCR-Graph are located in this history.
                 | ExecuteStart -> 
                     match hasRequired rest outgoing with
-                    | None -> Failure [([fst action.Id], FakeRelationsOut)]
+                    | None -> Failure <| tagAllActionsWithFailureType FakeRelationsOut history
                     | Some rest' -> checker rest'
                 // If one of these occurs, then they have happened without the correct relations following from an ExecuteStart
-                | Includes | Excludes | SetsPending | ChecksCondition | ExecuteFinish -> Failure [([fst action.Id], FakeRelationsOut)]
+                | Includes | Excludes | SetsPending | ChecksCondition | ExecuteFinish -> 
+                    Failure <| tagAllActionsWithFailureType FakeRelationsOut history
                 // We don't care about ingoing relations in this check.
                 | _ -> checker rest
 
         checker historyAsList
 
     // Check that the correct order is established for single execution
-    let checkLocalHistoryForCorrectOrder history : Result<Graph, FailureT list> =
+    let checkLocalHistoryForCorrectOrder history : Result<Graph, Graph> =
         // Find beginning node (there can be 0 in an empty local history, and 1 otherwise) there exists a check for this
         let (firstActionId, _)= Seq.minBy (fun (id,_) -> snd id) (Map.toSeq history.Nodes)
 
@@ -126,13 +126,13 @@ module LocalHistoryValidation =
                 then Success history
                 // In local history, there can be at most one successor on each action.
                 else checkOrder (Seq.head node.Edges) timestamp
-            else Failure [([fst actionId], LocalTimestampOutOfOrder)]
+            else Failure <| tagAllActionsWithFailureType LocalTimestampOutOfOrder history
 
         // Implementation specific first value. The timestamps of our database should never be less than either 0 or 1.
         checkOrder firstActionId -1
 
     // Check that no incoming actions appear when executing.
-    let checkLocalIncomingRelationsWhenExecuting eventId (history:Graph) : Result<Graph, FailureT list> = 
+    let checkLocalIncomingRelationsWhenExecuting (history:Graph) : Result<Graph, Graph> = 
         
         // Get execution chunks, as a list of [ExecutionStart Action, random Action, random Action, ExecutionFinish Action])
         let executionChunks = 
@@ -157,8 +157,8 @@ module LocalHistoryValidation =
         // Check whether a given Action type is valid/allowed.
         let hasValidType actionType = 
             match actionType with 
-            | IncludedBy | ExcludedBy | SetPendingBy | CheckedCondition  -> false
-            | _                                                          -> true
+            | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditionBy  -> false
+            | _                                                            -> true
 
         // Check a list of execution chunks for validity.
         let rec checkChunks chunks = 
@@ -170,12 +170,12 @@ module LocalHistoryValidation =
             match chunks with 
             | c::cs     -> let chunkIsValid = checkChunk c
                            if chunkIsValid then checkChunks cs 
-                           else Failure [([eventId], IncomingChangesWhileExecuting)]
+                           else Failure <| tagAllActionsWithFailureType IncomingChangesWhileExecuting history
             | _         -> Success history 
 
         checkChunks executionChunks
 
-    let checkLocalHistoryForCorrectCounterpartOrder history : Result<Graph, FailureT list> =
+    let checkLocalHistoryForCorrectCounterpartOrder history : Result<Graph, Graph> =
         // Find beginning node (there can be 0 in an empty local history, and 1 otherwise)
         let (_, firstAction)= Seq.minBy (fun (id,_) -> snd id) (Map.toSeq history.Nodes)
 
@@ -192,13 +192,13 @@ module LocalHistoryValidation =
                 then
                     let storedTimestamp = Map.find (fst counterpartId) lastTimestamps
                     let newTimestamp = snd counterpartId
-                    if fst action.Id = fst counterpartId && (action.Type = ActionType.CheckedCondition || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy)
+                    if fst action.Id = fst counterpartId && (action.Type = ActionType.CheckedConditionBy || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy)
                     then 
                         // Special case where the local event is also the counterpart.
                         // This means that the actions can be interchangeable, because we also want the local timestamps to be in correct order.
                         if storedTimestamp - 1 = newTimestamp
                         then checkCounterpartOrder (getNode history <| Seq.head action.Edges) (Map.add (fst counterpartId) (max storedTimestamp newTimestamp) lastTimestamps)
-                        else Failure [([fst action.Id], CounterpartTimestampOutOfOrder)] 
+                        else Failure <| tagAllActionsWithFailureType CounterpartTimestampOutOfOrder history
                     else
                         if (Map.find (fst counterpartId) lastTimestamps) < snd counterpartId
                         // Correct order
@@ -207,7 +207,7 @@ module LocalHistoryValidation =
                             then checkCounterpartOrder (getNode history <| Seq.head action.Edges) (Map.add (fst counterpartId) (snd counterpartId) lastTimestamps)
                             else Success history
                         // Wrong order.
-                        else Failure [([fst action.Id], CounterpartTimestampOutOfOrder)] 
+                        else Failure <| tagAllActionsWithFailureType CounterpartTimestampOutOfOrder history
                 // A counterpart which hasn't been seen before in this history
                 else
                     if not <| Set.isEmpty action.Edges
@@ -217,18 +217,33 @@ module LocalHistoryValidation =
         checkCounterpartOrder firstAction Map.empty        
 
 
+    let outgoingRelationsMustHaveHigherTimestampsValidation history =
+        if Graph.forall 
+            (fun action -> 
+                match action.Type with
+                | Includes | Excludes | SetsPending | ChecksCondition ->
+                    (snd action.Id) < (snd action.CounterpartId)
+                | _ -> true)
+            history
+        then Success history
+        else Failure <| tagAllActionsWithFailureType PartOfCycle history
+
     // Validating
     let giantLocalCheck input eventId allowedIngoingRelations allowedOutgoingRelations =
-        input |> hasBeginningNodesValidation
+        input |> localBeginningNodesValidation
             >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
             >>= checkLocalHistoryForCorrectOrder
             >>= checkLocalHistoryForCorrectCounterpartOrder
+            >>= outgoingRelationsMustHaveHigherTimestampsValidation
+            >>= checkLocalIncomingRelationsWhenExecuting
             >>= checkLocalHistoryAgainstIncomingRelations allowedIngoingRelations
             >>= checkLocalHistoryAgainstOutgoingRelations allowedOutgoingRelations
 
 
     let smallerLocalCheck input eventId =
-        input |> hasBeginningNodesValidation
-            >>= checkLocalHistoryForLocalInformationAboutOthers eventId
+        input |> localBeginningNodesValidation
+            >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
             >>= checkLocalHistoryForCorrectOrder
             >>= checkLocalHistoryForCorrectCounterpartOrder
+            >>= outgoingRelationsMustHaveHigherTimestampsValidation
+            >>= checkLocalIncomingRelationsWhenExecuting

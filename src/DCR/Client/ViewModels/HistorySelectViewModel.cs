@@ -198,12 +198,17 @@ namespace Client.ViewModels
 
                 if (ShouldValidate)
                 {
-                    foreach (var history in localHistories)
+                    for (int index = 0; index < localHistories.Count; index++)
                     {
-                        var validationResult = await Task.Run(()=>LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
-                        if (!validationResult.IsSuccess)
+                        var history = localHistories[index];
+
+                        var validationResult =
+                            await Task.Run(() => LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
+                        if (validationResult.IsFailure)
                         {
                             wrongHistories.Add(history.Item1);
+
+                            localHistories[index] = new Tuple<string, Graph.Graph>(history.Item1, validationResult.GetFailure);
                         }
                     }
                     // todo validation on pairs and all

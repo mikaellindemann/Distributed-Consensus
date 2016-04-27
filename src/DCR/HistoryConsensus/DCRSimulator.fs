@@ -1,6 +1,7 @@
 ﻿namespace HistoryConsensus
 
 open Action
+open FailureTypes
 open Graph
 open HistoryValidation
 
@@ -66,21 +67,33 @@ module DCRSimulator =
             (Graph.getNode history actionId).Edges
 
 
-    let simulate (history : Graph) (initialState : DCRState) (rules : DCRRules) : Result<Graph, FailureT list> =
+    let simulate (history : Graph) (initialState : DCRState) (rules : DCRRules) : Result<Graph, Graph> =
         let initialCounterMap = buildCounterMap history
         
-        let rec simulateExecution state counterMap : Result<Graph, FailureT list> =
+        let rec simulateExecution state counterMap failureList : ActionId list =
             if Map.isEmpty counterMap
-            then Success history
+            then failureList
             else
                 // Take the first action that has a counter of 0
                 let ((eventId, _) as actionId,_) = 
                     Map.filter (fun _ count -> count = 0) counterMap |> Map.toSeq |> Seq.head
 
                 match execute state rules eventId with // Execute if possible
-                | None -> Failure [([eventId],Malicious)] // TODO: Change to illegal execution.
+                | None -> 
+                    let counterMap' = updateCounterMap counterMap history actionId // Update counters after execution
+                    simulateExecution state counterMap' (actionId :: failureList)
                 | Some state' -> 
                     let counterMap' = updateCounterMap counterMap history actionId // Update counters after execution
-                    simulateExecution state' counterMap' // Recursive step
+                    simulateExecution state' counterMap' failureList // Recursive step
 
-        simulateExecution initialState initialCounterMap
+        let failures = simulateExecution initialState initialCounterMap []
+
+        if List.isEmpty failures
+        then Success history
+        else
+            Failure <| List.fold 
+                (fun hist fail -> 
+                    let node = Graph.getNode hist fail
+                    Graph.addNode { node with FailureTypes = Set.add ExecutedWithoutProperState node.FailureTypes } hist)
+                history
+                failures

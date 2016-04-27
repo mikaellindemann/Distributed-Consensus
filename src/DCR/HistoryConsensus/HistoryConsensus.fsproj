@@ -52,6 +52,8 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="FailureTypes.fsi" />
+    <Compile Include="FailureTypes.fs" />
     <Compile Include="Action.fsi" />
     <Compile Include="Action.fs" />
     <Compile Include="Graph.fsi" />

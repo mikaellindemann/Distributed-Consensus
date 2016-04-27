@@ -1,5 +1,7 @@
 ﻿namespace HistoryConsensus
 
+open FailureTypes
+
 module Action =
     type EventId = string
     type LocalTimeStamp = int
@@ -24,6 +26,7 @@ module Action =
             CounterpartId: ActionId;
             Type: ActionType;
             Edges: ActionId Set;
+            FailureTypes: FailureType Set;
         }
 
     val create : ActionId -> ActionId -> ActionType -> ActionId Set -> Action

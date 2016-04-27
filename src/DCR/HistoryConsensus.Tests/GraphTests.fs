@@ -14,7 +14,8 @@ module GraphTests =
                 Id = ("Test", 1);
                 CounterpartId = ("CounterpartTest", 1);
                 Type = ActionType.IncludedBy;
-                Edges = Set.ofList [("2", 2); ("3", 3); ("4", 4)]
+                Edges = Set.ofList [("2", 2); ("3", 3); ("4", 4)];
+                FailureTypes = Set.empty;
             }
 
         [<Test>]
@@ -35,7 +36,8 @@ module GraphTests =
                         Id = ("Test", 1);
                         CounterpartId = ("CounterpartTest", 1);
                         Type = ActionType.IncludedBy;
-                        Edges = Set.ofList [("1", 1)]
+                        Edges = Set.ofList [("1", 1)];
+                        FailureTypes = Set.empty;
                     })]
             }
 
