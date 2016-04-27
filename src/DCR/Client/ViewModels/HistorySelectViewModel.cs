@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.Connections;
+using Common.DTO.Shared;
 using GraphOptionToGravizo;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
@@ -175,7 +176,8 @@ namespace Client.ViewModels
                 var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
                 var localHistories = new List<Tuple<string, Graph.Graph>>();
                 var wrongHistories = new List<string>();
-                foreach (var @event in events)
+                var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
+                foreach (var @event in serverEventDtos)
                 {
                     var localHistory =
                         JsonConvert.DeserializeObject<Graph.Graph>(
@@ -186,7 +188,7 @@ namespace Client.ViewModels
                 {
                     foreach (var history in localHistories)
                     {
-                        var validationResult = LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1);
+                        var validationResult = await Task.Run(()=>LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
                         if (!validationResult.IsSuccess)
                         {
                             wrongHistories.Add(history.Item1);
@@ -207,31 +209,31 @@ namespace Client.ViewModels
                             localHistories.Where(elem => !ReferenceEquals(elem.Item2, first))
                                 .Select(tuple => tuple.Item2));
 
-                    var result = History.stitch(first, rest);
+                    var result = await Task.Run(()=>History.stitch(first, rest));
                     mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
                 }
                 if (ShouldCollapse)
                 {
-                    mergedGraph = History.collapse(mergedGraph);
+                    mergedGraph = await Task.Run(()=>History.collapse(mergedGraph));
                 }
                 if (ShouldReduce)
                 {
-                    mergedGraph = History.reduce(mergedGraph);
+                    mergedGraph = await Task.Run(()=>History.reduce(mergedGraph));
                 }
                 if (ShouldSimulate)
                 {
-                    var initialStates = events.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
-                    List<Tuple<string, string, Action.ActionType>> rules = new List<Tuple<string, string, Action.ActionType>>();
-                    foreach (var serverEventDto in events)
+                    var initialStates = serverEventDtos.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
+                    var rules = new List<Tuple<string, string, Action.ActionType>>();
+                    foreach (var serverEventDto in serverEventDtos)
                     {
-                        var conditions = events.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)).ToList();
-                        var inclusions = events.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)).ToList();
-                        var exclusions = events.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)).ToList();
-                        var responses = events.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)).ToList();
-                        rules.AddRange(conditions);
-                        rules.AddRange(inclusions);
-                        rules.AddRange(exclusions);
-                        rules.AddRange(responses);
+                        //conditions
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
+                        //inclusions
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
+                        //exclusions
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
+                        //responses
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
                     }
 
                     var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
