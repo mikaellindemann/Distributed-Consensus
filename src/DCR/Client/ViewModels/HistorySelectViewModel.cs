@@ -97,12 +97,13 @@ namespace Client.ViewModels
                 if (_shouldValidate == value) return;
                 _shouldValidate = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShouldFilter));
             }
         }
 
         public bool ShouldFilter
         {
-            get { return _shouldFilter; }
+            get { return _shouldFilter && ShouldValidate; }
             set
             {
                 if (_shouldFilter == value) return;
@@ -120,12 +121,13 @@ namespace Client.ViewModels
                 _shouldCollapse = value;
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(ShouldSimulate));
+                NotifyPropertyChanged(nameof(ShouldReduce));
             }
         }
 
         public bool ShouldReduce
         {
-            get { return _shouldReduce; }
+            get { return _shouldReduce && ShouldCollapse; }
             set
             {
                 if (_shouldReduce == value) return;
@@ -218,26 +220,22 @@ namespace Client.ViewModels
                 }
                 if (ShouldSimulate)
                 {
-                    if (ShouldCollapse != true) Status = "Simulation only works when collapsing is also on";
-                    else
+                    var initialStates = events.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
+                    List<Tuple<string, string, Action.ActionType>> rules = new List<Tuple<string, string, Action.ActionType>>();
+                    foreach (var serverEventDto in events)
                     {
-                        var initialStates = events.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
-                        List<Tuple<string, string, Action.ActionType>> rules = new List<Tuple<string, string, Action.ActionType>>();
-                        foreach (var serverEventDto in events)
-                        {
-                            var conditions = events.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)).ToList();
-                            var inclusions = events.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)).ToList();
-                            var exclusions = events.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)).ToList();
-                            var responses = events.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)).ToList();
-                            rules.AddRange(conditions);
-                            rules.AddRange(inclusions);
-                            rules.AddRange(exclusions);
-                            rules.AddRange(responses);
-                        }
-
-                        var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
-                        // todo use this result
+                        var conditions = events.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)).ToList();
+                        var inclusions = events.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)).ToList();
+                        var exclusions = events.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)).ToList();
+                        var responses = events.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)).ToList();
+                        rules.AddRange(conditions);
+                        rules.AddRange(inclusions);
+                        rules.AddRange(exclusions);
+                        rules.AddRange(responses);
                     }
+
+                    var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
+                    // todo use this result
                 }
 
                 //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
