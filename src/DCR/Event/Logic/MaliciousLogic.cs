@@ -156,22 +156,22 @@ namespace Event.Logic
             if (eventModel.ConditionUris.Count != 0)
             {
                 type = ActionType.ChecksCondition;
-                id = eventModel.ConditionUris.ToList()[0].EventId;
+                id = eventModel.ConditionUris.First().EventId;
             }
             else if (eventModel.InclusionUris.Count != 0)
             {
                 type = ActionType.Includes;
-                id = eventModel.ConditionUris.ToList()[0].EventId;
+                id = eventModel.InclusionUris.First().EventId;
             }
             else if (eventModel.ExclusionUris.Count != 0)
             {
                 type = ActionType.Excludes;
-                id = eventModel.ConditionUris.ToList()[0].EventId;
+                id = eventModel.ExclusionUris.First().EventId;
             }
             else if (eventModel.ResponseUris.Count != 0)
             {
                 type = ActionType.SetsPending;
-                id = eventModel.ConditionUris.ToList()[0].EventId;
+                id = eventModel.ResponseUris.First().EventId;
             }
             return new Tuple<string, ActionType>(id,type);
         }
