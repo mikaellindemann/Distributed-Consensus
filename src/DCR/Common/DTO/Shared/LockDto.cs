@@ -1,4 +1,4 @@
-﻿namespace Event.Models
+﻿namespace Common.DTO.Shared
 {
     public class LockDto
     {

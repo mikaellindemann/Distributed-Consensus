@@ -177,6 +177,12 @@ namespace Client.ViewModels
                 var localHistories = new List<Tuple<string, Graph.Graph>>();
                 var wrongHistories = new List<string>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
+
+                await
+                    Task.WhenAll(
+                        serverEventDtos.OrderBy(@event => @event.EventId).Select(
+                            async @event => await _eventConnection.Lock(@event.Uri, @event.WorkflowId, @event.EventId)));
+
                 foreach (var @event in serverEventDtos)
                 {
                     var localHistory =
@@ -184,6 +190,12 @@ namespace Client.ViewModels
                             await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
                     localHistories.Add(new Tuple<string, Graph.Graph>(@event.EventId, localHistory));
                 }
+
+                await
+                    Task.WhenAll(
+                        serverEventDtos.Select(
+                            async @event => await _eventConnection.Unlock(@event.Uri, @event.WorkflowId, @event.EventId)));
+
                 if (ShouldValidate)
                 {
                     foreach (var history in localHistories)

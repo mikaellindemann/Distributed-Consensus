@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Exceptions;
 using Event.Interfaces;

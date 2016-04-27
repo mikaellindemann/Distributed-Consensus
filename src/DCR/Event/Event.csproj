@@ -156,7 +156,6 @@
     <Compile Include="Models\UriClasses\ResponseUri.cs" />
     <Compile Include="Models\UriClasses\UriRepresentationBase.cs" />
     <Compile Include="Storage\EventContext.cs" />
-    <Compile Include="Models\LockDto.cs" />
     <Compile Include="Interfaces\IEventFromEvent.cs" />
     <Compile Include="Interfaces\IServerFromEvent.cs" />
     <Compile Include="Global.asax.cs">

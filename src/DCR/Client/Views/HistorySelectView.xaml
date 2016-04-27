@@ -96,13 +96,17 @@
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <controls:ZoomBorderControl ClipToBounds="True" Grid.Column="0">
+                <controls:ZoomBorderControl 
+                    ClipToBounds="True" 
+                    Grid.Column="0"
+                    Background="LightGray"
+                    >
                     <svgc:SvgViewbox
                     HorizontalAlignment="Center"
         		    client:SvgViewboxAttachedProperties.Source="{Binding SvgPath}">
                     </svgc:SvgViewbox>
                 </controls:ZoomBorderControl>
-                
+
                 <ListBox Grid.Column="1" HorizontalAlignment="Right" DockPanel.Dock="Right" MinWidth="200" ></ListBox>
             </Grid>
         </DockPanel>
