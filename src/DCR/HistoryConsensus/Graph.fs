@@ -11,7 +11,7 @@ module Graph =
         if Map.containsKey node.Id graph.Nodes
         then
             let inGraph = Map.find node.Id graph.Nodes
-            { Nodes = Map.add node.Id { inGraph with Edges = Set.union inGraph.Edges node.Edges} graph.Nodes }
+            { Nodes = Map.add node.Id { inGraph with Edges = Set.union inGraph.Edges node.Edges; FailureTypes = Set.union inGraph.FailureTypes node.FailureTypes } graph.Nodes }
         else
             { Nodes = Map.add node.Id node graph.Nodes }
 

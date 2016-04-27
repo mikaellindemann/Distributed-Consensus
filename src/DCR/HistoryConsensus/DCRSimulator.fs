@@ -42,19 +42,21 @@ module DCRSimulator =
     let execute (state : DCRState) (rules : DCRRules) eventId : DCRState option =
         let eventRules = Set.filter (fun (id,_,_) -> id = eventId) rules
 
-        let conditions = Set.filter (fun (_,_,relationType) -> relationType = ActionType.ChecksCondition) eventRules
+        
+        let conditions = Set.filter (fun (_,from,relationType) -> relationType = ActionType.ChecksCondition && from = eventId) eventRules
 
         if not <| isExecutable conditions state
         then None // Not executable, this execution is illegal
         else
             // Executable -> Apply state update.
-            let (included, pending, _) = Map.find eventId state
-
-            Some <| Set.fold
-                (fun state' (_,toEventId,relationType) ->
-                    updateStateForRelation state' toEventId relationType)
-                (Map.add eventId (included, pending, true) state) // Set executed state of current event.
-                (Set.filter (fun (_,_,relationType) -> relationType <> ActionType.ChecksCondition) eventRules) // Only look at rules that are not conditions.
+            match Map.tryFind eventId state with
+            | None -> None
+            | Some (included, pending, _) ->
+                Some <| Set.fold
+                    (fun state' (_,toEventId,relationType) ->
+                        updateStateForRelation state' toEventId relationType)
+                    (Map.add eventId (included, pending, true) state) // Set executed state of current event.
+                    (Set.filter (fun (_,_,relationType) -> relationType <> ActionType.ChecksCondition) eventRules) // Only look at rules that are not conditions.
 
     let updateCounterMap counterMap history actionId : Map<ActionId, int> =
         let counterMap' = Map.remove actionId counterMap // Remove the action that was just executed.
