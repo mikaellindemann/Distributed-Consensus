@@ -68,6 +68,10 @@ module LocalHistoryValidation =
         let outgoing = Seq.toList <| allowedOutgoingRelations()
         let historyAsList = Map.toList history.Nodes
 
+        let isIngoing = function
+        | CheckedConditionBy | IncludedBy | ExcludedBy | SetPendingBy -> true
+        | _ -> false
+
         let rec hasRequired actions (remainingRelations : (EventId * ActionType) list) : (ActionId * Action) list option =
             match remainingRelations with
             // If we have no more required relations
@@ -75,6 +79,8 @@ module LocalHistoryValidation =
                 match actions with
                 // Then the current action must be an execute finish, because no more outgoing relations should be in the history.
                 | (_, action) :: rest when action.Type = ExecuteFinish -> Some rest
+                // Locally, ingoing actions are alright, if the counterpart are yourself.
+                | (_, action) :: rest when isIngoing action.Type -> hasRequired rest remainingRelations
                 | _ -> None // There should be no more relations. Is this correct?
 
             // If there are more required relations
@@ -83,6 +89,9 @@ module LocalHistoryValidation =
                 // And we have no more history, then there is a problem with the local history.
                 | [] -> None
                 // If we have more history
+                // But this history is ingoing, ignore it
+                | (_, action) :: rest when isIngoing action.Type -> hasRequired rest remainingRelations
+                // Otherwise check action and rest.
                 | (_, action) :: rest ->
                     // The type of the action (together with the counterpart who initiated it) should exist in the remaining relations.
                     if List.contains (fst action.CounterpartId, action.Type) remainingRelations
@@ -164,7 +173,8 @@ module LocalHistoryValidation =
         let rec checkChunks chunks = 
             // Check Action types in a chunk for validity.
             let checkChunk chunk = 
-                List.forall (fun a -> hasValidType a.Type) chunk
+                                                             // The event accepts incoming requests from itself.
+                List.forall (fun a -> hasValidType a.Type || (fst a.Id) = (fst a.CounterpartId)) chunk
             
             // Check every chunk for validity. If an illegal chunk is discovered, add a Failure to the list of failures.
             match chunks with 
@@ -228,16 +238,36 @@ module LocalHistoryValidation =
         then Success history
         else Failure <| tagAllActionsWithFailureType PartOfCycle history
 
+
+    let mapOutgoingToIngoing = function
+        | SetsPending -> SetPendingBy
+        | ChecksCondition -> CheckedConditionBy
+        | Includes -> IncludedBy
+        | Excludes -> ExcludedBy
+        | _ -> failwith "Not an outgoing relation!"
+
+    let allowedIngoingRelationsMapMaker eventId (rules : DCRRules) (unit : unit) =
+        let ingoing = Set.filter (fun (_, toId, _) -> toId = eventId) rules
+        let mafds = Set.map (fun (fromId, _, actionType) -> (fromId, mapOutgoingToIngoing actionType)) ingoing
+
+        let groups = Seq.groupBy (fun (fromId, _) -> fromId) mafds
+
+        Map.ofSeq (Seq.map (fun (fromId, actionTypes) -> (fromId, List.ofSeq (Seq.map (fun (_,types) -> types) actionTypes))) groups)
+
+    let allowedOutgoingRelationsMaker eventId (rules : DCRRules) (unit : unit) =
+        let outgoing = Set.filter (fun (fromId, _, _) -> fromId = eventId) rules
+        Seq.map (fun (_,toId, actionType) -> (toId, actionType)) outgoing
+
     // Validating
-    let giantLocalCheck input eventId allowedIngoingRelations allowedOutgoingRelations =
+    let giantLocalCheck input eventId (rules : DCRRules) =
         input |> localBeginningNodesValidation
             >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
             >>= checkLocalHistoryForCorrectOrder
             >>= checkLocalHistoryForCorrectCounterpartOrder
             >>= outgoingRelationsMustHaveHigherTimestampsValidation
             >>= checkLocalIncomingRelationsWhenExecuting
-            >>= checkLocalHistoryAgainstIncomingRelations allowedIngoingRelations
-            >>= checkLocalHistoryAgainstOutgoingRelations allowedOutgoingRelations
+            >>= checkLocalHistoryAgainstIncomingRelations (allowedIngoingRelationsMapMaker eventId rules)
+            >>= checkLocalHistoryAgainstOutgoingRelations (allowedOutgoingRelationsMaker eventId rules)
 
 
     let smallerLocalCheck input eventId =

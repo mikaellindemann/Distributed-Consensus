@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -200,6 +199,21 @@ namespace Client.ViewModels
                         serverEventDtos.Select(
                             async @event => await _eventConnection.Unlock(@event.Uri, @event.WorkflowId, @event.EventId)));
 
+                // Extract DCR rules
+                var rules = new List<Tuple<string, string, Action.ActionType>>();
+                foreach (var serverEventDto in serverEventDtos)
+                {
+                    //conditions
+                    rules.AddRange(serverEventDto.Conditions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
+                    //inclusions
+                    rules.AddRange(serverEventDto.Inclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
+                    //exclusions
+                    rules.AddRange(serverEventDto.Exclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
+                    //responses
+                    rules.AddRange(serverEventDto.Responses.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
+                }
+                var dcrRules = new FSharpSet<Tuple<string, string, Action.ActionType>>(rules);
+
                 if (ShouldValidate)
                 {
                     for (int index = 0; index < localHistories.Count; index++)
@@ -207,7 +221,7 @@ namespace Client.ViewModels
                         var history = localHistories[index];
 
                         var validationResult =
-                            await Task.Run(() => LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
+                            await Task.Run(() => LocalHistoryValidation.giantLocalCheck(history.Item2, history.Item1, dcrRules));
                         if (validationResult.IsFailure)
                         {
                             var failureHistory = validationResult.GetFailure;
@@ -248,20 +262,8 @@ namespace Client.ViewModels
                 if (ShouldSimulate)
                 {
                     var initialStates = serverEventDtos.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
-                    var rules = new List<Tuple<string, string, Action.ActionType>>();
-                    foreach (var serverEventDto in serverEventDtos)
-                    {
-                        //conditions
-                        rules.AddRange(serverEventDto.Conditions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
-                        //inclusions
-                        rules.AddRange(serverEventDto.Inclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
-                        //exclusions
-                        rules.AddRange(serverEventDto.Exclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
-                        //responses
-                        rules.AddRange(serverEventDto.Responses.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
-                    }
 
-                    var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
+                    var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), dcrRules);
 
                     if (result.IsFailure)
                     {

@@ -15,6 +15,8 @@ module HistoryValidation =
             member GetSuccess : 'SuccessType
             member GetFailure : 'FailureType
 
+    type DCRRules = Set<EventId * EventId * ActionType> // From * To * Type
+
     ///Check a given Result and call the given function on it, if it is a Success.
     val bind : ('a -> Result<'b,'c>) -> Result<'a,'c> -> Result<'b,'c>
     val (>>=) : Result<'a, 'b> -> ('a -> Result<'c, 'b>) -> Result<'c, 'b>
