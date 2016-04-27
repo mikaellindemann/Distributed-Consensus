@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using Common.DTO.History;
 using Event.Interfaces;
 using Event.Models;
 using Event.Models.UriClasses;
@@ -39,7 +38,7 @@ namespace Event.Storage
                 .HasForeignKey(c => new { c.WorkflowId, c.EventId });
 
             modelBuilder.Entity<ActionModel>()
-                .HasKey(model => new {model.Timestamp, model.EventId});
+                .HasKey(model => new {model.Timestamp, model.EventId, model.WorkflowId});
         }
 
         public DbSet<EventModel> Events { get; set; }
