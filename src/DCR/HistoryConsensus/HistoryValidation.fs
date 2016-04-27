@@ -22,6 +22,8 @@ module HistoryValidation =
                 | Failure f -> f
                 | _ -> failwith "Check the result first!"
 
+    type DCRRules = Set<EventId * EventId * ActionType> // From * To * Type
+
     ///Check a given Result and call the given function on it, if it is a Success.
     let bind func resultInput = 
         match resultInput with 

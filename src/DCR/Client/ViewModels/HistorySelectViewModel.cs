@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -200,6 +199,10 @@ namespace Client.ViewModels
                         serverEventDtos.Select(
                             async @event => await _eventConnection.Unlock(@event.Uri, @event.WorkflowId, @event.EventId)));
 
+                // Extract DCR rules
+                var rules = GetRules(serverEventDtos);
+                var dcrRules = new FSharpSet<Tuple<string, string, Action.ActionType>>(rules);
+
                 if (ShouldValidate)
                 {
                     for (int index = 0; index < localHistories.Count; index++)
@@ -207,7 +210,7 @@ namespace Client.ViewModels
                         var history = localHistories[index];
 
                         var validationResult =
-                            await Task.Run(() => LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
+                            await Task.Run(() => LocalHistoryValidation.giantLocalCheck(history.Item2, history.Item1, dcrRules));
                         if (validationResult.IsFailure)
                         {
                             var failureHistory = validationResult.GetFailure;
@@ -220,7 +223,6 @@ namespace Client.ViewModels
                         }
                     }
                     // pair validations
-                    var rules = GetRules(serverEventDtos);
                     for (int index1 = 0; index1 < localHistories.Count; index1++)
                     {
                         var history1 = localHistories[index1];
@@ -272,8 +274,7 @@ namespace Client.ViewModels
                 if (ShouldSimulate)
                 {
                     var initialStates = serverEventDtos.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
-                    var rules = GetRules(serverEventDtos);
-                    var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
+                    var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), dcrRules);
 
                     if (result.IsFailure)
                     {
