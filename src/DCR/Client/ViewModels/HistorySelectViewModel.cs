@@ -21,11 +21,14 @@ namespace Client.ViewModels
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
         private bool _canPressButtons;
-        private bool _shouldValidate;
-        private bool _shouldFilter;
-        private bool _shouldCollapse;
-        private bool _shouldReduce;
-        private bool _shouldSimulate;
+
+        private bool 
+            _shouldValidate = true,
+            _shouldFilter = true,
+            _shouldCollapse = true,
+            _shouldReduce = true,
+            _shouldSimulate = true;
+
         private string _executionTime;
         private string _status;
 
@@ -115,6 +118,7 @@ namespace Client.ViewModels
                 if (_shouldCollapse == value) return;
                 _shouldCollapse = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShouldSimulate));
             }
         }
 
@@ -131,7 +135,7 @@ namespace Client.ViewModels
 
         public bool ShouldSimulate
         {
-            get { return _shouldSimulate; }
+            get { return _shouldSimulate && ShouldCollapse; }
             set
             {
                 if (_shouldSimulate == value) return;
@@ -234,9 +238,26 @@ namespace Client.ViewModels
                 }
                 if (ShouldSimulate)
                 {
-                    //var map = new FSharpMap<string, Tuple<bool, bool, bool>>();
-                    //var rules = new FSharpSet<Tuple<string, string, Action.ActionType>>();
-                    var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, null, null);
+                    if (ShouldCollapse != true) Status = "Simulation only works when collapsing is also on";
+                    else
+                    {
+                        var initialStates = events.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
+                        List<Tuple<string, string, Action.ActionType>> rules = new List<Tuple<string, string, Action.ActionType>>();
+                        foreach (var serverEventDto in events)
+                        {
+                            var conditions = events.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)).ToList();
+                            var inclusions = events.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)).ToList();
+                            var exclusions = events.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)).ToList();
+                            var responses = events.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)).ToList();
+                            rules.AddRange(conditions);
+                            rules.AddRange(inclusions);
+                            rules.AddRange(exclusions);
+                            rules.AddRange(responses);
+                        }
+
+                        var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
+                        // todo use this result
+                    }
                 }
 
                 new GraphToPdfConverter().ConvertAndShow(mergedGraph);
