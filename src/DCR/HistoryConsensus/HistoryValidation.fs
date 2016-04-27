@@ -6,10 +6,14 @@ open Graph;
 module HistoryValidation =
 
     type FailureType =
-        | Maybe
-        | HasWrongOutgoingAction
-        | HasWrongIngoingAction
-        | Malicious
+        | HistoryAboutOthers
+        | FakeRelationsOut
+        | FakeRelationsIn
+        | LocalTimestampOutOfOrder
+        | IncomingChangesWhileExecuting
+        | PartialOutgoingWhenExecuting
+        | CounterpartTimestampOutOfOrder
+        | Malicious // TODO: Remove
 
     type FailureT = string list * FailureType
 
@@ -25,31 +29,6 @@ module HistoryValidation =
         | Failure f -> Failure f
 
     let (>>=) resultInput func = bind func resultInput
-    
-    let validationExample = 
-        let failureInput = "2 A"
-        let successInput = "okaystring"
-
-        let noSpacesValidation input = 
-            if Seq.exists (fun c -> System.Char.IsWhiteSpace(c)) input
-            then Failure "Input contained spaces."
-            else Success input
-
-        let noNumberValidation input =
-            if Seq.exists (fun c -> System.Char.IsDigit(c)) input
-            then Failure "Input contains a number."
-            else Success input
-
-        let noUpperCaseValidation input =
-            if Seq.exists (fun c -> System.Char.IsUpper(c)) input
-            then Failure "Input contains an uppercase character."
-            else Success input
-
-        let failureResult = failureInput |> noSpacesValidation >>= noNumberValidation >>= noUpperCaseValidation
-        let successResult = successInput |> noSpacesValidation >>= noNumberValidation >>= noUpperCaseValidation
-        printf "Failure result: %O" failureResult
-        printf "Success result: %O" successResult
-        
 
     // If no beginning nodes exist, we have either an empty history, or a history with cycles
     let hasBeginningNodesValidation (history : Graph) : Result<Graph, FailureT list> = 
@@ -63,85 +42,51 @@ module HistoryValidation =
     let noCycleValidation (history : Graph) : Result<Graph, FailureT list> =
         let beginningNodes = Graph.getBeginningNodes history
 
-        let rec cycleDfsCheck node trace : Result<Graph, FailureT list> =
-            if List.contains node.Id trace
-            then Failure [([(fst node.Id)], Malicious)]
-            else 
-                Set.fold 
-                    (fun status edge -> 
-                        match status with
-                        | Failure g -> Failure g
-                        | Success g -> cycleDfsCheck (Graph.getNode history edge) (node.Id :: trace))
-                    (Success history)
-                    node.Edges
+        let rec cycleDfsCheck node trace failures =
+            Set.fold
+                (fun acc edge ->
+                    if List.contains node.Id trace
+                    then
+                        // Todo: Is it correct that it is always the last two that created the cycle?
+                        Set.add ([fst node.Id; fst <| List.head trace], Malicious) acc
+                    else
+                        cycleDfsCheck (Graph.getNode history edge) (node.Id :: trace) acc
+                )
+                failures
+                node.Edges
 
-        List.fold 
-            (fun status node ->
-                match status with
-                | Failure g -> Failure g
-                | Success g -> cycleDfsCheck node [])
-            (Success history)
-            beginningNodes
+        let failureSet = 
+            List.fold 
+                (fun failures node ->
+                    cycleDfsCheck node [] failures
+                )
+                Set.empty
+                beginningNodes
+
+        match Set.toList failureSet with
+        | [] -> Success history
+        | x  -> Failure x
 
 
-    
+    let agreeOnAmtOfActions  (history1 : Graph)   (history2 : Graph)  : Result<(Graph*Graph), FailureT list> =
+        let eventId1 = fst (Map.pick (fun x y -> Some x) history1.Nodes)
+        let eventId2 = fst (Map.pick (fun x y -> Some x) history2.Nodes)
+        if ((Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes).Count = (Map.filter (fun actionId action -> fst action.CounterpartId = eventId1) history2.Nodes).Count)
+        then
+            Success (history1, history2)
+        else 
+            Failure [([string eventId1; string eventId2], Malicious)];
 
-    // When an events history is returned, the eventID (not counterpart) should ALWAYS be the event itself.
-    let checkLocalHistoryForLocalInformationAboutOthers eventId history : Result<Graph, FailureT list> =
-        if Graph.forall (fun action -> (fst action.Id) = eventId) history
-        then Success history
-        else Failure [([eventId], Malicious)]
+
+    let agreeOnActions  (history1 : Graph)   (history2 : Graph)  : Result<(Graph*Graph), FailureT list> =
+        let eventId1 = fst (Map.pick (fun x y -> Some x) history1.Nodes)
+        let eventId2 = fst (Map.pick (fun x y -> Some x) history2.Nodes)
+        let actionsAbout2From1 = Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes |> Map.toSeq
+        let actionsAbout1From2 = Map.filter (fun actionId action -> fst action.CounterpartId = eventId1) history2.Nodes |> Map.toSeq
         
-
-    // Check a single local history if it contacts or are contacted by wrong events.
-    let checkLocalHistoryAgainstRelations allowedIngoingRelations allowedOutgoingRelations history : Result<Graph, FailureT list> =
-        Graph.fold 
-            (fun status action -> 
-                match status with
-                | Success i -> 
-                    match action.Type with
-                    // TODO: Make it stricter, denoting which kind of actions can come from which events,
-                    // and also check that if one relation comes from another event, then all of its outgoing relations
-                    // must be in the execution as well.
-                    | ExecuteStart | ExecuteFinish -> Success i
-                    | Includes | Excludes | SetsPending | ChecksConditon ->
-                        if Set.contains (fst action.CounterpartId) allowedOutgoingRelations
-                        then Success i
-                        else Failure [([fst action.Id], HasWrongOutgoingAction)]
-                    | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditon ->
-                        if Set.contains (fst action.CounterpartId) allowedIngoingRelations
-                        then Success i
-                        else Failure [([fst action.Id], HasWrongIngoingAction)]
-                | Failure i -> Failure i
-            )
-            (Success history)
-            history
-
-    // Check that the correct order is established for single execution
-    let checkLocalForCorrectOrder history : Result<Graph, FailureT list> =
-        // Find beginning node (there can be 0 in an empty local history, and 1 otherwise)
-        let (firstActionId, _)= Seq.minBy (fun (id,_) -> snd id) (Map.toSeq history.Nodes)
-
-        let rec checkOrder actionId lastTimestamp =
-            let timestamp = snd actionId
-            if timestamp > lastTimestamp
-            then 
-                let node = getNode history actionId
-                if Set.isEmpty node.Edges
-                then Success history
-                // In local history, there can be at most one successor on each action.
-                else checkOrder (Seq.head node.Edges) timestamp
-            else Failure [([fst actionId], Malicious)]
-
-        // Implementation specific first value. The timestamps of our database should never be less than either 0 or 1.
-        checkOrder firstActionId -1
-
-    // Check that no ingoing actions can appear when executing.
-
-    // Check that all relations appears inside execution
-
-    let giantLocalCheck input eventId allowedIngoingRelations allowedOutgoingRelations =
-        input |> hasBeginningNodesValidation
-            >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
-            >>= checkLocalForCorrectOrder
-            >>= checkLocalHistoryAgainstRelations allowedIngoingRelations allowedOutgoingRelations
+        let zipped = Seq.zip actionsAbout2From1 actionsAbout1From2
+        if (Seq.exists (fun ((actionId1,action1), (actionId2,action2)) -> snd action2.Id = snd action1.CounterpartId && snd action1.Id = snd action2.CounterpartId ) zipped)
+        then
+            Success (history1, history2)
+        else 
+            Failure [([string eventId1; string eventId2], Malicious)];

@@ -108,7 +108,7 @@ module Graph =
             fromNode.CounterpartId = toNode.Id && fromNode.Id = toNode.CounterpartId
         let checkRelation fromType toType =
             match fromType, toType with
-            | ChecksConditon, CheckedConditon   -> true
+            | ChecksCondition, CheckedCondition -> true
             | Includes, IncludedBy              -> true
             | Excludes, ExcludedBy              -> true
             | SetsPending, SetPendingBy         -> true
@@ -147,6 +147,8 @@ module Graph =
         let neighbourNodes = getNodes graph <| Set.toList node.Edges
         cycleThrough [node.Id] neighbourNodes
 
-    let fold folder (state : 'State) graph = Map.fold (fun state _ node -> folder state node) state graph.Nodes
+    let fold folder state graph = Map.fold (fun state _ node -> folder state node) state graph.Nodes
 
     let forall predicate graph = Map.forall (fun _ node -> predicate node) graph.Nodes
+
+    let exists predicate graph = Map.exists (fun _ node -> predicate node) graph.Nodes

@@ -7,8 +7,8 @@
     <ProjectGuid>{98CB8062-6A49-4D78-91A6-873C520A22E8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GraphOptionToGravizo</RootNamespace>
-    <AssemblyName>GraphOptionToGravizo</AssemblyName>
+    <RootNamespace>GraphOptionToSvg</RootNamespace>
+    <AssemblyName>GraphOptionToSvg</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphToPdfConverter.cs" />
+    <Compile Include="GraphToSvgConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TupleConverter.cs" />
   </ItemGroup>

@@ -347,3 +347,7 @@ doc/texv2/DistributedConsensus.pdf
 
 .paket/
 paket.*
+
+
+### Mac specific files
+.DS_STORE

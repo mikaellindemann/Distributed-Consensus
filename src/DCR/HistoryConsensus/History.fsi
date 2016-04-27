@@ -9,3 +9,4 @@ module History =
     val stitch : Graph -> Graph list -> Graph option
     val collapse : Graph -> Graph
     val simplify : Graph -> Graph
+    val reduce : Graph -> Graph

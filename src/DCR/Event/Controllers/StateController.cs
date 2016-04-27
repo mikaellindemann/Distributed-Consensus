@@ -82,7 +82,7 @@ namespace Event.Controllers
                 var included = await _logic.IsIncluded(workflowId, eventId, senderId);
                 var executed = await _logic.IsExecuted(workflowId, eventId, senderId);
 
-                var localTimestamp = await _historyLogic.SaveSuccesfullCall(ActionType.CheckedConditon, eventId, workflowId, senderId, timestamp);
+                var localTimestamp = await _historyLogic.SaveSuccesfullCall(ActionType.CheckedCondition, eventId, workflowId, senderId, timestamp);
 
                 if (included && !executed)
                 {

@@ -56,14 +56,16 @@
     <Compile Include="Action.fs" />
     <Compile Include="Graph.fsi" />
     <Compile Include="Graph.fs" />
-    <Compile Include="History.fsi" />
-    <Compile Include="History.fs" />
     <Compile Include="HistoryValidation.fsi" />
     <Compile Include="HistoryValidation.fs" />
+    <Compile Include="LocalHistoryValidation.fsi" />
+    <Compile Include="LocalHistoryValidation.fs" />
+    <Compile Include="DCRSimulator.fsi" />
+    <Compile Include="DCRSimulator.fs" />
+    <Compile Include="History.fsi" />
+    <Compile Include="History.fs" />
     <Content Include="packages.config" />
     <Content Include="App.config" />
-    <None Include="Scripts\load-references-debug.fsx" />
-    <None Include="Scripts\load-project-debug.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Data">

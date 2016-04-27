@@ -8,8 +8,8 @@
         ExcludedBy,
         SetsPending,
         SetPendingBy,
-        CheckedConditon,
-        ChecksConditon,
+        CheckedCondition,
+        ChecksCondition,
         ExecuteStart,
         ExecuteFinished
     }

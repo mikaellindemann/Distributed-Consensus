@@ -7,11 +7,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.Connections;
+using Common.DTO.Shared;
 using GraphOptionToGravizo;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Newtonsoft.Json;
+using Action = HistoryConsensus.Action;
 
 namespace Client.ViewModels
 {
@@ -20,8 +22,17 @@ namespace Client.ViewModels
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
         private bool _canPressButtons;
+
+        private bool 
+            _shouldValidate = true,
+            _shouldFilter = true,
+            _shouldCollapse = true,
+            _shouldReduce = true,
+            _shouldSimulate = true;
+
         private string _executionTime;
         private string _status;
+        private Uri _svgPath;
 
         public HistorySelectViewModel(EventViewModel eventViewModel, IServerConnection serverConnection, IEventConnection eventConnection)
         {
@@ -41,6 +52,8 @@ namespace Client.ViewModels
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
         }
+
+        #region Databindings
 
         public EventViewModel EventViewModel { get; set; }
 
@@ -77,148 +90,183 @@ namespace Client.ViewModels
             }
         }
 
-        private async Task<Graph.Graph> FetchAndMerge()
+        public bool ShouldValidate
         {
-            var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
-
-            var localHistories = new List<Graph.Graph>();
-
-            foreach (var @event in events)
+            get { return _shouldValidate; }
+            set
             {
-                localHistories.Add(JsonConvert.DeserializeObject<Graph.Graph>(await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId)));
+                if (_shouldValidate == value) return;
+                _shouldValidate = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShouldFilter));
             }
-
-            var first = localHistories.First();
-            var rest = ToFSharpList(localHistories.Where(elem => !ReferenceEquals(elem, first)));
-
-            var finalGraph = History.stitch(first, rest);
-
-            return FSharpOption<Graph.Graph>.get_IsSome(finalGraph) ? finalGraph.Value : null;
         }
 
-        public async Task MakeHistoryLocal(Func<Task<Graph.Graph>> makeHistory)
+        public bool ShouldFilter
         {
+            get { return _shouldFilter && ShouldValidate; }
+            set
+            {
+                if (_shouldFilter == value) return;
+                _shouldFilter = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool ShouldCollapse
+        {
+            get { return _shouldCollapse; }
+            set
+            {
+                if (_shouldCollapse == value) return;
+                _shouldCollapse = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShouldSimulate));
+                NotifyPropertyChanged(nameof(ShouldReduce));
+            }
+        }
+
+        public bool ShouldReduce
+        {
+            get { return _shouldReduce && ShouldCollapse; }
+            set
+            {
+                if (_shouldReduce == value) return;
+                _shouldReduce = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool ShouldSimulate
+        {
+            get { return _shouldSimulate && ShouldCollapse; }
+            set
+            {
+                if (_shouldSimulate == value) return;
+                _shouldSimulate = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public Uri SvgPath
+        {
+            get { return _svgPath; }
+            set
+            {
+                if (value == _svgPath) return;
+                _svgPath = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion Databindings
+
+
+        #region Actions
+        public async void GenerateHistory()
+        {
+            Status = "Attempting to generate history with the given parameters";
             var tokenSource = new CancellationTokenSource();
             CanPressButtons = false;
-            
+
             try
             {
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var graph = await makeHistory();
-                tokenSource.Cancel();
 
-                new GraphToPdfConverter().ConvertAndShow(graph);
-                
-                CanPressButtons = true;
+                var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
+                var localHistories = new List<Tuple<string, Graph.Graph>>();
+                var wrongHistories = new List<string>();
+                var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
+
+                await
+                    Task.WhenAll(
+                        serverEventDtos.OrderBy(@event => @event.EventId).Select(
+                            async @event => await _eventConnection.Lock(@event.Uri, @event.WorkflowId, @event.EventId)));
+
+                foreach (var @event in serverEventDtos)
+                {
+                    var localHistory =
+                        JsonConvert.DeserializeObject<Graph.Graph>(
+                            await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
+                    localHistories.Add(new Tuple<string, Graph.Graph>(@event.EventId, localHistory));
+                }
+
+                await
+                    Task.WhenAll(
+                        serverEventDtos.Select(
+                            async @event => await _eventConnection.Unlock(@event.Uri, @event.WorkflowId, @event.EventId)));
+
+                if (ShouldValidate)
+                {
+                    foreach (var history in localHistories)
+                    {
+                        var validationResult = await Task.Run(()=>LocalHistoryValidation.smallerLocalCheck(history.Item2, history.Item1));
+                        if (!validationResult.IsSuccess)
+                        {
+                            wrongHistories.Add(history.Item1);
+                        }
+                    }
+                    // todo validation on pairs and all
+                }
+                if (ShouldFilter)
+                {
+                    localHistories = localHistories.Where(tuple => !wrongHistories.Contains(tuple.Item1)).ToList();
+                }
+                Graph.Graph mergedGraph;
+                {
+                    // Merging
+                    var first = localHistories.First().Item2;
+                    var rest =
+                        ToFSharpList(
+                            localHistories.Where(elem => !ReferenceEquals(elem.Item2, first))
+                                .Select(tuple => tuple.Item2));
+
+                    var result = await Task.Run(()=>History.stitch(first, rest));
+                    mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
+                }
+                if (ShouldCollapse)
+                {
+                    mergedGraph = await Task.Run(()=>History.collapse(mergedGraph));
+                }
+                if (ShouldReduce)
+                {
+                    mergedGraph = await Task.Run(()=>History.reduce(mergedGraph));
+                }
+                if (ShouldSimulate)
+                {
+                    var initialStates = serverEventDtos.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
+                    var rules = new List<Tuple<string, string, Action.ActionType>>();
+                    foreach (var serverEventDto in serverEventDtos)
+                    {
+                        //conditions
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
+                        //inclusions
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
+                        //exclusions
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
+                        //responses
+                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
+                    }
+
+                    var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
+                    // todo use this result
+                }
+
+                //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
+                var tempFile = Path.GetTempFileName() + ".svg";
+                new GraphToSvgConverter().ConvertGraphToSvg(mergedGraph, tempFile);
+
+                SvgPath = new Uri(tempFile);
+
                 Status = "";
             }
             catch (Exception)
             {
                 Status = "Something went wrong";
-                CanPressButtons = true;
             }
-        }
-
-        public async void ProduceLocal()
-        {
-            Status = "Attempting to produce history - pdf result will open when done";
-            await MakeHistoryLocal(FetchAndMerge);
-        }
-
-        public async void CollapseLocal()
-        {
-            Status = "Attempting to produce+collapse history - pdf result will open when done";
-            await MakeHistoryLocal(async () => History.collapse(await FetchAndMerge()));
-        }
-
-        public async void CreateLocal()
-        {
-            Status = "Attempting to create history - pdf result will open when done";
-            await MakeHistoryLocal(async () => History.simplify(await FetchAndMerge()));
-        }
-
-        public async void Produce()
-        {
-            CanPressButtons = false;
-            Status = "Attempting to produce history - pdf result will open when done";
-            try
+            finally
             {
-                var tokenSource = new CancellationTokenSource();
-
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json =
-                    await
-                        _eventConnection.Produce(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
-                            EventViewModel.Id);
                 tokenSource.Cancel();
-
-                var file = Path.GetTempFileName();
-                File.WriteAllText(file, json);
-
-                new GraphToPdfConverter().ConvertAndShow(file);
-
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
-                CanPressButtons = true;
-            }
-        }
-
-        public async void Collapse()
-        {
-            CanPressButtons = false;
-            Status = "Attempting to produce+collapse history - pdf result will open when done";
-            try
-            {
-                var tokenSource = new CancellationTokenSource();
-
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json = await _eventConnection.Collapse(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId, EventViewModel.Id);
-                tokenSource.Cancel();
-
-                var file = Path.GetTempFileName();
-                File.WriteAllText(file, json);
-
-                new GraphToPdfConverter().ConvertAndShow(file);
-
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
-                CanPressButtons = true;
-            }
-        }
-
-        public async void Create()
-        {
-            CanPressButtons = false;
-            Status = "Attempting to create history - pdf result will open when done";
-
-
-            try
-            {
-                var tokenSource = new CancellationTokenSource();
-
-                DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
-                var json = await _eventConnection.Create(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId, EventViewModel.Id);
-                tokenSource.Cancel();
-
-                var file = Path.GetTempFileName();
-                File.WriteAllText(file, json);
-
-                new GraphToPdfConverter().ConvertAndShow(file);
-
-                CanPressButtons = true;
-                Status = "";
-            }
-            catch (Exception)
-            {
-                Status = "Something went wrong";
                 CanPressButtons = true;
             }
         }
@@ -247,6 +295,7 @@ namespace Client.ViewModels
         {
             return elements.Reverse().Aggregate(FSharpList<T>.Empty, (current, element) => FSharpList<T>.Cons(element, current));
         }
+        #endregion Actions
     }
 
     public class TupleConverter : TypeConverter

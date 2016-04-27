@@ -130,3 +130,7 @@ module History =
         let collapsedExecutions = collapse graph
         let transReduction = transitiveReduction collapsedExecutions
         transReduction
+
+    let reduce (graph:Graph) : Graph =
+        let transReduction = transitiveReduction graph
+        transReduction

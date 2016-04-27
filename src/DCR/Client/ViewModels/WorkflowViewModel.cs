@@ -120,7 +120,7 @@ namespace Client.ViewModels
         {
             if (EventList != null && EventList.Count != 0)
             {
-                var maliciousWindow = new MaliciousView(new MaliciousViewModel(SelectedEventViewModel, _serverConnection, _eventConnection) );
+                var maliciousWindow = new MaliciousView(new MaliciousViewModel(SelectedEventViewModel, new MaliciousConnection()) );
                 maliciousWindow.ShowDialog();
             }
         }

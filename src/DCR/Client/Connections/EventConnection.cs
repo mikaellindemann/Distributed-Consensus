@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Client.Exceptions;
 using Common.DTO.Event;
 using Common.DTO.History;
+using Common.DTO.Shared;
 using Common.Exceptions;
 using Common.Tools;
 using HistoryConsensus;
@@ -165,6 +166,33 @@ namespace Client.Connections
             {
                 return await
                     _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/create/");
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public Task Lock(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return
+                    _httpClient.Create($"{uri}events/{workflowId}/{eventId}/lock",
+                        new LockDto {EventId = eventId, WorkflowId = workflowId, LockOwner = "-1"});
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HostNotFoundException(e);
+            }
+        }
+
+        public Task Unlock(Uri uri, string workflowId, string eventId)
+        {
+            try
+            {
+                return
+                    _httpClient.Delete($"{uri}events/{workflowId}/{eventId}/lock/-1");
             }
             catch (HttpRequestException e)
             {

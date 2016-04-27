@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
+using Common.DTO.Shared;
 using Event.Interfaces;
 using Event.Logic;
 
@@ -16,6 +18,13 @@ namespace Event.Controllers
         public MaliciousController(IMaliciousLogic logic)
         {
             _maliciousLogic = logic;
+        }
+
+        [Route("event/malicious/{workflowId}/{eventId}")]
+        [HttpPut]
+        public async Task ApplyCheatingType(string workflowId, string eventId, [FromBody] CheatingDto cheatingDto)
+        {
+            await _maliciousLogic.AddCheatingType(workflowId, eventId, cheatingDto);
         }
 
         protected override void Dispose(bool disposing)

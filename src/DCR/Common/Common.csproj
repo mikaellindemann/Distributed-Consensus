@@ -55,8 +55,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheatingTypeEnum.cs" />
     <Compile Include="DTO\Event\ConditionDto.cs" />
     <Compile Include="DTO\History\ActionType.cs" />
+    <Compile Include="DTO\Shared\CheatingDto.cs" />
+    <Compile Include="DTO\Shared\LockDto.cs" />
     <Compile Include="DTO\Shared\ServerEventDto.cs" />
     <Compile Include="Exceptions\EventExistsException.cs" />
     <Compile Include="Exceptions\IllegalstorageStateException.cs" />

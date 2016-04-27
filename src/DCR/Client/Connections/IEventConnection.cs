@@ -59,5 +59,8 @@ namespace Client.Connections
         Task<string> Produce(Uri uri, string workflowId, string id);
         Task<string> Collapse(Uri uri, string workflowId, string id);
         Task<string> Create(Uri uri, string workflowId, string id);
+
+        Task Lock(Uri uri, string workflowId, string id);
+        Task Unlock(Uri uri, string workflowId, string id);
     }
 }

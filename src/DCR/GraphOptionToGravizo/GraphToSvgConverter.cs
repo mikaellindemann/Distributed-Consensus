@@ -11,7 +11,7 @@ using Action = HistoryConsensus.Action;
 
 namespace GraphOptionToGravizo
 {
-    public class GraphToPdfConverter
+    public class GraphToSvgConverter
     {
         public static void Main(string[] args)
         {
@@ -29,7 +29,7 @@ namespace GraphOptionToGravizo
                 return;
             }
 
-            var converter = new GraphToPdfConverter();
+            var converter = new GraphToSvgConverter();
             if (args.Length == 1)
             {
                 converter.ConvertAndShow(args[0]);
@@ -52,9 +52,9 @@ namespace GraphOptionToGravizo
             var dotFileName = Path.GetTempFileName();
             File.Delete(dotFileName);
 
-            if (ConvertGraphToPdf(graph, $"{dotFileName}.pdf"))
+            if (ConvertGraphToSvg(graph, $"{dotFileName}.svg"))
             {
-                var pdfProcess = Process.Start($"{dotFileName}.pdf");
+                var pdfProcess = Process.Start($"{dotFileName}.svg");
                 if (pdfProcess != null)
                 {
                     pdfProcess.Exited += async (sender, args) =>
@@ -62,7 +62,7 @@ namespace GraphOptionToGravizo
                         await Task.Delay(2000);
                         try
                         {
-                            File.Delete($"{dotFileName}.pdf");
+                            File.Delete($"{dotFileName}.svg");
                         }
                         catch (Exception)
                         {
@@ -73,24 +73,24 @@ namespace GraphOptionToGravizo
             }
         }
 
-        private void ConvertAndShow(string jsonFile, string pdfFile)
+        private void ConvertAndShow(string jsonFile, string svgfile)
         {
             var graph = LoadGraph(jsonFile);
 
-            ConvertAndShow(graph, pdfFile);
+            ConvertAndShow(graph, svgfile);
         }
 
-        private void ConvertAndShow(Graph.Graph graph, string pdfFile)
+        private void ConvertAndShow(Graph.Graph graph, string svgfile)
         {
-            if (!pdfFile.EndsWith(".pdf"))
+            if (!svgfile.EndsWith(".svg"))
             {
-                Console.WriteLine("Appended '.pdf' to the end of FileToWrite.");
-                pdfFile = pdfFile + ".pdf";
+                Console.WriteLine("Appended '.svg' to the end of FileToWrite.");
+                svgfile = svgfile + ".svg";
             }
 
-            if (ConvertGraphToPdf(graph, pdfFile))
+            if (ConvertGraphToSvg(graph, svgfile))
             {
-                Process.Start(pdfFile);
+                Process.Start(svgfile);
             }
         }
 
@@ -139,14 +139,15 @@ namespace GraphOptionToGravizo
             return true;
         }
 
-        public bool ConvertGraphToPdf(Graph.Graph graph, string pdffile)
+        public bool ConvertGraphToSvg(Graph.Graph graph, string svgfile)
         {
-            var dotStartInfo = new ProcessStartInfo("dot", "-Kdot -Tpdf")
+            var dotStartInfo = new ProcessStartInfo("dot", "-Kdot -Tsvg")
             {
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
             };
 
             var dot = Process.Start(dotStartInfo);
@@ -159,7 +160,7 @@ namespace GraphOptionToGravizo
             }
             using (var reader = dot.StandardOutput.BaseStream)
             {
-                using (var writer = File.OpenWrite(pdffile))
+                using (var writer = File.OpenWrite(svgfile))
                 {
                     var buffer = new byte[1024];
                     int bytesRead;
@@ -176,8 +177,8 @@ namespace GraphOptionToGravizo
 
         private static string ActionToString(Action.ActionType type)
         {
-            if (type.IsCheckedConditon) return "CheckedCondition\"";
-            if (type.IsChecksConditon) return "ChecksCondition\"";
+            if (type.IsCheckedCondition) return "CheckedCondition\"";
+            if (type.IsChecksCondition) return "ChecksCondition\"";
             if (type.IsExcludedBy) return "ExcludedBy\"";
             if (type.IsExcludes) return "Excludes\"";
             if (type.IsExecuteFinish) return "ExecuteFinish\",style=filled,fillcolor=green";

@@ -1,4 +1,5 @@
 ﻿namespace HistoryConsensus
+
 module Action =
     type EventId = string
     type LocalTimeStamp = int
@@ -12,8 +13,8 @@ module Action =
         | ExcludedBy
         | SetsPending
         | SetPendingBy
-        | CheckedConditon// of bool
-        | ChecksConditon// of bool
+        | CheckedCondition// of bool
+        | ChecksCondition// of bool
         | ExecuteStart
         | ExecuteFinish
 
