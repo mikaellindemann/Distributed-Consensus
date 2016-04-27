@@ -184,6 +184,7 @@
     <Compile Include="ViewModels\IWorkflowViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MaliciousViewModel.cs" />
+    <Compile Include="ViewModels\ObservableSet.cs" />
     <Compile Include="ViewModels\Parser\ParsingViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\WorkflowListViewModel.cs" />

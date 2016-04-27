@@ -245,5 +245,5 @@ module LocalHistoryValidation =
             >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
             >>= checkLocalHistoryForCorrectOrder
             >>= checkLocalHistoryForCorrectCounterpartOrder
-            >>= outgoingRelationsMustHaveHigherTimestampsValidation
             >>= checkLocalIncomingRelationsWhenExecuting
+            >>= outgoingRelationsMustHaveHigherTimestampsValidation

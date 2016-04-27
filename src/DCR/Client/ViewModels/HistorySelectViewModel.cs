@@ -41,7 +41,7 @@ namespace Client.ViewModels
             EventViewModel = eventViewModel;
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
-            Failures = new ObservableCollection<string>();
+            Failures = new ObservableSet<string>();
 
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
@@ -53,7 +53,7 @@ namespace Client.ViewModels
             CanPressButtons = true;
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
-            Failures = new ObservableCollection<string>();
+            Failures = new ObservableSet<string>();
         }
 
         #region Databindings
@@ -162,7 +162,7 @@ namespace Client.ViewModels
             }
         }
 
-        public ObservableCollection<string> Failures { get; set; }
+        public ObservableSet<string> Failures { get; set; }
         #endregion Databindings
 
 
@@ -179,7 +179,7 @@ namespace Client.ViewModels
 
                 var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
                 var localHistories = new List<Tuple<string, Graph.Graph>>();
-                var wrongHistories = new List<Tuple<string, FailureTypes.FailureType>>();
+                var wrongHistories = new HashSet<Tuple<string, FailureTypes.FailureType>>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
 
                 await
@@ -223,7 +223,7 @@ namespace Client.ViewModels
                 }
                 if (ShouldFilter)
                 {
-                    localHistories = localHistories.Where(tuple => !wrongHistories.Exists(tuple1 => tuple1.Item1 == tuple.Item1)).ToList();
+                    localHistories = localHistories.Where(tuple => wrongHistories.All(badTuple => badTuple.Item1 != tuple.Item1)).ToList();
                 }
                 Graph.Graph mergedGraph;
                 {
@@ -252,17 +252,32 @@ namespace Client.ViewModels
                     foreach (var serverEventDto in serverEventDtos)
                     {
                         //conditions
-                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Conditions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
+                        rules.AddRange(serverEventDto.Conditions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksCondition)));
                         //inclusions
-                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Inclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
+                        rules.AddRange(serverEventDto.Inclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Includes)));
                         //exclusions
-                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Exclusions).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
+                        rules.AddRange(serverEventDto.Exclusions.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.Excludes)));
                         //responses
-                        rules.AddRange(serverEventDtos.SelectMany(dto => dto.Responses).Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
+                        rules.AddRange(serverEventDto.Responses.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.SetsPending)));
                     }
 
-                    var result = HistoryConsensus.DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
-                    // todo use this result
+                    var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), new FSharpSet<Tuple<string, string, Action.ActionType>>(rules));
+
+                    if (result.IsFailure)
+                    {
+                        var failureResult = result.GetFailure;
+
+                        foreach (var keyValuePair in failureResult.Nodes)
+                        {
+                            foreach (var failureType in keyValuePair.Value.FailureTypes)
+                            {
+                                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(keyValuePair.Key.Item1,
+                                    failureType));
+                            }
+                        }
+
+                        mergedGraph = failureResult;
+                    }
                 }
 
                 //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
@@ -273,7 +288,6 @@ namespace Client.ViewModels
                 Failures.Clear();
                 foreach (var wrongHistory in wrongHistories)
                 {
-                    
                     Failures.Add($"{wrongHistory.Item1} {FailureTypeToString(wrongHistory.Item2)}");
                 }
 
