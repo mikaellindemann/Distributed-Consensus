@@ -159,6 +159,7 @@
     </ApplicationDefinition>
     <Compile Include="Connections\IMaliciousConnection.cs" />
     <Compile Include="Connections\MaliciousConnection.cs" />
+    <Compile Include="Controls\ZoomBorderControl.cs" />
     <Compile Include="Exceptions\HostNotFoundException.cs" />
     <Compile Include="Connections\EventConnection.cs" />
     <Compile Include="Connections\IEventConnection.cs" />
@@ -295,9 +296,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\IsEvil.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="accessible.svg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

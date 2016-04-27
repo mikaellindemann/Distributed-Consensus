@@ -10,6 +10,7 @@
     xmlns:toggleSwitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
     xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
     xmlns:client="clr-namespace:Client"
+    xmlns:controls="clr-namespace:Client.Controls"
     x:Class="Client.Views.HistorySelectView"
     Title="HistorySelectView" WindowState="Maximized"
     d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}" 
@@ -72,7 +73,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Filter malicious Events" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" IsEnabled="{Binding ShouldValidate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Collapsing" HorizontalAlignment="Center"/>
@@ -80,7 +81,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Reduction" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldReduce, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldReduce, Mode=TwoWay}" IsEnabled="{Binding ShouldCollapse}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Simulation" HorizontalAlignment="Center"/>
@@ -90,20 +91,18 @@
             </StackPanel>
             <Grid
                 Height="{Binding Height, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}"
-                >
+                Margin="10,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <svgc:SvgViewbox
-                    Stretch="UniformToFill"
-                    Margin="10"
-                    Grid.Column="0"
-                    
-                HorizontalAlignment="Center"
-                    AutoSize="True"
-        		client:SvgViewboxAttachedProperties.Source="{Binding SvgPath}">
-                </svgc:SvgViewbox>
+                <controls:ZoomBorderControl ClipToBounds="True" Grid.Column="0">
+                    <svgc:SvgViewbox
+                    HorizontalAlignment="Center"
+        		    client:SvgViewboxAttachedProperties.Source="{Binding SvgPath}">
+                    </svgc:SvgViewbox>
+                </controls:ZoomBorderControl>
+                
                 <ListBox Grid.Column="1" HorizontalAlignment="Right" DockPanel.Dock="Right" MinWidth="200" ></ListBox>
             </Grid>
         </DockPanel>
