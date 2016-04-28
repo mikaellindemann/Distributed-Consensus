@@ -32,7 +32,7 @@ module HistoryValidation =
 
     let (>>=) resultInput func = bind func resultInput
 
-    let agreeOnAmtOfActions  (history1 : Graph)   (history2 : Graph)  : Result<Graph * Graph, Graph * Graph> =
+    let agreeOnAmtOfActions  ((history1 : Graph), (history2 : Graph))  : Result<Graph * Graph, Graph * Graph> =
         let eventId1 = fst (Map.pick (fun x y -> Some x) history1.Nodes)
         let eventId2 = fst (Map.pick (fun x y -> Some x) history2.Nodes)
         if ((Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes).Count = (Map.filter (fun actionId action -> fst action.CounterpartId = eventId1) history2.Nodes).Count)
@@ -42,7 +42,7 @@ module HistoryValidation =
             Failure <| (tagAllActionsWithFailureType Maybe history1, tagAllActionsWithFailureType Maybe history2)
 
 
-    let agreeOnActions  (history1 : Graph)   (history2 : Graph)  : Result<Graph * Graph, Graph * Graph> =
+    let agreeOnActions  ((history1 : Graph), (history2 : Graph))  : Result<Graph * Graph, Graph * Graph> =
         let eventId1 = fst (Map.pick (fun x y -> Some x) history1.Nodes)
         let eventId2 = fst (Map.pick (fun x y -> Some x) history2.Nodes)
         let actionsAbout2From1 = Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes |> Map.toSeq
@@ -55,5 +55,5 @@ module HistoryValidation =
         else 
             Failure <| (tagAllActionsWithFailureType Maybe history1, tagAllActionsWithFailureType Maybe history2)
 
-    let pairValidationCheck (history1 : Graph)   (history2 : Graph)  : Result<Graph * Graph, Graph * Graph> =
-        (agreeOnAmtOfActions history1 history2)
+    let pairValidationCheck (history1 : Graph) (history2 : Graph)  : Result<Graph * Graph, Graph * Graph> =
+        (history1, history2) |> agreeOnAmtOfActions >>= agreeOnActions
