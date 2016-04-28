@@ -274,6 +274,11 @@ namespace Event.Tests.LogicTests
                 new RelationToOtherEventModel() {EventId = "EventId8", Uri = new Uri("http://uri8.dk"), WorkflowId = "WorkflowId8"},
                 new RelationToOtherEventModel() {EventId = "EventId9", Uri = new Uri("http://uri9.dk"), WorkflowId = "WorkflowId9"},
             };
+            var milestones = new HashSet<RelationToOtherEventModel>()
+            {
+                new RelationToOtherEventModel() {EventId = "EventId10", Uri = new Uri("http://uri10.dk"), WorkflowId = "WorkflowId10"},
+                new RelationToOtherEventModel() {EventId = "EventId11", Uri = new Uri("http://uri11.dk"), WorkflowId = "WorkflowId11"},
+            };
 
             const string name = "Name";
             const bool executed = false;
@@ -292,6 +297,7 @@ namespace Event.Tests.LogicTests
             mockStorage.Setup(m => m.GetResponses(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(responses);
             mockStorage.Setup(m => m.GetExclusions(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(exclusions);
             mockStorage.Setup(m => m.GetInclusions(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(inclusions);
+            mockStorage.Setup(m => m.GetMilestones(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(milestones);
             mockStorage.Setup(m => m.GetRoles(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(roles);
 
             mockStorage.Setup(m => m.Exists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);

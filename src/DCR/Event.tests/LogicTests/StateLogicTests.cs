@@ -25,7 +25,7 @@ namespace Event.Tests.LogicTests
         private Mock<IAuthLogic> _authLogicMock;
         private Mock<IEventFromEvent> _eventCommunicatorMock;
         private Mock<IEventHistoryLogic> _eventHistoryMock;
-        private HashSet<RelationToOtherEventModel> _conditions, _responses, _inclusions, _exclusions;
+        private HashSet<RelationToOtherEventModel> _conditions, _responses, _inclusions, _exclusions, _milestones;
 
         private int _timestamp;
 
@@ -36,6 +36,7 @@ namespace Event.Tests.LogicTests
             _responses = new HashSet<RelationToOtherEventModel>();
             _inclusions = new HashSet<RelationToOtherEventModel>();
             _exclusions = new HashSet<RelationToOtherEventModel>();
+            _milestones = new HashSet<RelationToOtherEventModel>();
 
             _eventStorageMock = new Mock<IEventStorage>(MockBehavior.Strict);
 
@@ -45,6 +46,7 @@ namespace Event.Tests.LogicTests
             _eventStorageMock.Setup(s => s.GetResponses(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_responses);
             _eventStorageMock.Setup(s => s.GetInclusions(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_inclusions);
             _eventStorageMock.Setup(s => s.GetExclusions(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_exclusions);
+            _eventStorageMock.Setup(s => s.GetMilestones(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_milestones);
             _eventStorageMock.Setup(s => s.GetUri(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Uri("http://www.contoso.com"));
             _eventStorageMock.Setup(s => s.Reload(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(0));
             _eventStorageMock.Setup(s => s.SetExecuted(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.Delay(0)).Verifiable();
@@ -69,6 +71,10 @@ namespace Event.Tests.LogicTests
             _eventCommunicatorMock.Setup(ec => ec.CheckCondition(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new ConditionDto
             {
                 Condition = true
+            });
+            _eventCommunicatorMock.Setup(ec => ec.CheckMilestone(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new MilestoneDto
+            {
+                Milestone = true
             });
             _eventCommunicatorMock.Setup(ec => ec.IsExecuted(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
             _eventCommunicatorMock.Setup(ec => ec.IsIncluded(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);

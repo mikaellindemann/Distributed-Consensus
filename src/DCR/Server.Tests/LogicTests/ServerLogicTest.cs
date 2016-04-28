@@ -106,6 +106,7 @@ namespace Server.Tests.LogicTests
             var conditions = new List<ConditionUri>();
             var exclusions = new List<ExclusionUri>();
             var inclusions = new List<InclusionUri>();
+            var milestones = new List<MilestoneUri>();
             //Ensure that it's REALLY set up this time...
             role.ServerWorkflowModel = w1;
             w1.ServerRolesModels = roles;
@@ -121,7 +122,8 @@ namespace Server.Tests.LogicTests
                 ConditionUris = conditions,
                 ExclusionUris = exclusions,
                 InclusionUris = inclusions,
-                ResponseUris = responses
+                ResponseUris = responses,
+                MilestoneUris = milestones
             };
 
             //Add the event to one of the events.
@@ -142,7 +144,8 @@ namespace Server.Tests.LogicTests
                 Responses = new List<EventAddressDto>(),
                 Conditions = new List<EventAddressDto>(),
                 Exclusions = new List<EventAddressDto>(),
-                Inclusions = new List<EventAddressDto>()
+                Inclusions = new List<EventAddressDto>(),
+                Milestones = new List<EventAddressDto>()
             };
 
             await _toTest.AddEventToWorkflow("1", toAdd);
