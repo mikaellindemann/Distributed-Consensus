@@ -1,0 +1,21 @@
+Related work: inkluder også hvorfor oplagte ting ikke fungerer
+
+Skal være færdigt:
+
+* Problemformulering
+* Introduktion til DCR grafer
+
+* Analyse
+  * Rationalet
+  * Korrekthedsargument
+  * Overvejelse om performance
+
+Helst alle ovenfor, men mindst 1 af Analyse-afsnittene.
+Send hele rapporten, men skriv hvilke afsnit er done.
+
+
+Husk overvejelser over måder at løse problemet på vi har forsøgt. Inkluder gerne en kortere beskrivelse af det i analysen og hvorfor vi ikke gik videre med det.
+
+(Hint: Brug det at vi gerne ville bruge DCR grafer til at finde onde knuder, frem for at gøre det distribueret)
+
+Vi bliver enige om at alle kan sige "Min historie passer ind i det store billede"
