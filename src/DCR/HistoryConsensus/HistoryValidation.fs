@@ -48,8 +48,24 @@ module HistoryValidation =
         let actionsAbout2From1 = Map.filter (fun actionId action -> fst action.CounterpartId = eventId2) history1.Nodes |> Map.toSeq
         let actionsAbout1From2 = Map.filter (fun actionId action -> fst action.CounterpartId = eventId1) history2.Nodes |> Map.toSeq
         
+        let hasMatchingTypes type1 type2 =
+            match (type1, type2) with
+            | ChecksCondition, CheckedConditionBy
+            | CheckedConditionBy, ChecksCondition
+            | ChecksMilestone, CheckedMilestoneBy
+            | CheckedMilestoneBy, ChecksMilestone
+            | SetsPending, SetPendingBy
+            | SetPendingBy, SetsPending
+            | Includes, IncludedBy
+            | IncludedBy, Includes
+            | Excludes, ExcludedBy
+            | ExcludedBy, Excludes -> true
+            | _ -> false
+
+        let isCounterpart action1 action2 = action1.Id = action2.CounterpartId && action2.Id = action1.CounterpartId
+
         let zipped = Seq.zip actionsAbout2From1 actionsAbout1From2
-        if (Seq.exists (fun ((actionId1,action1), (actionId2,action2)) -> snd action2.Id = snd action1.CounterpartId && snd action1.Id = snd action2.CounterpartId ) zipped)
+        if (Seq.forall (fun ((actionId1,action1), (actionId2,action2)) -> isCounterpart action1 action2 && hasMatchingTypes action1.Type action2.Type) zipped)
         then
             Success (history1, history2)
         else 
