@@ -56,25 +56,24 @@ module DCRSimulator =
                 else
                     false
 
-    let execute (state : DCRState) (rules : DCRRules) eventId : DCRState option =
-        let eventRules = Set.filter (fun (id,_,_) -> id = eventId) rules
+    let execute (state : DCRState) (rules : DCRRules) eventId : Result<DCRState, DCRState> =
+        match Map.tryFind eventId state with
+            | None -> Failure state
+            | Some (included, _, _) ->
+                let eventRules = Set.filter (fun (id,_,_) -> id = eventId) rules
+                let conditions = Set.filter (fun (_,_,relationType) -> relationType = ActionType.ChecksCondition) eventRules
+                let milestones = Set.filter (fun (_,_,relationType) -> relationType = ActionType.ChecksMilestone) eventRules
 
-        
-        let conditions = Set.filter (fun (_,_,relationType) -> relationType = ActionType.ChecksCondition) eventRules
-        let milestones = Set.filter (fun (_,_,relationType) -> relationType = ActionType.ChecksMilestone) eventRules
+                let executedState = 
+                    Set.fold
+                        (fun state' (_,toEventId,relationType) ->
+                            updateStateForRelation state' toEventId relationType)
+                        (Map.add eventId (included, false, true) state) // Set executed state of current event.
+                        (Set.filter (fun (_,_,relationType) -> relationType <> ActionType.ChecksCondition && relationType <> ActionType.ChecksMilestone) eventRules) // Only look at rules that are not conditions and milestones.
 
-        if not <| isExecutable conditions milestones state eventId
-        then None // Not executable, this execution is illegal
-        else
-            // Executable -> Apply state update.
-            match Map.tryFind eventId state with
-            | None -> None
-            | Some (included, pending, _) ->
-                Some <| Set.fold
-                    (fun state' (_,toEventId,relationType) ->
-                        updateStateForRelation state' toEventId relationType)
-                    (Map.add eventId (included, pending, true) state) // Set executed state of current event.
-                    (Set.filter (fun (_,_,relationType) -> relationType <> ActionType.ChecksCondition && relationType <> ActionType.ChecksMilestone) eventRules) // Only look at rules that are not conditions and milestones.
+                if not <| isExecutable conditions milestones state eventId
+                then Failure executedState // Not executable, this execution is illegal
+                else Success executedState
 
     let updateCounterMap counterMap history actionId : Map<ActionId, int> =
         let counterMap' = Map.remove actionId counterMap // Remove the action that was just executed.
@@ -98,12 +97,12 @@ module DCRSimulator =
                 let ((eventId, _) as actionId,_) = 
                     Map.filter (fun _ count -> count = 0) counterMap |> Map.toSeq |> Seq.head
 
+                let counterMap' = updateCounterMap counterMap history actionId // Update counters after execution
+
                 match execute state rules eventId with // Execute if possible
-                | None -> 
-                    let counterMap' = updateCounterMap counterMap history actionId // Update counters after execution
-                    simulateExecution state counterMap' (actionId :: failureList)
-                | Some state' -> 
-                    let counterMap' = updateCounterMap counterMap history actionId // Update counters after execution
+                | Failure state' -> 
+                    simulateExecution state' counterMap' (actionId :: failureList)
+                | Success state' -> 
                     simulateExecution state' counterMap' failureList // Recursive step
 
         let failures = simulateExecution initialState initialCounterMap []
