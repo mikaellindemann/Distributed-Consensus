@@ -219,18 +219,21 @@ namespace Client.ViewModels
                         {
                             var failureHistory = validationResult.GetFailure;
 
-                            var failures = failureHistory.Nodes.First(node => !node.Value.FailureTypes.IsEmpty).Value.FailureTypes;
-    
-                            wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history.Item1, failures.First()));
+                            var failures = failureHistory.Nodes.Where(node => !node.Value.FailureTypes.IsEmpty).SelectMany(actionTuple => actionTuple.Value.FailureTypes).Distinct();
+
+                            foreach (var failureType in failures)
+                            {
+                                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history.Item1, failureType));
+                            }
 
                             localHistories[index] = new Tuple<string, Graph.Graph>(history.Item1, failureHistory);
                         }
                     }
                     // pair validations
-                    for (int index1 = 0; index1 < localHistories.Count; index1++)
+                    for (var index1 = 0; index1 < localHistories.Count; index1++)
                     {
                         var history1 = localHistories[index1];
-                        for (int index2 = 0; index2 < localHistories.Count; index2++)
+                        for (var index2 = index1 + 1; index2 < localHistories.Count; index2++)
                         {
                             var history2 = localHistories[index2];
                             if (rules.Any(tuple => tuple.Item1 == history1.Item1 && tuple.Item2 == history2.Item1))
