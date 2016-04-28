@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.Connections;
+using Client.Helpers.ViewModelHelpers;
 using Common.DTO.Shared;
 using GraphOptionToSvg;
 using HistoryConsensus;
