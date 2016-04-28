@@ -30,23 +30,29 @@ module DCRSimulator =
         | Excludes    -> Map.add eventId (false, pending, executed) state
         | _ -> failwith "Wrong relation type in model!"
 
-    let isExecutable conditions milestones state =
-        if Set.fold 
-            (fun exec (_,conditionEventId,_) ->
-                let (included, _, executed) = Map.find conditionEventId state
-                exec && (not included || executed)) // If included and not executed -> Not executable.
-            true // Assume executable
-            conditions
-
-        then
-            Set.fold
-                (fun exec (_,milestoneEventId,_) ->
-                    let (included, pending, _) = Map.find milestoneEventId state
-                    exec && (not included || not pending)) // If included and pending -> Not executable
-                true // Assume executable
-                milestones
+    let isExecutable conditions milestones state eventToExecute =
+        let (included,pending,executed) = Map.find eventToExecute state
+        if not included
+        then false
         else
-            false
+            let relevantConditions = Set.filter (fun (fromId, toId, actionType) -> fromId = eventToExecute) conditions
+            if Set.fold 
+                (fun exec (_,conditionEventId,_) ->
+                    let (included, _, executed) = Map.find conditionEventId state
+                    exec && (not included || executed)) // If included and not executed -> Not executable.
+                true // Assume executable
+                relevantConditions
+
+            then
+                let relevantMilestones = Set.filter (fun (fromId, toId, actionType) -> fromId = eventToExecute) milestones
+                Set.fold
+                    (fun exec (_,milestoneEventId,_) ->
+                        let (included, pending, _) = Map.find milestoneEventId state
+                        exec && (not included || not pending)) // If included and pending -> Not executable
+                    true // Assume executable
+                    relevantMilestones
+            else
+                false
 
     let execute (state : DCRState) (rules : DCRRules) eventId : DCRState option =
         let eventRules = Set.filter (fun (id,_,_) -> id = eventId) rules
@@ -55,7 +61,7 @@ module DCRSimulator =
         let conditions = Set.filter (fun (_,from,relationType) -> relationType = ActionType.ChecksCondition && from = eventId) eventRules
         let milestones = Set.filter (fun (_,from,relationType) -> relationType = ActionType.ChecksMilestone && from = eventId) eventRules
 
-        if not <| isExecutable conditions milestones state
+        if not <| isExecutable conditions milestones state eventId
         then None // Not executable, this execution is illegal
         else
             // Executable -> Apply state update.
