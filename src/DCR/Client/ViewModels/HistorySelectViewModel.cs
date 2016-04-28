@@ -284,13 +284,10 @@ namespace Client.ViewModels
                     {
                         var failureResult = result.GetFailure;
 
-                        foreach (var keyValuePair in failureResult.Nodes)
+                        foreach (var keyValuePair in failureResult.Nodes.Where(actionTuple => actionTuple.Value.FailureTypes.Contains(FailureTypes.FailureType.ExecutedWithoutProperState)))
                         {
-                            foreach (var failureType in keyValuePair.Value.FailureTypes)
-                            {
-                                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(keyValuePair.Key.Item1,
-                                    failureType));
-                            }
+                            wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(keyValuePair.Key.Item1,
+                                FailureTypes.FailureType.ExecutedWithoutProperState));
                         }
 
                         mergedGraph = failureResult;
