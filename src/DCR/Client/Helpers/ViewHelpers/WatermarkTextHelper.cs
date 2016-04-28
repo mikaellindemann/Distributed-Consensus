@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Client
+namespace Client.Helpers.ViewHelpers
 {
     /// <summary>
     /// Found at http://prabu-guru.blogspot.dk/2010/06/how-to-add-watermark-text-to-textbox.html

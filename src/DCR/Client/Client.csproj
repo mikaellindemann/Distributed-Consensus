@@ -166,6 +166,9 @@
     <Compile Include="Connections\IServerConnection.cs" />
     <Compile Include="Connections\ServerConnection.cs" />
     <Compile Include="Exceptions\LoginFailedException.cs" />
+    <Compile Include="Helpers\ViewHelpers\SvgViewBoxAttachedProperties.cs" />
+    <Compile Include="Helpers\ViewHelpers\WaterMarkTextHelper.cs" />
+    <Compile Include="Helpers\ViewModelHelpers\ObservableSet.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -175,7 +178,6 @@
     <Compile Include="Services\DcrParser.cs" />
     <Compile Include="Services\EventUploader.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="SvgViewBoxAttachedProperties.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\HistoryListViewModel.cs" />
     <Compile Include="ViewModels\HistorySelectViewModel.cs" />
@@ -184,7 +186,6 @@
     <Compile Include="ViewModels\IWorkflowViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MaliciousViewModel.cs" />
-    <Compile Include="ViewModels\ObservableSet.cs" />
     <Compile Include="ViewModels\Parser\ParsingViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\WorkflowListViewModel.cs" />
@@ -211,7 +212,6 @@
     <Compile Include="Views\Parser\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WaterMarkTextHelper.cs" />
     <Page Include="StringResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -298,6 +298,7 @@
   <ItemGroup>
     <Resource Include="Assets\IsEvil.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

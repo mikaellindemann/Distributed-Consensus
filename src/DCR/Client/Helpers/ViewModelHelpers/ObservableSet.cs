@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Client.ViewModels
+namespace Client.Helpers.ViewModelHelpers
 {
     public class ObservableSet<T> : INotifyCollectionChanged, ICollection<T>
     {

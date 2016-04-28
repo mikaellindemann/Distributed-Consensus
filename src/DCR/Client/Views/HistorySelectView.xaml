@@ -11,6 +11,7 @@
     xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
     xmlns:client="clr-namespace:Client"
     xmlns:controls="clr-namespace:Client.Controls"
+    xmlns:viewHelpers="clr-namespace:Client.Helpers.ViewHelpers"
     x:Class="Client.Views.HistorySelectView"
     Title="HistorySelectView" WindowState="Maximized"
     d:DataContext="{d:DesignInstance viewModels:HistorySelectViewModel}" 
@@ -103,7 +104,7 @@
                     >
                     <svgc:SvgViewbox
                     HorizontalAlignment="Center"
-        		    client:SvgViewboxAttachedProperties.Source="{Binding SvgPath}">
+        		    viewHelpers:SvgViewboxAttachedProperties.Source="{Binding SvgPath}">
                     </svgc:SvgViewbox>
                 </controls:ZoomBorderControl>
 
