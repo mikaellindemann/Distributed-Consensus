@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Client.ViewModels;
 
 namespace Client.Views
@@ -11,12 +12,16 @@ namespace Client.Views
         public HistorySelectView()
         {
             InitializeComponent();
+
+            Closing += (sender, args) => ((IDisposable)DataContext).Dispose();
         }
 
         public HistorySelectView(HistorySelectViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
+
+            Closing += (sender, args) => vm.Dispose();
         }
     }
 }

@@ -17,7 +17,7 @@ using Action = HistoryConsensus.Action;
 
 namespace Client.ViewModels
 {
-    public class HistorySelectViewModel : ViewModelBase
+    public class HistorySelectViewModel : ViewModelBase, IDisposable
     {
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
@@ -156,8 +156,11 @@ namespace Client.ViewModels
             set
             {
                 if (value == _svgPath) return;
+                var oldValue = _svgPath;
                 _svgPath = value;
                 NotifyPropertyChanged();
+                if (oldValue != null && File.Exists(oldValue.LocalPath))
+                    File.Delete(oldValue.LocalPath);
             }
         }
 
@@ -295,6 +298,8 @@ namespace Client.ViewModels
 
                 //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
                 var tempFile = Path.GetTempFileName() + ".svg";
+                File.Delete(tempFile.Substring(0, tempFile.Length - 4));
+
                 new GraphToSvgConverter().ConvertGraphToSvg(mergedGraph, tempFile);
 
                 // Update the failure list on the right:
@@ -380,6 +385,12 @@ namespace Client.ViewModels
             return elements.Reverse().Aggregate(FSharpList<T>.Empty, (current, element) => FSharpList<T>.Cons(element, current));
         }
         #endregion Actions
+
+        public void Dispose()
+        {
+            if (SvgPath != null && File.Exists(SvgPath.LocalPath))
+                File.Delete(SvgPath.LocalPath);
+        }
     }
 
     public class TupleConverter : TypeConverter
