@@ -108,6 +108,51 @@ namespace Event.Controllers
             }
         }
 
+        [Route("events/{workflowId}/{eventId}/milestone")]
+        [HttpGet]
+        public async Task<MilestoneDto> GetMilestone(string workflowId, string eventId, string senderId, int timestamp)
+        {
+            if (
+                !await
+                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, senderId,
+                        timestamp))
+            {
+                var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "UpdateIncluded: EventAddressDto Timestamp was lower than a previous timestamp from this event"));
+                //await _historyLogic.SaveException(toThrow, "PUT", "UpdateIncluded", eventId, workflowId);
+                throw toThrow;
+            }
+            try
+            {
+                var included = await _logic.IsIncluded(workflowId, eventId, senderId);
+                var pending = await _logic.IsPending(workflowId, eventId, senderId);
+
+                var localTimestamp = await _historyLogic.SaveSuccesfullCall(ActionType.CheckedMilestoneBy, eventId, workflowId, senderId, timestamp);
+
+                if (included && pending)
+                {
+                    return new MilestoneDto { Milestone = false, TimeStamp = localTimestamp };
+                }
+
+                return new MilestoneDto { Milestone = true, TimeStamp = localTimestamp };
+            }
+            catch (NotFoundException)
+            {
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
+                    "GetIncluded: Not Found"));
+            }
+            catch (LockedException)
+            {
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
+                        "GetIncluded: Event is locked"));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "GetIncluded: Seems input was not satisfactory"));
+            }
+        }
+
         /// <summary>
         /// GetIncluded returns Event's current value for Included (bool). 
         /// </summary>
@@ -137,6 +182,31 @@ namespace Event.Controllers
             {
                 throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
                     "GetIncluded: Seems input was not satisfactory"));
+            }
+        }
+
+        [Route("events/{workflowId}/{eventId}/pending/{senderId}")]
+        [HttpGet]
+        public async Task<bool> GetPending(string workflowId, string senderId, string eventId)
+        {
+            try
+            {
+                return await _logic.IsPending(workflowId, eventId, senderId);
+            }
+            catch (NotFoundException)
+            {
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound,
+                    "GetPending: Not Found"));
+            }
+            catch (LockedException)
+            {
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.Conflict,
+                        "GetPending: Event is locked"));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                    "GetPending: Seems input was not satisfactory"));
             }
         }
 

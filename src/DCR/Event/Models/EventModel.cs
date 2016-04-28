@@ -13,6 +13,7 @@ namespace Event.Models
             InclusionUris = new List<InclusionUri>();
             ExclusionUris = new List<ExclusionUri>();
             ConditionUris = new List<ConditionUri>();
+            MilestoneUris = new List<MilestoneUri>();
         }
         [Key, Column(Order = 0)]
         public string WorkflowId { get; set; }
@@ -28,6 +29,7 @@ namespace Event.Models
         public virtual ICollection<InclusionUri> InclusionUris { get; set; }
         public virtual ICollection<ExclusionUri> ExclusionUris { get; set; }
         public virtual ICollection<ConditionUri> ConditionUris { get; set; }
+        public virtual ICollection<MilestoneUri> MilestoneUris { get; set; }
         public string LockOwner { get; set; }
         public bool IsEvil { get; set; }
         public virtual ICollection<CheatingType> TypesOfCheating { get; set; } 
@@ -35,5 +37,6 @@ namespace Event.Models
         public bool InitialPending { get; set; }
         public bool InitialExecuted { get; set; }
         public bool InitialIncluded { get; set; }
+        
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Common.DTO.Event;
-using Event.Exceptions.EventInteraction;
 using Common.DTO.Shared;
-using Event.Models;
+using Event.Exceptions.EventInteraction;
 
 namespace Event.Interfaces
 {
@@ -24,7 +23,7 @@ namespace Event.Interfaces
         Task<bool> IsExecuted(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
 
         Task<ConditionDto> CheckCondition(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId, int timestamp);
-
+        Task<MilestoneDto> CheckMilestone(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId, int timestamp);
         /// <summary>
         /// Will determine if the target event is included (true) or not (false). 
         /// </summary>
@@ -35,6 +34,8 @@ namespace Event.Interfaces
         /// <returns></returns>
         /// <exception cref="FailedToGetIncludedFromAnotherEventException">Thrown if Included could not be retrieved from the target Event</exception>
         Task<bool> IsIncluded(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
+
+        Task<bool> IsPending(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId);
 
         /// <summary>
         /// SendExcluded attempts on updating the Pending value on the target Event

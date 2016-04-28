@@ -21,5 +21,6 @@ namespace Common.DTO.Event
         public IEnumerable<EventAddressDto> Exclusions { get; set; }
         public IEnumerable<EventAddressDto> Responses { get; set; }
         public IEnumerable<EventAddressDto> Inclusions { get; set; }
+        public IEnumerable<EventAddressDto> Milestones { get; set; }
     }
 }

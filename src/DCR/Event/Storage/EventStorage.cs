@@ -464,6 +464,35 @@ namespace Event.Storage
 
             return hashSet;
         }
+
+        public async Task<HashSet<RelationToOtherEventModel>> GetMilestones(string workflowId, string eventId)
+        {
+            if (workflowId == null || eventId == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (!await Exists(workflowId, eventId))
+            {
+                throw new NotFoundException();
+            }
+
+
+            var dbset = _context.Milestones.Where(model => model.WorkflowId == workflowId && model.EventId == eventId);
+            var hashSet = new HashSet<RelationToOtherEventModel>();
+
+            foreach (var element in dbset)
+            {
+                hashSet.Add(new RelationToOtherEventModel
+                {
+                    Uri = new Uri(element.UriString),
+                    EventId = element.ForeignEventId,
+                    WorkflowId = element.WorkflowId
+                });
+            }
+
+            return hashSet;
+        }
+
         #endregion
 
         #region Public methods

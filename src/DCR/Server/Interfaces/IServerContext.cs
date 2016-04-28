@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
-using Common.DTO.History;
 using Server.Models;
 using Server.Models.UriClasses;
 
@@ -18,6 +17,7 @@ namespace Server.Interfaces
         DbSet<ResponseUri> Responses { get; set; }
         DbSet<InclusionUri> Inclusions { get; set; }
         DbSet<ExclusionUri> Exclusions { get; set; }
+        DbSet<MilestoneUri> Milestones { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync();
     }

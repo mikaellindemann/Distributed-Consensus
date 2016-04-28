@@ -26,8 +26,10 @@ namespace Server.Models
         public virtual ICollection<InclusionUri> InclusionUris { get; set; }
         public virtual ICollection<ExclusionUri> ExclusionUris { get; set; }
         public virtual ICollection<ConditionUri> ConditionUris { get; set; }
+        public virtual ICollection<MilestoneUri> MilestoneUris { get; set; }
         public bool InitialPending { get; set; }
         public bool InitialExecuted { get; set; }
         public bool InitialIncluded { get; set; }
+        
     }
 }

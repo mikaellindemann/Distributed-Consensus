@@ -51,7 +51,7 @@ module LocalHistoryValidation =
             | [] -> Success history
             | (_, node) :: rest ->
                 match node.Type with
-                | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditionBy ->
+                | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditionBy | CheckedMilestoneBy ->
                     let counterpart = fst node.CounterpartId
                     if not <| Map.containsKey counterpart ingoing
                     then Failure <| tagAllActionsWithFailureType FakeRelationsIn history
@@ -69,7 +69,7 @@ module LocalHistoryValidation =
         let historyAsList = Map.toList history.Nodes
 
         let isIngoing = function
-        | CheckedConditionBy | IncludedBy | ExcludedBy | SetPendingBy -> true
+        | CheckedConditionBy | IncludedBy | ExcludedBy | SetPendingBy | CheckedMilestoneBy -> true
         | _ -> false
 
         let rec hasRequired actions (remainingRelations : (EventId * ActionType) list) : (ActionId * Action) list option =
@@ -114,7 +114,7 @@ module LocalHistoryValidation =
                     | None -> Failure <| tagAllActionsWithFailureType FakeRelationsOut history
                     | Some rest' -> checker rest'
                 // If one of these occurs, then they have happened without the correct relations following from an ExecuteStart
-                | Includes | Excludes | SetsPending | ChecksCondition | ExecuteFinish -> 
+                | Includes | Excludes | SetsPending | ChecksCondition | ChecksMilestone | ExecuteFinish -> 
                     Failure <| tagAllActionsWithFailureType FakeRelationsOut history
                 // We don't care about ingoing relations in this check.
                 | _ -> checker rest
@@ -166,7 +166,7 @@ module LocalHistoryValidation =
         // Check whether a given Action type is valid/allowed.
         let hasValidType actionType = 
             match actionType with 
-            | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditionBy  -> false
+            | IncludedBy | ExcludedBy | SetPendingBy | CheckedConditionBy | CheckedMilestoneBy -> false
             | _                                                            -> true
 
         // Check a list of execution chunks for validity.
@@ -202,7 +202,7 @@ module LocalHistoryValidation =
                 then
                     let storedTimestamp = Map.find (fst counterpartId) lastTimestamps
                     let newTimestamp = snd counterpartId
-                    if fst action.Id = fst counterpartId && (action.Type = ActionType.CheckedConditionBy || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy)
+                    if fst action.Id = fst counterpartId && (action.Type = ActionType.CheckedConditionBy || action.Type = ActionType.CheckedMilestoneBy || action.Type = ActionType.ExcludedBy || action.Type = ActionType.IncludedBy || action.Type = ActionType.SetPendingBy)
                     then 
                         // Special case where the local event is also the counterpart.
                         // This means that the actions can be interchangeable, because we also want the local timestamps to be in correct order.
@@ -231,7 +231,7 @@ module LocalHistoryValidation =
         if Graph.forall 
             (fun action -> 
                 match action.Type with
-                | Includes | Excludes | SetsPending | ChecksCondition ->
+                | Includes | Excludes | SetsPending | ChecksCondition | ChecksMilestone ->
                     (snd action.Id) < (snd action.CounterpartId)
                 | _ -> true)
             history
@@ -242,6 +242,7 @@ module LocalHistoryValidation =
     let mapOutgoingToIngoing = function
         | SetsPending -> SetPendingBy
         | ChecksCondition -> CheckedConditionBy
+        | ChecksMilestone -> CheckedMilestoneBy
         | Includes -> IncludedBy
         | Excludes -> ExcludedBy
         | _ -> failwith "Not an outgoing relation!"

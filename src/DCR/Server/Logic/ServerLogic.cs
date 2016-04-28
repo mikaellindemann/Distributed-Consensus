@@ -167,6 +167,7 @@ namespace Server.Logic
                             Exclusions = ev.ExclusionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
                             Inclusions = ev.InclusionUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
                             Responses = ev.ResponseUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId }),
+                            Milestones = ev.MilestoneUris.Select(uri => new EventAddressDto { Id = uri.ForeignEventId, WorkflowId = uri.WorkflowId}),
                             Included = ev.InitialIncluded,
                             Pending = ev.InitialPending,
                             Executed = ev.InitialExecuted
@@ -212,6 +213,12 @@ namespace Server.Logic
                 WorkflowId = eventToBeAddedDto.WorkflowId,
                 ForeignEventId = relation.Id
             }).ToList();
+            var milestones = eventToBeAddedDto.Milestones.Select(relation => new MilestoneUri
+            {
+                EventId = eventToBeAddedDto.EventId,
+                WorkflowId = eventToBeAddedDto.WorkflowId,
+                ForeignEventId = relation.Id
+            }).ToList();
 
             await _storage.AddEventToWorkflow(new ServerEventModel
             {
@@ -224,6 +231,7 @@ namespace Server.Logic
                 InclusionUris = inclusions,
                 ExclusionUris = exclusions,
                 ResponseUris = responses,
+                MilestoneUris = milestones,
                 InitialExecuted = eventToBeAddedDto.Executed,
                 InitialIncluded = eventToBeAddedDto.Included,
                 InitialPending = eventToBeAddedDto.Pending

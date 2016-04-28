@@ -199,8 +199,10 @@ namespace GraphOptionToSvg
 
         private static string ActionToString(Action.ActionType type)
         {
-            if (type.IsCheckedConditionBy) return "CheckedCondition\"";
+            if (type.IsCheckedConditionBy) return "CheckedConditionBy\"";
             if (type.IsChecksCondition) return "ChecksCondition\"";
+            if (type.IsCheckedMilestoneBy) return "CheckedMilestoneBy\"";
+            if (type.IsChecksMilestone) return "ChecksMilestone\"";
             if (type.IsExcludedBy) return "ExcludedBy\"";
             if (type.IsExcludes) return "Excludes\"";
             if (type.IsExecuteFinish) return "ExecuteFinish\"";

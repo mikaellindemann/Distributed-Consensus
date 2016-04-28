@@ -220,6 +220,8 @@ namespace Event.Interfaces
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if any of the arguments are null</exception>
         Task<HashSet<RelationToOtherEventModel>> GetInclusions(string workflowId, string eventId);
+
+        Task<HashSet<RelationToOtherEventModel>> GetMilestones(string workflowId, string eventId);
         #endregion
     }
 }

@@ -35,6 +35,8 @@ namespace Event.Interfaces
         /// <exception cref="ArgumentNullException">Thrown if any of the arguments are null</exception>
         Task<bool> IsIncluded(string workflowId, string eventId, string senderId);
 
+        Task<bool> IsPending(string workflowId, string eventId, string senderId);
+
         /// <summary>
         /// GetStateDto returns an EventStateDto for the specified Event
         /// </summary>
@@ -87,6 +89,5 @@ namespace Event.Interfaces
         /// <exception cref="FailedToUpdateStateAtOtherEventException">Thrown if updating of another Event's state failed</exception>
         /// <exception cref="FailedToUnlockOtherEventException">Thrown if unlocking of another Event fails.</exception>
         Task Execute(string workflowId, string eventId, RoleDto executeDto);
-
     }
 }

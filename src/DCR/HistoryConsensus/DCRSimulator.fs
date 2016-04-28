@@ -30,21 +30,32 @@ module DCRSimulator =
         | Excludes    -> Map.add eventId (false, pending, executed) state
         | _ -> failwith "Wrong relation type in model!"
 
-    let isExecutable conditions state =
-        Set.fold 
+    let isExecutable conditions milestones state =
+        if Set.fold 
             (fun exec (_,conditionEventId,_) ->
                 let (included, _, executed) = Map.find conditionEventId state
                 exec && (not included || executed)) // If included and not executed -> Not executable.
             true // Assume executable
             conditions
 
+        then
+            Set.fold
+                (fun exec (_,milestoneEventId,_) ->
+                    let (included, pending, _) = Map.find milestoneEventId state
+                    exec && (not included || not pending)) // If included and pending -> Not executable
+                true // Assume executable
+                milestones
+        else
+            false
+
     let execute (state : DCRState) (rules : DCRRules) eventId : DCRState option =
         let eventRules = Set.filter (fun (id,_,_) -> id = eventId) rules
 
         
         let conditions = Set.filter (fun (_,from,relationType) -> relationType = ActionType.ChecksCondition && from = eventId) eventRules
+        let milestones = Set.filter (fun (_,from,relationType) -> relationType = ActionType.ChecksMilestone && from = eventId) eventRules
 
-        if not <| isExecutable conditions state
+        if not <| isExecutable conditions milestones state
         then None // Not executable, this execution is illegal
         else
             // Executable -> Apply state update.
@@ -55,7 +66,7 @@ module DCRSimulator =
                     (fun state' (_,toEventId,relationType) ->
                         updateStateForRelation state' toEventId relationType)
                     (Map.add eventId (included, pending, true) state) // Set executed state of current event.
-                    (Set.filter (fun (_,_,relationType) -> relationType <> ActionType.ChecksCondition) eventRules) // Only look at rules that are not conditions.
+                    (Set.filter (fun (_,_,relationType) -> relationType <> ActionType.ChecksCondition && relationType <> ActionType.ChecksMilestone) eventRules) // Only look at rules that are not conditions and milestones.
 
     let updateCounterMap counterMap history actionId : Map<ActionId, int> =
         let counterMap' = Map.remove actionId counterMap // Remove the action that was just executed.

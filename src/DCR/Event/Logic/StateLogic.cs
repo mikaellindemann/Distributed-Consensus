@@ -6,7 +6,6 @@ using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Exceptions.EventInteraction;
 using Event.Interfaces;
-using Event.Models;
 
 namespace Event.Logic
 {
@@ -93,6 +92,32 @@ namespace Event.Logic
 
             var b = await _storage.GetIncluded(workflowId, eventId);
             return b;
+        }
+
+        public async Task<bool> IsPending(string workflowId, string eventId, string senderId)
+        {
+            if (workflowId == null || eventId == null || senderId == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (!await _storage.Exists(workflowId, eventId))
+            {
+                throw new NotFoundException();
+            }
+
+            // Check is made to see if caller is allowed to execute this method
+            if (!await _lockingLogic.IsAllowedToOperate(workflowId, eventId, senderId))
+            {
+                await _lockingLogic.WaitForMyTurn(workflowId, eventId, new LockDto
+                {
+                    WorkflowId = workflowId,
+                    LockOwner = senderId,
+                    EventId = eventId
+                });
+            }
+
+            return await _storage.GetPending(workflowId, eventId);
         }
 
         /// <summary>
@@ -204,6 +229,41 @@ namespace Event.Logic
                     }
                 }
             }
+
+            var milestoneRelations = await _storage.GetMilestones(workflowId, eventId);
+
+            foreach (var milestone in milestoneRelations)
+            {
+                if (log)
+                {
+                    var actionDto = await _historyLogic.ReserveNext(ActionType.ChecksMilestone, workflowId, eventId,
+                        milestone.EventId);
+
+                    var mile =
+                        await
+                            _eventCommunicator.CheckMilestone(milestone.Uri, milestone.WorkflowId, milestone.EventId,
+                                eventId, actionDto.TimeStamp);
+
+                    actionDto.CounterpartTimeStamp = mile.TimeStamp;
+
+                    await _historyLogic.UpdateAction(actionDto);
+
+                    // If the condition-event is not executed and currently included.
+                    if (!mile.Milestone) return false;
+                }
+                else
+                {
+                    var pending = await _eventCommunicator.IsPending(milestone.Uri, milestone.WorkflowId, milestone.EventId, eventId);
+                    var included = await _eventCommunicator.IsIncluded(milestone.Uri, milestone.WorkflowId, milestone.EventId, eventId);
+
+                    // If the condition-event is not executed and currently included.
+                    if (included && pending)
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return true; // If all conditions are executed or excluded.
         }
 

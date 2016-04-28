@@ -10,6 +10,8 @@
         SetPendingBy,
         CheckedConditionBy,
         ChecksCondition,
+        CheckedMilestoneBy,
+        ChecksMilestone,
         ExecuteStart,
         ExecuteFinished
     }

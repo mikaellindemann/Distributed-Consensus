@@ -109,6 +109,7 @@ module Graph =
         let checkRelation fromType toType =
             match fromType, toType with
             | ChecksCondition, CheckedConditionBy -> true
+            | ChecksMilestone, CheckedMilestoneBy -> true
             | Includes, IncludedBy                -> true
             | Excludes, ExcludedBy                -> true
             | SetsPending, SetPendingBy           -> true

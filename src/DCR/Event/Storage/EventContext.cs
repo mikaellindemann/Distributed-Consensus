@@ -37,6 +37,11 @@ namespace Event.Storage
                 .WithMany(e => e.ExclusionUris)
                 .HasForeignKey(c => new { c.WorkflowId, c.EventId });
 
+            modelBuilder.Entity<MilestoneUri>()
+                .HasRequired(c => c.Event)
+                .WithMany(e => e.MilestoneUris)
+                .HasForeignKey(c => new { c.WorkflowId, c.EventId });
+
             modelBuilder.Entity<ActionModel>()
                 .HasKey(model => new {model.Timestamp, model.EventId, model.WorkflowId});
         }
@@ -46,6 +51,7 @@ namespace Event.Storage
         public DbSet<ResponseUri> Responses { get; set; }
         public DbSet<InclusionUri> Inclusions { get; set; }
         public DbSet<ExclusionUri> Exclusions { get; set; }
+        public DbSet<MilestoneUri> Milestones { get; set; }
         public DbSet<ActionModel> History { get; set; }
     }
 }

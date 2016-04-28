@@ -62,12 +62,39 @@ namespace Event.Communicators
             }
         }
 
+        public async Task<MilestoneDto> CheckMilestone(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId, int timestamp)
+        {
+            HttpClient.SetBaseAddress(targetEventUri);
+
+            try
+            {
+                return await HttpClient.Read<MilestoneDto>($"events/{targetWorkflowId}/{targetEventId}/milestone/?senderId={ownId}&timestamp={timestamp}");
+            }
+            catch (Exception)
+            {
+                throw new FailedToGetConditionFromAnotherEventException();
+            }
+        }
+
         public async Task<bool> IsIncluded(Uri targetEventUri, string targetWorkflowId, string targetId, string ownId)
         {
             HttpClient.SetBaseAddress(targetEventUri);
             try
             {
                 return await HttpClient.Read<bool>($"events/{targetWorkflowId}/{targetId}/included/{ownId}");
+            }
+            catch (Exception)
+            {
+                throw new FailedToGetIncludedFromAnotherEventException();
+            }
+        }
+
+        public async Task<bool> IsPending(Uri targetEventUri, string targetWorkflowId, string targetEventId, string ownId)
+        {
+            HttpClient.SetBaseAddress(targetEventUri);
+            try
+            {
+                return await HttpClient.Read<bool>($"events/{targetWorkflowId}/{targetEventId}/pending/{ownId}");
             }
             catch (Exception)
             {

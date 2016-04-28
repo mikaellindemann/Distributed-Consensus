@@ -61,7 +61,8 @@ namespace Event.Logic
                 Conditions = eventDto.Conditions,
                 Exclusions = eventDto.Exclusions,
                 Inclusions = eventDto.Inclusions,
-                Responses = eventDto.Responses
+                Responses = eventDto.Responses,
+                Milestones = eventDto.Milestones
             };
 
 #if DEBUG
@@ -88,6 +89,7 @@ namespace Event.Logic
                 ResponseUris = eventDto.Responses.Select(response => new ResponseUri { WorkflowId = eventDto.WorkflowId, EventId = eventDto.EventId, ForeignEventId = response.Id, UriString = response.Uri.AbsoluteUri }).ToList(),
                 InclusionUris = eventDto.Inclusions.Select(inclusion => new InclusionUri { WorkflowId = eventDto.WorkflowId, EventId = eventDto.EventId, ForeignEventId = inclusion.Id, UriString = inclusion.Uri.AbsoluteUri }).ToList(),
                 ExclusionUris = eventDto.Exclusions.Select(exclusion => new ExclusionUri { WorkflowId = eventDto.WorkflowId, EventId = eventDto.EventId, ForeignEventId = exclusion.Id, UriString = exclusion.Uri.AbsoluteUri }).ToList(),
+                MilestoneUris = eventDto.Milestones.Select(milestone => new MilestoneUri { WorkflowId = eventDto.WorkflowId, EventId = eventDto.EventId, ForeignEventId = milestone.Id, UriString = milestone.Uri.AbsoluteUri }).ToList(),
                 LockOwner = null,
                 InitialExecuted = eventDto.Executed,
                 InitialIncluded = eventDto.Included,
@@ -179,7 +181,8 @@ namespace Event.Logic
                 Conditions = (await _storage.GetConditions(workflowId, eventId)).Select(model => new EventAddressDto { WorkflowId = model.WorkflowId, Id = model.EventId, Uri = model.Uri }),
                 Exclusions = (await _storage.GetExclusions(workflowId, eventId)).Select(model => new EventAddressDto { WorkflowId = model.WorkflowId, Id = model.EventId, Uri = model.Uri }),
                 Responses = (await _storage.GetResponses(workflowId, eventId)).Select(model => new EventAddressDto { WorkflowId = model.WorkflowId, Id = model.EventId, Uri = model.Uri }),
-                Inclusions = (await _storage.GetInclusions(workflowId, eventId)).Select(model => new EventAddressDto { WorkflowId = model.WorkflowId, Id = model.EventId, Uri = model.Uri })
+                Inclusions = (await _storage.GetInclusions(workflowId, eventId)).Select(model => new EventAddressDto { WorkflowId = model.WorkflowId, Id = model.EventId, Uri = model.Uri }),
+                Milestones = (await _storage.GetMilestones(workflowId, eventId)).Select(model => new EventAddressDto { WorkflowId = model.WorkflowId, Id = model.EventId, Uri = model.Uri })
             };
             
             return returnValue;

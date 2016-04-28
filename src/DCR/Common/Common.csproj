@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheatingTypeEnum.cs" />
+    <Compile Include="DTO\Event\MilestoneDto.cs" />
     <Compile Include="DTO\Event\ConditionDto.cs" />
     <Compile Include="DTO\History\ActionType.cs" />
     <Compile Include="DTO\Shared\CheatingDto.cs" />

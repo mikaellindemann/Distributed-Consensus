@@ -72,6 +72,10 @@ namespace Event.Controllers
                     return Action.ActionType.CheckedConditionBy;
                 case ActionType.ChecksCondition:
                     return Action.ActionType.ChecksCondition;
+                case ActionType.CheckedMilestoneBy:
+                    return Action.ActionType.CheckedMilestoneBy;
+                case ActionType.ChecksMilestone:
+                    return Action.ActionType.ChecksMilestone;
                 case ActionType.ExecuteStart:
                     return Action.ActionType.ExecuteStart;
                 case ActionType.ExecuteFinished:

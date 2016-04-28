@@ -17,6 +17,8 @@ module Action =
         | SetPendingBy
         | CheckedConditionBy
         | ChecksCondition
+        | CheckedMilestoneBy
+        | ChecksMilestone
         | ExecuteStart
         | ExecuteFinish
 

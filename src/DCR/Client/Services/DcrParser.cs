@@ -88,6 +88,7 @@ namespace Client.Services
                     Roles = new HashSet<string>(),
                     Inclusions = new HashSet<EventAddressDto>(),
                     Exclusions = new HashSet<EventAddressDto>(),
+                    Milestones = new HashSet<EventAddressDto>(),
                     Executed = false,
                     Included = false,
                     Pending = false,
@@ -139,6 +140,7 @@ namespace Client.Services
             ExtractRules(constraints, "responses", "response", eventDto => (ICollection<EventAddressDto>) eventDto.Responses);
             ExtractRules(constraints, "excludes", "exclude", eventDto => (ICollection<EventAddressDto>) eventDto.Exclusions);
             ExtractRules(constraints, "includes", "include", eventDto => (ICollection<EventAddressDto>) eventDto.Inclusions);
+            ExtractRules(constraints, "milestones", "milestone", eventDto => (ICollection<EventAddressDto>) eventDto.Milestones);
         }
 
         private void ExtractRules(IEnumerable<XElement> constraints, string descendantParent, string descendant, Func<EventDto, ICollection<EventAddressDto>> getPropertyFunc)
@@ -151,7 +153,7 @@ namespace Client.Services
                 string target;
 
                 //Anoying check to swap variables if we're dealing with conditions.
-                if (descendant == "condition")
+                if (descendant == "condition" || descendant == "milestone")
                 {
                     target = rule.Attribute("sourceId").Value;
                     source = rule.Attribute("targetId").Value;
