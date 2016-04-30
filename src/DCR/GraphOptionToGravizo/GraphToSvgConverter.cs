@@ -183,7 +183,7 @@ namespace GraphOptionToSvg
             if (type == null) return "";
 
             if (type.IsCounterpartTimestampOutOfOrder) return "style=filled,fillcolor=red";
-            if (type.IsExecutedWithoutProperState) return "style=filled,fillcolor=red";
+            if (type.IsExecutedWithoutProperState) return "style=filled,fillcolor=purple";
             if (type.IsFakeRelationsIn) return "style=filled,fillcolor=red";
             if (type.IsFakeRelationsOut) return "style=filled,fillcolor=red";
             if (type.IsHistoryAboutOthers) return "style=filled,fillcolor=red";

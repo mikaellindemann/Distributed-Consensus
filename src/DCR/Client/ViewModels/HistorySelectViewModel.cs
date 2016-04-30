@@ -248,7 +248,7 @@ namespace Client.ViewModels
                                     wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history2.Item1, FailureTypes.FailureType.Maybe));
 
                                     localHistories[index1] = new Tuple<string, Graph.Graph>(history1.Item1, failureHistory.Item1);
-                                    localHistories[index1] = new Tuple<string, Graph.Graph>(history2.Item1, failureHistory.Item2);
+                                    localHistories[index2] = new Tuple<string, Graph.Graph>(history2.Item1, failureHistory.Item2);
                                 }
                             }
                         }
