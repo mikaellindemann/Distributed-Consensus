@@ -63,14 +63,45 @@ module LocalHistoryValidation =
 
         checker historyAsList        
 
+    let isIngoing = function
+        | CheckedConditionBy | IncludedBy | ExcludedBy | SetPendingBy | CheckedMilestoneBy -> true
+        | _ -> false
+
+    // Checks that whenever an
+    let checkLocalHistoryHasAllIngoingRelationsPerExecution allowedInGoingRelations (ownId:EventId) (history:Graph) : Result<Graph, Graph> =
+        // Lazy initialization of this calculation.
+        let ingoing = allowedInGoingRelations()
+        let historyAsList = Map.toList history.Nodes 
+
+        let rec iterateOverHistoryUntilIngoing historyList = 
+            match historyList with 
+            | [] -> Success history
+            | ((eventId,_),action)::rest -> 
+                if (isIngoing action.Type)
+                then
+                    let counterPart = fst action.CounterpartId
+                    let (incomingOnEvent:ActionType list) = Map.find counterPart ingoing
+                    matchRestOfIncoming incomingOnEvent historyList counterPart
+                else 
+                    iterateOverHistoryUntilIngoing rest
+        and matchRestOfIncoming relationsLeft actions counterPartId =
+            if relationsLeft.IsEmpty 
+            then iterateOverHistoryUntilIngoing actions
+            else 
+                match actions with
+                | [] -> Failure <| tagAllActionsWithFailureType Malicious history
+                | (actionId,action)::rest -> if fst action.CounterpartId = counterPartId && List.exists (fun actionType -> action.Type = actionType) relationsLeft
+                                             then 
+                                                let elementToRemove = List.find (fun actionType -> action.Type = actionType) relationsLeft
+                                                let newList = List.except [elementToRemove] relationsLeft
+                                                matchRestOfIncoming newList rest counterPartId
+                                             else Failure <| tagAllActionsWithFailureType Malicious history
+        iterateOverHistoryUntilIngoing historyAsList
+
     let checkLocalHistoryAgainstOutgoingRelations (allowedOutgoingRelations : unit -> (EventId * ActionType) seq) history : Result<Graph, Graph> =
         // Lazy initialization of this calculation.
         let outgoing = Seq.toList <| allowedOutgoingRelations()
         let historyAsList = Map.toList history.Nodes
-
-        let isIngoing = function
-        | CheckedConditionBy | IncludedBy | ExcludedBy | SetPendingBy | CheckedMilestoneBy -> true
-        | _ -> false
 
         let rec hasRequired actions (remainingRelations : (EventId * ActionType) list) : (ActionId * Action) list option =
             match remainingRelations with
@@ -269,6 +300,7 @@ module LocalHistoryValidation =
             >>= checkLocalIncomingRelationsWhenExecuting
             >>= checkLocalHistoryAgainstIncomingRelations (allowedIngoingRelationsMapMaker eventId rules)
             >>= checkLocalHistoryAgainstOutgoingRelations (allowedOutgoingRelationsMaker eventId rules)
+            >>= checkLocalHistoryHasAllIngoingRelationsPerExecution (allowedIngoingRelationsMapMaker eventId rules) eventId
 
 
     let smallerLocalCheck input eventId =
