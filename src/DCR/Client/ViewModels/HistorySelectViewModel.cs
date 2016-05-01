@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Client.Connections;
 using Client.Helpers.ViewModelHelpers;
+using Common.DTO.Event;
 using Common.DTO.Shared;
 using GraphOptionToSvg;
 using HistoryConsensus;
@@ -38,7 +39,7 @@ namespace Client.ViewModels
 
         public HistorySelectViewModel(WorkflowViewModel workflowViewModel, IServerConnection serverConnection, IEventConnection eventConnection) : this(serverConnection, eventConnection)
         {
-            Workflows = workflowViewModel.Parent.WorkflowList;
+            Workflows = new ObservableCollection<WorkflowViewModel>(workflowViewModel.Parent.WorkflowList);
             SelectedWorkflow = Workflows.FirstOrDefault(model => model.WorkflowId == workflowViewModel.WorkflowId);
 
             TypeDescriptor.AddAttributes(
