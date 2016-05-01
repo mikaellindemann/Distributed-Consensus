@@ -107,7 +107,7 @@ namespace Client.ViewModels
                 {
                     _eventConnection = (IEventConnection)_dummyConnection;
                     _serverConnection = (IServerConnection)_dummyConnection;
-                    Workflows = new ObservableCollection<WorkflowDto>(_dummyConnection.DummyWorkflows);
+                    Workflows = new ObservableCollection<WorkflowDto>(_dummyConnection.WorkflowDtos);
                 }
                 else
                 {
@@ -115,10 +115,10 @@ namespace Client.ViewModels
                     _serverConnection = _realServerConnection;
                     Workflows = new ObservableCollection<WorkflowDto>(_realWorkflows);
                 }
-                SelectedWorkflow = Workflows.FirstOrDefault();
-
+                
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(Workflows));
+                SelectedWorkflow = Workflows.FirstOrDefault();
                 NotifyPropertyChanged(nameof(SelectedWorkflow));
             }
         }
