@@ -16,7 +16,7 @@ namespace Client.ViewModels
     {
         private readonly WorkflowDto _workflowDto;
         private bool _resetEventRuns;
-        private readonly IWorkflowListViewModel _parent;
+        public IWorkflowListViewModel Parent { get; }
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
 
@@ -25,7 +25,7 @@ namespace Client.ViewModels
         public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles,
             IEventConnection eventConnection, IServerConnection serverConnection, ObservableCollection<EventViewModel> eventList)
         {
-            _parent = parent;
+            Parent = parent;
             _workflowDto = workflowDto;
             Roles = roles;
             _eventConnection = eventConnection;
@@ -61,10 +61,10 @@ namespace Client.ViewModels
 
         public string Status
         {
-            get { return _parent.Status; }
+            get { return Parent.Status; }
             set
             {
-                _parent.Status = value;
+                Parent.Status = value;
             }
         }
 
@@ -106,7 +106,7 @@ namespace Client.ViewModels
         {
             if (EventList != null && EventList.Count != 0)
             {
-                var history = new HistorySelectView(new HistorySelectViewModel(SelectedEventViewModel, _serverConnection, _eventConnection));
+                var history = new HistorySelectView(new HistorySelectViewModel(this, _serverConnection, _eventConnection));
                 history.ShowDialog();
                 //var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
                 //historyView.Show();

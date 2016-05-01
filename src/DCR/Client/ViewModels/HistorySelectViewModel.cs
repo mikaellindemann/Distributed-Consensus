@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -35,13 +36,10 @@ namespace Client.ViewModels
         private string _status;
         private Uri _svgPath;
 
-        public HistorySelectViewModel(EventViewModel eventViewModel, IServerConnection serverConnection, IEventConnection eventConnection)
+        public HistorySelectViewModel(WorkflowViewModel workflowViewModel, IServerConnection serverConnection, IEventConnection eventConnection) : this(serverConnection, eventConnection)
         {
-            CanPressButtons = true;
-            EventViewModel = eventViewModel;
-            _serverConnection = serverConnection;
-            _eventConnection = eventConnection;
-            Failures = new ObservableSet<string>();
+            Workflows = workflowViewModel.Parent.WorkflowList;
+            SelectedWorkflow = Workflows.FirstOrDefault(model => model.WorkflowId == workflowViewModel.WorkflowId);
 
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
@@ -54,11 +52,13 @@ namespace Client.ViewModels
             _serverConnection = serverConnection;
             _eventConnection = eventConnection;
             Failures = new ObservableSet<string>();
+            Workflows = new ObservableCollection<WorkflowViewModel>();
         }
 
         #region Databindings
 
-        public EventViewModel EventViewModel { get; set; }
+        public ObservableCollection<WorkflowViewModel> Workflows { get; set; }
+        public WorkflowViewModel SelectedWorkflow { get; set; } 
 
         public string Status
         {
@@ -180,7 +180,7 @@ namespace Client.ViewModels
             {
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
 
-                var events = await _serverConnection.GetEventsFromWorkflow(EventViewModel.EventAddressDto.WorkflowId);
+                var events = await _serverConnection.GetEventsFromWorkflow(SelectedWorkflow.WorkflowId);
                 var localHistories = new List<Tuple<string, Graph.Graph>>();
                 var wrongHistories = new HashSet<Tuple<string, FailureTypes.FailureType>>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();

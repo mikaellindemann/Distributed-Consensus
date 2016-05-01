@@ -25,14 +25,22 @@
                 Margin="10,5,0,5" 
                 FontSize="24" 
                 Style="{StaticResource HeaderTextBlockStyle}" />
-            <TextBlock 
+            <ComboBox HorizontalAlignment="Left" Margin="8,10" MinWidth="120" ItemsSource="{Binding Workflows}" SelectedItem="{Binding SelectedWorkflow}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"></TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+                <TextBlock 
                 DockPanel.Dock="Right" 
-                Text="{Binding Status}" 
                 Margin="5,0" 
                 TextAlignment="Right" 
                 TextWrapping="Wrap" 
                 Foreground="Red" 
-                FontSize="16" />
+                FontSize="16" ><Run Text="Status"/><InlineUIContainer>
+            		
+            	</InlineUIContainer></TextBlock>
         </DockPanel>
         <DockPanel 
             DockPanel.Dock="Bottom">
