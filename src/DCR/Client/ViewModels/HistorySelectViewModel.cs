@@ -22,9 +22,16 @@ namespace Client.ViewModels
 {
     public class HistorySelectViewModel : ViewModelBase, IDisposable
     {
-        private readonly IEventConnection _eventConnection;
-        private readonly IServerConnection _serverConnection;
+        private IEventConnection _eventConnection;
+        private readonly IEventConnection _realEventConnection;
+
+        private IServerConnection _serverConnection;
+        private readonly IServerConnection _realServerConnection;
+
+        private readonly DummyConnection _dummyConnection; // can be used as either eventconnection or Serverconnection
+
         private bool _canPressButtons;
+        private bool _useDummyConnection;
 
         private bool 
             _shouldValidate = true,
@@ -39,8 +46,9 @@ namespace Client.ViewModels
 
         public HistorySelectViewModel(WorkflowViewModel workflowViewModel, IServerConnection serverConnection, IEventConnection eventConnection) : this(serverConnection, eventConnection)
         {
-            Workflows = new ObservableCollection<WorkflowViewModel>(workflowViewModel.Parent.WorkflowList);
-            SelectedWorkflow = Workflows.FirstOrDefault(model => model.WorkflowId == workflowViewModel.WorkflowId);
+            _realWorkflows = workflowViewModel.Parent.WorkflowList.Select(model => model.WorkflowDto);
+            Workflows = new ObservableCollection<WorkflowDto>(_realWorkflows);
+            SelectedWorkflow = Workflows.FirstOrDefault(model => model.Id == workflowViewModel.WorkflowId);
 
             TypeDescriptor.AddAttributes(
                 typeof(Tuple<string, int>),
@@ -51,15 +59,20 @@ namespace Client.ViewModels
         {
             CanPressButtons = true;
             _serverConnection = serverConnection;
+            _realServerConnection = serverConnection;
+
             _eventConnection = eventConnection;
+            _realEventConnection = eventConnection;
+            _dummyConnection = new DummyConnection();
             Failures = new ObservableSet<string>();
-            Workflows = new ObservableCollection<WorkflowViewModel>();
+            Workflows = new ObservableCollection<WorkflowDto>();
         }
 
         #region Databindings
 
-        public ObservableCollection<WorkflowViewModel> Workflows { get; set; }
-        public WorkflowViewModel SelectedWorkflow { get; set; } 
+        private readonly IEnumerable<WorkflowDto> _realWorkflows;
+        public ObservableCollection<WorkflowDto> Workflows { get; set; }
+        public WorkflowDto SelectedWorkflow { get; set; } 
 
         public string Status
         {
@@ -80,6 +93,33 @@ namespace Client.ViewModels
                 if (_canPressButtons == value) return;
                 _canPressButtons = value;
                 NotifyPropertyChanged();
+            }
+        }
+
+        public bool UseDummyConnection
+        {
+            get { return _useDummyConnection; }
+            set
+            {
+                if (_useDummyConnection == value) return;
+                _useDummyConnection = value;
+                if (_useDummyConnection)
+                {
+                    _eventConnection = (IEventConnection)_dummyConnection;
+                    _serverConnection = (IServerConnection)_dummyConnection;
+                    Workflows = new ObservableCollection<WorkflowDto>(_dummyConnection.DummyWorkflows);
+                }
+                else
+                {
+                    _eventConnection = _realEventConnection;
+                    _serverConnection = _realServerConnection;
+                    Workflows = new ObservableCollection<WorkflowDto>(_realWorkflows);
+                }
+                SelectedWorkflow = Workflows.FirstOrDefault();
+
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(Workflows));
+                NotifyPropertyChanged(nameof(SelectedWorkflow));
             }
         }
 
@@ -181,7 +221,7 @@ namespace Client.ViewModels
             {
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
 
-                var events = await _serverConnection.GetEventsFromWorkflow(SelectedWorkflow.WorkflowId);
+                var events = await _serverConnection.GetEventsFromWorkflow(SelectedWorkflow.Id);
                 var localHistories = new List<Tuple<string, Graph.Graph>>();
                 var wrongHistories = new HashSet<Tuple<string, FailureTypes.FailureType>>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();

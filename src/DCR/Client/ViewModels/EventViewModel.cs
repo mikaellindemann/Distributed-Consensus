@@ -12,7 +12,7 @@ namespace Client.ViewModels
 {
     public class EventViewModel : ViewModelBase
     {
-        internal readonly ServerEventDto EventAddressDto;
+        internal readonly ServerEventDto EventDto;
         private EventStateDto _eventStateDto;
         private readonly IWorkflowViewModel _parent;
         private static readonly Brush WhiteBrush, IncludedBrush, PendingBrush, ExecutedBrush, IsEvilBrush;
@@ -41,24 +41,24 @@ namespace Client.ViewModels
             WhiteBrush.Freeze();
         }
 
-        public EventViewModel(ServerEventDto eventAddressDto, IWorkflowViewModel workflow)
+        public EventViewModel(ServerEventDto eventDto, IWorkflowViewModel workflow)
         {
-            if (eventAddressDto == null || workflow == null)
+            if (eventDto == null || workflow == null)
             {
                 throw new ArgumentNullException();
             }
-            EventAddressDto = eventAddressDto;
+            EventDto = eventDto;
             _parent = workflow;
             _eventStateDto = new EventStateDto();
             _eventConnection = new EventConnection();
             GetStateInternal();
         }
 
-        public EventViewModel(IEventConnection eventConnection, ServerEventDto eventAddressDto, IWorkflowViewModel parent)
+        public EventViewModel(IEventConnection eventConnection, ServerEventDto eventDto, IWorkflowViewModel parent)
         {
             _parent = parent;
             _eventStateDto = new EventStateDto();
-            EventAddressDto = eventAddressDto;
+            EventDto = eventDto;
             _eventConnection = eventConnection;
         }
 
@@ -66,10 +66,10 @@ namespace Client.ViewModels
 
         public string Id
         {
-            get { return EventAddressDto.EventId; }
+            get { return EventDto.EventId; }
             set
             {
-                EventAddressDto.EventId = value;
+                EventDto.EventId = value;
                 NotifyPropertyChanged();
             }
         }
@@ -89,10 +89,10 @@ namespace Client.ViewModels
 
         public Uri Uri
         {
-            get { return EventAddressDto.Uri; }
+            get { return EventDto.Uri; }
             set
             {
-                EventAddressDto.Uri = value;
+                EventDto.Uri = value;
                 NotifyPropertyChanged();
             }
         }
@@ -211,7 +211,7 @@ namespace Client.ViewModels
             await _parent.DisableExecuteButtons();
             try
             {
-                await _eventConnection.Execute(EventAddressDto.Uri, _parent.WorkflowId, EventAddressDto.EventId, _parent.Roles);
+                await _eventConnection.Execute(EventDto.Uri, _parent.WorkflowId, EventDto.EventId, _parent.Roles);
                 _parent.RefreshEvents();
             }
             catch (NotFoundException)

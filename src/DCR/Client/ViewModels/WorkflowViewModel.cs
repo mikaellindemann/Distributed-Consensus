@@ -14,19 +14,19 @@ namespace Client.ViewModels
 {
     public class WorkflowViewModel : ViewModelBase, IWorkflowViewModel
     {
-        private readonly WorkflowDto _workflowDto;
+        public WorkflowDto WorkflowDto { get; }
         private bool _resetEventRuns;
         public IWorkflowListViewModel Parent { get; }
         private readonly IEventConnection _eventConnection;
         private readonly IServerConnection _serverConnection;
 
-        public string WorkflowId => _workflowDto.Id;
+        public string WorkflowId => WorkflowDto.Id;
 
         public WorkflowViewModel(IWorkflowListViewModel parent, WorkflowDto workflowDto, IEnumerable<string> roles,
             IEventConnection eventConnection, IServerConnection serverConnection, ObservableCollection<EventViewModel> eventList)
         {
             Parent = parent;
-            _workflowDto = workflowDto;
+            WorkflowDto = workflowDto;
             Roles = roles;
             _eventConnection = eventConnection;
             _serverConnection = serverConnection;
@@ -37,10 +37,10 @@ namespace Client.ViewModels
 
         public string Name
         {
-            get { return _workflowDto.Name; }
+            get { return WorkflowDto.Name; }
             set
             {
-                _workflowDto.Name = value;
+                WorkflowDto.Name = value;
                 NotifyPropertyChanged();
             }
         }

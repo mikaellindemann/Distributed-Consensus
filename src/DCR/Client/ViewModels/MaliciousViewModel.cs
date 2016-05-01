@@ -65,7 +65,7 @@ namespace Client.ViewModels
         {
             try
             {
-                await _maliciousConnection.ApplyCheatingType(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
+                await _maliciousConnection.ApplyCheatingType(EventViewModel.Uri, EventViewModel.EventDto.WorkflowId,
                     EventViewModel.Id, CheatingTypeEnum.HistoryAboutOthers);
                 EventViewModel.IsEvil = true;
                 Status = "Now the event is evil";
@@ -81,7 +81,7 @@ namespace Client.ViewModels
         {
             try
             {
-                await _maliciousConnection.ApplyCheatingType(EventViewModel.Uri, EventViewModel.EventAddressDto.WorkflowId,
+                await _maliciousConnection.ApplyCheatingType(EventViewModel.Uri, EventViewModel.EventDto.WorkflowId,
                     EventViewModel.Id, CheatingTypeEnum.LocalTimestampOutOfOrder);
                 EventViewModel.IsEvil = true;
                 Status = "Now the event is evil";

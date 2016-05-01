@@ -157,6 +157,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Connections\DummyConnection.cs" />
     <Compile Include="Connections\IMaliciousConnection.cs" />
     <Compile Include="Connections\MaliciousConnection.cs" />
     <Compile Include="Controls\ZoomBorderControl.cs" />
