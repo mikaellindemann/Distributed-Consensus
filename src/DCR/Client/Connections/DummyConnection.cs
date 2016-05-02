@@ -14,15 +14,7 @@ namespace Client.Connections
     public class DummyConnection : IEventConnection, IServerConnection
     {
         private int _idCounter;
-
-        public int IdCounter
-        {
-            get
-            {
-                _idCounter++;
-                return _idCounter;
-            }
-        }
+        public int IdCounter => _idCounter++;
 
         private readonly Dictionary<ServerEventDto, ICollection<ActionDto>> _historyMap = new Dictionary<ServerEventDto, ICollection<ActionDto>>();
         public ICollection<WorkflowDto> WorkflowDtos { get; set; } = new List<WorkflowDto>();
@@ -37,7 +29,7 @@ namespace Client.Connections
         {
             ICollection<Tuple<ServerEventDto, ICollection<ActionDto>>> list = new List<Tuple<ServerEventDto, ICollection<ActionDto>>>();
 
-            #region Workflow1
+            #region Workflow1 everything good
             {
                 var workflowDto = new WorkflowDto { Name = "All good Workflow", Id = IdCounter.ToString() };
                 var eventDto = new ServerEventDto
@@ -56,29 +48,30 @@ namespace Client.Connections
                     Roles = new List<string>()
                 };
                 var actions = new List<ActionDto>
-            {
-                new ActionDto
                 {
-                    EventId = eventDto.EventId,
-                    WorkflowId = workflowDto.Id,
-                    Type = ActionType.ExecuteStart,
-                    TimeStamp = 1,
-                    CounterpartTimeStamp = -1
-                },
-                new ActionDto
-                {
-                    EventId = eventDto.EventId,
-                    WorkflowId = workflowDto.Id,
-                    Type = ActionType.ExecuteFinished,
-                    TimeStamp = 2,
-                    CounterpartTimeStamp = -1
-                }
-            };
-                AddToLists(workflowDto, list, eventDto, actions);
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteStart,
+                        TimeStamp = 1,
+                        CounterpartTimeStamp = -1
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteFinished,
+                        TimeStamp = 2,
+                        CounterpartTimeStamp = -1
+                    }
+                };
+                AddToLists(list, eventDto, actions);
+                WorkflowDtos.Add(workflowDto);
             }
-            #endregion Workflow1
+            #endregion Workflow1 everything good
 
-            #region Workflow2
+            #region Workflow2 local timestamp mess up
             {
                 var workflowDto = new WorkflowDto { Name = "local Timestamp mixup", Id = IdCounter.ToString() };
                 var eventDto = new ServerEventDto
@@ -97,34 +90,182 @@ namespace Client.Connections
                     Roles = new List<string>()
                 };
                 var actions = new List<ActionDto>
-            {
-                new ActionDto
                 {
-                    EventId = eventDto.EventId,
-                    WorkflowId = workflowDto.Id,
-                    Type = ActionType.ExecuteStart,
-                    TimeStamp = 2,
-                    CounterpartTimeStamp = -1
-                },
-                new ActionDto
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteStart,
+                        TimeStamp = 2,
+                        CounterpartTimeStamp = -1
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteFinished,
+                        TimeStamp = 1,
+                        CounterpartTimeStamp = -1
+                    }
+                };
+                AddToLists(list, eventDto, actions);
+                eventDto = new ServerEventDto
                 {
-                    EventId = eventDto.EventId,
                     WorkflowId = workflowDto.Id,
-                    Type = ActionType.ExecuteFinished,
-                    TimeStamp = 1,
-                    CounterpartTimeStamp = -1
-                }
-            };
-                AddToLists(workflowDto, list, eventDto, actions);
+                    EventId = IdCounter.ToString(),
+                    Conditions = new List<EventAddressDto>(),
+                    Exclusions = new List<EventAddressDto>(),
+                    Inclusions = new List<EventAddressDto>(),
+                    Responses = new List<EventAddressDto>(),
+                    Milestones = new List<EventAddressDto>(),
+                    Name = "local Timestamp mixup",
+                    Included = true,
+                    Executed = true,
+                    Pending = true,
+                    Roles = new List<string>()
+                };
+                actions = new List<ActionDto>
+                {
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteStart,
+                        TimeStamp = 2,
+                        CounterpartTimeStamp = -1
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteFinished,
+                        TimeStamp = 2,
+                        CounterpartTimeStamp = -1
+                    }
+                };
+                AddToLists(list, eventDto, actions);
+                WorkflowDtos.Add(workflowDto);
             }
             #endregion Workflow2
+
+            #region Workflow3 Counterpart timestamp mess up
+            {
+                var workflowDto = new WorkflowDto { Name = "counterpart Timestamp mixup", Id = IdCounter.ToString() };
+                var eventDto = new ServerEventDto
+                {
+                    WorkflowId = workflowDto.Id,
+                    EventId = IdCounter.ToString(),
+                    Conditions = new List<EventAddressDto>(),
+                    Exclusions = new List<EventAddressDto>(),
+                    Inclusions = new List<EventAddressDto>(),
+                    Responses = new List<EventAddressDto>(),
+                    Milestones = new List<EventAddressDto>(),
+                    Name = "local Timestamp mixup",
+                    Included = true,
+                    Executed = true,
+                    Pending = true,
+                    Roles = new List<string>()
+                };
+                var eventDto2 = new ServerEventDto
+                {
+                    WorkflowId = workflowDto.Id,
+                    EventId = IdCounter.ToString(),
+                    Conditions = new List<EventAddressDto>(),
+                    Exclusions = new List<EventAddressDto>(),
+                    Inclusions = new List<EventAddressDto> { new EventAddressDto { WorkflowId = workflowDto.Id, Id = eventDto.EventId, Roles = new List<string>() } },
+                    Responses = new List<EventAddressDto>(),
+                    Milestones = new List<EventAddressDto>(),
+                    Name = "local Timestamp mixup",
+                    Included = true,
+                    Executed = true,
+                    Pending = true,
+                    Roles = new List<string>()
+                };
+                var actions = new List<ActionDto>
+                {
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        CounterpartId = eventDto2.EventId,
+                        Type = ActionType.IncludedBy,
+                        TimeStamp = 3,
+                        CounterpartTimeStamp = 5
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto.EventId,
+                        WorkflowId = workflowDto.Id,
+                        CounterpartId = eventDto2.EventId,
+                        Type = ActionType.IncludedBy,
+                        TimeStamp = 6,
+                        CounterpartTimeStamp = 2
+                    }
+                };
+                var actions2 = new List<ActionDto>
+                {
+                    new ActionDto
+                    {
+                        EventId = eventDto2.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteStart,
+                        TimeStamp = 1,
+                        CounterpartTimeStamp = -1
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto2.EventId,
+                        WorkflowId = workflowDto.Id,
+                        CounterpartId = eventDto.EventId,
+                        Type = ActionType.Includes,
+                        TimeStamp = 2,
+                        CounterpartTimeStamp = 3
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto2.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteFinished,
+                        TimeStamp = 3,
+                        CounterpartTimeStamp = -1
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto2.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteStart,
+                        TimeStamp = 4,
+                        CounterpartTimeStamp = -1
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto2.EventId,
+                        WorkflowId = workflowDto.Id,
+                        CounterpartId = eventDto.EventId,
+                        Type = ActionType.Includes,
+                        TimeStamp = 5,
+                        CounterpartTimeStamp = 6
+                    },
+                    new ActionDto
+                    {
+                        EventId = eventDto2.EventId,
+                        WorkflowId = workflowDto.Id,
+                        Type = ActionType.ExecuteFinished,
+                        TimeStamp = 6,
+                        CounterpartTimeStamp = -1
+                    }
+                };
+                WorkflowDtos.Add(workflowDto);
+                AddToLists(list, eventDto, actions);
+                AddToLists(list, eventDto2, actions2);
+            }
+            #endregion Workflow3
 
             AddWorkflowDtoToMap(list);
         }
 
-        private void AddToLists(WorkflowDto workflowDto, ICollection<Tuple<ServerEventDto, ICollection<ActionDto>>> list, ServerEventDto eventDto, List<ActionDto> actions)
+        private void AddToLists(ICollection<Tuple<ServerEventDto, ICollection<ActionDto>>> list, ServerEventDto eventDto, List<ActionDto> actions)
         {
-            WorkflowDtos.Add(workflowDto);
             list.Add(new Tuple<ServerEventDto, ICollection<ActionDto>>(eventDto, actions));
         }
 
