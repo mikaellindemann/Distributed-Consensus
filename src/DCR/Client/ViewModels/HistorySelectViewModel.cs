@@ -240,19 +240,9 @@ namespace Client.ViewModels
                     localHistories = localHistories.Where(id => wrongHistories.All(badTuple => badTuple.Item1 != id.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);                    
                 }
                 Graph.Graph mergedGraph = Graph.empty;
-                if (localHistories.Count != 0)
+                if (localHistories.Count != 0) // can only merge if there is something to remove
                 {
-                    {
-                        // Merging
-                        var first = localHistories.First().Value;
-                        var rest =
-                            ToFSharpList(
-                                localHistories.Where(elem => !ReferenceEquals(elem.Value, first))
-                                    .Select(tuple => tuple.Value));
-
-                        var result = await Task.Run(() => History.stitch(first, rest));
-                        mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
-                    }
+                    mergedGraph = await Merging(localHistories);
                 }
                 if (ShouldCollapse)
                 {
@@ -264,37 +254,10 @@ namespace Client.ViewModels
                 }
                 if (ShouldSimulate)
                 {
-                    var initialStates = serverEventDtos.Select(dto => new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId, new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
-                    var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates), dcrRules);
-
-                    if (result.IsFailure)
-                    {
-                        var failureResult = result.GetFailure;
-
-                        foreach (var keyValuePair in failureResult.Nodes.Where(actionTuple => actionTuple.Value.FailureTypes.Contains(FailureTypes.FailureType.ExecutedWithoutProperState)))
-                        {
-                            wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(keyValuePair.Key.Item1,
-                                FailureTypes.FailureType.ExecutedWithoutProperState));
-                        }
-
-                        mergedGraph = failureResult;
-                    }
+                    mergedGraph = Simulation(serverEventDtos, mergedGraph, dcrRules, wrongHistories);
                 }
 
-                //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
-                var tempFile = Path.GetTempFileName() + ".svg";
-                File.Delete(tempFile.Substring(0, tempFile.Length - 4));
-
-                new GraphToSvgConverter().ConvertGraphToSvg(mergedGraph, tempFile);
-
-                // Update the failure list on the right:
-                Failures.Clear();
-                foreach (var wrongHistory in wrongHistories)
-                {
-                    Failures.Add($"{wrongHistory.Item1} {FailureTypeToString(wrongHistory.Item2)}");
-                }
-
-                SvgPath = new Uri(tempFile);
+                CreateSVG(mergedGraph, wrongHistories);
 
                 Status = "";
             }
@@ -307,6 +270,65 @@ namespace Client.ViewModels
                 tokenSource.Cancel();
                 CanPressButtons = true;
             }
+        }
+
+        private void CreateSVG(Graph.Graph mergedGraph, HashSet<Tuple<string, FailureTypes.FailureType>> wrongHistories)
+        {
+            //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
+            var tempFile = Path.GetTempFileName() + ".svg";
+            File.Delete(tempFile.Substring(0, tempFile.Length - 4));
+
+            new GraphToSvgConverter().ConvertGraphToSvg(mergedGraph, tempFile);
+
+            // Update the failure list on the right:
+            Failures.Clear();
+            foreach (var wrongHistory in wrongHistories)
+            {
+                Failures.Add($"{wrongHistory.Item1} {FailureTypeToString(wrongHistory.Item2)}");
+            }
+
+            SvgPath = new Uri(tempFile);
+        }
+
+        private static async Task<Graph.Graph> Merging(Dictionary<string, Graph.Graph> localHistories)
+        {
+            var first = localHistories.First().Value;
+            var rest =
+                ToFSharpList(
+                    localHistories.Where(elem => !ReferenceEquals(elem.Value, first))
+                        .Select(tuple => tuple.Value));
+
+            var result = await Task.Run(() => History.stitch(first, rest));
+            return FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
+        }
+
+        private static Graph.Graph Simulation(IList<ServerEventDto> serverEventDtos, Graph.Graph mergedGraph, FSharpSet<Tuple<string, string, Action.ActionType>> dcrRules, HashSet<Tuple<string, FailureTypes.FailureType>> wrongHistories)
+        {
+            var initialStates =
+                serverEventDtos.Select(
+                    dto =>
+                        new Tuple<string, Tuple<bool, bool, bool>>(dto.EventId,
+                            new Tuple<bool, bool, bool>(dto.Included, dto.Pending, dto.Executed)));
+            var result = DCRSimulator.simulate(mergedGraph, new FSharpMap<string, Tuple<bool, bool, bool>>(initialStates),
+                dcrRules);
+
+            if (result.IsFailure)
+            {
+                var failureResult = result.GetFailure;
+
+                foreach (
+                    var keyValuePair in
+                        failureResult.Nodes.Where(
+                            actionTuple =>
+                                actionTuple.Value.FailureTypes.Contains(FailureTypes.FailureType.ExecutedWithoutProperState)))
+                {
+                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(keyValuePair.Key.Item1,
+                        FailureTypes.FailureType.ExecutedWithoutProperState));
+                }
+
+                mergedGraph = failureResult;
+            }
+            return mergedGraph;
         }
 
         private static async Task Validation(Dictionary<string, Graph.Graph> localHistories, FSharpSet<Tuple<string, string, Action.ActionType>> dcrRules, HashSet<Tuple<string, FailureTypes.FailureType>> wrongHistories)
@@ -377,7 +399,7 @@ namespace Client.ViewModels
                     .Select(actionDto => Action.create(
                         new Tuple<string, int>(actionDto.EventId, actionDto.TimeStamp),
                         new Tuple<string, int>(actionDto.CounterpartId, actionDto.CounterpartTimeStamp),
-                        ConvertType(actionDto.Type),
+                        ConvertActionType(actionDto.Type),
                         new FSharpSet<Tuple<string, int>>(Enumerable.Empty<Tuple<string, int>>()) // Todo: Remember to add an edge to the resulting graph, from this action to the next.
                     )).ToList();
 
@@ -402,7 +424,7 @@ namespace Client.ViewModels
             return localHistories;
         }
 
-        private static string FailureTypeToString(FailureTypes.FailureType type)
+        private string FailureTypeToString(FailureTypes.FailureType type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
@@ -419,18 +441,6 @@ namespace Client.ViewModels
             if (type.IsPartialOutgoingWhenExecuting) return "only used some of the outgoing relations when executing";
 
             throw new ArgumentException("Unknown type", nameof(type));
-        }
-
-        public async void DoAsyncTimerUpdate(CancellationToken token, DateTime start, TimeSpan timeout)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                if (timeout > TimeSpan.Zero)
-                    // ReSharper disable once MethodSupportsCancellation
-                    await Task.Delay(timeout);
-
-                ExecutionTime = DateTime.Now.Subtract(start).ToString(@"h\:mm\:ss\.ff", new DateTimeFormatInfo());
-            }
         }
 
         private IList<Tuple<string, string, Action.ActionType>> GetRules(IList<ServerEventDto> serverEventDtos)
@@ -451,27 +461,7 @@ namespace Client.ViewModels
             }
             return rules;
         }
-
-        /// <summary>
-        /// Turns a typed IEnumerable into the corresponding FSharpList.
-        /// 
-        /// The list gets reversed up front because it is cons'ed together backwards.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="elements"></param>
-        /// <returns></returns>
-        private static FSharpList<T> ToFSharpList<T>(IEnumerable<T> elements)
-        {
-            return elements.Reverse().Aggregate(FSharpList<T>.Empty, (current, element) => FSharpList<T>.Cons(element, current));
-        }
-        #endregion Actions
-
-        public void Dispose()
-        {
-            if (SvgPath != null && File.Exists(SvgPath.LocalPath))
-                File.Delete(SvgPath.LocalPath);
-        }
-        private static Action.ActionType ConvertType(ActionType type)
+        private Action.ActionType ConvertActionType(ActionType type)
         {
             switch (type)
             {
@@ -502,6 +492,38 @@ namespace Client.ViewModels
                 default:
                     throw new InvalidOperationException("Update actiontypes!");
             }
+        }
+
+        public async void DoAsyncTimerUpdate(CancellationToken token, DateTime start, TimeSpan timeout)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                if (timeout > TimeSpan.Zero)
+                    // ReSharper disable once MethodSupportsCancellation
+                    await Task.Delay(timeout);
+
+                ExecutionTime = DateTime.Now.Subtract(start).ToString(@"h\:mm\:ss\.ff", new DateTimeFormatInfo());
+            }
+        }
+
+        /// <summary>
+        /// Turns a typed IEnumerable into the corresponding FSharpList.
+        /// 
+        /// The list gets reversed up front because it is cons'ed together backwards.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        private static FSharpList<T> ToFSharpList<T>(IEnumerable<T> elements)
+        {
+            return elements.Reverse().Aggregate(FSharpList<T>.Empty, (current, element) => FSharpList<T>.Cons(element, current));
+        }
+        #endregion Actions
+
+        public void Dispose()
+        {
+            if (SvgPath != null && File.Exists(SvgPath.LocalPath))
+                File.Delete(SvgPath.LocalPath);
         }
     }
 
