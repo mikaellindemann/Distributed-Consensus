@@ -17,6 +17,7 @@ using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Newtonsoft.Json;
 using Action = HistoryConsensus.Action;
+using Common.DTO.History;
 
 namespace Client.ViewModels
 {
@@ -222,77 +223,17 @@ namespace Client.ViewModels
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
 
                 var events = await _serverConnection.GetEventsFromWorkflow(SelectedWorkflow.Id);
-                var localHistories = new Dictionary<string,Graph.Graph>();
-                var wrongHistories = new HashSet<Tuple<string, FailureTypes.FailureType>>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
 
-                await
-                    Task.WhenAll(
-                        serverEventDtos.OrderBy(@event => @event.EventId).Select(
-                            async @event => await _eventConnection.Lock(@event.Uri, @event.WorkflowId, @event.EventId)));
-
-                foreach (var @event in serverEventDtos)
-                {
-                    var localHistory =
-                        JsonConvert.DeserializeObject<Graph.Graph>(
-                            await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
-                    localHistories.Add(@event.EventId, localHistory);
-                }
-
-                await
-                    Task.WhenAll(
-                        serverEventDtos.Select(
-                            async @event => await _eventConnection.Unlock(@event.Uri, @event.WorkflowId, @event.EventId)));
-
+                var localHistories = await GenerateLocalGraphs(serverEventDtos);
+                var wrongHistories = new HashSet<Tuple<string, FailureTypes.FailureType>>();
+                
                 // Extract DCR rules
-                var rules = GetRules(serverEventDtos);
-                var dcrRules = new FSharpSet<Tuple<string, string, Action.ActionType>>(rules);
+                var dcrRules = new FSharpSet<Tuple<string, string, Action.ActionType>>(GetRules(serverEventDtos));
 
                 if (ShouldValidate)
                 {
-                    foreach (var historyId in localHistories.Keys)
-                    {
-                        var historyGraph = localHistories[historyId];
-                        var validationResult =
-                            await Task.Run(() => LocalHistoryValidation.giantLocalCheck(historyGraph, historyId, dcrRules));
-                        if (validationResult.IsFailure)
-                        {
-                            var failureHistory = validationResult.GetFailure;
-
-                            var failures = failureHistory.Nodes.Where(node => !node.Value.FailureTypes.IsEmpty).SelectMany(actionTuple => actionTuple.Value.FailureTypes).Distinct();
-
-                            foreach (var failureType in failures)
-                            {
-                                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId, failureType));
-                            }
-
-                            localHistories[historyId] = failureHistory;
-                        }
-                    }
-                    // pair validations
-                    foreach (var historyId1 in localHistories.Keys.ToList())
-                    {
-                        var history1 = localHistories[historyId1];
-                        foreach (var historyId2 in localHistories.Keys.ToList())
-                        {
-                            var history2 = localHistories[historyId2];
-                            if (rules.Any(tuple => tuple.Item1 == historyId1 && tuple.Item2 == historyId2))
-                            {
-                                var validationResult =
-                                    await Task.Run(() => HistoryValidation.pairValidationCheck(history1, history2));
-                                if (validationResult.IsFailure)
-                                {
-                                    var failureHistory = validationResult.GetFailure;
-
-                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId1, FailureTypes.FailureType.Maybe));
-                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId2, FailureTypes.FailureType.Maybe));
-
-                                    localHistories[historyId1] = failureHistory.Item1;
-                                    localHistories[historyId2] = failureHistory.Item2;
-                                }
-                            }
-                        }
-                    }
+                    await Validation(localHistories, dcrRules, wrongHistories);
                 }
                 if (ShouldFilter)
                 {
@@ -365,6 +306,99 @@ namespace Client.ViewModels
             }
         }
 
+        private static async Task Validation(Dictionary<string, Graph.Graph> localHistories, FSharpSet<Tuple<string, string, Action.ActionType>> dcrRules, HashSet<Tuple<string, FailureTypes.FailureType>> wrongHistories)
+        {
+            foreach (var historyId in localHistories.Keys.ToList())
+            {
+                var historyGraph = localHistories[historyId];
+                var validationResult =
+                    await Task.Run(() => LocalHistoryValidation.giantLocalCheck(historyGraph, historyId, dcrRules));
+                if (validationResult.IsFailure)
+                {
+                    var failureHistory = validationResult.GetFailure;
+
+                    var failures =
+                        failureHistory.Nodes.Where(node => !node.Value.FailureTypes.IsEmpty)
+                            .SelectMany(actionTuple => actionTuple.Value.FailureTypes)
+                            .Distinct();
+
+                    foreach (var failureType in failures)
+                    {
+                        wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId, failureType));
+                    }
+
+                    localHistories[historyId] = failureHistory;
+                }
+            }
+            // pair validations
+            foreach (var historyId1 in localHistories.Keys.ToList())
+            {
+                var history1 = localHistories[historyId1];
+                foreach (var historyId2 in localHistories.Keys.ToList())
+                {
+                    var history2 = localHistories[historyId2];
+                    if (dcrRules.Any(tuple => tuple.Item1 == historyId1 && tuple.Item2 == historyId2))
+                    {
+                        var validationResult =
+                            await Task.Run(() => HistoryValidation.pairValidationCheck(history1, history2));
+                        if (validationResult.IsFailure)
+                        {
+                            var failureHistory = validationResult.GetFailure;
+
+                            wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId1,
+                                FailureTypes.FailureType.Maybe));
+                            wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId2,
+                                FailureTypes.FailureType.Maybe));
+
+                            localHistories[historyId1] = failureHistory.Item1;
+                            localHistories[historyId2] = failureHistory.Item2;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task<Dictionary<string, Graph.Graph>> GenerateLocalGraphs(IList<ServerEventDto> serverEventDtos)
+        {
+            
+            var localHistories = new Dictionary<string, Graph.Graph>();
+
+            await
+                Task.WhenAll(
+                    serverEventDtos.OrderBy(@event => @event.EventId).Select(
+                        async @event => await _eventConnection.Lock(@event.Uri, @event.WorkflowId, @event.EventId)));
+
+            foreach (var @event in serverEventDtos)
+            {
+                var localHistory = (await _eventConnection.GetHistory(@event.Uri, @event.WorkflowId, @event.EventId))
+                    .Select(actionDto => Action.create(
+                        new Tuple<string, int>(actionDto.EventId, actionDto.TimeStamp),
+                        new Tuple<string, int>(actionDto.CounterpartId, actionDto.CounterpartTimeStamp),
+                        ConvertType(actionDto.Type),
+                        new FSharpSet<Tuple<string, int>>(Enumerable.Empty<Tuple<string, int>>()) // Todo: Remember to add an edge to the resulting graph, from this action to the next.
+                    )).ToList();
+
+
+                var localHistoryGraph = Graph.empty;
+
+                for (var i = 0; i < localHistory.Count; i++)
+                {
+                    localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
+                    if (i - 1 >= 0)
+                        localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
+                }
+
+                localHistories.Add(@event.EventId, localHistoryGraph);
+            }
+
+            await
+                Task.WhenAll(
+                    serverEventDtos.Select(
+                        async @event => await _eventConnection.Unlock(@event.Uri, @event.WorkflowId, @event.EventId)));
+
+            return localHistories;
+        }
+
         private static string FailureTypeToString(FailureTypes.FailureType type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -415,11 +449,6 @@ namespace Client.ViewModels
             return rules;
         }
 
-        private void Validate()
-        {
-            
-        }
-
         /// <summary>
         /// Turns a typed IEnumerable into the corresponding FSharpList.
         /// 
@@ -438,6 +467,38 @@ namespace Client.ViewModels
         {
             if (SvgPath != null && File.Exists(SvgPath.LocalPath))
                 File.Delete(SvgPath.LocalPath);
+        }
+        private static Action.ActionType ConvertType(ActionType type)
+        {
+            switch (type)
+            {
+                case ActionType.Includes:
+                    return Action.ActionType.Includes;
+                case ActionType.IncludedBy:
+                    return Action.ActionType.IncludedBy;
+                case ActionType.Excludes:
+                    return Action.ActionType.Excludes;
+                case ActionType.ExcludedBy:
+                    return Action.ActionType.ExcludedBy;
+                case ActionType.SetsPending:
+                    return Action.ActionType.SetsPending;
+                case ActionType.SetPendingBy:
+                    return Action.ActionType.SetPendingBy;
+                case ActionType.CheckedConditionBy:
+                    return Action.ActionType.CheckedConditionBy;
+                case ActionType.ChecksCondition:
+                    return Action.ActionType.ChecksCondition;
+                case ActionType.CheckedMilestoneBy:
+                    return Action.ActionType.CheckedMilestoneBy;
+                case ActionType.ChecksMilestone:
+                    return Action.ActionType.ChecksMilestone;
+                case ActionType.ExecuteStart:
+                    return Action.ActionType.ExecuteStart;
+                case ActionType.ExecuteFinished:
+                    return Action.ActionType.ExecuteFinish;
+                default:
+                    throw new InvalidOperationException("Update actiontypes!");
+            }
         }
     }
 
