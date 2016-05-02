@@ -222,7 +222,7 @@ namespace Client.ViewModels
                 DoAsyncTimerUpdate(tokenSource.Token, DateTime.Now, TimeSpan.FromMilliseconds(20));
 
                 var events = await _serverConnection.GetEventsFromWorkflow(SelectedWorkflow.Id);
-                var localHistories = new List<Tuple<string, Graph.Graph>>();
+                var localHistories = new Dictionary<string,Graph.Graph>();
                 var wrongHistories = new HashSet<Tuple<string, FailureTypes.FailureType>>();
                 var serverEventDtos = events as IList<ServerEventDto> ?? events.ToList();
 
@@ -236,7 +236,7 @@ namespace Client.ViewModels
                     var localHistory =
                         JsonConvert.DeserializeObject<Graph.Graph>(
                             await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
-                    localHistories.Add(new Tuple<string, Graph.Graph>(@event.EventId, localHistory));
+                    localHistories.Add(@event.EventId, localHistory);
                 }
 
                 await
@@ -250,12 +250,11 @@ namespace Client.ViewModels
 
                 if (ShouldValidate)
                 {
-                    for (int index = 0; index < localHistories.Count; index++)
+                    foreach (var historyId in localHistories.Keys)
                     {
-                        var history = localHistories[index];
-
+                        var historyGraph = localHistories[historyId];
                         var validationResult =
-                            await Task.Run(() => LocalHistoryValidation.giantLocalCheck(history.Item2, history.Item1, dcrRules));
+                            await Task.Run(() => LocalHistoryValidation.giantLocalCheck(historyGraph, historyId, dcrRules));
                         if (validationResult.IsFailure)
                         {
                             var failureHistory = validationResult.GetFailure;
@@ -264,32 +263,32 @@ namespace Client.ViewModels
 
                             foreach (var failureType in failures)
                             {
-                                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history.Item1, failureType));
+                                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId, failureType));
                             }
 
-                            localHistories[index] = new Tuple<string, Graph.Graph>(history.Item1, failureHistory);
+                            localHistories[historyId] = failureHistory;
                         }
                     }
                     // pair validations
-                    for (var index1 = 0; index1 < localHistories.Count; index1++)
+                    foreach (var historyId1 in localHistories.Keys.ToList())
                     {
-                        var history1 = localHistories[index1];
-                        for (var index2 = index1 + 1; index2 < localHistories.Count; index2++)
+                        var history1 = localHistories[historyId1];
+                        foreach (var historyId2 in localHistories.Keys.ToList())
                         {
-                            var history2 = localHistories[index2];
-                            if (rules.Any(tuple => tuple.Item1 == history1.Item1 && tuple.Item2 == history2.Item1))
+                            var history2 = localHistories[historyId2];
+                            if (rules.Any(tuple => tuple.Item1 == historyId1 && tuple.Item2 == historyId2))
                             {
                                 var validationResult =
-                                    await Task.Run(() => HistoryValidation.pairValidationCheck(history1.Item2, history2.Item2));
+                                    await Task.Run(() => HistoryValidation.pairValidationCheck(history1, history2));
                                 if (validationResult.IsFailure)
                                 {
                                     var failureHistory = validationResult.GetFailure;
 
-                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history1.Item1, FailureTypes.FailureType.Maybe));
-                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(history2.Item1, FailureTypes.FailureType.Maybe));
+                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId1, FailureTypes.FailureType.Maybe));
+                                    wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(historyId2, FailureTypes.FailureType.Maybe));
 
-                                    localHistories[index1] = new Tuple<string, Graph.Graph>(history1.Item1, failureHistory.Item1);
-                                    localHistories[index2] = new Tuple<string, Graph.Graph>(history2.Item1, failureHistory.Item2);
+                                    localHistories[historyId1] = failureHistory.Item1;
+                                    localHistories[historyId2] = failureHistory.Item2;
                                 }
                             }
                         }
@@ -297,16 +296,16 @@ namespace Client.ViewModels
                 }
                 if (ShouldFilter)
                 {
-                    localHistories = localHistories.Where(tuple => wrongHistories.All(badTuple => badTuple.Item1 != tuple.Item1)).ToList();
+                    localHistories = localHistories.Where(id => wrongHistories.All(badTuple => badTuple.Item1 != id.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
                 }
                 Graph.Graph mergedGraph;
                 {
                     // Merging
-                    var first = localHistories.First().Item2;
+                    var first = localHistories.First().Value;
                     var rest =
                         ToFSharpList(
-                            localHistories.Where(elem => !ReferenceEquals(elem.Item2, first))
-                                .Select(tuple => tuple.Item2));
+                            localHistories.Where(elem => !ReferenceEquals(elem.Value, first))
+                                .Select(tuple => tuple.Value));
 
                     var result = await Task.Run(()=>History.stitch(first, rest));
                     mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
@@ -414,6 +413,11 @@ namespace Client.ViewModels
                 rules.AddRange(serverEventDto.Milestones.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksMilestone)));
             }
             return rules;
+        }
+
+        private void Validate()
+        {
+            
         }
 
         /// <summary>

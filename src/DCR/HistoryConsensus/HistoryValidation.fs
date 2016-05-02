@@ -62,10 +62,10 @@ module HistoryValidation =
             | ExcludedBy, Excludes -> true
             | _ -> false
 
-        let isCounterpart action1 action2 = action1.Id = action2.CounterpartId && action2.Id = action1.CounterpartId
+        let isCounterpart action1 action2 = (action1.Id = action2.CounterpartId && action2.Id = action1.CounterpartId)
 
         let zipped = Seq.zip actionsAbout2From1 actionsAbout1From2
-        if (Seq.forall (fun ((actionId1,action1), (actionId2,action2)) -> isCounterpart action1 action2 && hasMatchingTypes action1.Type action2.Type) zipped)
+        if (Seq.forall (fun ((actionId1,action1), (actionId2,action2)) -> action1=action2 || (isCounterpart action1 action2 && hasMatchingTypes action1.Type action2.Type)) zipped)
         then
             Success (history1, history2)
         else 
