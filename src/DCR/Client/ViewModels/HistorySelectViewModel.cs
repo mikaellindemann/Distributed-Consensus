@@ -237,19 +237,22 @@ namespace Client.ViewModels
                 }
                 if (ShouldFilter)
                 {
-                    localHistories = localHistories.Where(id => wrongHistories.All(badTuple => badTuple.Item1 != id.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
+                    localHistories = localHistories.Where(id => wrongHistories.All(badTuple => badTuple.Item1 != id.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);                    
                 }
-                Graph.Graph mergedGraph;
+                Graph.Graph mergedGraph = Graph.empty;
+                if (localHistories.Count != 0)
                 {
-                    // Merging
-                    var first = localHistories.First().Value;
-                    var rest =
-                        ToFSharpList(
-                            localHistories.Where(elem => !ReferenceEquals(elem.Value, first))
-                                .Select(tuple => tuple.Value));
+                    {
+                        // Merging
+                        var first = localHistories.First().Value;
+                        var rest =
+                            ToFSharpList(
+                                localHistories.Where(elem => !ReferenceEquals(elem.Value, first))
+                                    .Select(tuple => tuple.Value));
 
-                    var result = await Task.Run(()=>History.stitch(first, rest));
-                    mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
+                        var result = await Task.Run(() => History.stitch(first, rest));
+                        mergedGraph = FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
+                    }
                 }
                 if (ShouldCollapse)
                 {
