@@ -1,6 +1,6 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
-\chapter{Related Work}\label{chap:related-work}
+\chapter{Background}\label{chap:related-work}
 	\section{Dynamic Condition Response Graphs}
 	DCR graphs function as a good domain for developing an algorithm for finding an order of execution in distributed systems. Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
 	Furthermore DCR graphs specify several types of directed edges in the graph, which provide useful information for determining order of execution.
@@ -37,6 +37,8 @@
 	\section{Distributed Systems}
 	\todo[inline]{Seriel Ækvivalens}
 		\subsection{Consensus}
+		traditionelt set er consensus bla bla (paxos) det kan ikke bruges fordi bla bla. Man kunne bruge elections bla bla men det passer heller ikke på problemet fordi data ligger distribueret rundt og brudstykkerne er ikke nok til at finde hele billedet. bla bla
+		
 		\subsection{Ordering of events}\label{subsec:orderingofevents}
 		In \cite{Lamport:1978:TCO:359545.359563} Leslie Lamport examines and describes the ordering of events (not to be confused with DCR events) in distributed systems based on their occurrence in time. Applying these concepts is very helpful when determining the order of execution. 
 		
