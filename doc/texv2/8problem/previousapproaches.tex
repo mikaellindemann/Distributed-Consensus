@@ -69,5 +69,65 @@
 	
 	There is a couple of pitfalls with the algorithm. If malicious events are introduced in the DCR graph, the same problems arise as with the graph where the beginning node had relations with the rest of the graph. 
 	
-	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recoursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls. \todo{Wat.}
+	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls. \todo{Wat.}
+	
+	\section{Use of the Transitive Closure in Order to Gain Extra Information}
+	It is desired to be able to guarantee that the order of execution as correct as the information provided by events allow it to be. Increasing reachability of actions in the history will provide more information about the actions that have occurred, even if these actions have no existing relation. 
+	
+	Since a strict partial order is a directed acyclic graph, the transitive closure of the graph can be found, to find more happens-before relations. This is useful when determining what actions are part of an execution. 
+	
+	Finding the transitive closure does not always give better results, and the \texttt{Collapse} solution was found instead. 
+	In figure the result of finding the transitive closure on the joined histories of two events is shown. 
+	Compare the result to the result of using the collapse approach in figure. 
+	The actions marked with a grey color are concurrent after the transitive closure has been found, but actually happen in order, which is seen when using the collapse approach. 
+	
+	\subsection{Complexity}
+	We implemented the finding of the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}.
+	
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{8problem/images/trans.pdf}
+		\caption{The result of finding the transitive closure on from the actions of an event. Note that the grey \texttt{ExecuteFinish}, \texttt{IncludedBy} and\texttt{ExecuteStart} seem to happen concurrently.}
+		\label{fig:problem:trans}
+	\end{figure}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{8problem/images/collapse.pdf}
+		\caption{The result of finding an execution using \textit{Collapse}. Note that the grey  \texttt{ExecuteFinish} happens before the next execution and that the \texttt{IncludedBy} action happens after the execution.}
+		\label{fig:problem:trans}
+	\end{figure}
+	
+	%\begin{figure}
+	%	\centering
+	%	\def\svgwidth{0.42\columnwidth}
+	%	\fontsize{6}{8}\selectfont
+	%	\import{5connect/images/}{3executionswithtransitive.pdf_tex}
+	%	\caption{3 executions before and after applying execution transitive closure.}
+	%	\label{fig:connect:3executionstrans}
+	%\end{figure}
+	
+	%\begin{algorithm}
+	%	\begin{algorithmic}
+	%	\Function{Execution Transitive-Closure}{history}
+	%		\State startFromSet $\leftarrow$ actions with no incomming edges in history
+	%		\ForAll{fromAction in startFromSet}
+	%			\State neighbourActions $\leftarrow$ \Call{GetNeighboursOfNeighbours}{fromAction}
+	%			\ForAll{neighbour in neighbourActions}
+	%				\If {neighbour is execution}
+	%					\State history $\leftarrow$ \Call{addEdge}{fromAction, neighbour, history}
+	%					\State startFromSet $\leftarrow$ \Call{add}{neighbour, startFromSet}
+	%				\Else
+	%					\State neighbourActions $\leftarrow$ \Call{Union}{neighbour.neighbours, neighbourActions}
+	%				\EndIf
+	%			\EndFor
+	%		\EndFor
+	%		\State 
+	%		\Return graph
+	%	\EndFunction
+	%	\end{algorithmic}
+	%	\caption{Transitive Closure Algorithm}
+	%\end{algorithm}
+	
 	

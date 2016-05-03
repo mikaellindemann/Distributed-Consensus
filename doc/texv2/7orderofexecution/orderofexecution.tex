@@ -8,41 +8,6 @@
 	\subsection{korrekthed}
 	\todo{What is this? Hvor skal det hen? }
 	The found order of execution still represents the same history and have the same properties as to the order. Given the definition of serially equivalence, which executions complies with, requires that two processes happen after one another. Therefore the set of actions which are after actions in an execution must happen after that execution finishes, just as well as all action which happen before actions in an execution must happen before the execution starts. 
-	
-	% Transitive closure
-	%\newpar In order to remove unnecessary actions and preserve the order of execution, direct edges between executions in the history graph must be created based on the existing paths so that reachability between executions is preserved. The transitive closure of a graph has this property and therefore an algorithm finding this closure is needed.\footnote{\url{https://en.wikipedia.org/wiki/Transitive_closure}} Since reachability is preserved by only creating edges from an execution to the first execution encountered on every path from the execution, it is not required to find a complete transitive closure, as long as it is then done for every of the encountered executions. An example of this can be seen on %\autoref{fig:connect:3executionstrans}.
-	
-	%\begin{figure}
-	%	\centering
-	%	\def\svgwidth{0.42\columnwidth}
-	%	\fontsize{6}{8}\selectfont
-	%	\import{5connect/images/}{3executionswithtransitive.pdf_tex}
-	%	\caption{3 executions before and after applying execution transitive closure.}
-	%	\label{fig:connect:3executionstrans}
-	%\end{figure}
-	
-	%\begin{algorithm}
-	%	\begin{algorithmic}
-	%	\Function{Execution Transitive-Closure}{history}
-	%		\State startFromSet $\leftarrow$ actions with no incomming edges in history
-	%		\ForAll{fromAction in startFromSet}
-	%			\State neighbourActions $\leftarrow$ \Call{GetNeighboursOfNeighbours}{fromAction}
-	%			\ForAll{neighbour in neighbourActions}
-	%				\If {neighbour is execution}
-	%					\State history $\leftarrow$ \Call{addEdge}{fromAction, neighbour, history}
-	%					\State startFromSet $\leftarrow$ \Call{add}{neighbour, startFromSet}
-	%				\Else
-	%					\State neighbourActions $\leftarrow$ \Call{Union}{neighbour.neighbours, neighbourActions}
-	%				\EndIf
-	%			\EndFor
-	%		\EndFor
-	%		\State 
-	%		\Return graph
-	%	\EndFunction
-	%	\end{algorithmic}
-	%	\caption{Transitive Closure Algorithm}
-	%\end{algorithm}
-	
 
 	% TODO: Collapsing
 	\subsection{Collapsing}
