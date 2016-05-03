@@ -22,7 +22,7 @@
 	This also introduces a special kind of cheating:
 	
 		\begin{definition}
-			\textbf{Inconsistent cheating} is the act of manipulation data in a way that is not adhering to the rules of the DCR graph
+			\textbf{Inconsistent cheating} is the act of manipulation  in a way where the history is not valid.
 		\end{definition}
 		
 	\subsection{DCR Rules}
@@ -32,7 +32,7 @@
 	
 	\newpar \textbf{Complete executions}: A given event, $e1$ must affect all of its outgoing relations when executing. Furthermore every event that $e1$ has a relation to must have a \texttt{By} relation in its history after $e1$ has executed.
 	
-	\newpar \textbf{Executions in Valid States}: A given history for an event, $e1$, must only have executions where the state is included, and the event's conditions are either executed or excluded.
+	\newpar \textbf{Executions only in Valid States}: A given history for an event, $e1$, must only have executions where the state is included, and the event's conditions are either executed or excluded.
 	
 	\subsection{Serial Equivelence Rules}
 	A given execution must abide the rules of serially equivelence. That includes the following:
@@ -65,12 +65,22 @@
 
 	\todo[inline]{Uddyb regler og tilføj evt. en figur der viser invalid DCR historik ift. relations der ikke eksisterer. }
 	
+	\subsection{Simulation}
+	Executions only in Valid States is a special case which is non trivial to check. HOW DO WE DO. ALSO WE DONT KNOW IF IT IS THE EVENT ITSELF DOING BAD BEHAVIOR OR A CONDITION REPLIED WITH LYING DATA.
+	
 	\newpar If any of these rules are not adhered to an event must be malicious, since any well functioning event would not be able to such a create history. Thereby allowing us to identify and if wanted remove this subset of Corruption types 
 	
 	\section{Mismatching Histories}
-	Until now we have examned inconsistent cheating, but malicious events are also able to cheat consistently:
+	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
 	\begin{definition}
-		\textbf{Consistent cheating} is the act of manipulation data in a way that is adhering to the rules of the DCR graph
+		\textbf{Consistent cheating} is the act of manipulating data in a way where the history is still valid.
 	\end{definition}
+	
+	\newpar Consistent cheating can take a number of forms:
+	
+	\newpar \textbf{Non correct number of exections}: EXAMPLES
+	\newpar \textbf{Non correct timestamps}: EXAMPLES
+	\todo[inline]{more types?}
+	
 	
 	\section{Election}
