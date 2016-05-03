@@ -6,13 +6,23 @@
 	
 	\newpar In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. Traditionally malicious agents can tamper with messages in transfer by; altering messages, replaying messages and withholding messages. We assume that any of these kinds of corrupting messages in transfer is not present in this system. How a system can handle these kinds of corruption is examined in \todo[inline]{Henvis til en artikel der udforsker disse traditionelle typer "snyd"}.
 	
+	\newpar Therefore the kinds of cheating which is examined in this project is the following:
+	\begin{definition}
+		\textbf{Cheating} is any changing of a history that is not corresponding to what actually happened in the DCR graph.
+	\end{definition}
 	\todo[inline]{Tilføj rigtig definition.}
 	
 	\section{Validating histories}
-	In order to validate a given history, a valid history is defined as follows
+	In order to identify malicious events in a given history, we need to define what a valid history is:
 	
 		\begin{definition}
 			A \textit{\textbf{Valid History}} is a history, H, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in a strict partial order. 
+		\end{definition}
+		
+	This also introduces a special kind of cheating:
+	
+		\begin{definition}
+			\textbf{Inconsistent cheating} is the act of manipulation  in a way where the history is not valid.
 		\end{definition}
 		
 	\subsection{DCR Rules}
@@ -22,7 +32,7 @@
 	
 	\newpar \textbf{Complete executions}: A given event, $e1$ must affect all of its outgoing relations when executing. Furthermore every event that $e1$ has a relation to must have a \texttt{By} relation in its history after $e1$ has executed.
 	
-	\newpar \textbf{Executions in Valid States}: A given history for an event, $e1$, must only have executions where the state is included, and the event's conditions are either executed or excluded.
+	\newpar \textbf{Executions only in Valid States}: A given history for an event, $e1$, must only have executions where the state is included, and the event's conditions are either executed or excluded.
 	
 	\subsection{Serial Equivelence Rules}
 	A given execution must abide the rules of serially equivelence. That includes the following:
@@ -43,14 +53,29 @@
 	\newpar \textbf{Mismatches in typestamps:} A given history graph must not contain any actions that have relations to actions with an invalid timestamp. This would imply that either an executing event has tampered with its outgoing action history or that an event affected by an execution has tampered with its ingoing action history. 
 	
 	\newpar These rules together makes sure that no cycles can exist.
-	\todo{Maybe remove next paragraph}
 	
+	\todo[inline]{Maybe remove next paragraph}
 	\textbf{Cycles:} A given history graph must not contain any cycles, since cycles in the history graph would imply that an action, $a1$, has occurred before another action, $a2$, but $a2$ has also occurred before $a1$. This is not possible in any execution, and a given history with cycles will therefore be invalid.
 	
 	
 	
 	\todo[inline]{Uddyb regler og tilføj evt. en figur der viser mismatches mellem timestamps. }
 	
-	
-
 	\todo[inline]{Uddyb regler og tilføj evt. en figur der viser invalid DCR historik ift. relations der ikke eksisterer. }
+	
+	\subsection{Simulation}
+	Executions only in Valid States is a special case which is non trivial to check. HOW DO WE DO. ALSO WE DONT KNOW IF IT IS THE EVENT ITSELF DOING BAD BEHAVIOR OR A CONDITION REPLIED WITH LYING DATA.
+	
+	\newpar If any of these rules are not adhered to an event must be malicious, since any well functioning event would not be able to such a create history. Thereby allowing us to identify and if wanted remove this subset of Corruption types 
+	
+	\section{Mismatching Histories}
+	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
+	\begin{definition}
+		\textbf{Consistent cheating} is the act of manipulating data in a way where the history is still valid.
+	\end{definition}
+	
+	\newpar Consistent cheating can take a number of forms:
+	
+	\newpar \textbf{Non correct number of exections}: EXAMPLES
+	\newpar \textbf{Non correct timestamps}: EXAMPLES
+	\todo[inline]{more types?}
