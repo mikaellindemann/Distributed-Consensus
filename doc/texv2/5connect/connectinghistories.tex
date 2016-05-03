@@ -51,8 +51,11 @@
 			\label{def:happensbeforeaction}
 	\end{definition}
 	
-	\todo[inline]{Dette skal skrives om ...}
-	\newpar Because multiple events can share action types, the types of two actions are not enough to determine whether or not that pair of actions is each others complement. Therefore the actions are also matched by the ID of the counterpart, seen from each side. Because the same event can possibly be executed multiple times, and thereby create multiple pairs of corresponding actions, at least one of the actions must know the local time stamp of the other. In the implementation we have chosen that the performer logs the time stamp of its counterpart as part of its action. With this information pairs of actions can uniquely be identified, eliminating the possibility of creating inconsistent histories due to mispaired data. Furthermore, an action can only match with a single other action following these rules. This limits the amount of both outgoing and incoming edges for each action to at most 2, due to the fact that an action is part of the local history for an event and has at most one mathed relation to an action of another event.
+
+	\newpar Mapping actions in a history with any other given action with a corresponding action type will not produce correct history relations. 
+	An action on the performing event should \textbf{only} be matched with the corresponding action on the receiving event. 
 	
-	Given this functionality provided by the happens before relations, an algorithm can be created to merge two histories together. First of all, every action of the history need to be added to a joined history. To connect actions, for each action of the graph the corresponding action is found by the rules described in the previous section. Whenever a match is found the edge is added from the performing action to the receiving action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
-	\todo[inline]{... hertil.}	
+	Actions should therefore be matched on more than just their corresponding action type, since this would introduce false matches. An action includes the timestamp of both the performing and receiving event to ensure that matches are as precise as possible.
+	An action can also, due to the fact that an ID for an action is unique at both the performing and receiving event, never be matched with more than a single other action. 
+	
+	To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Actions are mathed by corresponding type and ID action is found by the rules described in the previous section. Whenever a match is found the edge is added from the performing action to the receiving action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
