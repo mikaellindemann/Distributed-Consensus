@@ -36,7 +36,7 @@
 	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation. 
 	
 	\section{Distributed Systems}
-		Distributed systems is an area of computer science which focus on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process.
+		Distributed systems is an area of computer science which focus on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network.
 		
 		\subsection{Serial Equivalence}
 		Two concurrent processes are serially equivalent if the outcome of the two executing, is the same as if any one of the processes executed first followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message parsing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking, and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110} these concepts are explored in depth.
@@ -56,7 +56,7 @@
 		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
 		
 		\subsection{Consensus}
-		Concensus in distributed systems is the process of reaching agreement among the participants in the system. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}. The Paxos algorithm cannot handle corrupted agents and can therefore not be used. Furthermore election algorithms requires all the agents of the election to be able to propose the value which can be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, regular election algorithms cannot be used.
+		Concensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}. The Paxos algorithm cannot handle corrupted agents and can therefore not be used. Furthermore election algorithms requires all the agents of the election to be able to propose the value which can be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, regular election algorithms cannot be used. 
 		
 	\section{Distributed DCR implementation}
 		\todo[inline]{Vi har implementeret vores løsning med locking. Søren siger vi skal kigge på SFEN '12 eller '13.}
