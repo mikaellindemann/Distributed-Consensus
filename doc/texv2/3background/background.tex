@@ -36,7 +36,8 @@
 	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation. 
 	
 	\section{Distributed Systems}
-		\todo{general introduction}
+		Distributed systems is an area of computer science which focus on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process.
+		
 		\subsection{Serial Equivalence}
 		Two concurrent processes are serially equivalent if the outcome of the two executing, is the same as if any one of the processes executed first followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message parsing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking, and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110} these concepts are explored in depth.
 		
