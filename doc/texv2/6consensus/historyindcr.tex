@@ -68,7 +68,7 @@
 	
 	\newpar If any of these rules are not adhered to an event must be malicious, since any well functioning event would not be able to such a create history. Thereby allowing us to identify and if wanted remove this subset of Corruption types 
 	
-	\section{Mismatching Histories}
+	\section{Consistent cheating}
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
 	\begin{definition}
 		\textbf{Consistent cheating} is the act of manipulating data in a way where the history is still valid.
@@ -76,6 +76,19 @@
 	
 	\newpar Consistent cheating can take a number of forms:
 	
-	\newpar \textbf{Non correct number of exections}: EXAMPLES
-	\newpar \textbf{Non correct timestamps}: EXAMPLES
+
+	\newpar \textbf{Non correct timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still mainting order in both local and counterpart timestamps.
+	
+	\newpar \textbf{Non correct number of executions}: A malicious event which is executable executes either fewer or more times than it has done.
 	\todo[inline]{more types?}
+	
+	\subsection{Cases}
+	Detecting and identifying consistently cheating events is difficult, due to the fact that it is not possible to look at a single event's history and determine if it is valid or not. We will now examine how the structure of the DCR graph, and the connecting between malicious events contribute to the ability to detect and identifying the cheating.
+	
+	\newpar \textbf{Single Malicious Event}: 
+	\newpar \textbf{Single Malicious Event With Relation to Self}:
+	\newpar \textbf{Single Malicious Event With Relation to Good Event}: 
+	\newpar \textbf{Good Event With Relation to Single Malicious Event}: 
+	\newpar \textbf{Good and Malicious Event with Relations to eachother}:
+	\newpar \textbf{Malicious Event A with relation to Malicious Event B}: 
+	\newpar \textbf{Two Malicious Events With Relations To Eachother}:
