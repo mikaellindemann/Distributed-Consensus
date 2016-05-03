@@ -72,13 +72,13 @@
 	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls. \todo{Wat.}
 	
 	\section{Use of the Transitive Closure in Order to Gain Extra Information}
-	It is desired to be able to guarantee that the order of execution as correct as the information provided by events allow it to be. Increasing reachability of actions in the history will provide more information about the actions that have occurred, even if these actions have no existing relation. 
+	It is desired to be able to guarantee that the order of execution is as correct as the information provided by events allow it to be. Increasing reachability of actions in the history will provide more information about the actions that have occurred, even if these actions have no existing relation. 
 	
 	Since a strict partial order is a directed acyclic graph, the transitive closure of the graph can be found, to find more happens-before relations. This is useful when determining what actions are part of an execution. 
 	
 	Finding the transitive closure does not always give better results, and the \texttt{Collapse} solution was found instead. 
-	In figure the result of finding the transitive closure on the joined histories of two events is shown. 
-	Compare the result to the result of using the collapse approach in figure. 
+	In \autoref{fig:problem:trans} the result of finding the transitive closure on the joined histories of two events is shown. 
+	Compare the result to the result of using the collapse approach in \autoref{fig:problem:collapse}. 
 	The actions marked with a grey color are concurrent after the transitive closure has been found, but actually happen in order, which is seen when using the collapse approach. 
 	
 	\subsection{Complexity}
@@ -96,7 +96,7 @@
 		\centering
 		\includegraphics[width=\textwidth]{8problem/images/collapse.pdf}
 		\caption{The result of finding an execution using \textit{Collapse}. Note that the grey  \texttt{ExecuteFinish} happens before the next execution and that the \texttt{IncludedBy} action happens after the execution.}
-		\label{fig:problem:trans}
+		\label{fig:problem:collapse}
 	\end{figure}
 	
 	%\begin{figure}

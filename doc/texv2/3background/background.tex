@@ -1,7 +1,7 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Background}\label{chap:background}
-	\section{Dynamic Condition Response Graphs}
+	\section{Dynamic Condition Response Graphs}\label{sec:background:dcrgraphs}
 	Dynamic Condition Response Graphs (\textit{DCR graphs}) is a declarative, event-based process model. Instead of using sequences of state transitions like imperative process languages, declarative process languages uses sets of constraints to model the possible transitions in the process (hereafter \textit{workflow}). One benefit of DCR graphs is that parts of the workflow are allowed to happen multiple times if desired.
 	
 %	Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
@@ -82,7 +82,6 @@
 		Concensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}. The Paxos algorithm cannot handle corrupted agents and can therefore not be used. Furthermore election algorithms requires all the agents of the election to be able to propose the value which can be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, regular election algorithms cannot be used. 
 		
 	\section{Distributed DCR implementation}
-		\todo[inline]{Vi har implementeret vores løsning med locking. Søren siger vi skal kigge på SFEN '12 eller '13.}
 		As a prerequisite for this project, we have built upon an implementation that was developed during our second year project of the bachelor in software development at the IT University of Copenhagen.\footnote{For an in depth description of the original implementation the project including a report can be found at \url{https://github.com/andersfischernielsen/FlowIT-Second-Year-Project/}.}
 		
 		\newpar From the requirements of the Second Year Project:
@@ -91,7 +90,7 @@
 			\noindent\textit{``The goal is to develop a functioning and correct, web-service based distributed workflow system that can support distributed coordination of workflows provided by the external and possibly international customers, and reconfigured if the workflow changes.''}
 		\end{quotation}
 		
-		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required. The Milestone relation was presented, but we were not expected to implement this relation. \todo[inline]{Skal vi nævne spawn og nested workflows som vi ikke understøtter?}
+		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required. The Milestone relation was presented, but we were not expected to implement this relation.
 		
 		\newpar In order to fulfil the requirements we separated the project into smaller components:
 		
@@ -104,7 +103,9 @@
 		
 		\newpar The event server can contain zero or more events. For each of these events, the server persists the state of the event. The state consists of an identity, a name to show in the client, 3 boolean values for include, response, and execute respectively. Furthermore the initial values of these boolean values are saved in order to restore the workflow to the original state. Also the "outgoing" relations of an event are stored. Outgoing means that the event that has to contact another event knows which events to contact. For inclusions, exclusions, and responses this means that an executed event will send a request to update another events state. For conditions, the event that is about to execute sends requests to the events that must be either executed or excluded, in order to determine if these conditions are fulfilled.
 		
-		\newpar In order to achieve serial equivalence when executing, a locking strategy has been used for simplicity and because performance was not a priority for the project. How to implement this is described in section 5 of \cite{debois2015concurrency}. In order to prevent deadlocks an order of obtaining locks has been defined inside a workflow. The chosen strategy for this is to order the events to lock by their ID alphabetically.
+		As mentioned above and as opposed to the definition of DCR graphs in \cite{hildebrandt2011declarative} the states of workflows are not saved as markings. Instead the event machine saves the state of each of the events it holds.
+		
+		\newpar In order to achieve serial equivalence when executing, a locking strategy has been used for simplicity and because performance was not a priority for the project.\footnote{The system executes events using the procedure from \cite{debois2015concurrency} as quoted in \autoref{sec:background:dcrgraphs}} In order to prevent deadlocks an order of obtaining locks has been defined inside a workflow. The chosen strategy for this is to order the events to lock by their ID alphabetically.
 		
 		\newpar The central server contains information about workflows and the events that take part in the workflow. Each workflow is identified by an ID, that is chosen when creating the workflow. For each event in a workflow the ID of the event, as well as the address to the event machine containing that event is saved.
 		
@@ -130,3 +131,5 @@
 			\newpar Furthermore, the aforementioned history implementation has been thrown out, as well as the parser is now included in the main client project.
 
 			\newpar The original project was hosted in Microsoft Azure\footnote{Microsofts cloud platform - \url{https://azure.microsoft.com/}}. In the aforementioned report, the user guide points to certain URLs that should contain the web services of the system. These web services are no longer running.
+			
+			\newpar To explore how the milestone-relation worked, this has been implemented in the system too. There are still no support for nested graphs or spawn-relations.
