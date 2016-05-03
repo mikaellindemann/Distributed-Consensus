@@ -1,10 +1,10 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
-\chapter{Consensus of History in Distributed DCR Graphs}
+\chapter{Validation and Consensus of Histories}
 \label{chap:consensusindcr}
-	This chapter defines the validation of local and global histories across multiple events. It also defines how to determine when a history can be produced, and, if possible, which events have inconsistent history data.
+	This chapter defines how histories from malicious events are identified and removed as well as how correctly functioning events can agree upon an order of execution.
 	
-	In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
+	\newpar In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. Traditionally malicious agents can tamper with messages in transfer by; altering messages, replaying messages and withholding messages. We assume that any of these kinds of corrupting messages in transfer is not present in this system. How a system can handle these kinds of corruption is examned in \todo[inline]{refereferef}.
 	
 	\todo[inline]{Tilføj rigtig definition.}
 	
@@ -54,3 +54,6 @@
 	
 
 	\todo[inline]{Uddyb regler og tilføj evt. en figur der viser invalid DCR historik ift. relations der ikke eksisterer. }
+	
+	
+	\section{Election}
