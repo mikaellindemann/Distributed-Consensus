@@ -131,3 +131,23 @@
 	\newpar By combining these two collapsing and reduction steps, the order of execution represented as a minimum equivalent graph of the entire history is found. 
 	
 	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot falsify the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
+
+	\section{Election}
+	As we have now found an order of execution where (potentially) malicious events have been identified, we want to know if the remaining events can agree upon the rest of order of execution.
+	
+	\newpar As stated in the problem definition, it is desired to reach consensus on the resulting order of execution, but since no process in the system knows the entire state of a workflow, it is not possible for the events to suggest an order of execution without completing steps alike with the ones described in this report.
+	
+	\newpar Because we have chosen to let the client know all events in order to retrieve their histories, it is also easy for us to send the resulting order of execution back to them, in order to find out whether or not they can agree to this order.
+	
+	\newpar When any event receives this order of execution, it can look at its own history and at the received order. In a good event the local history can contain executions with outgoing actions between execute start and execute finish actions. Furthermore ingoing relations can be identified as executions of other events from the following rules:
+	
+	\begin{itemize}
+		\item Each counterpart present in actions with ingoing action types must have executed at least once, in order to contact the local event.
+		\item If two actions with the same ingoing action type and counterpart are present after each other, this denotes two separate executions of the counterpart event, because each executing event only contacts another event once per relation when executing.
+	\end{itemize}
+	
+	\newpar Furthermore if an event has sent multiple ingoing requests as part of a single execution, then each of the relations that these actions represent must be present every time that execution has happened. Given these rules, the local history can be turned into a "local order of execution".
+	
+	\newpar In order for the event to agree on the global order of execution, if there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution.
+	
+	\newpar \todo[inline]{Hvordan bruger vi det her til at skrive at election i virkeligheden er en bekræftelse af vores algoritme, mere end det er en egentlig afstemning om resultatet?}
