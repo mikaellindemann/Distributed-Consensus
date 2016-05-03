@@ -4,7 +4,7 @@
 \label{chap:consensusindcr}
 	This chapter defines the validation of local and global histories across multiple events. It also defines how to determine when a history can be produced, and, if possible, which events have inconsistent history data.
 	
-	In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way.
+	In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
 	
 	\todo[inline]{Tilføj rigtig definition.}
 	
@@ -14,12 +14,8 @@
 		\begin{definition}
 			A \textit{\textbf{Valid History}} is a history, H, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in a strict partial order. 
 		\end{definition}
-	
-	\subsection{History graph and DCR graph rules}
-	\todo{maybe this header is not neccesary? as well as the paragraph}
-	Several rules must be adhered to for a history to be valid. These rules are both specific to the history graph and to DCR graphs in general. 
 		
-	\subsubsection{DCR Rules}
+	\subsection{DCR Rules}
 	A given execution must abide the rules of the DCR graph it is part of. That includes the following:
 	
 	\newpar \textbf{Valid relations}: A given history for an event, $e1$, must only contain actions which represents relations to another event, $e2$, where there exists such a relation in the DCR graph definition and vice versa. 
@@ -28,14 +24,14 @@
 	
 	\newpar \textbf{Executions in Valid States}: A given history for an event, $e1$, must only have executions where the state is included, and the event's conditions are either executed or excluded.
 	
-	\subsubsection{Serial Equivelence Rules}
+	\subsection{Serial Equivelence Rules}
 	A given execution must abide the rules of serially equivelence. That includes the following:
 	
 	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must affect all of its outgoing relations when executing without having any other executions start or affect the event. The exception to the rule is when an event has a relation to itself in which case a \texttt{By} action is allowed.
 	
 	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all the its ingoing relations from event, $e2$ when $e2$ executes, before anything else happens. The exception to the rule is when an event has a relation to itself in which case a actions from the execution are allowed before the next \texttt{By} action happens. 
 	
-	\subsubsection{History Graph Rules / Strict Partial Ordering / Lamport Logical Clocks}
+	\subsection{History Graph Rules / Strict Partial Ordering / Lamport Logical Clocks}
 	A given history must abide the rules of being a strict partial order. That includes the following:
 	
 	\newpar \textbf{Total Order of Local Timestamps}: A history of an event $e1$ must have its local timestamps be in strict total order.
