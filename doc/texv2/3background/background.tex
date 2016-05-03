@@ -2,39 +2,63 @@
 % !TeX spellcheck = en_GB
 \chapter{Background}\label{chap:background}
 	\section{Dynamic Condition Response Graphs}
-	DCR graphs function as a good domain for developing an algorithm for finding an order of execution in distributed systems. Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
-	Furthermore DCR graphs specify several types of directed edges in the graph, which provide useful information for determining order of execution.
+	Dynamic Condition Response Graphs (\textit{DCR graphs}) is a declarative, event-based process model. Instead of using sequences of state transitions like imperative process languages, declarative process languages uses sets of constraints to model the possible transitions in the process (hereafter \textit{workflow}). One benefit of DCR graphs is that parts of the workflow are allowed to happen multiple times if desired.
 	
-	\newpar DCR graphs are in \cite{6975351} defined as: 
-		\begin{quotation}	
-		A DCR Graph is a tuple $(E, l R, M)$ where
-		\begin{itemize}
-			\item $E$ is a finite set of events (nodes of the graph)
-			\item $l$ is a labelling function, assigning a label to each event
-			\item $R$ is a finite set of relations between events (edges of the graph). These are partitioned into five kinds; conditions (\condition), responses (\response), milestones ($\rightarrow\!\!\!\diamond$), inclusions(\inclusion) and exclusion (\exclusion).
-			\item $M$ is the marking of the graph. A marking represent the state of the process and is a triple ($Ex,Re,In$) of sets of events, respectively the executed ($Ex$), the pending ($Re$), and the included ($In$) events.
-		\end{itemize}
-		A DCR Graph with data is a tuple $(E,l,R,Md,g,V)$ where $V$ is a set of data variables, $Md = (M,ev), (E,l,R,M)$ is a DCR Graph, $ev$ is an evaluation function mapping data variables to values, and $g$ is a (partial) relation guard mapping from (some of) the relations to boolean expressions over variables.
+%	Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
+%	Furthermore DCR graphs specify several types of directed edges in the graph, which provide useful information for determining order of execution.
+	
+	\newpar DCR graphs are in \cite{hildebrandt2011declarative} defined as a tuple $(E, M, Act, $\condition$, $\response$, \pm, l)$ where
+	\begin{itemize}
+		\item $E$ is the set of events
+		\item $M$ is the marking, this is the state of the workflow. The marking is a triple containing three sets of events. The first set contains the events that has previously been excluded. The second set contains the events that is required to be executed or excluded. These are called the pending responses. The last set contains the events which are currently included.
+		\item $Act$ is the set of actions. That is, a representation of what happens in the workflow, when a given event is executed.
+		\item \condition (conditions) is a relation, which for all pairs of events which is present in the relation, means that the first event must be either excluded or executed for the second event to be executable.
+		\item \response (responses) is a relation, which for all pairs of events which is present in the relation, means that after the first event has been executed the second event must either be executed or excluded at some point.
+		\item $\pm$ defines the dynamic inclusion and exclusion of events. This partial function is a triple of two events and symbol defining whether the execution of the first event should result in an exclusion or inclusion of the second event. It is possible for an event to exclude itself.
+		\item $l$ is the labelling function, assigning an action to each event.
+	\end{itemize}
 		
-		Events are atomic and can represent the start or the end of an activity, or an atomic event. 
+	Furthermore the article defines a distributed DCR graph as a DCR graph with a set of roles, a set of principals and a mapping function that assigns roles to principals and actions. This assignment means that if principal $P$ is assigned role $R$, and action $A$ is assigned $R$, then $P$ can execute $A$.
+		
+	\newpar
+	\cite{hildebrandt2011safe} describes how events can be safely distributed. This is done by defining \textit{projections} and \textit{compositions} of DCR graphs.
+	
+	\newpar
+	A projection of a DCR graph with respect to a subset of events of the graph and a subset of the labels of the graph. The label set must contain the labels of the events in the event set, as well as all labels of events that can affect the marking or the ability to execute an event in the projection, through relations.
+	
+	\newpar
+	Proposition 1 in \cite{hildebrandt2011safe} defines how an execution in a projection corresponds to the execution of events in the entire DCR graph the projection was made on. In short it describes if and how a transition in the projection corresponds to a transition in the entire DCR graph and vice versa.
+	
+	\newpar
+	The composition of two DCR graphs defines the rules for how these graphs can be glued back together. The requirement is to keep all events and relations as well as combining the markings in a consistent manner. These rules can be found in definition 5 of \cite{hildebrandt2011safe}.
+	
+	\newpar 
+	In \cite{debois2015concurrency} Debois et al. describes the procedure for executing distributed events using a locking mechanism to ensure serial equivalence:
+	
+	\begin{quotation}
+		The procedure for executing an event, in detail, is as follows. A component
+		wishing to execute an event $e$ must first request\footnote{All components request locks in the same fixed order to prevent deadlocks.} and receive locks on all (local
+		and remote) events that are in conflict (i.e., not independent ) with $e$ (thus, in
+		particular, on itself). It then queries the state of remote events to determine if
+		$e$ is currently executable. If it is, it instructs remote events affected by firing $e$
+		to change state accordingly. Finally, it releases all locks.
 	\end{quotation}
+
+%	\newpar For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
 	
-	\newpar For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
+%	A DCR graph can model a \textit{workflow}, which represents a work process. The DCR graph can then be used to represent the current state of the process, to see what parts of the process have been completed and what parts of the process remain to be completed or \textit{executed}. 
 	
-	A DCR graph can model a \textit{workflow}, which represents a work process. The DCR graph can then be used to represent the current state of the process, to see what parts of the process have been completed and what parts of the process remain to be completed or \textit{executed}. 
+%	The partitioning of the five types of relations in DCR graph makes modelling interconnected events possible, e.g. having an event in a process that makes another event non-executable. This is made possible by the \textit{exclusion} (\exclusion) relation, that excludes the other event and therefore makes in non-executable. 
 	
-	The partitioning of the five types of relations in DCR graph makes modelling interconnected events possible, e.g. having an event in a process that makes another event non-executable. This is made possible by the \textit{exclusion} (\exclusion) relation, that excludes the other event and therefore makes in non-executable. 
+%	Modeling an event that is dependent on the completion of another event is made possible by the \textit{condition} (\condition) relation, which makes it impossible to execute an event, unless the event that has a condition to it has been executed.
 	
-	Modeling an event that is dependent on the completion of another event is made possible by the \textit{condition} (\condition) relation, which makes it impossible to execute an event, unless the event that has a condition to it has been executed.
+%	Modeling an event that can be excluded and then then re-included is made possible by the \textit{inclusion} (\inclusion) relation. 
 	
-	Modeling an event that can be excluded and then then re-included is made possible by the \textit{inclusion} (\inclusion) relation. 
+%	Modeling an event that has to be executed in order for the event to be in an accepting state \todo{Find bedre phrasing for 'accepting'.} is made possible by the \textit{response} (\response) relation. If an event has a \textit{response} edge going to it in the DCR graph, the event is in a \textit{pending} state. The pending state signifies that the event should be executed in order for the process to be in an accepting state.
 	
-	Modeling an event that has to be executed in order for the event to be in an accepting state \todo{Find bedre phrasing for 'accepting'.} is made possible by the \textit{response} (\response) relation. If an event has a \textit{response} edge going to it in the DCR graph, the event is in a \textit{pending} state. The pending state signifies that the event should be executed in order for the process to be in an accepting state.
+%	Users of a given DCR graph will execute events in order to change the state of the process the DCR graph is modelling. Events will have been executed in a certain order, which have resulted in the current state of the workflow. Several users can execute events concurrently in different locations. The events change state accordingly by communicating with reachable events. 
 	
-	Users of a given DCR graph will execute events in order to change the state of the process the DCR graph is modelling. Events will have been executed in a certain order, which have resulted in the current state of the workflow. Several users can execute events concurrently in different locations. The events change state accordingly by communicating with reachable events. 
-	
-	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation. 
-	
+%	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation. 
 	\section{Distributed Systems}
 		Distributed systems is an area of computer science which focus on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network.
 		
