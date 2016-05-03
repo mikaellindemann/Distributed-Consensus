@@ -48,7 +48,7 @@ bin
 *.vrb
 *.xdy
 *.tdo
-
+.texpadtmp
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
