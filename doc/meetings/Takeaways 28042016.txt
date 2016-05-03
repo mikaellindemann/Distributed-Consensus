@@ -1,0 +1,54 @@
+Philip Bille er ham som vi havde til censor på førsteårsprojektet.
+Vi skal lave en fælles præsentation, og derefter ind individuelt.
+
+Vi får først karakterer når vi alle er færdige.
+
+
+
+Søren mener stadig godt at vi kan få konsensus ind over ved at lave en "afstemning" om at ens data er korrekt i den mergede historik, men forstod også godt hvorfor vi synes at det var ved at bevæge sig væk fra konsensus.
+
+
+Han virkede glad for at vi havde lavet klienten med de forskellige valgmuligheder, så man kunne se hvornår og hvorfor ting går galt.
+
+
+
+Vi skal fremover bruge slack til kommunikation. 
+Vi når nok ikke at få flere møder med ham, men hvis vi virkelig har brug for det, vil han gerne sætte et skype-møde op. 
+Slack kan bruges til både korte spørgsmål og til dokumentaflevering.
+
+
+
+På onsdag (senest kl. 8) vil han gerne se en rapport hvor følgende er skrevet færdig:
+
+
+
+* Problemformulering
+
+* Introduktion til DCR Grafer
+
+
+
+Analyse (gerne alle afsnit, men mindst ét):
+
+
+* Rationale
+
+* Korrekthedsargument
+
+* Overvejelse over performance
+
+
+
+Vi skal helst sende hele rapporten med en tilhørende tekst omkring hvilke afsnit der er klar til at han skal læse.
+
+
+
+Husk overvejelser over måder at løse problemet på vi har forsøgt. Inkluder gerne en kortere beskrivelse af det i analysen og hvorfor vi ikke gik videre med det.
+
+
+
+(Hint: Brug det at vi gerne ville bruge DCR grafer til at finde onde knuder, frem for at gøre det distribueret)
+
+
+
+I den mail han har sendt er der en side hvor en dude for mange år siden har beskrevet nogle pitfalls i forhold til at skrive rapporter. Særligt de 3 overskrifter han har markeret bør vi fokusere på.
