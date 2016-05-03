@@ -21,7 +21,7 @@
 	Furthermore the article defines a distributed DCR graph as a DCR graph with a set of roles, a set of principals and a mapping function that assigns roles to principals and actions. This assignment means that if principal $P$ is assigned role $R$, and action $A$ is assigned $R$, then $P$ can execute $A$.
 		
 	\newpar
-	\cite{hildebrandt2011safe} describes how events can be safely distributed. This is done by defining \textit{projections} and \textit{compositions} of DCR graphs.
+	Events can be safely distributed by defining \textit{projections} and \textit{compositions} of DCR graphs. This is described in \cite{hildebrandt2011safe}.
 	
 	\newpar
 	A projection of a DCR graph with respect to a subset of events of the graph and a subset of the labels of the graph. The label set must contain the labels of the events in the event set, as well as all labels of events that can affect the marking or the ability to execute an event in the projection, through relations.
@@ -133,3 +133,6 @@
 			\newpar The original project was hosted in Microsoft Azure\footnote{Microsofts cloud platform - \url{https://azure.microsoft.com/}}. In the aforementioned report, the user guide points to certain URLs that should contain the web services of the system. These web services are no longer running.
 			
 			\newpar To explore how the milestone-relation worked, this has been implemented in the system too. There are still no support for nested graphs or spawn-relations.
+			
+		\newpar 
+		\todo[inline]{Add section for graph theory.}
