@@ -1,0 +1,30 @@
+% !TeX root = ../DistributedConsensus.tex
+% !TeX spellcheck = en_GB
+\section{Problem Definition}
+	\textit{Given a distributed DCR graph, the purpose of this project is to find an algorithm which uses the execution information of the individual events to find an order of execution where the information of these events are part of the result. Furthermore, the algorithm should be able to identify and remove the histories of malicious events from the order of execution. Correctly functioning events should be able to agree upon the resulting order of execution.}
+	
+	\vspace{0.4cm}
+	
+	\newpar
+	This report has the following structure:
+	
+	\newpar
+	Chapter \ref{chap:background} describes the previous work that this project is based upon. This includes distributed DCR graphs, graph theory, as well as distributed system concepts, such as consensus algorithms, serially equivalence and ordering of events.
+		
+	\newpar
+	Chapter \ref{chap:representing-a-history} introduces the terms action and history and defines the representation of a history and an action.
+	Furthermore, it examines why a local history of a single event must be in a strict total order.
+		
+	\newpar
+	Chapter \ref{chap:connecting-histories} examines how it is possible exploit the rules of DCR graphs to merge histories of multiple events into a single history, which is in strict partial order.
+	
+	\newpar
+	Chapter \ref{chap:consensusindcr} introduces the malicious event and what such an event can do to a history. Furthermore it defines a valid history and describes how it is possible, both locally and globally, to validate histories using the constraints of DCR graphs, serial equivalence, and ordering of events.
+	
+    \newpar
+    Chapter \ref{chap:order-of-execution} examines how it is possible to find an order of execution from a global history, as well as making sure that the participating events of the history can agree on the global order of execution.
+    
+	\newpar
+	Chapter \ref{chap:previous-attempts} describes attempts made at solving the problem during this project and their shortcomings. Furthermore, it is described why the solution in this report fulfils the shortcomings of these previous attempts. 
+		
+	

@@ -1,0 +1,139 @@
+% !TeX root = ../DistributedConsensus.tex
+% !TeX spellcheck = en_GB
+\chapter{Validation of Histories}
+\label{chap:consensusindcr}
+	This chapter defines how histories from malicious events are identified and removed.
+	
+	\newpar In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. Traditionally malicious agents can tamper with messages in transfer by; altering, replaying and withholding messages. We assume that any of these kinds of corrupting messages in transfer are not present in this system. How a system can handle these kinds of corruption is examined in \todo[inline]{Henvis til en artikel der udforsker disse traditionelle typer "snyd"}.
+	
+	\newpar Therefore the kinds of cheating which is examined in this project is the following:
+	\begin{definition}
+		\textbf{Cheating} is any changing of a history that is not corresponding to what actually happened in the DCR graph.
+	\end{definition}
+	\todo[inline]{Tilføj rigtig definition.}
+	
+	\section{Validating histories}
+	In order to identify malicious events in a given history, we need to define what a valid history is:
+	
+		\begin{definition}
+			A \textit{\textbf{Valid History}} is a history, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in a strict partial order. 
+		\end{definition}
+		
+	This also introduces a special kind of cheating:
+	
+		\begin{definition}
+			\textbf{Inconsistent cheating} is the act of manipulating a history in a way where the result is not valid.
+		\end{definition}
+		
+	\subsection{DCR Rules}
+	A given execution must abide to the rules of the DCR graph it is part of. That includes the following:
+	
+	\newpar \textbf{Valid relations}: A given history for an event must only contain actions which represents relations to another event where there exists such a relation in the DCR graph definition and vice versa. 
+	
+	\newpar \textbf{Complete executions}: A given event, $e1$ must have actions for each of its outgoing relation when executing. Each of the counterparts of these actions must have a corresponding action in their history after $e1$ has executed.
+	
+	\newpar \textbf{Executions only in Valid States}: The history of an event must only contain executions when the event is executable. That is, the event is included and all of its conditions are either excluded or executed.
+	
+	\subsection{Serial Equivalence Rules}
+	A given execution must abide the rules of serially equivalence. That includes the following:
+	
+	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case a \texttt{By} action is allowed.
+	
+	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next \texttt{By} action happens. 
+	
+	\subsection{History Graph Rules / Strict Partial Ordering / Lamport Logical Clocks}
+	A given history must abide the rules of being a strict partial order. That includes the following:
+	
+	\newpar \textbf{Total Order of Local Timestamps}: Every action in the history of an event must be in strict total order according to the timestamp.
+	
+	\newpar \textbf{Total Order of Counterpart Timestamps}: In the history of an event actions with the same counterpart ID must have its counterpart timestamp in strict total order.  The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be be lower. \todo{example}
+	
+	\newpar \textbf{Outgoing Relations Timestamp Order}: When an action is part of an outgoing relation the counterpart's corresponding action's timestamp must be higher than the outgoing one.
+	
+	\newpar Together, these rules makes sure that no cycles can exist.
+    \todo[inline]{Indsæt figurer og algoritmer der kan opdage hver af disse typer snyd.}
+    
+	\subsection{Simulation}
+    \todo[inline]{Simulation bruges til at finde events som har executed uden at være executable. Skriv dette afsnit.}
+%	Executions only in Valid States is a special case which is non trivial to check. HOW DO WE DO. ALSO WE DONT KNOW IF IT IS THE EVENT ITSELF DOING BAD BEHAVIOR OR A CONDITION REPLIED WITH LYING DATA.
+	
+%	\newpar If any of these rules are not adhered to an event must be malicious, since any well functioning event would not be able to such a create history. Thereby allowing us to identify and, if wanted, remove this subset of corruption types.
+	
+	\section{Consistent Cheating}
+	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
+	\begin{definition}
+		\textbf{Consistent cheating} is the act of manipulating data in a way where the history is still valid.
+	\end{definition}
+	
+	\newpar Consistent cheating can take a number of forms:
+
+	\newpar \textbf{Non correct timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still maintaining order in both local and counterpart timestamps.
+	
+	\newpar \textbf{Non correct number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.
+	
+	\subsection{Cases}
+	Detecting and identifying consistently cheating events is difficult, because it is not possible to look at a single event's history and determine if it is valid or not. We will now examine how the structure of the DCR graph, and the connection between malicious events contribute to the ability to detect and identifying consistent cheating.
+	
+	\newpar \textbf{Single Malicious Event}: 
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/1.pdf}
+		\caption{}
+		\label{fig:consensus:single-malicious}
+	\end{figure}
+	
+	\newpar \textbf{Single Malicious Event With Relation to Self}:
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/5.pdf}
+		\caption{}
+		\label{fig:consensus:single-malicious-with-relation}
+	\end{figure}
+	
+	\newpar \textbf{Single Malicious Event With Relation to Good Event}:
+	 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/3.pdf}
+		\caption{}
+		\label{fig:consensus:single-malicious-with-good-relation}
+	\end{figure}
+	
+	\newpar \textbf{Single Good Event With Relation to Single Malicious Event}:
+	 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/2.pdf}
+		\caption{}
+		\label{fig:consensus:single-good-with-malicious-relation}
+	\end{figure}
+	
+	\newpar \textbf{Single Good and Single Malicious Event with Relations to eachother}:
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/6.pdf}
+		\caption{}
+		\label{fig:consensus:single-good-with-twoway-malicious-relation}
+	\end{figure}
+	
+	\newpar \textbf{Single Malicious Event A with relation to Single Malicious Event B}: 
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/4.pdf}
+		\caption{}
+		\label{fig:consensus:single-malicious-with-twoway-malicious-relation}
+	\end{figure}
+	
+	\newpar \textbf{Two Malicious Events With Relations To Eachother}:
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/7.pdf}
+		\caption{}
+		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
+	\end{figure}
+\todo[inline]{Figurerne ovenfor viser de forskellige situationer. Der skal selvfølgelig knyttes en beskrivelse af situationen, samt i hvilket omfang dette kan opdages til hver figur.}
