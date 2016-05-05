@@ -37,9 +37,9 @@
 	\subsection{Serial Equivalence Rules}
 	A given execution must abide the rules of serially equivalence. That includes the following:
 	
-	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case a \texttt{By} action is allowed.
+	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case an incoming action is allowed.
 	
-	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next \texttt{By} action happens. 
+	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
 	
 	\subsection{History Graph Rules / Strict Partial Ordering / Lamport Logical Clocks}
 	A given history must abide the rules of being a strict partial order. That includes the following:

@@ -8,14 +8,14 @@
 	
 	% TODO: Collapsing
 	\subsection{Collapsing}
-	Although the receiver saves \texttt{By} actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. 
+	Although the receiver saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. 
 		
 	It is necessary to determine what should represent the time of an execution. Possible candidates would be \texttt{ExecuteFinish} and \texttt{ExecuteStart}. Using \texttt{ExecuteFinish}, it is difficult to tell which execution happened before the other, due to the fact that actions that are part of an execution happen before the \texttt{ExecuteFinish} action. 
 	The same applies for the \texttt{ExecuteStart} action, where actions that are part of an execution can happen after the execution.
 	
 	\newpar It then is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} constitutes looking at all actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connecting these events into a single entity, representing an entire execution. 
 	
-	Actions between start and finish might contain relations to other actions located in the local histories of other events. Since a given event is only affected by the effects of other events executing, it is safe to collapse the \texttt{By} actions from executing events into execution of the executing event. Since an action is always caused by the execution of \textit{some} event, the collapsed execution has the property that no action can happened outside any collapsed execution.
+	Actions between start and finish might contain relations to other actions located in the local histories of other events. Since a given event is only affected by the effects of other events executing, it is safe to collapse the incoming actions from executing events into execution of the executing event. Since an action is always caused by the execution of \textit{some} event, the collapsed execution has the property that no action can happened outside any collapsed execution.
 	
 	An example of this separation of executions can be found in \autoref{fig:before-collapsing}.
 	
