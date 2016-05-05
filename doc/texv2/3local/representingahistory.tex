@@ -5,7 +5,9 @@
 	
 	\newpar	In a DCR graph where an event has been executed an arbitrary number of times, it is wanted to find the order of execution for the workflow. In order to find this, one must first determine how to represent an execution.
 	
-	\newpar Recall that an execution can affect other events, including itself. Therefore an execution can be described as a \textit{set of effects}. An execution has different effects, such as including another event or checking a condition, and therefore these effects need to be distinguished by time and type. Lamport's logical clocks can be used for time stamps.\footnote{See \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}} Furthermore, an event, outside of its own execution, can be affected by the execution of another event. Therefore we can say that, either the event is \textit{affecting} another event, or the event is being \textit{affected} by another event, which brings us to the defnition of a so called \textit{\textbf{counterpart}}:
+	\newpar Recall that an execution can affect other events, including itself. Therefore an execution can be described as a \textit{set of effects}. An execution has different effects, such as including another event or checking a condition, and therefore these effects need to be distinguished by time and type. Lamport's logical clocks can be used for time stamps, since they help determining the order of events in a distributed system, as described in \autoref{subsec:orderingofevents}. 
+	
+	Furthermore, an event, outside of its own execution, can be affected by the execution of another event. Therefore we can say that, either the event is \textit{affecting} another event, or the event is being \textit{affected} by another event, which brings us to the defnition of a so called \textit{\textbf{counterpart}}:
 
 	\begin{definition}
 		In a given effect where two events A and B are part of the effect, event B is \textbf{\textit{Counterpart}} of event A and event A is counterpart of event B.
@@ -47,7 +49,7 @@
 	
 	\newpar Now that a representation of actions has been defined, it is necessary to define a way to connect and order these actions.
     
-    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement that executions in distributed DCR graph implementations must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B. This can be defined mathematically when actions are compared using logical timestamps:
+    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementations must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B. This can be defined mathematically as follows when actions are compared on their logical timestamps:
 	
 	\begin{center}
 		$\forall_{x \in E_A}\forall_{y \in E_B} . (x < y) \lor \forall_{x \in E_A}\forall_{y \in E_B} . (y < x)$ \todo[inline]{Totality for executions?}
@@ -58,7 +60,7 @@
 	\end{center}
 	\todo[inline]{Søren: Hvilken af disse former (hvis nogen) ville du foretrække i en rapport?}
     
-	\newpar Due to this property, executions happening on the same event can be \textit{strictly totally ordered}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system.\footnote{See \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}} 
+	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system.\footnote{See \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}} 
 	
     \begin{center}
 		$\forall_{x \in E_A}\forall_{y \in E_B} . ((x \rightarrow y \lor x \not\rightarrow y) \land y \not\rightarrow x)$
