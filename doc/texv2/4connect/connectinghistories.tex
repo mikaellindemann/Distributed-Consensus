@@ -12,7 +12,9 @@
 	Also recall that edges can be created between actions on two different events.
 	
     \newpar
-	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange. We say that an initiation of this message exchange happens before the message is received by the other event. Therefore an edge can be created between the pairs of actions that correspond to each other.
+	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange.
+	
+	The \textit{outgoing action types} are action types \ref{actiontype:includes}, \ref{actiontype:excludes}, \ref{actiontype:setspending}, and \ref{actiontype:checkscondition}, while \textit{incoming action types} are \ref{actiontype:includedby}, \ref{actiontype:excludedby}, \ref{actiontype:setpendingby}, and \ref{actiontype:checkedconditionby}. Each outgoing action type corresponds to an incoming action type by the following definition:
 	
 	\begin{definition}
 		\label{def:happensbeforeaction}
@@ -25,7 +27,9 @@
 			\end{itemize}
 	\end{definition}
 	
-	\newpar For any action on an event with action type 1 through 8, there might exist any number of actions with corresponding action types. However, because the pair of actions are part of the same message exchange, there is only one corresponding action.
+	\newpar For readability an \textbf{\textit{outgoing action}} is an action with an outgoing action type. In the same fashion an \textbf{\textit{incoming action}} is an action with an incoming action type.
+	
+	\newpar For any action on an event with action type 1 through 8, there might exist any number of actions with corresponding action types. However, because a pair of actions are part of the same message exchange, there is only one corresponding action.
 	
 	Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the performing and counterpart event to ensure that matches are unique.
     Pairs of actions correspond if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.
@@ -35,7 +39,7 @@
     	A pair of actions, $a$ and $b$, \textit{\textbf{matches}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Also the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
     \end{definition}
     
-    \newpar An outgoing relation type must happen before its ingoing counterparts, because they together represent a message passing between to processes. Therefore matching actions represent a happens before relation between two events. Therefore an edge can be added between two matching actions.
+    \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
     

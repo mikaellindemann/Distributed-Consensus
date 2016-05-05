@@ -37,9 +37,9 @@
 	\subsection{Serial Equivalence Rules}
 	A given execution must abide the rules of serially equivalence. That includes the following:
 	
-	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case a \texttt{By} action is allowed.
+	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case an incoming action is allowed.
 	
-	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next \texttt{By} action happens. 
+	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
 	
 	\subsection{History Graph Rules / Strict Partial Ordering / Lamport Logical Clocks}
 	A given history must abide the rules of being a strict partial order. That includes the following:
@@ -69,12 +69,12 @@
 
 	\newpar \textbf{Non correct timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still maintaining order in both local and counterpart timestamps.
 	
-	\newpar \textbf{Non correct number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.
+	\newpar \textbf{Non correct number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done, and in doing so might also have outgoing relation actions.
 	
 	\subsection{Cases}
 	Detecting and identifying consistently cheating events is difficult, because it is not possible to look at a single event's history and determine if it is valid or not. We will now examine how the structure of the DCR graph, and the connection between malicious events contribute to the ability to detect and identifying consistent cheating.
 	
-	\newpar \textbf{Single Malicious Event}: 
+	\newpar \textbf{Case 1 - Single Malicious Event}: In this case (see \ref{fig:consensus:single-malicious}), the event does not share relations with any other event, there is no one to disagree with any timestamps on actions and, in addition, completely oppose to the fact that an execution has happened or not. Therefore in workflows or subworkflows that include such events, it is not possible to identify or even observe if any kind of consistent cheating has happened.
 	
 	\begin{figure}[H]
 		\centering
@@ -83,7 +83,8 @@
 		\label{fig:consensus:single-malicious}
 	\end{figure}
 	
-	\newpar \textbf{Single Malicious Event With Relation to Self}:
+	
+	\newpar \textbf{Case 2 - Single Malicious Event With Relation to Self}: This case (see \ref{fig:consensus:single-malicious-with-relation}), just like case 1, in this case there are no one but the event itself to disrupt the cheating and therefore it is not possible to observe or identify consistent cheating.
 	
 	\begin{figure}[H]
 		\centering
@@ -92,8 +93,10 @@
 		\label{fig:consensus:single-malicious-with-relation}
 	\end{figure}
 	
-	\newpar \textbf{Single Malicious Event With Relation to Good Event}:
-	 
+	\newpar \textbf{Single Malicious Event With Relation to Good Event}: In this case (see \ref{fig:consensus:single-malicious-with-good-relation}), the malicious event has a relation to a correctly working event. If the malicious event tries to cheat by changing the timestamps, it can do so in two ways. It can try to change the timestamps of the actions corrosponding to the relation with the correctly working event, but in that case the two events will not agree on what happened and we are able to observe that one of them must cheat. In the next case it becomes clear why we are not able to identify which one of the events are malicious. 
+	\todo[inline]{figur eksempler til tekst}
+	In the same way when looking at more or fewer executions, the relation action in the executions should have a counterpart but might not have. In the scenario where there are fewer executions the correctly working event will have actions with no counterpart and therefore it is only possible to observe and not identify this kind of cheating. 
+	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/3.pdf}
@@ -101,7 +104,7 @@
 		\label{fig:consensus:single-malicious-with-good-relation}
 	\end{figure}
 	
-	\newpar \textbf{Single Good Event With Relation to Single Malicious Event}:
+	\newpar \textbf{Single Good Event With Relation to Single Malicious Event}: In this case (see \ref{fig:consensus:single-good-with-malicious-relation}),
 	 
 	\begin{figure}[H]
 		\centering
@@ -110,7 +113,7 @@
 		\label{fig:consensus:single-good-with-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Single Good and Single Malicious Event with Relations to eachother}:
+	\newpar \textbf{Single Good and Single Malicious Event with Relations to eachother}: In this case (see \ref{fig:consensus:single-good-with-twoway-malicious-relation}),
 	
 	\begin{figure}[H]
 		\centering
@@ -119,7 +122,7 @@
 		\label{fig:consensus:single-good-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Single Malicious Event A with relation to Single Malicious Event B}: 
+	\newpar \textbf{Single Malicious Event A with relation to Single Malicious Event B}: In this case (see \ref{fig:consensus:single-malicious-with-twoway-malicious-relation}),
 	
 	\begin{figure}[H]
 		\centering
@@ -128,7 +131,7 @@
 		\label{fig:consensus:single-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Two Malicious Events With Relations To Eachother}:
+	\newpar \textbf{Two Malicious Events With Relations To Eachother}: In this case (see \ref{fig:consensus:two-malicious-with-twoway-malicious-relation}),
 	
 	\begin{figure}[H]
 		\centering
