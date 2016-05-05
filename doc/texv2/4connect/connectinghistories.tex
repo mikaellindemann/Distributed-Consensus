@@ -15,6 +15,7 @@
 	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange. We say that an initiation of this message exchange happens before the message is received by the other event. Therefore an edge can be created between the pairs of actions that correspond to each other.
 	
 	\begin{definition}
+		\label{def:happensbeforeaction}
 		The types of actions that correspond are:
 			\begin{itemize}
 				\item Includes $\rightarrow$ Included by
@@ -22,18 +23,21 @@
 				\item Sets pending $\rightarrow$ Set pending by
 				\item Checks condition $\rightarrow$ Checked condition by
 			\end{itemize}
-			\label{def:happensbeforeaction}
 	\end{definition}
 	
-
 	\newpar For any action on an event with action type 1 through 8, there might exist any number of actions with corresponding action types. However, because the pair of actions are part of the same message exchange, there is only one corresponding action.
 	
-	Actions should therefore be matched on more than just their corresponding action type. An action includes the timestamp of both the performing and counterpart event to ensure that matches are unique.
+	Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the performing and counterpart event to ensure that matches are unique.
     Pairs of actions correspond if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.
+    
+    \begin{definition}
+    	\label{def:action:matching}
+    	A pair of actions, $a$ and $b$, \textit{\textbf{matches}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Also the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
+    \end{definition}
+    
+    \newpar An outgoing relation type must happen before its ingoing counterparts, because they together represent a message passing between to processes. Therefore matching actions represent a happens before relation between two events. Therefore an edge can be added between two matching actions.
 
-	The local histories are created by retrieving all actions local to an event and connecting them by adding edges so the total strict order of the actions are preserved.
-
-	To create a history of the entire set of events, every action of every local history needs to be added to a joined history.  Whenever a match between two actions is found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
+	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
     
     \todo[inline]{algorithm of how this is done}
     \todo[inline]{correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved.}
