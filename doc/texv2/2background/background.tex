@@ -7,7 +7,7 @@
 %	Since events in a DCR graphs are distributed and no algorithm for finding the order of execution currently exists, DCR graphs are well suited for developing an algorithm for determining history. 
 %	Furthermore DCR graphs specify several types of directed edges in the graph, which provide useful information for determining order of execution.
 	
-	\newpar DCR graphs are in \cite{hildebrandt2011declarative} defined as a tuple $(E, M, Act, $\condition$, $\response$, \pm, l)$ where
+	\newpar A DCR graphs is in \cite{hildebrandt2011declarative} defined as a tuple $(E, M, Act, $\condition$, $\response$, \pm, l)$ where
 	\begin{itemize}
 		\item $E$ is the set of events
 		\item $M$ is the marking, the state of the workflow. The marking is a triple containing three sets of events. The first set contains the events that have previously been executed. The second set contains the events that are required to be executed or excluded. These are called the pending responses. The last set contains the events which are currently included.
