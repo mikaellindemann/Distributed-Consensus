@@ -4,9 +4,11 @@
 \label{chap:consensusindcr}
 	This chapter defines how histories from malicious events are identified and removed.
 	
-	\newpar In distributed systems malicious agents are introduced. These agents can take many forms and corrupt data in many ways. Therefore it is wanted to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. Traditionally malicious agents can tamper with messages in transfer by; altering, replaying and withholding messages. We assume that any of these kinds of corrupting messages in transfer are not present in this system. How a system can handle these kinds of corruption is examined in \todo[inline]{Henvis til en artikel der udforsker disse traditionelle typer "snyd"}.
+	\newpar We introduce malicious agents in a given distributed DCR graph. These agents can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
 	
-	\newpar Therefore the kinds of cheating which is examined in this project is the following:
+	Traditionally malicious agents can tamper with messages in transfer by altering, replaying and withholding messages. We assume that any of these kinds of corruption of messages in transfer are not present in this system. How a system can handle these kinds of corruptions is examined in \todo[inline]{Henvis til en artikel der udforsker disse traditionelle typer "snyd"}.
+	
+	\newpar Therefore the kinds of cheating examined in this project are the following:
 	\begin{definition}
 		\textbf{Cheating} is any changing of a history that is not corresponding to what actually happened in the DCR graph.
 	\end{definition}
