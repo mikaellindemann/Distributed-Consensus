@@ -95,7 +95,7 @@
 		\label{fig:consensus:single-malicious-with-relation}
 	\end{figure}
 	
-	\newpar \textbf{Case 3 - Single Malicious Event With Relation to Good Event}: In this case (see \ref{fig:consensus:single-malicious-with-good-relation}), the malicious event has a relation to a correctly working event. If the malicious event tries to cheat by changing the timestamps, it can do so in two ways. It can try to change the timestamps of the actions corrosponding to the relation with the correctly working event, but in that case the two events will not agree on what happened and we are able to observe that one of them must cheat. Due to the fact that any of the two events could be malicious and change the timestamps it would not be possible to identify which of the two are evil.
+	\newpar \textbf{Case 3 - Single Malicious Event With Relation to Good Event}: In this case (see \ref{fig:consensus:single-malicious-with-good-relation}), the malicious event has a relation to a correctly working event. If the malicious event tries to cheat by changing the timestamps, it can do so in two ways. It can try to change the timestamps of the actions corresponding to the relation with the correctly working event, but in that case the two events will not agree on what happened and we are able to observe that one of them must cheat. Due to the fact that any of the two events could be malicious and change the timestamps it would not be possible to identify which of the two are evil.
 	If the timestamp changes are on action which not related to the good event then it is not possible to observe nor identify. 
 	\todo[inline]{figur eksempler til tekst}
 	In the same way when looking at more or fewer executions, the relation action in the executions should have a counterpart but might not have. In the scenario where there are fewer executions the correctly working event will have actions with no counterpart and therefore it is only possible to observe and not identify this kind of cheating. 
@@ -107,7 +107,7 @@
 		\label{fig:consensus:single-malicious-with-good-relation}
 	\end{figure}
 	
-	\newpar \textbf{Case 4 - Single Good Event With Relation to Single Malicious Event}: In this case (see \ref{fig:consensus:single-good-with-malicious-relation}), a good event has a relation to a malicious event. Similarly to case 3 timestamp changes are observable due to the same factors, but cheating about executions is actually in a different form. Due to the fact that when the malicious event executes the good event will not know about it, because it is not affected by that execution, the malicious event is able change the number of executions to its liking.
+	\newpar \textbf{Case 4 - Single Good Event With Relation to Single Malicious Event}: In this case (see \ref{fig:consensus:single-good-with-malicious-relation}), a good event has a relation to a malicious event. Similarly to case 3 timestamp changes are observable due to the same factors, but instead of disagreeing on the outgoing relation in this case the malicious event will disagree on whether the good event executed or not. Due to the fact that when the malicious event executes the good event will not have any information about it, because it is not affected by that execution, the malicious event is able change the number of executions to its liking.
 	 
 	\begin{figure}[H]
 		\centering
@@ -116,7 +116,7 @@
 		\label{fig:consensus:single-good-with-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Case 5 - Single Good and Single Malicious Event with Relations to each other}: In this case (see \ref{fig:consensus:single-good-with-twoway-malicious-relation}), this case is simular to that of case 3 and provides the same ability to observe and identify the cheater.
+	\newpar \textbf{Case 5 - Single Good and Single Malicious Event with Relations to each other}: In this case (see \ref{fig:consensus:single-good-with-twoway-malicious-relation}), the situation is similar to that of case 3 and provides the same ability to observe and identify the cheater.
 	
 	\begin{figure}[H]
 		\centering
@@ -125,7 +125,9 @@
 		\label{fig:consensus:single-good-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Case 6 - Single Malicious Event A with relation to Single Malicious Event B}: In this case (see \ref{fig:consensus:single-malicious-with-twoway-malicious-relation}),
+	\newpar \textbf{Case 6 - Single Malicious Event A with relation to Single Malicious Event B}: In this case (see \ref{fig:consensus:single-malicious-with-twoway-malicious-relation}), two malicious events work in collaboration to manipulate the data. Because a malicious event is also unpredictable, one of the events could function as a correctly functioning event and create the same depicting scenarios as in case 3 and 4, any absence of manipulation actually corresponds to the event functioning correctly.
+	
+	If it is assumed that both events work in collaboration to manipulate the history, it is both possible to change timestamps in such a way that it is not observable if they agree on the numbers, or observable if they disagree. Furthermore fewer or more executions is equally easily obscured if they agree that they did or did not happen.
 	
 	\begin{figure}[H]
 		\centering
@@ -134,7 +136,7 @@
 		\label{fig:consensus:single-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Case 7 - Two Malicious Events With Relations To Eachother}: In this case (see \ref{fig:consensus:two-malicious-with-twoway-malicious-relation}),
+	\newpar \textbf{Case 7 - Two Malicious Events With Relations To Eachother}: In this case (see \ref{fig:consensus:two-malicious-with-twoway-malicious-relation}), two malicious events work in collaboration with to manipulate data with both their relations. This situation has the same properties as case 6.
 	
 	\begin{figure}[H]
 		\centering
