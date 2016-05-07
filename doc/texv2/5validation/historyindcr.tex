@@ -12,7 +12,7 @@
 	\begin{definition}
 		\textbf{Cheating} is any changing of a history that is not corresponding to what actually happened in the DCR graph.
 	\end{definition}
-	\todo[inline]{Tilføj rigtig definition.}
+	\todo[inline]{Tilføj rigtig definition (?).}
 	
 	\section{Validating histories}
 	In order to identify malicious events in a given history, we need to define what a valid history is:
@@ -48,7 +48,7 @@
 	
 	\newpar \textbf{Total Order of Local Timestamps}: Every action in the history of an event must be in strict total order according to the timestamp.
 	
-	\newpar \textbf{Total Order of Counterpart Timestamps}: In the history of an event actions with the same counterpart ID must have its counterpart timestamp in strict total order.  The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be be lower. \todo{example}
+	\newpar \textbf{Total Order of Counterpart Timestamps}: In the history of an event actions with the same counterpart ID must have its counterpart timestamp in strict total order.  The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be be lower. \todo{Tilføj example.}
 	
 	\newpar \textbf{Outgoing Relations Timestamp Order}: When an action is part of an outgoing relation the counterpart's corresponding action's timestamp must be higher than the outgoing one.
 	

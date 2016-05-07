@@ -1,7 +1,6 @@
 % !TeX root = ../DistributedConsensus.tex
 \chapter{Previous Approaches to solving the Problem}
 \label{chap:previous-attempts}
-	% TODO: Recursive "Produce", reachability, validation issues.	
 	Previous attempts at producing the order of execution have been made, each with shortcomings, that have led to the development of the implemented solution.
 	
 	\newpar These attempts and their shortcomings are detailed below.
@@ -69,7 +68,7 @@
 	
 	There is a couple of pitfalls with the algorithm. If malicious events are introduced in the DCR graph, the same problems arise as with the graph where the beginning node had relations with the rest of the graph. 
 	
-	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls. \todo{Wat.}
+	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls.
 	
 	\section{Use of the Transitive Closure in Order to Gain Extra Information}
 	It is desired to be able to guarantee that the order of execution is as correct as the information provided by events allow it to be. Increasing reachability of actions in the history will provide more information about the actions that have occurred, even if these actions have no existing relation. 
