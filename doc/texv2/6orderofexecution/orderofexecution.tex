@@ -33,7 +33,7 @@
 	By pointing all ingoing edges to the current event towards a new \textit{collapsed node}, and adding all outgoing edges to the new node, this is accomplished. This new \textit{collapsed node} then represents the entire execution. 
 	
 	In the implemented solution the the \texttt{ExecuteFinish} type has been chosen to denote a collapsed execution in order to avoid creating a new action type. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
-%	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efter\-følgende}
+	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efter\-følgende}
 	
 	\begin{figure}
 		\centering
@@ -43,7 +43,7 @@
 		\caption{Executions after collapsing}
 		\label{fig:after-collapsing}
 	\end{figure}
-%	\todo{Måske skal denne figur laves ud fra GasWorkflow}
+	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
 	The Collapse algorithm can be seen in \autoref{alg:collapse}.
 	
