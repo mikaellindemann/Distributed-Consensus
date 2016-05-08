@@ -7,15 +7,22 @@
 	Recall that the goal is to provide an order of execution and excess information in the history therefore needs to be removed in a way that still provides the same amount of information about the order of executions. By reducing the history to an order of execution a minimal equivalent graph is then achieved.\todo{maybe it is not equivalent since collapse actually removes info}
 	
 	\subsection{Collapsing}
-	In definition \todo[inline]{lav label til definitions} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
+	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
 	
-	\newpar Due to the property of an execution stated in \ref{math:distributedExecutionOrder} which states that for an execution, some actions might be concurrent with other actions, while other actions in the execution is able to establish happen before relation to those same actions, it creates complications since executions then happens both concurrent and not concurrently at the same time. Because of this problem it is neccesary to formulate a method which is able to \textit{collapse} the execution into a single entity, which has the same happens before relations to actions outside of the execution.
 	
-	To do so it is necessary to make an assumption which states that everything in an execution happens at the same time and therefore any happens before relations any action has with any actions outside of the execution is now applies to all the events in the execution. When this is the case, every action inside the execution are equal in terms of happens before relations and therefore we can \textit{collapse} the execution into one single entity. 
+	\newpar 
+	\todo[inline]{Wat. Forstår overhovedet ikke noget fra her... }
+	Due to the property of an execution stated in \ref{math:distributedExecutionOrder} which states that for an execution, some actions might be concurrent with other actions, while other actions in the execution is able to establish happen before relation to those same actions, it creates complications since executions then happens both concurrent and not concurrently at the same time. 
+	\todo[inline]{... til her.}
 	
-	The assumption that every action of an execution have the same happens before relation as any other action in the execution, cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent, which implies that two executions cannot affect the same event at interpolated allowing some actions to happen before, and some after, another execution.
+	Because of this problem it is neccesary to formulate a method which is able to \textit{collapse} the execution into a single entity, which has the same happens before relations to actions outside of the execution.
 	
-	\newpar An example of this separation of executions can be found in \autoref{fig:orderofexecution:collapsing}. The figure shows actions that are part of an execution getting collapsed into a single execution with the happens before relations preserved. 
+	
+	To do so it is necessary to make an assumption which states that everything in an execution happens at the same time \todo[inline]{"at the same time" = concurrently?} and therefore any happens-before relation any action has with any action outside of the execution now applies to all events in the execution. When this is the case, every action inside the execution are equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity. 
+	
+	The assumption that every action of an execution has the same happens-before relation as any other action in the execution cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent. This implies that two executions cannot affect the same event at interpolated\todo{wat?} allowing some actions to happen before, and some after, another execution.
+	
+	\newpar An example of this separation of executions can be found in \autoref{fig:orderofexecution:collapsing}. The figure shows actions that are part of an execution getting collapsed into a single execution, with preserved happens-before relations. 
 	
 %	\newpar It then is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} constitutes looking at all actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connecting these events into a single entity, representing an entire execution. 
 
@@ -55,7 +62,7 @@
 %	\end{figure}
 %	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
-	\newpar The collapsing algorithm can be be seen on \ref{alg:collapse}, as it can be seen this algorithm starts out gathering all the actions of an execution and only after the single entity is created adds all the happens before relations, though different in approach this produces the same result.
+	\newpar The collapsing algorithm can be be seen on \ref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. Though different in approach, this produces the same end result \todo{same result as what?}.
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
