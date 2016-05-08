@@ -16,7 +16,14 @@
 	
 	Actions between start and finish might contain relations to other actions located in the local histories of other events. Since a given event is only affected by the effects of other events executing, it is safe to collapse the incoming actions from executing events into execution of the executing event. Since an action is always caused by the execution of \textit{some} event, the collapsed execution has the property that no action can happened outside any collapsed execution.
 	
-	An example of this separation of executions can be found in \autoref{fig:before-collapsing}.
+	An example of this separation of executions can be found in \autoref{fig:validation:collapsing}.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{6orderofexecution/images/transitive-reduction-collapse.pdf}
+		\caption{The result of collapsing actions in the histories of three events.}
+		\label{fig:validation:collapsing}
+	\end{figure}
 	
 	\begin{figure}
 		\centering
@@ -86,12 +93,13 @@
 	\end{algorithm}
 	
 %    \subsection{Correctnes}
-	The found order of execution still represents the same history and have the same properties as to the order. Given the definition of serially equivalence, which executions complies with, requires that two processes happen after one another. Therefore the set of actions which are after actions in an execution must happen after that execution finishes, just as well as all action which happen before actions in an execution must happen before the execution starts. 
+	The found order of execution still represents the same history and have the same properties as to the order. Given the definition of serially equivalence, which executions complies with, two processes happen after one another. Therefore the set of actions which are after actions in an execution must happen after that execution finishes, just as well as all action which happen before actions in an execution must happen before the execution starts. 
 
     
 	\subsection{Transitive Reduction}
 	
-	\newpar After collapsing a history, redundant edges might still exist. In cases where a path from an action to another action as well as a direct edge between the two exists, the direct edge is redundant and can be removed. 
+	\newpar Redundant edges might still exist in the history after the executions of the history have been collapsed. 
+	In cases where a path from an action to another action as well as a direct edge between the two exists, the direct edge is redundant and can be removed. 
 	
 	\newpar Recall that a subgraph of the history with the same ordering and reachability, but as few edges as possible, is a \textit{minimum equivalent graph}. If there is a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa. 
 	
