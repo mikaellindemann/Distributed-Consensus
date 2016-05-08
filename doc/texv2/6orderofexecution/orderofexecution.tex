@@ -95,23 +95,18 @@
 		\label{alg:collapse}
 	\end{algorithm}
 	
+	\newpar The algorithm runs in a time complexity of $O(n^2)$ where $n$ is the number of actions in the history. This must be so since $CreateExecution$ runs linearly in $n$ if $Add$ on $map$ is constant and $CreateExecution$ worst case gets called $n/2$ times if every action in the history are executions. \todo{write better more correct yes}
+	
 	\subsection{Transitive Reduction}
 	
-	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed. An edge is redundant in cases where there exists a path from an execution to another execution through another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions, and removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
+	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
 	
-	\newpar An example of a redundant edge in a collapsed order of execution can be seen in figure \autoref{fig:orderofexecution:collapsing}. The figure illustrates a case where a redundant edge exists between event $A$ and event $B$, since the edge from event $B$ through $C$ provides more information about the order in which the executions occurred.  
+	\newpar An example of a redundant edge in a collapsed order of execution can be seen in figure \autoref{fig:orderofexecution:collapsing}. The figure illustrates a case where a redundant edge exists between event $A$ and event $B$, since the edge from event $B$ through $C$ provides more information about the order in which the executions occurred. 
+	Recall that the order of execution is represented as a directed acyclic graph. For a directed acyclic graph a subgraph of the graph with the same ordering and reachability, but as few edges as possible, can be found, called a \textit{minimum equivalent graph}.
 	
-	\newpar Recall that the order of execution is represented as a directed acyclic graph. For a directed acyclic graph a subgraph of the graph with the same ordering and reachability, but as few edges as possible, can be found, called a \textit{minimum equivalent graph}. 
-	
-	In directed acyclic graphs the transitive reduction of a given graph is a graph with the fewest possible number of edges, but the same reachability as the given graph. 
-	
-	That is, if there exists a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa.
-	
-	Furthermore, the transitive reduction will always be a subgraph of the given graph. For that reason the transitive reduction corresponds to the minimum equivalent graph.  
-	
-	\todo[inline]{Måske skal disse to paragraffer smeltes sammen? Det er to forskellige concepter, der dog er lig hinanden i DAC's, og de resulterer dermed i det samme..}
-	
-	\newpar Finding the transitive reduction of the order of execution is desired, since this results in the simplest possible order of execution where reachability is preserved. No information is therefore lost, and redundant edges are simply removed. 
+	\newpar In directed acyclic graphs the transitive reduction of a given graph is a graph with the fewest possible number of edges, but the same reachability as the given graph.	That is, if there exists a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa.
+		
+	Furthermore, the transitive reduction will always be a subgraph of the given graph. For that reason the transitive reduction corresponds to the minimum equivalent graph.
 	
 	The implementation for finding the transitive reduction on an order of execution is shown in \autoref{alg:orderofexecution:reduction}.
 	
@@ -139,9 +134,11 @@
 		\label{alg:orderofexecution:reduction}
 	\end{algorithm}
 	
-	\newpar The shown algorithm for transitive reduction has $O(n^3)$ complexity where $n$ is the number of executions, since the algorithm has three nested for-loops over all executions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most executions.
-	
-	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot tamper with the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
+	\newpar The shown algorithm for transitive reduction has a time complexity of $O(n^3)$ where $n$ is the number of executions, since the algorithm has three nested for-loops over all executions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most executions. \todo{check if pathExists runs linearly}
+
+% Synes ikke det hører til her	
+%	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot tamper with the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
+
 
 	\section{Election} 
 	As we have now found an order of execution where (potentially) malicious events have been identified, we want to know if the remaining events can agree upon the rest of order of execution.
