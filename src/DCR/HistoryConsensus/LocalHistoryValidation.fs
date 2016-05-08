@@ -292,15 +292,19 @@ module LocalHistoryValidation =
 
     // Validating
     let giantLocalCheck input eventId (rules : DCRRules) =
-        input |> localBeginningNodesValidation
-            >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
-            >>= checkLocalHistoryForCorrectOrder
-            >>= checkLocalHistoryForCorrectCounterpartOrder
-            >>= outgoingRelationsMustHaveHigherTimestampsValidation
-            >>= checkLocalIncomingRelationsWhenExecuting
-            >>= checkLocalHistoryAgainstIncomingRelations (allowedIngoingRelationsMapMaker eventId rules)
-            >>= checkLocalHistoryAgainstOutgoingRelations (allowedOutgoingRelationsMaker eventId rules)
-            >>= checkLocalHistoryHasAllIngoingRelationsPerExecution (allowedIngoingRelationsMapMaker eventId rules) eventId
+        if not input.Nodes.IsEmpty
+        then
+            input |> localBeginningNodesValidation
+                >>= checkLocalHistoryForLocalInformationAboutOthers eventId 
+                >>= checkLocalHistoryForCorrectOrder
+                >>= checkLocalHistoryForCorrectCounterpartOrder
+                >>= outgoingRelationsMustHaveHigherTimestampsValidation
+                >>= checkLocalIncomingRelationsWhenExecuting
+                >>= checkLocalHistoryAgainstIncomingRelations (allowedIngoingRelationsMapMaker eventId rules)
+                >>= checkLocalHistoryAgainstOutgoingRelations (allowedOutgoingRelationsMaker eventId rules)
+                >>= checkLocalHistoryHasAllIngoingRelationsPerExecution (allowedIngoingRelationsMapMaker eventId rules) eventId
+        else
+            Success input
 
 
     let smallerLocalCheck input eventId =
