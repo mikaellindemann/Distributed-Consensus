@@ -164,8 +164,9 @@
     \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. The order is created based on the counter value, where lower values are taken first. The order of which executions have happened are adhered to, but concurrent executions happen in a random order.
     
     Executions can only be concurrent if the events they belong to do not share outgoing relations. If two events share outgoing relations, one of them must affect the shared event before the other and an order would be able to be created. Therefore in an order of execution only one of the ingoing edges can be of an ingoing relation, the rest must be based on outgoing relations which can determine that the execution happens after some other executionn. The order of which concurrent executions are simulate therefore does not matter since they order of which they execute can only result in one state change which affects common outgoing edges.
-
-    If an event has cheated bla bla...\todo{write stuff}
     
-    \todo[inline]{Simulation bruges til at finde events som har executed uden at være executable. Skriv dette afsnit.}
-    %	Executions only in Valid States is a special case which is non trivial to check. HOW DO WE DO. ALSO WE DONT KNOW IF IT IS THE EVENT ITSELF DOING BAD BEHAVIOR OR A CONDITION REPLIED WITH LYING DATA.
+    \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.
+
+	\newpar On \todo{create and ref} the algorithm can be seen. It runs in linear time to the amount of nodes bla bla
+	
+    \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.
