@@ -53,8 +53,14 @@
 	
 	\newpar \textbf{Outgoing Relations Timestamp Order}: When an action is part of an outgoing relation the counterpart's corresponding action's timestamp must be higher than the outgoing one.
 	
-	\newpar Together, these rules makes sure that no cycles can exist. If any action on an outgoing edge must have a higher timestamp than the the one preceding it, it will never be so that an edge can go to a previous action, since such an action would have a lower timestamp.
-    \todo[inline]{Indsæt figurer}
+	\newpar Together, these rules makes sure that no cycles can exist. If any action on an outgoing edge must have a higher timestamp than the the one preceding it, it will never be so that an edge can go to a previous action, since such an action would have a lower timestamp. This is illustrated in \autoref{fig:validation:cycle-prevention}.
+	
+    \begin{figure}[H]
+		\centering
+		\includegraphics[]{5validation/images/cycle-prevention.pdf}
+		\caption{CAPTION.}
+		\label{fig:validation:cycle-prevention}
+	\end{figure}
 	
 	\section{Consistent Cheating}
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
