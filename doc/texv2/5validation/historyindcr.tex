@@ -167,6 +167,101 @@
     
     \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.
 
-	\newpar On \todo{create and ref} the algorithm can be seen. It runs in linear time to the amount of nodes bla bla
+	\newpar On \todo{create and ref} the algorithm can be seen. It runs in linear time to the amount of nodes
+	
+	\begin{algorithm}[H]
+		\begin{algorithmic}
+			\Function{BuildCounterMap}{counterMap}
+				\State CounterMap: a map mapping executions to their countervalue.
+				\ForAll{Execution from in graph}
+					\ForAll{Execution to in from.OutgoingEdges}
+						\State counter $\leftarrow$ \Call{Map.Get}{to, CounterMap}
+						\State \Call{Map.AddOrUpdate}{to, (counter+1), CounterMap}
+					\EndFor
+				\EndFor
+				\Return CounterMap
+			\EndFunction
+			
+			\State
+			
+			\Function{UpdateState}{state, event, relationType}
+				\State locals: DCR rules
+				\State (included, pending, executed) $\leftarrow$ \Call{Map.Get}{event, state}
+				\If{relationType is SetsPending}
+					\State \Call{Map.AddOrUpdate}{event, (included, true, executed), state}
+				\ElsIf{relationType is Includes}
+					\State \Call{Map.AddOrUpdate}{event, (true, pending, executed), state}
+				\ElsIf{relationType is Excludes}
+					\State \Call{Map.AddOrUpdate}{event, (false, pending, executed), state}
+				\EndIf
+				\State \Return state
+			\EndFunction
+			
+			\State
+			
+			\Function{UpdateCountermap}{execution, counterMap}
+				\State counterMap $\leftarrow$ \Call{Map.Remove}{execution.Id, counterMap}
+				\ForAll{Executions e in action.Edges}
+					\State counter $\leftarrow$ \Call{Map.Get}{e, counterMap}
+					\State counterMap $\leftarrow$ \Call{Map.AddOrUpdate}{action, counter-1, counterMap}
+				\EndFor
+				\Return counterMap
+			\EndFunction
+			
+			\State
+			
+			\Function{IsExecutable}{state, conditions, execution}
+				\If{not \Call{Map.Get}{event, state}.Included}
+					\Return false
+				\EndIf
+				\ForAll{event e, in conditions}
+					\State localState $leftarrow$ \Call{Map.Get}{event, state}
+					\If{not localState.included OR not localState.executed}
+						\Return false
+					\EndIf
+				\EndFor
+				\Return true
+			\EndFunction
+			
+			\State
+			
+			\Function{Execute}{state, DCRRules, execution}
+				\State conditions $leftarrow$ \Call{List.Where}{id == execution.Id and conditionType, DCRRules}
+				\State relations $leftarrow$ \Call{List.Where}{id == execution.Id and not conditionType, DCRRules}
+				\State state $leftarrow$ \Call{UpdateState}{state, execution, r}
+				\ForAll{event e, relation r in relations}
+					\State state $leftarrow$ \Call{UpdateState}{state, e, r}
+				\EndFor
+				\Return \Call{IsExecutable}{state, conditions, execution}
+			\EndFunction
+			
+			\State
+			
+			\Function{Simulation}{Graph, DCRRules, state}
+			\State counterMap $\leftarrow$ Map.Empty
+			\ForAll{Executions e in Graph}
+				\State \Call{Map.AddOrUpdate}{e,0,counterMap}
+			\EndFor
+			\State failures $\leftarrow$ List.Empty
+			\While{not Countermap.isEmpty}
+				\State execution $\leftarrow$ \Call{Map.Head}{\Call{Map.Filter}{value=0, counterMap}}
+				\State executeResult $\leftarrow$ \Call{Execute}{state, DCRRules, execution}
+				\If{executeResult.IsFailure}
+					\State failures $leftarrow$ \Call{List.Add}{execution, failures}
+				\EndIf
+				\State state $leftarrow$ execute.ResultState
+				\State counterMap $leftarrow$ \Call{UpdateCounterMap}{execution, counterMap}
+			\EndWhile
+			\Return failures
+			\EndFunction
+			
+			
+		\end{algorithmic}
+		\caption{Simulation algorithm}
+		\label{alg:simulation}
+	\end{algorithm}
+	\todo{Check lige op på hvorfor vi tjekker executability efter det er vi opdaterer state i execute metoden}
+	
+	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog}, which also runs in linear time and is used to see if a knowledge base can entail a proposition. 
 	
     \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.
