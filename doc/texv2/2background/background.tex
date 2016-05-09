@@ -75,7 +75,25 @@
 		
 		\newpar In set theory a total order is an order that is \textit{antisymmetric}, that is if $a \leq b$ and $b \leq a$ then $a = b$, as well as \textit{transitive}, that is if $a \leq b$ and $b \leq c$ then $a \leq c$, in addition to being \textit{total}, that is $a \leq b$ or $b \leq a$. For a total order to also be strict the \textit{irreflexivity} property must also be present, that is $not$ $a < a$. A \textit{strict partial order} is similar to a \textit{strict total order} in that a strict partial order also has the \textit{transitive}, \textit{antisymmetry} and \textit{irreflexivity} properties, but not the \textit{totality} property.
 		
-		An example of a total order is the natural numbers, where a tree would be a partial order. \todo{Uddyb eksempel.}
+		These orders can be described with two examples, using a subset of the natural numbers, $\{1, 2, 3, 4, 5, 6\}$ referred to as $N$. 
+		
+		An example of a strict total order is $N$ ordered by the less-than ($<$) relation. An example of a strict partial order is $N$ ordered by the divisibility of the numbers, where the result of the division would be a natural number. An illustration of these two orders can be found seen on \autoref{fig:background:strict-partial} and \autoref{fig:background:strict-total}.
+	
+		\begin{figure}[H]
+		\centering
+		\begin{minipage}{0.45\textwidth}
+			\centering
+			\includegraphics[height=\textheight/5]{2background/images/strict-partial.pdf}
+		\caption{The strict partial order of $N$ ordered by divisibility resulting in a natural number.}
+		\label{fig:background:strict-partial}
+		\end{minipage}\hfill
+		\begin{minipage}{0.45\textwidth}
+			\centering
+			\includegraphics[height=\textheight/5]{2background/images/strict-total.pdf}
+		\caption{The strict total order of the set of $N$ ordered by the less-than ($<$) relation.}
+		\label{fig:background:strict-total}
+		\end{minipage}
+		\end{figure}
 		
 		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that enable determining the order of events in a distributed system. The clocks are \textit{logical} in the sense that they do not represent \textit{physical} time, since synchronising time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each event happening in a process. When a process receives a message, the counter must be set to a higher value than both the received timestamp, as well as the local clock. This also implies that each message must include the timestamp of the sending event.
 		
