@@ -52,14 +52,8 @@
 	
 	\newpar \textbf{Outgoing Relations Timestamp Order}: When an action is part of an outgoing relation the counterpart's corresponding action's timestamp must be higher than the outgoing one.
 	
-	\newpar Together, these rules makes sure that no cycles can exist.
-    \todo[inline]{Indsæt figurer og algoritmer der kan opdage hver af disse typer snyd.}
-    
-	\subsection{Simulation}
-    \todo[inline]{Simulation bruges til at finde events som har executed uden at være executable. Skriv dette afsnit.}
-%	Executions only in Valid States is a special case which is non trivial to check. HOW DO WE DO. ALSO WE DONT KNOW IF IT IS THE EVENT ITSELF DOING BAD BEHAVIOR OR A CONDITION REPLIED WITH LYING DATA.
-	
-%	\newpar If any of these rules are not adhered to an event must be malicious, since any well functioning event would not be able to such a create history. Thereby allowing us to identify and, if wanted, remove this subset of corruption types.
+	\newpar Together, these rules makes sure that no cycles can exist. \todo[inline]{skriv noget om hvorfor det må være så}
+    \todo[inline]{Indsæt figurer og algoritmer der kan opdage hver af disse typer snyd. Måske skal algoritmerne ned i et afsnit til sidst.}
 	
 	\section{Consistent Cheating}
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
@@ -145,11 +139,33 @@
 		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
-\todo[inline]{Figurerne ovenfor viser de forskellige situationer. Der skal selvfølgelig knyttes en beskrivelse af situationen, samt i hvilket omfang dette kan opdages til hver figur.}
+	\todo[inline]{Figurerne ovenfor viser de forskellige situationer. Der skal selvfølgelig knyttes en beskrivelse af situationen, samt i hvilket omfang dette kan opdages til hver figur.}
+	
+	\newpar In none of these cases had the property of being able to identify which of the events are malicious (in case 1 and 2 it is not possible to observe and therefore neither to identify), which creates some interesting questions as to how one can try to identify which of the events are cheating. One method could be to determine by counting how many of the neighbouring events disagree with you and if a majority disagrees the event will be marked as evil. Unfortunately that method has pitfalls since a good event with connection only to evil events could be marked as malicious. If we require a new property of the DCR graph which states that in all neighbourhoods with $N$ events, a maximum of $N/2-1$ are malicious an election would not be able to falsely accuse a good event of being malicious. This property is commonly used for distributed systems which uses elections, but traditionally is only used to describe the amount of malicious nodes in the entire system. Therefore this property is more strict and perhaps more difficult to adhere to. To worsen the situation substantially even if this property is adhered to, if an event is malicious does not mean that it is always malicious meaning it would be able to trick an election into not having a majority against it, so it is not possible to say that each event which disagrees with the values are malicious, which places us in the same situation as to begin with where we can only say one of two events must be malicious.
+	
+	\newpar It becomes apparent that the structure of the DCR graph has a great influence on whether it is possible to observe consistent cheating or not - especially in cases where a lot of malicious events create interconnected or not connected to any other event at all it can be difficult to say anything about the state of the history. One could argue what implications consistent cheating have on sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state and these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The true problems clearly happen in situation 6 and 7 where for example a company can own a sub part of the graph with many events working together to create a falsified image of what has happened. 
+	
+	\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing 
 
-\newpar In none of these cases had the property of being able to identify which of the events are malicious (in case 1 and 2 it is not possible to observe and therefore neither to identify), which creates some interesting questions as to how one can try to identify which of the events are cheating. One method could be to determine by counting how many of the neighbouring events disagree with you and if a majority disagrees the event will be marked as evil. Unfortunately that method has pitfalls since a good event with connection only to evil events could be marked as malicious. If we require a new property of the DCR graph which states that in all neighbourhoods with $N$ events, a maximum of $N/2-1$ are malicious an election would not be able to falsely accuse a good event of being malicious. This property is commonly used for distributed systems which uses elections, but traditionally is only used to describe the amount of malicious nodes in the entire system. Therefore this property is more strict and perhaps more difficult to adhere to. To worsen the situation substantially even if this property is adhered to, if an event is malicious does not mean that it is always malicious meaning it would be able to trick an election into not having a majority against it, so it is not possible to say that each event which disagrees with the values are malicious, which places us in the same situation as to begin with where we can only say one of two events must be malicious.
+	\section{Validation algorithms}
+    \subsection{Single Event Validation}
+    \todo[inline]{algorithms}
+    \subsection{Pair Validation}
+    \todo[inline]{algorithms}
+    \subsection{Simulation}
+    One of the more difficult validity properties to check is whether events only executed when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its, conditions also need to be taken into perspective, furthermore the state of the workflow possibly changes over time with each execution. In addition since the history is a strictly partially ordered set some executions happen concurrently which does not match physical time in which the events hav executed in.
+    
+    \newpar An approach to this problem is to simulate the executions of the workflow. To do so, it is required that the rules of the workflow and the initial state of every event in the workflow is known. Furthermore it is required that an order of execution has been found, this is examined in the next chapter but we assume it is available. 
+    
+    Given the order of execution each execution has either zero or more ingoing edges. Each ingoing edge states which executions must have happened before, therefore an execution can first happen when all of its ingoing edges have executed. Therefore each execution have a counter based on the amount of ingoing edges which can be decreased each time one of the ingoing edges executes. An order of execution based on a valid history will always have some executions which have no ingoing edges since no cycles appear and some events must happen before all their relations. 
+    
+    \newpar To check if an execution was possible, first it is checked if the the state of the corresponding event is executable. Then the state of every condition the event has are checked for being either excluded or executed. If the event was executable, the state of the workflow is changed according to the rules of the workflow. Then for every outgoing edge in the order of execution the counter is reduced by one. 
+    
+    \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. The order is created based on the counter value, where lower values are taken first. The order of which executions have happened are adhered to, but concurrent executions happen in a random order.
+    
+    Executions can only be concurrent if the events they belong to do not share outgoing relations. If two events share outgoing relations, one of them must affect the shared event before the other and an order would be able to be created. Therefore in an order of execution only one of the ingoing edges can be of an ingoing relation, the rest must be based on outgoing relations which can determine that the execution happens after some other executionn. The order of which concurrent executions are simulate therefore does not matter since they order of which they execute can only result in one state change which affects common outgoing edges.
 
-\newpar It becomes apparent that the structure of the DCR graph has a great influence on whether it is possible to observe consistent cheating or not - especially in cases where a lot of malicious events create interconnected or not connected to any other event at all it can be difficult to say anything about the state of the history. One could argue what implications consistent cheating have on sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state and these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The true problems clearly happen in situation 6 and 7 where for example a company can own a sub part of the graph with many events working together to create a falsified image of what has happened. 
-
-\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing 
-
+    If an event has cheated bla bla...\todo{write stuff}
+    
+    \todo[inline]{Simulation bruges til at finde events som har executed uden at være executable. Skriv dette afsnit.}
+    %	Executions only in Valid States is a special case which is non trivial to check. HOW DO WE DO. ALSO WE DONT KNOW IF IT IS THE EVENT ITSELF DOING BAD BEHAVIOR OR A CONDITION REPLIED WITH LYING DATA.
