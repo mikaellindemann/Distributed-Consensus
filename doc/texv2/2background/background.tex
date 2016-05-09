@@ -106,10 +106,10 @@
 		\subsection{Consensus}
 		Traditionally consensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}. The Paxos algorithm cannot handle corrupted agents, that is agents that collude, lie, or otherwise try to subvert the protocol, and can therefore not be used in this project. Furthermore election algorithms requires all agents of the election to be able to propose a single value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a single value, regular election algorithms cannot be used.
         
-        \newpar Consensus can also be defined as a value on which participants must agree, as well as a definition of what it means to agree on that value. We will use this definition of consensus in \autoref{chap:order-of-execution}.\todo[inline]{Til Søren: Er dette nok til at komme ud af det med consensus?}
+        \newpar We generalise the concept of consensus from being agreement on a single value to finding a value compatible with all proposed values. We will use this generalisation of consensus in \autoref{chap:order-of-execution}.
 		
 	\section{Distributed DCR implementation}
-		As a prerequisite for this project, we have built upon an implementation that was developed during our second year project of the bachelor in software development at the IT University of Copenhagen.\footnote{For an in depth description of the original implementation the project including a report can be found at \url{https://github.com/andersfischernielsen/FlowIT-Second-Year-Project/}.}
+		We have based the implementation of this project on work undertaken during our second year project of the bachelor in Software Development at the IT University of Copenhagen.\footnote{For an in depth description of the original implementation the project including a report can be found at \url{https://github.com/andersfischernielsen/FlowIT-Second-Year-Project/}.}
 		
 		\newpar From the requirements of the Second Year Project:
 		

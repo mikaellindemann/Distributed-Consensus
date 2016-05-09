@@ -43,7 +43,8 @@
 	
 	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
 	
-	\subsection{History Graph Rules / Strict Partial Ordering / Lamport Logical Clocks}
+	%\subsection{History Graph Rules / Strict Partial Ordering}
+	\subsection{Use of Lamport's Logical Clocks}
 	A given history must abide the rules of being a strict partial order. That includes the following:
 	
 	\newpar \textbf{Total Order of Local Timestamps}: Every action in the history of an event must be in strict total order according to the timestamp.

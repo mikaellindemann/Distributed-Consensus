@@ -51,16 +51,15 @@
     
     \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementations must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B. This can be defined mathematically as follows when actions are compared on their logical timestamps:
 	
-	\begin{center}
-		$\forall_{x \in E_A}\forall_{y \in E_B} . (x < y) \lor \forall_{x \in E_A}\forall_{y \in E_B} . (y < x)$ \todo[inline]{Totality for executions?}
-	\end{center}
+	%\begin{center}
+	%	$\forall_{x \in E_A}\forall_{y \in E_B} . (x < y) \lor \forall_{x \in E_A}\forall_{y \in E_B} . (y < x)$ \todo[inline]{Totality for executions?}
+	%\end{center}
 
 	\begin{center}
 		$max_{E_A} < min_{E_B} \lor max_{E_B} < min_{E_A}$
 	\end{center}
-	\todo[inline]{Søren: Hvilken af disse former (hvis nogen) ville du foretrække i en rapport?}
     
-	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system.\footnote{See \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}} 
+	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}. 
 	
     \begin{center}
     	\label{math:distributedExecutionOrder}
@@ -83,14 +82,14 @@
 		\item If Action A happened before action B and B in addition happened before C then A happened before C and the order must be therefore transitive.
 		\item Actions can in distributed systems be concurrent and the order can therefore not be total.
 	\end{enumerate}
-	\newpar These are the properties of strict partial order and therefore this ordering is optimal for the problem at hand. To represent this type of order a directed acyclic graph can be used since it allows for the same properties
-	\begin{enumerate}
-		\item Actions can be represented as nodes in the graph. The ordering of actions can be represented as the edges between the nodes.
-		\item Paths from one action to another can be found by going over edges. Finding these paths explain which transitive relations each action has.
-		\item A graph can represent concurrent actions by having two nodes A and B, where there exists no path from A to B and from B to A.
-		\item The acyclic requirement ensure that action A cannot occur both before and after action B since there is no path from both A and B and from B to A.
-		\item The acyclic requirement also ensures that action A cannot have an edge to itself, implying that it happened before itself.
-	\end{enumerate}
+	\newpar These are the properties of strict partial order and therefore this ordering is fitting for the problem at hand. To represent this type of order a directed acyclic graph can be used since it allows for the same properties. 
+	%\begin{enumerate}
+	%	\item Actions can be represented as nodes in the graph. The ordering of actions can be represented as the edges between the nodes.
+	%	\item Paths from one action to another can be found by going over edges. Finding these paths explain which transitive relations each action has.
+	%	\item A graph can represent concurrent actions by having two nodes A and B, where there exists no path from A to B and from B to A.
+	%	\item The acyclic requirement ensure that action A cannot occur both before and after action B since there is no path from both A and B and from B to A.
+	%	\item The acyclic requirement also ensures that action A cannot have an edge to itself, implying that it happened before itself.
+	%\end{enumerate}
 	
 	\newpar This leads to the following definition of \texttt{History}:
 	
