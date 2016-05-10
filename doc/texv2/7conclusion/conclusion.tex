@@ -1,7 +1,14 @@
 % !TeX root = ../DistributedConsensus.tex
+% !TeX spellcheck = en_GB
 \chapter{Conclusion}
-\todo[inline]{vi løste problemet}
-\todo[inline]{Kort summary af hver step}
-\todo[inline]{Vi måtte ændre strategi}
-\todo[inline]{requirements til sikkerhed requirements til setup}
-\todo[inline]{Åben slutning man kan arbejde videre}
+This report has examined how it is possible to find a global order of execution of a distributed DCR graph. Several algorithms has to work in collaboration to do so. By storing the actions of each execution on the individual events and using Lamport's logical clocks as timestamps it is possible to merge local histories together. A combined history can be simplified to represent only the order of execution, by collapsing actions together to form single entities with the same happens before relations, and finally using a transitive reduction algorithm to represent the minimal equivalent graph.
+
+The observability and identifiability of malicious behaviour depends on both the type of cheating and the structure of the DCR graph. By applying individual validations, pair validations and simulating the order of execution it is possible to in most cases observe malicious behaviour, and at least state which events could be the reason behind that. If the amount of interconnectivity of the DCR graph is sparse and malicious nodes are interconnected then it is difficult to even observe if some kind of cheating has happened.
+
+To reach distributed consensus on the order of execution, each event can examine the result and confirm that their individual order of execution is preserved.
+
+\todo[inline]{det er godt nok en lidt lang opsummering men jeg synes egentlig det alligevel er en okay mængde i en konklusion. Det er jo meningen at man skal kunne læse introen og den og have en nogenlunde ide}
+
+\newpar We have tried multiple approaches to the problem over the course of project, and a lot of them has been loose ends with problems that were not solvable easily or without putting up requirements which would tighten the use case of the algorithms. The fact that only at most two events share information and that no event knows the global order made it difficult to use election algorithms as a way of handling malicious behavior. Furthermore gathering information in a peer to peer fashion proved even more difficult when introducing malicious nodes.
+
+\newpar Overall an algorithm has been provided which solves the problem in most cases. There are multiple areas which could be extended upon in future reports, for example how malicious nodes are handled if they are identified and in what cases it is still possible to still find and order of execution if any malicious behaviour has happened. Furthermore a peer to peer based gathering algorithm which can handle malicious events could be researched.
