@@ -40,15 +40,5 @@ namespace Client.Connections
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
         Task<IEnumerable<ServerEventDto>> GetEventsFromWorkflow(string workflowId);
-
-        /// <summary>
-        /// Retrieve the worklfow history from the server.
-        /// </summary>
-        /// <param name="workflowId">The Id of the workflow we want to see the history of.</param>
-        /// <returns>A list of history-entries.</returns>
-        /// <exception cref="NotFoundException">If the resource isn't found</exception>
-        /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
-        /// <exception cref="Exception">If an unexpected error happened</exception>
-        Task<IEnumerable<ActionDto>> GetHistory(string workflowId);
     }
 }

@@ -31,15 +31,6 @@ namespace Event.Tests.ControllersTests
             _historyMock = new Mock<IEventHistoryLogic>(MockBehavior.Strict);
             _lifecycleMock = new Mock<ILifecycleLogic>(MockBehavior.Strict);
 
-            _historyMock.Setup(l => l.GetHistoryForEvent(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((string wId, string eId) => Task.Run(() =>
-               {
-                   var models = _historyTestList.Where(x => x.EventId == eId && x.WorkflowId == wId).ToList();
-                   var dtos = new List<ActionDto>();
-                   models.ForEach(x => dtos.Add(x.ToActionDto()));
-                   return dtos.AsEnumerable();
-               })).Verifiable();
-
             _historyMock.Setup(l => l.SaveSuccesfullCall(It.IsAny<ActionType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
                 .Returns((ActionType type, string eId, string wId, string cId) =>
                     {

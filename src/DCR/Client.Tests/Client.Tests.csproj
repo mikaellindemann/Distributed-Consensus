@@ -79,8 +79,6 @@
     <Compile Include="Connections\ServerConnectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\EventViewModelTests.cs" />
-    <Compile Include="ViewModels\HistoryListViewModelTests.cs" />
-    <Compile Include="ViewModels\HistoryViewModelTests.cs" />
     <Compile Include="ViewModels\LoginViewModelTests.cs" />
     <Compile Include="ViewModels\WorkflowListViewModelTests.cs" />
     <Compile Include="ViewModels\WorkflowViewModelTests.cs" />

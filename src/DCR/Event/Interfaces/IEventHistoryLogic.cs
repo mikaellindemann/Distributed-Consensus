@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.DTO.History;
+using HistoryConsensus;
 
 namespace Event.Interfaces
 {
@@ -16,7 +17,7 @@ namespace Event.Interfaces
         /// <param name="workflowId">EventId of the workflow, the Event belongs to.</param>
         /// <param name="eventId">EventId of the specified Event.</param>
         /// <returns></returns>
-        Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId);
+        Task<Graph.Graph> GetHistory(string workflowId, string eventId);
         
         /// <summary>
         /// Will save a succesfull method call for this event. Should be used when an operation was carried out succesfully.
@@ -31,6 +32,6 @@ namespace Event.Interfaces
 
         Task<ActionDto> ReserveNext(ActionType type, string workflowId, string eventId, string counterpartId);
         Task UpdateAction(ActionDto dto);
-        Task<bool> IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp);
+        bool IsCounterpartTimeStampHigher(string workflowId, string eventId, string counterpartId, int timestamp);
     }
 }

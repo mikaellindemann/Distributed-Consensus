@@ -111,67 +111,6 @@ namespace Client.Tests.Connections
         }
         #endregion
 
-        #region GetHistory
-        [TestCase(0),
-                 TestCase(1),
-                 TestCase(500)]
-        public async Task GetHistory_Ok(int amount)
-        {
-            // Arrange
-            for (var i = 0; i < amount; i++)
-            {
-                _historyDtos.Add(new ActionDto
-                {
-                    WorkflowId = "workflowId",
-                    EventId = "eventId",
-                    CounterpartId = "counterpartId",
-                    TimeStamp = 1
-                });
-            }
-
-            // Act
-            var result = await _connection.GetHistory(new Uri("http://uri.uri"), "workflowId", "eventId");
-
-            // Assert
-            Assert.AreSame(_historyDtos, result);
-        }
-
-        [Test]
-        public void GetHistory_HostNotFound()
-        {
-            // Arrange
-            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>()))
-                .ThrowsAsync(new HttpRequestException());
-
-            // Act
-            AsyncTestDelegate testDelegate = async () => await _connection.GetHistory(new Uri("http://uri.uri"), "workflow", "event");
-
-            // Assert
-            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
-            _toolboxMock.Verify(t => t.ReadList<ActionDto>(It.IsAny<string>()), Times.Once);
-        }
-
-        [TestCase(typeof(NotFoundException)),
-         TestCase(typeof(LockedException)),
-         TestCase(typeof(NotExecutableException)),
-         TestCase(typeof(UnauthorizedException))]
-        public void GetHistory_ExceptionPassthrough(Type exceptionType)
-        {
-            // Arrange
-            var exception = (Exception)exceptionType.GetConstructors().First().Invoke(null);
-
-            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>()))
-                .ThrowsAsync(exception);
-
-            // Act
-            AsyncTestDelegate testDelegate = async () => await _connection.GetHistory(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>());
-
-            // Assert
-            var thrown = Assert.ThrowsAsync(exceptionType, testDelegate);
-            Assert.AreSame(exception, thrown);
-        }
-        #endregion
-
         #region ResetEvent
         [Test]
         public async Task ResetEvent_Ok()

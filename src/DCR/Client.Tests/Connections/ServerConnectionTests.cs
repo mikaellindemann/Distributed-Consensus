@@ -218,50 +218,5 @@ namespace Client.Tests.Connections
             // Assert
             Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
         }
-
-        [Test]
-        public async Task GetHistory_Ok()
-        {
-            // Arrange
-            _historyDtos.Add(new ActionDto
-            {
-                WorkflowId = "workflowId",
-                EventId = "eventId"
-            });
-
-            // Act
-            var history = await _connection.GetHistory("workflowId");
-
-            // Assert
-            Assert.IsNotNull(history);
-            Assert.IsNotEmpty(history);
-        }
-
-        [Test]
-        public void GetHistory_Throws()
-        {
-            // Arrange
-            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ThrowsAsync(new HttpRequestException());
-
-            // Act
-            AsyncTestDelegate testDelegate = async () => await _connection.GetHistory("workflowId");
-
-            // Assert
-            Assert.ThrowsAsync<HostNotFoundException>(testDelegate);
-        }
-
-        [Test]
-        public async Task GetHistory_Empty()
-        {
-            // Arrange
-            _toolboxMock.Setup(t => t.ReadList<ActionDto>(It.IsAny<string>())).ReturnsAsync(new List<ActionDto>());
-
-            // Act
-            var workflows = await _connection.GetHistory("workflowId");
-
-            // Assert
-            Assert.IsNotNull(workflows);
-            Assert.IsEmpty(workflows);
-        }
     }
 }

@@ -32,7 +32,7 @@ namespace Event.Tests.ControllersTests
             _historyLogicMock.Setup(
                 h =>
                     h.IsCounterpartTimeStampHigher(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                        It.IsAny<int>())).ReturnsAsync(true);
+                        It.IsAny<int>())).Returns(true);
 
             _stateController = new StateController(_stateLogicMock.Object, _historyLogicMock.Object) { Request = new HttpRequestMessage() };
         }

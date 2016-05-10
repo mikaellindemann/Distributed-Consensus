@@ -31,9 +31,7 @@ namespace Client.Connections
         /// <exception cref="NotFoundException">If the resource isn't found</exception>
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
-        Task<IEnumerable<ActionDto>> GetHistory(Uri uri, string workflowId, string eventId);
-
-        Task<string> GetLocalHistory(Uri uri, string workflowId, string eventId);
+        Task<Graph.Graph> GetLocalHistory(Uri uri, string workflowId, string eventId);
 
         /// <summary>
         /// Reset an event. Only to be used for testing!

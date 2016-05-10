@@ -4,11 +4,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Client.Exceptions;
 using Common.DTO.Event;
-using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
 using Common.Tools;
 using HistoryConsensus;
+using Newtonsoft.Json;
 
 namespace Client.Connections
 {
@@ -64,24 +64,12 @@ namespace Client.Connections
         /// <exception cref="NotFoundException">If the resource isn't found</exception>
         /// <exception cref="HostNotFoundException">If the host wasn't found.</exception>
         /// <exception cref="Exception">If an unexpected error happened</exception>
-        public async Task<IEnumerable<ActionDto>> GetHistory(Uri uri, string workflowId, string eventId)
+        public async Task<Graph.Graph> GetLocalHistory(Uri uri, string workflowId, string eventId)
         {
             try
             {
-                return await _httpClient.ReadList<ActionDto>($"{uri}history/{workflowId}/{eventId}");
-            }
-            catch (HttpRequestException e)
-            {
-                throw new HostNotFoundException(e);
-            }
-            
-        }
-
-        public async Task<string> GetLocalHistory(Uri uri, string workflowId, string eventId)
-        {
-            try
-            {
-                return await _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/local");
+                var graphString = await _httpClient.Read<string>($"{uri}history/{workflowId}/{eventId}/local");
+                return JsonConvert.DeserializeObject<Graph.Graph>(graphString);
             }
             catch (HttpRequestException e)
             {

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Common.DTO.Event;
 using Common.DTO.History;
 using Common.DTO.Server;
 using Common.DTO.Shared;
-using Newtonsoft.Json;
+using HistoryConsensus;
+using Microsoft.FSharp.Collections;
+using Action = HistoryConsensus.Action;
 
 namespace Client.Connections
 {
@@ -285,17 +286,38 @@ namespace Client.Connections
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ActionDto>> GetHistory(Uri uri, string workflowId, string eventId)
+        public Task<Graph.Graph> GetLocalHistory(Uri uri, string workflowId, string eventId)
         {
-            return Task.Run(()=>(IEnumerable<ActionDto>)_historyMap.FirstOrDefault(pair => pair.Key.WorkflowId == workflowId && pair.Key.EventId == eventId).Value);
-        }
+            return Task.Run(() =>
+            {
 
-        public Task<string> GetLocalHistory(Uri uri, string workflowId, string eventId)
-        {
-            var history =
-                _historyMap.FirstOrDefault(pair => pair.Key.WorkflowId == workflowId && pair.Key.EventId == eventId)
-                    .Value;
-            return Task.Run(() => JsonConvert.SerializeObject(history));
+                var history =
+                    _historyMap.FirstOrDefault(pair => pair.Key.WorkflowId == workflowId && pair.Key.EventId == eventId)
+                        .Value.ToArray();
+
+                var graph = Graph.empty;
+
+                for (var index = 0; index < history.Length; index++)
+                {
+                    var actionDto = history[index];
+                    var action = Action.create(
+                        new Tuple<string, int>(actionDto.EventId, actionDto.TimeStamp),
+                        new Tuple<string, int>(actionDto.CounterpartId, actionDto.CounterpartTimeStamp),
+                        ConvertActionType(actionDto.Type),
+                        new FSharpSet<Tuple<string, int>>(Enumerable.Empty<Tuple<string, int>>()));
+
+                    graph = Graph.addNode(action, graph);
+                    if (index > 0)
+                    {
+                        graph =
+                            Graph.addEdge(
+                                new Tuple<string, int>(history[index - 1].EventId, history[index - 1].TimeStamp),
+                                action.Id, graph);
+                    }
+                }
+
+                return graph;
+            });
         }
 
         public Task ResetEvent(Uri uri, string workflowId, string eventId)
@@ -325,12 +347,12 @@ namespace Client.Connections
 
         public Task Lock(Uri uri, string workflowId, string id)
         {
-            return Task.Delay(0);
+            return Task.CompletedTask;
         }
 
         public Task Unlock(Uri uri, string workflowId, string id)
         {
-            return Task.Delay(0);
+            return Task.CompletedTask;
         }
 
 
@@ -349,17 +371,45 @@ namespace Client.Connections
 
         public Task<IEnumerable<ServerEventDto>> GetEventsFromWorkflow(string workflowId)
         {
-            return Task.Run(() => (IEnumerable<ServerEventDto>) _historyMap.Where(pair => pair.Key.WorkflowId == workflowId).Select(pair => pair.Key));
-        }
-
-        public Task<IEnumerable<ActionDto>> GetHistory(string workflowId)
-        {
-            return Task.Run(() => (IEnumerable<ActionDto>)_historyMap.Where(pair => pair.Key.WorkflowId == workflowId).Select(pair => pair.Value));
+            return Task.Run(() => _historyMap.Where(pair => pair.Key.WorkflowId == workflowId).Select(pair => pair.Key));
         }
 
         public void Dispose()
         {
 
+        }
+
+        private Action.ActionType ConvertActionType(ActionType type)
+        {
+            switch (type)
+            {
+                case ActionType.Includes:
+                    return Action.ActionType.Includes;
+                case ActionType.IncludedBy:
+                    return Action.ActionType.IncludedBy;
+                case ActionType.Excludes:
+                    return Action.ActionType.Excludes;
+                case ActionType.ExcludedBy:
+                    return Action.ActionType.ExcludedBy;
+                case ActionType.SetsPending:
+                    return Action.ActionType.SetsPending;
+                case ActionType.SetPendingBy:
+                    return Action.ActionType.SetPendingBy;
+                case ActionType.CheckedConditionBy:
+                    return Action.ActionType.CheckedConditionBy;
+                case ActionType.ChecksCondition:
+                    return Action.ActionType.ChecksCondition;
+                case ActionType.CheckedMilestoneBy:
+                    return Action.ActionType.CheckedMilestoneBy;
+                case ActionType.ChecksMilestone:
+                    return Action.ActionType.ChecksMilestone;
+                case ActionType.ExecuteStart:
+                    return Action.ActionType.ExecuteStart;
+                case ActionType.ExecuteFinished:
+                    return Action.ActionType.ExecuteFinish;
+                default:
+                    throw new InvalidOperationException("Update actiontypes!");
+            }
         }
     }
 }

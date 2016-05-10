@@ -68,8 +68,7 @@ namespace Event.Controllers
         public async Task<ConditionDto> GetCondition(string workflowId, string eventId, string senderId, int timestamp)
         {
             if (
-                !await
-                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, senderId,
+                !_historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, senderId,
                         timestamp))
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
@@ -113,8 +112,7 @@ namespace Event.Controllers
         public async Task<MilestoneDto> GetMilestone(string workflowId, string eventId, string senderId, int timestamp)
         {
             if (
-                !await
-                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, senderId,
+                !_historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, senderId,
                         timestamp))
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
@@ -260,8 +258,7 @@ namespace Event.Controllers
                     "UpdateIncluded: Provided input could not be mapped onto an instance of EventAddressDto"));
             }
             if (
-                !await
-                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, eventAddressDto.Id,
+                !_historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, eventAddressDto.Id,
                         eventAddressDto.Timestamp))
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,
@@ -316,8 +313,7 @@ namespace Event.Controllers
                     "UpdatePending: Provided input could not be mapped onto an instance of EventAddressDto"));
             }
             if (
-                !await
-                    _historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, eventAddressDto.Id,
+                !_historyLogic.IsCounterpartTimeStampHigher(workflowId, eventId, eventAddressDto.Id,
                         eventAddressDto.Timestamp))
             {
                 var toThrow = new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.BadRequest,

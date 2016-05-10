@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Common.DTO.History;
 using Common.DTO.Shared;
 using Common.Exceptions;
 using Event.Exceptions;
@@ -15,9 +15,9 @@ namespace Event.Storage
 {
     public static class HistoryExtension
     {
-        public static async Task<int> MaxOrDefaultAsync<T>(this IQueryable<T> source, Expression<Func<T, int>> selector)
+        public static int MaxOrDefault<T>(this IEnumerable<T> source, Func<T, int> selector)
         {
-            return await source.Select(selector).MaxAsync(i => (int?) i) ?? default(int);
+            return source.Select(selector).Max(i => (int?) i) ?? default(int);
         }
     }
     /// <summary>
@@ -550,14 +550,14 @@ namespace Event.Storage
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IQueryable<ActionModel>> GetHistoryForEvent(string workflowId, string eventId)
+        public async Task<IEnumerable<ActionDto>> GetHistoryForEvent(string workflowId, string eventId)
         {
             if (!await Exists(workflowId, eventId))
             {
                 throw new NotFoundException();
             }
 
-            return _context.History.Where(h => h.EventId == eventId && h.WorkflowId == workflowId);
+            return _context.History.Where(h => h.EventId == eventId && h.WorkflowId == workflowId).AsEnumerable().Select(action => action.ToActionDto());
         }
 
         public async Task<ActionModel> ReserveNext(ActionModel model)
@@ -571,7 +571,7 @@ namespace Event.Storage
                 throw new NotFoundException();
             }
 
-            model.Timestamp = await (await GetHistoryForEvent(model.WorkflowId, model.EventId)).MaxOrDefaultAsync(action => action.Timestamp) + 1;
+            model.Timestamp = (await GetHistoryForEvent(model.WorkflowId, model.EventId)).MaxOrDefault(action => action.TimeStamp) + 1;
 
             _context.History.Add(model);
             await _context.SaveChangesAsync();
@@ -590,16 +590,18 @@ namespace Event.Storage
                 throw new NotFoundException();
             }
 
-            var dbModel =
-                await
-                    (await GetHistoryForEvent(model.WorkflowId, model.EventId)).SingleOrDefaultAsync(
-                        m => m.Timestamp == model.Timestamp && m.CounterpartId == model.CounterpartId && m.Type == model.Type);
+            var dbModel = _context.History.Single(m => 
+                m.WorkflowId == model.WorkflowId && 
+                m.EventId == model.EventId && 
+                m.Timestamp == model.Timestamp && 
+                m.CounterpartId == model.CounterpartId && 
+                m.Type == model.Type);
             dbModel.CounterpartTimeStamp = model.CounterpartTimeStamp;
 
             await _context.SaveChangesAsync();
         }
 
-        public Task<int> GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
+        public int GetHighestCounterpartTimeStamp(string workflowId, string eventId, string counterpartId)
         {
             return _context.History
                 .Where(
@@ -607,7 +609,7 @@ namespace Event.Storage
                         action.WorkflowId == workflowId
                         && action.EventId == eventId
                         && action.CounterpartId == counterpartId)
-                .MaxOrDefaultAsync(action => action.CounterpartTimeStamp);
+                .MaxOrDefault(action => action.CounterpartTimeStamp);
         }
     }
 }

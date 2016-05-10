@@ -180,9 +180,7 @@
     <Compile Include="Services\EventUploader.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
-    <Compile Include="ViewModels\HistoryListViewModel.cs" />
     <Compile Include="ViewModels\HistorySelectViewModel.cs" />
-    <Compile Include="ViewModels\HistoryViewModel.cs" />
     <Compile Include="ViewModels\IWorkflowListViewModel.cs" />
     <Compile Include="ViewModels\IWorkflowViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -193,9 +191,6 @@
     <Compile Include="ViewModels\WorkflowViewModel.cs" />
     <Compile Include="Views\HistorySelectView.xaml.cs">
       <DependentUpon>HistorySelectView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\HistoryView.xaml.cs">
-      <DependentUpon>HistoryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -218,10 +213,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\HistorySelectView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\HistoryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

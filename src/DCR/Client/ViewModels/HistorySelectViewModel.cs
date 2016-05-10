@@ -395,25 +395,9 @@ namespace Client.ViewModels
 
             foreach (var @event in serverEventDtos)
             {
-                var localHistory = (await _eventConnection.GetHistory(@event.Uri, @event.WorkflowId, @event.EventId))
-                    .Select(actionDto => Action.create(
-                        new Tuple<string, int>(actionDto.EventId, actionDto.TimeStamp),
-                        new Tuple<string, int>(actionDto.CounterpartId, actionDto.CounterpartTimeStamp),
-                        ConvertActionType(actionDto.Type),
-                        new FSharpSet<Tuple<string, int>>(Enumerable.Empty<Tuple<string, int>>()) // Todo: Remember to add an edge to the resulting graph, from this action to the next.
-                    )).ToList();
+                var localHistory = (await _eventConnection.GetLocalHistory(@event.Uri, @event.WorkflowId, @event.EventId));
 
-
-                var localHistoryGraph = Graph.empty;
-
-                for (var i = 0; i < localHistory.Count; i++)
-                {
-                    localHistoryGraph = Graph.addNode(localHistory[i], localHistoryGraph);
-                    if (i - 1 >= 0)
-                        localHistoryGraph = Graph.addEdge(localHistory[i - 1].Id, localHistory[i].Id, localHistoryGraph);
-                }
-
-                localHistories.Add(@event.EventId, localHistoryGraph);
+                localHistories.Add(@event.EventId, localHistory);
             }
 
             await
@@ -460,38 +444,6 @@ namespace Client.ViewModels
                 rules.AddRange(serverEventDto.Milestones.Select(dto => new Tuple<string, string, Action.ActionType>(serverEventDto.EventId, dto.Id, Action.ActionType.ChecksMilestone)));
             }
             return rules;
-        }
-        private Action.ActionType ConvertActionType(ActionType type)
-        {
-            switch (type)
-            {
-                case ActionType.Includes:
-                    return Action.ActionType.Includes;
-                case ActionType.IncludedBy:
-                    return Action.ActionType.IncludedBy;
-                case ActionType.Excludes:
-                    return Action.ActionType.Excludes;
-                case ActionType.ExcludedBy:
-                    return Action.ActionType.ExcludedBy;
-                case ActionType.SetsPending:
-                    return Action.ActionType.SetsPending;
-                case ActionType.SetPendingBy:
-                    return Action.ActionType.SetPendingBy;
-                case ActionType.CheckedConditionBy:
-                    return Action.ActionType.CheckedConditionBy;
-                case ActionType.ChecksCondition:
-                    return Action.ActionType.ChecksCondition;
-                case ActionType.CheckedMilestoneBy:
-                    return Action.ActionType.CheckedMilestoneBy;
-                case ActionType.ChecksMilestone:
-                    return Action.ActionType.ChecksMilestone;
-                case ActionType.ExecuteStart:
-                    return Action.ActionType.ExecuteStart;
-                case ActionType.ExecuteFinished:
-                    return Action.ActionType.ExecuteFinish;
-                default:
-                    throw new InvalidOperationException("Update actiontypes!");
-            }
         }
 
         public async void DoAsyncTimerUpdate(CancellationToken token, DateTime start, TimeSpan timeout)
