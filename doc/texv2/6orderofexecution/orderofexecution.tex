@@ -16,13 +16,13 @@
 	It might therefore be possible to establish that two actions have occurred after each other after increasing reachability, since an edge between these two actions has then been found.
 	
 	\newpar Since the history is represented as a directed acyclic graph, the transitive closure of the graph can be found to find more happens-before relations. 
-	After having found the transitive closure of the graph, actions that happen between \texttt{Execution start} and \texttt{Execution finish} action types can be filtered away from the graph. 
+	After having found the transitive closure of the graph, actions that are either not an between \texttt{Execution start} and \texttt{Execution finish} action types can be filtered away from the graph. One of these execution types should denote an entire execution.
 	
 	This does not affect the order of the executions, since the execute action types are now connected after having found the transitive closure.
 	
 	\newpar Finding the transitive closure and filtering does not always give the best possible results however, since actions might appear to happen concurrently after having found the transitive closure, when it is in fact possible to determine that the actions have happened in order. 
 	
-	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure from an \texttt{Execute start} action in the joined histories of two events is shown. 
+	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure of the joined histories of two events is shown. 
 	Compare the result to the result of using the \textit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order.
 	The actions marked with a grey color are happening concurrently after the transitive closure has been found, but actually happen in order, which is seen when using the \textit{Collapse} approach. 
 	
@@ -32,14 +32,14 @@
 	\begin{figure}
 		\centering
 		\includegraphics[width=\textwidth]{6orderofexecution/images/trans.pdf}
-		\caption{The result of finding the transitive closure on from the actions of an event. Note that the grey \texttt{ExecuteFinish}, \texttt{IncludedBy} and \texttt{ExecuteStart} seem to happen concurrently.}
+		\caption{The result of finding the transitive closure on from the actions of an event. Note that the topmost executions happen concurrently. So does the two lower executions.}
 		\label{fig:problem:trans}
 	\end{figure}
 	
 	\begin{figure}
 		\centering
 		\includegraphics[width=\textwidth]{6orderofexecution/images/collapse.pdf}
-		\caption{The result of finding an execution using \textit{Collapse}. Note that the grey  \texttt{ExecuteFinish} happens before the next execution and that the \texttt{IncludedBy} action happens after the execution.}
+		\caption{The result of finding an execution using \textit{Collapse}. Note that executions that previously were concurrent (\autoref{fig:problem:trans}) are now ordered.}
 		\label{fig:problem:collapse}
 	\end{figure}
 	
