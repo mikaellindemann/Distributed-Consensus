@@ -3,11 +3,48 @@
 \chapter{Reducing Histories to Orders of Execution}
 \label{chap:order-of-execution}
 \section{Order of Execution}
-	When a combined history has been produced, it represents every action that has occurred on all the events of the workflow. 
-	Recall that the goal is to provide an order of execution and excess information in the history therefore needs to be removed in a way that still provides the same amount of information about the order of executions. By reducing the history to an order of execution a minimal equivalent graph is then achieved.\todo{maybe it is not equivalent since collapse actually removes info}
+	A produced combined history represents every action that has occurred on all the events of the workflow.
+	It is desired to find an order of execution with excess information in the history removed without losing information regarding the order of the executions. 
+	
+	\newpar In order to do this, we need to find a single entity denoting an execution, and identify actions that are part of that execution. 
+	
+	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph. 
+	
+	\subsection{Use of the Transitive Closure in Order to Gain Extra Information}
+	In order to establish the happens-before relations of actions occurring on different events, increasing the reachability of actions in the history is beneficial, since every edge in the history denotes a happens-before relation. 
+	
+	It might therefore be possible to establish that two actions have occurred after each other after increasing reachability, since an edge between these two actions has then been found.
+	
+	\newpar Since the history is represented as a directed acyclic graph, the transitive closure of the graph can be found to find more happens-before relations. 
+	After having found the transitive closure of the graph, actions that happen between \texttt{Execution start} and \texttt{Execution finish} action types can be filtered away from the graph. 
+	
+	This does not affect the order of the executions, since the execute action types are now connected after having found the transitive closure.
+	
+	\newpar Finding the transitive closure and filtering does not always give the best possible results however, since actions might appear to happen concurrently after having found the transitive closure, when it is in fact possible to determine that the actions have happened in order. 
+	
+	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure from an \texttt{Execute start} action in the joined histories of two events is shown. 
+	Compare the result to the result of using the \textit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order.
+	The actions marked with a grey color are happening concurrently after the transitive closure has been found, but actually happen in order, which is seen when using the \textit{Collapse} approach. 
+	
+	\subsubsection{Complexity}
+	We implemented finding the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}, and this approach has been determined as the better way of finding the order of execution.
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{6orderofexecution/images/trans.pdf}
+		\caption{The result of finding the transitive closure on from the actions of an event. Note that the grey \texttt{ExecuteFinish}, \texttt{IncludedBy} and \texttt{ExecuteStart} seem to happen concurrently.}
+		\label{fig:problem:trans}
+	\end{figure}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{6orderofexecution/images/collapse.pdf}
+		\caption{The result of finding an execution using \textit{Collapse}. Note that the grey  \texttt{ExecuteFinish} happens before the next execution and that the \texttt{IncludedBy} action happens after the execution.}
+		\label{fig:problem:collapse}
+	\end{figure}
 	
 	\subsection{Collapsing}
-	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
+	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver \todo{Introduktion til receiver og performer mangler.} saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
 	
 	
 	\newpar 
@@ -104,38 +141,6 @@
 	
 	\newpar The algorithm runs in a time complexity of $O(n^2)$ where $n$ is the number of actions in the history. This must be so since $CreateExecution$ runs linearly in $n$ if $Add$ on $map$ is constant and $CreateExecution$ worst case gets called $n/2$ times if every action in the history are executions. \todo{write better more correct yes}
 	
-	
-	\todo[inline]{Fra her, skriv sektion om, og flyt evt. til analyse-del ...}
-	\subsection{Use of the Transitive Closure in Order to Gain Extra Information}
-	It is desired to be able to guarantee that the order of execution is as correct as the information provided by events allow it to be. Increasing reachability of actions in the history will provide more information about the actions that have occurred, even if these actions have no existing relation. 
-	
-	Since a strict partial order is a directed acyclic graph, the transitive closure of the graph can be found, to find more happens-before relations. This is useful when determining what actions are part of an execution. 
-	
-	Finding the transitive closure does not always give better results, and the \texttt{Collapse} solution was found instead. 
-	In \autoref{fig:problem:trans} the result of finding the transitive closure on the joined histories of two events is shown. 
-	Compare the result to the result of using the collapse approach in \autoref{fig:problem:collapse}. 
-	The actions marked with a grey color are concurrent after the transitive closure has been found, but actually happen in order, which is seen when using the collapse approach. 
-	
-	\subsubsection{Complexity}
-	We implemented the finding of the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}.
-	
-	
-	\begin{figure}
-		\centering
-		\includegraphics[width=\textwidth]{6orderofexecution/images/trans.pdf}
-		\caption{The result of finding the transitive closure on from the actions of an event. Note that the grey \texttt{ExecuteFinish}, \texttt{IncludedBy} and\texttt{ExecuteStart} seem to happen concurrently.}
-		\label{fig:problem:trans}
-	\end{figure}
-	
-	\begin{figure}
-		\centering
-		\includegraphics[width=\textwidth]{6orderofexecution/images/collapse.pdf}
-		\caption{The result of finding an execution using \textit{Collapse}. Note that the grey  \texttt{ExecuteFinish} happens before the next execution and that the \texttt{IncludedBy} action happens after the execution.}
-		\label{fig:problem:collapse}
-	\end{figure}
-	
-	\todo[inline]{... til her.}
-	
 	\subsection{Transitive Reduction}
 	
 	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
@@ -197,4 +202,6 @@
 	
 	\newpar In order for the event to agree on the global order of execution, if there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution.
 	
-	\newpar \todo[inline]{Hvordan bruger vi det her til at skrive at election i virkeligheden er en bekræftelse af vores algoritme, mere end det er en egentlig afstemning om resultatet?}
+	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo{Uddyb denne paragraf.}
+	
+	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem."}

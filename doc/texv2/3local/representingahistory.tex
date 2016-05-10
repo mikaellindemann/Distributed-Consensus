@@ -8,6 +8,8 @@
 	\newpar Recall that an execution can affect other events, including itself. Therefore an execution can be described as a \textit{set of effects}. An execution has different effects, such as including another event or checking a condition, and therefore these effects need to be distinguished by time and type. Lamport's logical clocks can be used for time stamps, since they help determining the order of events in a distributed system, as described in \autoref{subsec:orderingofevents}. 
 	
 	Furthermore, an event, outside of its own execution, can be affected by the execution of another event. Therefore we can say that, either the event is \textit{affecting} another event, or the event is being \textit{affected} by another event, which brings us to the defnition of a so called \textit{\textbf{counterpart}}:
+	
+	\todo[inline]{Ref. paper from Søren, located at \url{http://link.springer.com/chapter/10.1007\%2F978-3-319-19249-9_10}}
 
 	\begin{definition}
 		In a given effect where two events A and B are part of the effect, event B is \textbf{\textit{Counterpart}} of event A and event A is counterpart of event B.
@@ -73,16 +75,16 @@
         
         $\forall_{x \in E_A}\forall_{y \in E_B} . (x \not\rightarrow y \land y \not\rightarrow x)$
 	\end{center}
-    \todo[inline]{Søren: Vi vil gerne udarbejde en lignende matematisk definition for flere end ét event. Er ovenstående nogenlunde korrekt?}
+    \todo[inline]{Fiks Søren's kommentar: "I don't get this. What are you trying to show?"}
     
 	\newpar One can easily argue that a strict partial order fits ordering of actions because:
 	\begin{enumerate}
-		\item An action A cannot happen before itself, therefore the order must be irreflexive.
-		\item Actions A and B, cannot both be happening before and after each other, therefore the order must be anti-symmetric.
-		\item If Action A happened before action B and B in addition happened before C then A happened before C and the order must be therefore transitive.
+		\item An action $A$ cannot happen before itself, therefore the order must be irreflexive.
+		\item Actions $A$ and $B$, cannot both be happening before and after each other, therefore the order must be anti-symmetric.
+		\item If action $A$ happened before action $B$ and $B$ happened before $C$ then $A$ happened before $C$ and the order must be therefore transitive.
 		\item Actions can in distributed systems be concurrent and the order can therefore not be total.
 	\end{enumerate}
-	\newpar These are the properties of strict partial order and therefore this ordering is fitting for the problem at hand. To represent this type of order a directed acyclic graph can be used since it allows for the same properties. 
+	\newpar Since a finite strict order can be represented as a directed acyclic graph the history can therefore also be represented as such, where actions are nodes and the order in which the actions have happened is represented as edges.
 	%\begin{enumerate}
 	%	\item Actions can be represented as nodes in the graph. The ordering of actions can be represented as the edges between the nodes.
 	%	\item Paths from one action to another can be found by going over edges. Finding these paths explain which transitive relations each action has.
@@ -98,8 +100,7 @@
 	\end{definition}
 	
     \newpar 
-    A \textit{global history} is the strict partial order of actions in the entire workflow. A \textit{local history} is the special case where a strict total order of the actions that have happened on a single event is achievable. 
-	We have chosen to represent histories as a directed acyclic graph, where nodes are actions and edges represent the order in which the actions have happened.
+    A \textit{global history} is the strict partial order of the actions of all events in the workflow. A \textit{local history} is a strict total order of the actions that have happened on a single event. 
 	
 %	\begin{figure}
 %		\centering
