@@ -23,7 +23,7 @@
 	\newpar Finding the transitive closure and filtering does not always give the best possible results however, since actions might appear to happen concurrently after having found the transitive closure, when it is in fact possible to determine that the actions have happened in order. 
 	
 	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure from an \texttt{Execute start} action in the joined histories of two events is shown. 
-	Compare the result to the result of using the \testit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order.
+	Compare the result to the result of using the \textit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order.
 	The actions marked with a grey color are happening concurrently after the transitive closure has been found, but actually happen in order, which is seen when using the \textit{Collapse} approach. 
 	
 	\subsubsection{Complexity}
@@ -42,7 +42,6 @@
 		\caption{The result of finding an execution using \textit{Collapse}. Note that the grey  \texttt{ExecuteFinish} happens before the next execution and that the \texttt{IncludedBy} action happens after the execution.}
 		\label{fig:problem:collapse}
 	\end{figure}
-	
 	
 	\subsection{Collapsing}
 	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver \todo{Introduktion til receiver og performer mangler.} saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
