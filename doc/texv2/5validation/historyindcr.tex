@@ -32,11 +32,12 @@
 	A given execution must abide to the rules of the DCR graph it is part of. That includes the following:
 	
 	\newpar \textbf{Valid relations}: A given history for an event must only contain actions which represents relations to another event where there exists such a relation in the DCR graph definition and vice versa. 
-	
+	\todo[inline]{figur der viser en action i en execution der iokke skal være der - og en anden der har en ingoing der ikek skal være der.}
 	To check for this kind of inconsistency, every action for a particular event can be examined. If an action has an incorrect incoming or outgoing action type then that event must be malicious. 
 	
 	\newpar \textbf{Complete executions}: A given event, $e1$ must have actions for each of its outgoing relation when executing. Each of the counterparts of these actions must have a corresponding action in their history after $e1$ has executed.
-	
+	\todo[inline]{Figur hvor der ikke er 2 outgoing selvom den burde}
+	\todo[inline]{figur hvor der ikke er 2 ingoing selvom den burde}
 	To check for this kind of inconsistency, each action in an execution can be examined. If an outgoing action is not represented for each relation that event has, then the event must be malicious. The same tactic applies for incoming actions.
 	
 	\newpar \textbf{Executions only in Valid States}: The history of an event must only contain executions when the event is executable. That is, the event is included and all of its conditions are either excluded or executed. This implies that the entirety of the history must match a run of the DCR workflow it represents.
@@ -47,9 +48,14 @@
 	A given execution must abide the rules of serially equivalence. That includes the following:
 	
 	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case an incoming action is allowed.
+	\todo[inline]{en figur der viser en ingoing inde i en execution}
+	
+	To check for this, the history of each event is iterated over, when an execute start is met, there must only be outgoing action types until the execute finish action type. In addition when an execute start action type is met there must be a corresponding execute finish, before any other execute start.
 	
 	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
+	\todo[inline]{Figur der viser en der bliver påvirket af en anden ind imellem at den blvier påvirker af en anden.}
 	
+	To validate for this type of cheating, an algorithm which iterates over the history of each single event. When an ingoing action is met it looks up the DCR rules for that counterpart and makes sure that the following actions corresponds to those types, one by one.
 	%\subsection{History Graph Rules / Strict Partial Ordering}
 	\subsection{Lamport's Logical Clocks}
 	A given history must abide the rules of being a strict partial order. That includes the following:
@@ -68,6 +74,7 @@
 	
 	\newpar Together, these rules make sure that no cycles can exist. If any action on an outgoing edge must have a higher timestamp than the the one preceding it, it will never be so that an edge can go to a previous action, since such an action would have a lower timestamp. This is illustrated in \autoref{fig:validation:cycle-prevention}.
 	
+	\todo[inline]{udvid figur til at vise hvordan hvilke situationer der kan opstå i alle tre tilfælde}
     \begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/cycle-prevention.pdf}
@@ -98,15 +105,15 @@
 	\newpar Consistent cheating can take a number of forms:
 
 	\newpar \textbf{Incorrect timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still being in accordance to Lamport's logical clocks
-	
+	\todo[inline]{to historikker der er ens bortset fra timestamps}
 	The only actions which more that one event know of are the action which are part of a relation. The consequence of this is that it is only possible to check if events disagree on the timestamps of these actions and not the rest. To make this validation each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the events must be malicious. 
 	
 	\newpar \textbf{Incorrect number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.
-	
+	\todo[inline]{to historikker hvor antallet af executions ikke matcher}
 	To check for this kind of cheating each pair of events that have relations are examined. If event A and event B is examined, then the amount of every outgoing action from A to B must match the amount of ingoing actions on B from A. If the amount does not match then one of the events must be malicious and vice versa.
 	
 	\newpar \textbf{Incorrect number of incoming actions}: The history of a malicious event states that it has been affected either fewer or more times than what has happened.
-	
+	\todo[inline]{to historikker hvor antallet af incoming groups ikke matcher }
 	This type of cheating is already checked for by the method introduced in the previous paragraph.
 	
 	\newpar To argue there are no more ways to consistently cheat it is necessary to examine what possible activities an event can take part of. An event can execute or it can be affected by an execution. Not executing is just as valid as doing so (if the state of the workflow allows it). Furthermore, an action with a timestamp which is in accordance to Lamport's logical clocks, can have another timestamp which is also in accordance and therefore it is not possible to distinguish the correct timestamp from the incorrect. \todo[inline]{this paragraph has bullshit argumentation of the types being complete. plz help it}
@@ -135,7 +142,7 @@
 	
 	\newpar \textbf{Case 3 - Single Malicious Event With Relation to Good Event}: In this case (see \ref{fig:consensus:single-malicious-with-good-relation}), the malicious event has a relation to a correctly working event. If the malicious event tries to cheat by changing the timestamps, it can do so in two ways. It can try to change the timestamps of the actions corresponding to the relation with the correctly working event, but in that case the two events will not agree on what happened and we are able to observe that one of them must cheat. Due to the fact that any of the two events could be malicious and change the timestamps it would not be possible to identify which of the two are evil.
 	If the timestamp changes are on action which not related to the good event then it is not possible to observe nor identify. 
-	\todo[inline]{figur eksempler til tekst}
+	\todo[inline]{figur eksempler til tekst, der viser hvordan at to events kan være uenige}
 	In the same way when looking at more or fewer executions, the relation action in the executions should have a counterpart but might not have. In the scenario where there are fewer executions the correctly working event will have actions with no counterpart and therefore it is only possible to observe and not identify this kind of cheating. 
 	
 	\begin{figure}[H]
@@ -146,6 +153,7 @@
 	\end{figure}
 	
 	\newpar \textbf{Case 4 - Single Good Event With Relation to Single Malicious Event}: In this case (see \ref{fig:consensus:single-good-with-malicious-relation}), a good event has a relation to a malicious event. Similarly to case 3 timestamp changes are observable due to the same factors, but instead of disagreeing on the outgoing relation in this case the malicious event will disagree on whether the good event executed or not. Due to the fact that when the malicious event executes the good event will not have any information about it, because it is not affected by that execution, the malicious event is able change the number of executions to its liking.
+	\todo[inline]{figur helt ens til den overfor men nu med den anden historik ond}
 	 
 	\begin{figure}[H]
 		\centering
@@ -154,7 +162,7 @@
 		\label{fig:consensus:single-good-with-malicious-relation}
 	\end{figure}
 	
-	\newpar \textbf{Case 5 - Single Good and Single Malicious Event with Relations to each other}: In this case (see \ref{fig:consensus:single-good-with-twoway-malicious-relation}), the situation is similar to that of case 3 and provides the same ability to observe and identify the cheater.
+	\newpar \textbf{Case 5 - Single Good and Single Malicious Event with Relations to each other}: In this case (see \ref{fig:consensus:single-good-with-twoway-malicious-relation}), the situation is similar to that of case 3 and 4 in the sense that it provides the same ability to observe and the cheater.
 	
 	\begin{figure}[H]
 		\centering
@@ -165,7 +173,9 @@
 	
 	\newpar \textbf{Case 6 - Single Malicious Event A with relation to Single Malicious Event B}: In this case (see \ref{fig:consensus:single-malicious-with-twoway-malicious-relation}), two malicious events work in collaboration to manipulate the data. Because a malicious event is also unpredictable, one of the events could function as a correctly functioning event and create the same depicting scenarios as in case 3 and 4, any absence of manipulation actually corresponds to the event functioning correctly.
 	
-	If it is assumed that both events work in collaboration to manipulate the history, it is both possible to change timestamps in such a way that it is not observable if they agree on the numbers, or observable if they disagree. Furthermore fewer or more executions is equally easily obscured if they agree that they did or did not happen.
+	If it is assumed that both events work in collaboration to manipulate the history, it is both possible to change timestamps in such a way that it is not observable if they agree on the numbers, or observable if they disagree. Furthermore fewer or more executions is equally easily obscured if they agree on it.
+	
+	\todo[inline]{figur: eksempel på hvordan de kan tilføje flere executions sammen}
 	
 	\begin{figure}[H]
 		\centering
@@ -182,8 +192,6 @@
 		\caption{}
 		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
 	\end{figure}
-	
-	\todo[inline]{Mer figurer om hvilke historikker de kan skabe}
 	
 	\newpar In none of these cases had the property of being able to identify which of the events are malicious (in case 1 and 2 it is not possible to observe and therefore neither to identify), which creates some interesting questions as to how one can try to identify which of the events are cheating. One method could be to determine by counting how many of the neighbouring events disagree with you and if a majority disagrees the event will be marked as evil. Unfortunately that method has pitfalls since a good event with connection only to evil events could be marked as malicious. If we require a new property of the DCR graph which states that in all neighbourhoods with $N$ events, a maximum of $N/2-1$ are malicious an election would not be able to falsely accuse a good event of being malicious. This property is commonly used for distributed systems which uses elections, but traditionally is only used to describe the amount of malicious nodes in the entire system. Therefore this property is more strict and perhaps more difficult to adhere to. To worsen the situation substantially even if this property is adhered to, if an event is malicious does not mean that it is always malicious meaning it would be able to trick an election into not having a majority against it, so it is not possible to say that each event which disagrees with the values are malicious, which places us in the same situation as to begin with where we can only say one of two events must be malicious.
 	
@@ -207,6 +215,8 @@
     \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.
 
 	\newpar On \todo{create and ref} the algorithm can be seen. It runs in linear time to the amount of nodes
+	
+	\todo[inline]{figur over en order of executions med counters på hver executions - eventuelt en ekstra med hvordan det ser ud efter at x events har executed}
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}

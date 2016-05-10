@@ -39,10 +39,13 @@
     	A pair of actions, $a$ and $b$, \textit{\textbf{matches}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Also the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
     \end{definition}
     
+    \todo[inline]{Figur af nogle events der matcher og nogen der ikke matcher - med timestamps of hele mollevitten}
+    
     \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
 	
+	\todo[inline]{Figur med før efter merge af to historikker.}
 	\todo[inline]{write merge algorithm}
 	
 	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
@@ -70,6 +73,8 @@
     To merge the histories together it is necessary to acquire access to all the events of the DCR graph first. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the history of each event individually. This method is easy and only relies on the central server to the extent that it in fact returns all the events of the DCR graph. 
     
     Unfortunately central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. Therefore it could be desirable to create a peer to peer based gathering algorithm but this introduced a new set of challenges.
+    
+    \todo[inline]{måske figur af en client der kontater en server der har pile ud til alle events}
     
     \subsection{Recursive Traversal of the Distributed Graph / Gathering Without a Central Server}
 	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   
@@ -120,6 +125,8 @@
 	
 	\newpar This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
 	
+	\todo[inline]{måske en figur af en dcr graph med nogle ekstra pile der viser algoritmens gang}
+	
 	\subsubsection{Correctness}
 	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
 	
@@ -144,3 +151,5 @@
 	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls.
 	
 	The requirements for making it possible to validate the gathered history are described in the following section. 
+	
+	\todo[inline]{måske figur der viser besværligheden ved at nogle dele af graphen nås gennem en "evil"}
