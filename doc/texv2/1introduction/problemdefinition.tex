@@ -2,6 +2,7 @@
 % !TeX spellcheck = en_GB
 \section{Problem Definition}
 	\textit{Given a distributed DCR graph, the purpose of this project is to find an algorithm which uses the execution information of the individual events to find an order of execution where the information of these events are part of the result. Furthermore, the algorithm should be able to identify and remove the histories of malicious events from the order of execution. Correctly functioning events should be able to agree upon the resulting order of execution.}
+	\todo[inline]{Søren kommentar: Precision. Given an "execution of". Next you are saying here which properties you would like this algorithm to have. You should say explicitly, at the very beginning, why anyone would like those particular properties. Something like: "we solve the problem of establishing distributed consensus of execution history of a distributed DCR graph."}
 	
 	\vspace{0.4cm}
 	
@@ -13,13 +14,13 @@
 		
 	\newpar
 	Chapter \ref{chap:representing-a-history} introduces the terms action and history and defines the representation of a history and an action.
-	Furthermore, it examines why a local history of a single event must be in a strict total order and why this property is necessary when finding ordered history of multiple events. 
+	Furthermore, it examines why a local history of a single event must be in a strict total order and why this property is necessary when finding ordered history of multiple events. \todo[inline]{Søren kommentar: The comment about "partial orders" seem a bit out of place here; it's difficult for the reader to ascertain the relevance. Consider (consider!) whether to leave this as is, to remove the mentions of strict partial orders, or to elaborate a bit either here or earlier on why they're important and interesting.}
 		
 	\newpar
-	Chapter \ref{chap:connecting-histories} examines how it is possible to exploit the rules of DCR graphs with no malicious events when merging histories of multiple events into a single history and explains why the result is in strict partial order.
+	Chapter \ref{chap:connecting-histories} examines how it is possible to exploit the rules of DCR graphs when merging histories of multiple events into a single history and explains why the result is in strict partial order. In this chapter it is assumed that all histories adhere to the rules of the given workflow.
 	
-	\newpar
-	Chapter \ref{chap:consensusindcr} introduces malicious events in DCR graphs and what such events can do to a history. Furthermore it defines a valid history and describes how it is possible, both locally and globally, to validate histories using the constraints of DCR graphs, serial equivalence, and ordering of events.
+	\newpar\todo[inline]{Søren kommentar: Make clear that chapter 5 expands in chapter 4 by adding the notion of malicious node. I dislike the term "malicious event"; events are just things that happen, they don't have intent.}\todo[inline]{This is the first time the term "valid" and "validate" occurs. Presumably they should be already in the problem statement.}
+	Chapter \ref{chap:consensusindcr} introduces malicious nodes in the implementation of DCR graphs and what such nodes can do to a history. Furthermore it defines a valid history and describes how it is possible, both locally and globally, to validate histories using serial equivalence, ordering of events and the constraints of DCR graphs.
 	
     \newpar
     Chapter \ref{chap:order-of-execution} examines how it is possible to find an order of execution from a global history, and to prove the correctness of that order of execution it is shown that the participating events of the history can agree on the result.
