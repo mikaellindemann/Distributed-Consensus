@@ -45,13 +45,16 @@
 	
 	\todo[inline]{write merge algorithm}
     
+    
+    \todo[inline]{THIS TODO DOES NOT BELONG HERE Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved. THIS TODO DOES NOT BELONG HERE}
+    
     \section{Gathering of History}
+   
+    To merge the histories together it is necessary to acquire access to all the events of the DCR graph first. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the history of each event individually. This method is easy and only relies on the central server to the extent that it in fact returns all the events of the DCR graph. 
     
-    \todo[inline]{Description of gathering and algorithm of how this is done.}
-    \todo[inline]{Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved.}
+    Unfortunately central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. Therefore it could be desirable to create a peer to peer based gathering algorithm but this introduced a new set of challenges.
     
-    
-    \subsection{Recursive Traversal of the Distributed Graph}
+    \subsection{Recursive Traversal of the Distributed Graph / Gathering Without a Central Server}
 	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   
 	
 	In order to gather history from a given workflow using recursive traversal, a single starting event must be known. This event will - hopefully - have relations to some other events, and these events will - hopefully - have relations to other events in the DCR graph.
