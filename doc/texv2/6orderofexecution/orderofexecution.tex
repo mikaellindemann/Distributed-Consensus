@@ -3,11 +3,13 @@
 \chapter{Reducing Histories to Orders of Execution}
 \label{chap:order-of-execution}
 \section{Order of Execution}
-	When a combined history has been produced, it represents every action that has occurred on all the events of the workflow. 
-	Recall that the goal is to provide an order of execution and excess information in the history therefore needs to be removed in a way that still provides the same amount of information about the order of executions. By reducing the history to an order of execution a minimal equivalent graph is then achieved.\todo{maybe it is not equivalent since collapse actually removes info}
+	A produced combined history, represents every action that has occurred on all the events of the workflow. 
+	Recall that the goal is to provide an order of execution and excess information in the history therefore needs to be removed in a way that still provides the same amount of information about the order of executions. By reducing the history to an order of execution a minimal equivalent graph is then achieved. \todo{maybe it is not equivalent since collapse actually removes info}
+	
+	This can be accomplished by collapsing actions that are part of an execution into a representation of a single execution and then removing possible redundant edges in the order of execution. 
 	
 	\subsection{Collapsing}
-	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
+	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the action between an \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver \todo{Introduktion til receiver og performer mangler.} saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
 	
 	
 	\newpar 
@@ -197,4 +199,6 @@
 	
 	\newpar In order for the event to agree on the global order of execution, if there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution.
 	
-	\newpar \todo[inline]{Hvordan bruger vi det her til at skrive at election i virkeligheden er en bekræftelse af vores algoritme, mere end det er en egentlig afstemning om resultatet?}
+	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo{Uddyb denne paragraf.}
+	
+	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem."}
