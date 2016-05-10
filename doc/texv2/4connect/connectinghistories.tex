@@ -44,6 +44,23 @@
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
 	
 	\todo[inline]{write merge algorithm}
+	
+	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
+		graph, a distribution of it, and a run for
+		it, that you can use as an example
+		throughout the report.}
+	\todo[inline]{SØREN: That would allow you to here show
+		how the history and local history you
+		propose would be constructed in that
+		instance.}
+	\todo[inline]{SØREN: I think you should move the definition
+		of valid history up here, and gives
+		some form of proof that following the
+		algorithm yields a valid history, and
+		that you have thus solved the
+		consensus problem in the special case
+		where no node is malicious/there are
+		no byzantine failures.}
     
     
     \todo[inline]{THIS TODO DOES NOT BELONG HERE Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved. THIS TODO DOES NOT BELONG HERE}
