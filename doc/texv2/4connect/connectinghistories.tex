@@ -43,5 +43,82 @@
 
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
     
-    \todo[inline]{Algorithm of how this is done - eller måske ikke? Er en beskrivelse nok?}
-    \todo[inline]{correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved.}
+    \section{Gathering of History}
+    
+    \todo[inline]{Description of gathering and algorithm of how this is done.}
+    \todo[inline]{Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved.}
+    
+    
+    \subsection{Recursive Traversal of the Distributed Graph}
+	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   
+	
+	In order to gather history from a given workflow using recursive traversal, a single starting event must be known. This event will - hopefully - have relations to some other events, and these events will - hopefully - have relations to other events in the DCR graph.
+	If the event has no relations, the final gathered history will only contain the history of the contacted event. 
+	
+	The more connected the DCR graph is, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered, if the DCR graph is not fully connected.  
+	
+	It is desired that any given event in a distributed DCR graph is able to initiate a gathering and production of an order of execution, in cooperation with reachable events in the graph. 
+	
+	\subsubsection{Analysis}
+	If each event only knows a subset of the other events of a workflow, then simply merging the histories of that subset of neighbours will not create a complete history of what has happened up until that moment in time. 
+	
+	Because of these problems an algorithm which is able to gather information from the entire workflow without knowing all the nodes is developed. Such an algorithm needs to be measured in its ability to reach all reachable events in the graph, as well as its ability to handle relation cycles. 
+	
+	\subsubsection{The Produce Algorithm}
+	Given a DCR graph where all events are not reachable from the starting event, the algorithm should fetch and merge the histories of each event in the graph into one history.
+	
+	This is accomplished by recursively contacting neighbouring events and asking them for their history while stitching the neighbours' history with its own history. To handle cycles, the use of a trace of previously contacted events is send from each event to the next.
+	
+	\newpar The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
+	The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. 
+	
+	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history their history with the ID of the event appended to the \texttt{request trace}. 
+	
+	\subsubsection{Implementation}
+	\begin{algorithmic}
+		\State Event receives request for history with a \texttt{request trace}, $T$.
+		\State Event has internal \texttt{wait for}, $W$
+		\State
+		\State $W\gets W::$ reachable events \Comment Add all reachable events to \texttt{wait for}.
+		\If {$W=\emptyset$}
+			\Return own history
+		\Else
+			\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$. Cycles avoided.
+			\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
+			\State
+			\ForAll {$w$ in $W$} 
+				\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
+			\EndFor
+			\State wait for receiving histories
+			\State stitch received histories with own history
+			\State
+			\Return stitched histories
+		\EndIf
+	\end{algorithmic}
+	
+	\newpar This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
+	
+	\subsubsection{Correctness}
+	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
+	
+	\subsubsection{Performance}
+	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This occurs when the graph is fully connected, and all events therefore have relations to all other events in the graph. 
+	
+	Realistically this situation will rarely occur since DCR graphs. \todo{Since wat?}
+	
+	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents new problems. 
+	
+	Certain issues arise if an event with neighbours is the last event in what would have been a produce cycle and due to tracing returns its own local history which would then be cached. This event would then never return the histories of its neighbours if contacted again from a different event, but would instead only return its own history due to caching. 
+	
+	The neighbours history of the neighbours would then only be produced once, and therefore pass through a single, possibly malicious, node. The lack of redundancy in the system therefore presents an issue when validating histories.
+	
+	It is therefore necessary to produce redundant histories, which makes caching impossible.
+	
+	\subsubsection{Issues with Recursive Traversal of the Distributed Graph}
+	\todo[inline]{Omformulér afsnit om, at det er tæt på umuligt at validere historik (specielt vha. DCR-regler) uden at kende hele workflowet.}
+	
+	There is a couple of pitfalls with the algorithm. If malicious events are introduced in the DCR graph, the same problems arise as with the graph where the beginning node had relations with the rest of the graph. 
+	
+	\newpar That is, if the neighbouring nodes do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls.
+	
+	The requirements for making it possible to validate the gathered history are described in the following section. 
