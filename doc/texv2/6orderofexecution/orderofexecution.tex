@@ -199,11 +199,15 @@
 		\item If two actions with the same ingoing action type and counterpart are present after each other, this denotes two separate executions of the counterpart event, because each executing event only contacts another event once per relation when executing.
 	\end{itemize}
 	
-	\newpar Furthermore if an event has sent multiple ingoing requests as part of a single execution, then each of the relations that these actions represent must be present every time that execution has happened. Given these rules, the local history can be turned into a "local order of execution".
+	%\newpar Furthermore if an event has sent multiple ingoing requests as part of a single execution, then each of the relations that these actions represent must be present every time that execution has happened.
+	%Ovenstående er udkommenteret fordi det relaterer mere til validation end election.
 	
-	\newpar In order for the event to agree on the global order of execution, if there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution.
+	\newpar	Given these rules, the local history can be turned into a "local order of execution".
+	\figuretodo{Tilføj figur der viser hvordan en lokal historik kan omdannes til en order of execution der kan bruges til afstemning.}
 	
-	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo{Uddyb denne paragraf.}
+	\newpar Now that the event has created a local order of execution, this order can be used to decide whether or not the event can agree on the global order of execution. If there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution for the event to agree. Because the local history is totally ordered, the local order of execution must also be totally ordered.\todo[inline]{proof?} With this property the event can find the first execution from the local order of execution in the global order of execution and find the path to the next execution only by following edges from the first execution. The last step can be repeated until the paths in the local order of executions have been found. If these paths does not exist, the event cannot find its local history, and must vote no in the election.\todo[inline]{Should the last few sentences be written as an algorithm instead?}
+	
+	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo[inline]{Giver det her stadig mening?}
 	
 	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem."}
-	\figuretodo{Kan vi på nogen måde vise resultatet af election?}
+	\figuretodo{Tilføj figur: Kan vi på nogen måde vise resultatet af election?}
