@@ -61,8 +61,15 @@
 	
 %	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation.
 			
-	\newpar 
-	\todo[inline]{Add section for graph theory.}
+	\section{Directed Graphs}
+	A \textit{directed graph} is a special case of the graph data structure, which consists of \textit{nodes} connected by \textit{edges}. In directed graphs an edge is a ordered pair of nodes, where the first element is the start node and the second is the end node. When traversing the graph it is only possible to traverse edges from their start node to their end node. There exists a \textit{path} from a node to another if it is possible to get from the first to the second node.
+	
+	For a given node the \textit{reachability} is the set of all the nodes there exists a path to. For a graph to be \textit{acyclic} the reachability of all the nodes of the graph must not include the nodes themselves. 
+	
+	For a directed acyclic graph a subgraph of the graph with the same reachability of each node, but as few edges as possible, is called a \textit{minimum equivalent graph}.
+	
+	A \textit{topological order} of a directed graph is a linear ordering of the nodes, such that for every edge $a,b$ from node $a$ to $b$, $a$ comes before $b$.
+	
 
 	\section{Distributed Systems}
 		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Coulouris:2011:DSC:2029110}. \todo[inline]{Tilføj cite til chapter eller bare hele bog? Jeg (Mikael) er ret sikker på at denne beskrivelse kommer fra Lamports artikel om ordering af events og ikke fra Distributed Systems bogen.}
