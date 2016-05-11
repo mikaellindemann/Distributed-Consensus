@@ -53,7 +53,14 @@
 	\newpar The action types 1 through 8 are related to the functionality of DCR graphs, i.e. \textit{Includes} is an action that happens when an event $A$ includes event $B$, similarly \textit{Included by} is an action that happens on event $A$ when event $B$ includes it. Action types 9 and 10 are action types that happen when an event starts executing and finishes executing. 
     
     \newpar
-    An Action is part of an execution if the Event ID is the same and it has happened between a pair of \textit{Execute start} and \textit{Execute finish} actions.\figuretodo{Evt. en figur der viser en execution med et par udgående relationer.} Furthermore, when an execution has an outgoing action the corresponding ingoing action is part of the execution as well. This is explained in \autoref{chap:order-of-execution}.
+    An Action is part of an execution if the Event ID is the same and it has happened between a pair of \textit{Execute start} and \textit{Execute finish} actions. Furthermore, when an execution has an outgoing action the corresponding ingoing action is part of the execution as well, as illustrated in \autoref{fig:representing:execution} This is explained in \autoref{chap:order-of-execution}.
+    
+    \begin{figure}[H]
+		\centering
+		\includegraphics[height=\textheight/4]{3local/images/execution.pdf}
+		\caption{Actions that are part of an execution across the history of two events.}
+		\label{fig:representing:execution}
+		\end{figure}
     
 	With these new informations the definition of a representation of an exeuction can be revised to:
 	

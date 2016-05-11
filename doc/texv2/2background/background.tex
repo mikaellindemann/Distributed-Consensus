@@ -61,8 +61,15 @@
 	
 %	The implementation of a distributed system functioning as a DCR graph used in this project does not support the milestone relation.
 			
-	\newpar 
-	\todo[inline]{Add section for graph theory.}
+	\section{Directed Graphs}
+	A \textit{directed graph} is a special case of the graph data structure, which consists of \textit{nodes} connected by \textit{edges}. In directed graphs an edge is a ordered pair of nodes, where the first element is the start node and the second is the end node. When traversing the graph it is only possible to traverse edges from their start node to their end node. There exists a \textit{path} from a node to another if it is possible to get from the first to the second node.
+	
+	For a given node the \textit{reachability} is the set of all the nodes there exists a path to. For a graph to be \textit{acyclic} the reachability of all the nodes of the graph must not include the nodes themselves. 
+	
+	For a directed acyclic graph a subgraph of the graph with the same reachability of each node, but as few edges as possible, is called a \textit{minimum equivalent graph}.
+	
+	A \textit{topological order} of a directed graph is a linear ordering of the nodes, such that for every edge $a,b$ from node $a$ to $b$, $a$ comes before $b$.
+	
 
 	\section{Distributed Systems}
 		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Coulouris:2011:DSC:2029110}. \todo[inline]{Tilføj cite til chapter eller bare hele bog? Jeg (Mikael) er ret sikker på at denne beskrivelse kommer fra Lamports artikel om ordering af events og ikke fra Distributed Systems bogen.}
@@ -102,13 +109,15 @@
 		\end{minipage}
 		\end{figure}
 		
-		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that enable determining the order of events in a distributed system. The clocks are \textit{logical} in the sense that they do not represent \textit{physical} time, since synchronising time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each event happening in a process. When a process receives a message, the counter must be set to a higher value than both the received timestamp, as well as the local clock. This also implies that each message must include the timestamp of the sending event.
+		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that enable determining the order of events in a distributed system. The clocks are \textit{logical} in the sense that they do not represent \textit{physical} time, since synchronising time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each event happening in a process. 
+		
+		When a process receives a message, the counter must be set to a higher value than both the received timestamp, as well as the local clock. This also implies that each message must include the timestamp of the sending event. This is illustrated in \autoref{fig:background:lamport-timestamps}
 		
 		\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{2background/images/lamport-timestamps.pdf}
 		\caption{Three processes exchanging messages and setting their local timestamps accordingly.}
-		\label{fig:validation:cycle-prevention}
+		\label{fig:background:lamport-timestamps}
 		\end{figure}
 		
 		\newpar Lamport argues that if a given system is not distributed, it is possible to create a history of events where the ordering is total, since it is possible for one process to use a logical clock to find out which event happened before another. In a distributed system however, this global ordering is not possible, since events have independent locical clocks that can have the same timestamp.
@@ -118,11 +127,11 @@
 		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
 		
 		\subsection{Consensus}
-		Traditionally consensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}.\todo[inline]{Be precise about PAXOS failure modes. Then conclude that it cannot handle malicious agents because it does not handle byzantine failures.} The Paxos algorithm cannot handle corrupted agents, that is agents that collude, lie, or otherwise try to subvert the protocol, and can therefore not be used in this project. Furthermore election algorithms requires all agents of the election to be able to propose a single value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a single value, regular election algorithms cannot be used.
+		Traditionally consensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}.\todo[inline]{Be precise about PAXOS failure modes. Then conclude that it cannot handle malicious agents because it does not handle byzantine failures.} The Paxos algorithm cannot handle byzantine failures with agents that collude, lie, or otherwise try to subvert the protocol, and can therefore not be used in this project. Furthermore election algorithms requires all agents of the election to be able to propose a single value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a single value, regular election algorithms cannot be used. 
 		
 		\todo[inline]{There are consensus algorithms that are not election algorithms. Are you confusing the two terms?}
         
-        \newpar We generalise the concept of consensus from being agreement on a single value to finding a value compatible with all proposed values. We will use this generalisation of consensus in \autoref{chap:order-of-execution}.\todo[inline]{Søren: (Writing that down, I can't help wondering if somebody didn't do that before?). Mikael: Jeg har prøvet at søge en halv times tid omkring dette og har ikke fundet noget brugbart.. :-(}
+        \newpar We generalise the concept of consensus from being agreement on a single value to finding a value to propose that is compatible with all values at voters. We will use this generalisation of consensus in \autoref{chap:order-of-execution}.
 		
 	\section{Distributed DCR implementation}
 		We have based the implementation of this project on work undertaken during our second year project of the bachelor in Software Development at the IT University of Copenhagen.\footnote{For an in depth description of the original implementation the project including a report can be found at \url{https://github.com/andersfischernielsen/FlowIT-Second-Year-Project/}.}
@@ -133,7 +142,7 @@
 			\noindent\textit{The goal is to develop a functioning and correct, web-service based distributed workflow system that can support distributed coordination of workflows provided by the external and possibly international customers, and reconfigured if the workflow changes.}
 		\end{quotation}
 		
-		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required.\todo[inline]{Skulle man lige tilføje en note om at der findes flere relationer? Ellers virker denne sætning ligegyldig.}
+		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required, even though other relations exists, such as Milestone relations and Spawn relations. 
 		
 		\newpar In order to fulfil the requirements we separated the project into smaller components:
 		
@@ -160,7 +169,7 @@
 		
 		There are no fine-grained access control, so read-only access to events, for instance, is not implemented.
 		
-		\newpar For each accessible event in a workflow, the client shows the name and state of the event. Furthermore, a button used to execute an event exists, which is deactivated if the event is not executable. The client also allows the user to get an overview of what happened in a given workflow. This feature was called "history", but was implemented by ordering each log entry by physical time.\footnote{This history feature has of course been replaced with the outcome of this bachelor project.}\todo[inline]{Fjern evt. fodnoten og sæt teksten ind efter den forrige sætning.}
+		\newpar For each accessible event in a workflow, the client shows the name and state of the event. Furthermore, a button used to execute an event exists, which is deactivated if the event is not executable. The client also allows the user to get an overview of what happened in a given workflow. This feature was called "history", but was implemented by ordering each log entry by physical time. This history feature has obviously been replaced with the outcome of this bachelor project.
 		
 		\newpar The parser is a tool developed to make it easier to translate workflows from DCRGraphs.net into JSON that can the be used to create workflows in the system.
 		

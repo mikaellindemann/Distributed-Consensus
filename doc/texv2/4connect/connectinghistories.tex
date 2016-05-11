@@ -6,13 +6,14 @@
 	
     \newpar
     Given a set of local histories, we would like to connect the actions of the histories such that the result has the fewest possible concurrent actions, while requiring that for every history, B, that was part of the creation of history A, for any path from one action to another in B, this path must also exist in history A.\todo[inline]{Mikael: Jeg tror det skal gøres tydeligere at B er en lokal historik og A er den globale. Og så er det lidt underligt at B defineres før A.}\figuretodo{Jeg ved ikke om det er for komplekst at starte med. Men man kan godt lave en figur der præsenterer det ønskede resultat.}
+    	\todo[inline]{Det ovenstende er skrevet på basis af Sørens kommentar, at han gerne ville se en "Hvad er målet, og hvordan laver vi de trin der opnår målet" inden vi beskrev dem. Det er derfor det virker lidt "omvendt".}
     
     \newpar
     The concept of happens-before relations helps determining what actions have happened before others across events. Recall that individual actions which happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$.
 	Also recall that edges can be created between actions on two different events.\todo[inline]{Recall: Bør vi henvise til hvor det er nævnt?}
 	
     \newpar
-	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange.\figuretodo{Figur der viser idéen? Eller er det overkill?}
+	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange.
 	
 	The \textit{outgoing action types} are action types \ref{actiontype:includes}, \ref{actiontype:excludes}, \ref{actiontype:setspending}, and \ref{actiontype:checkscondition}, while \textit{incoming action types} are \ref{actiontype:includedby}, \ref{actiontype:excludedby}, \ref{actiontype:setpendingby}, and \ref{actiontype:checkedconditionby}. Each outgoing action type corresponds to an incoming action type by the following definition:
 	
@@ -64,9 +65,6 @@
 		consensus problem in the special case
 		where no node is malicious/there are
 		no byzantine failures.}
-    
-    
-    \todo[inline]{THIS TODO DOES NOT BELONG HERE Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved. THIS TODO DOES NOT BELONG HERE}
     
     \section{Gathering of History}
    
