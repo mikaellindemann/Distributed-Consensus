@@ -193,7 +193,7 @@
 	
 	\newpar Because we have chosen to let the client know all events in order to retrieve their histories, it is also easy for us to send the resulting order of execution back to them, in order to find out whether or not they can agree to this order.
 	
-	\newpar When any event receives this order of execution, it can look at its own history and at the received order. In a good event the local history can contain executions with outgoing actions between execute start and execute finish actions. Furthermore ingoing relations can be identified as executions of other events from the following rules:
+	\newpar When any event receives this order of execution, it can look at its own history and at the received order. The local history can contain executions with outgoing actions between execute start and execute finish actions. Furthermore ingoing relations can be identified as executions of other events from the following rules:
 	
 	\begin{itemize}
 		\item Each counterpart present in actions with ingoing action types must have executed at least once, in order to contact the local event.
@@ -206,7 +206,38 @@
 	\newpar	Given these rules, the local history can be turned into a "local order of execution".
 	\figuretodo{Tilføj figur der viser hvordan en lokal historik kan omdannes til en order of execution der kan bruges til afstemning.}
 	
-	\newpar Now that the event has created a local order of execution, this order can be used to decide whether or not the event can agree on the global order of execution. If there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution for the event to agree. Because the local history is totally ordered, the local order of execution must also be totally ordered.\todo[inline]{proof?} With this property the event can find the first execution from the local order of execution in the global order of execution and find the path to the next execution only by following edges from the first execution. The last step can be repeated until the paths in the local order of executions have been found. If these paths does not exist, the event cannot find its local history, and must vote no in the election.\todo[inline]{Should the last few sentences be written as an algorithm instead?}
+	\newpar Now that the event has created a local order of execution, this order can be used to decide whether or not the event can agree on the global order of execution. If there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution for the event to agree. Because the local history is totally ordered, the local order of execution must also be totally ordered.\todo[inline]{proof?}
+	
+	With this property the event can find the local order of execution in the global order. \todo[inline]{The following algorithm assumes that an execution can be found across local and global orders of execution.}Algorithm \ref{alg:vote} outlines how this can be done.
+	
+	\begin{algorithm}
+		\begin{algorithmic}
+			\Function{Vote}{localHistory, globalOrderOfExecution}
+				\State\hspace{2em}\textbf{returns} \texttt{True} if the paths between executions in the local history are present in the
+				\State\hspace{6em}global history. \texttt{False} otherwise.
+				\State localOrderOfExecution $\leftarrow$ \Call{MakeLocalOrderOfExecution}{localHistory}
+				\State localExecution $\leftarrow$ execution in localHistory with lowest local timestamp
+				\While{\Call{IsNotNull}{currentLocalExecution}}
+					\If{\Call{IsEmpty}{currentLocalExecution.Edges}}
+						\State \Return \texttt{True}
+					\EndIf
+					\State globalExecution $\leftarrow$ find localExecution in globalOrderOfExecution
+					\State nextGlobalExecution $\leftarrow$ find next local execution in globalOrderOfExecution
+					\If{\Call{HasPath}{globalExecution, nextGlobalExecution, globalOrderOfExecution}}
+						\State\Return \texttt{False}
+					\EndIf
+					
+					\State localExecution $\leftarrow$ \Call{SingleOrNull}{localExecution.Edges}
+				\EndWhile
+			\EndFunction
+		\end{algorithmic}
+		\caption{The \textit{\textbf{Vote}} algorithm}
+		\label{alg:vote}
+	\end{algorithm}
+	
+	If the history is correct, and the nodes are correct, then the nodes will vote in favour of the history.
+	
+	It is possible to decide a threshold for the ratio between the number of good nodes and the number of malicious nodes. If the result of the election is better than the threshold, then distributed consensus between the nodes exists for the history. In distributed systems this threshold is normally set to the majority of the participating nodes, which means at least one more than half the amount of nodes.\todo[inline]{Find a source.}
 	
 	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo[inline]{Giver det her stadig mening?}
 	
