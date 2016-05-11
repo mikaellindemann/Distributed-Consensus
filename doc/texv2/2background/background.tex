@@ -66,7 +66,7 @@
 	
 	For a given node the \textit{reachability} is the set of all the nodes there exists a path to. For a graph to be \textit{acyclic} the reachability of all the nodes of the graph must not include the nodes themselves. 
 	
-	For a directed acyclic graph a subgraph of the graph with the same reachability of each node, but as few edges as possible, is called a \textit{minimum equivalent graph}.
+	The subgraph of a given graph with the same reachability of each node, but with as few edges as possible, is called the \textit{minimum equivalent graph}.
 	
 	A \textit{topological order} of a directed graph is a linear ordering of the nodes, such that for every edge $a,b$ from node $a$ to $b$, $a$ comes before $b$.
 	
@@ -80,7 +80,7 @@
 		\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{2background/images/serial-equivalence.pdf}
-		\caption{Two transactions executed in sequence and their serially equivalent interleaving.}
+		\caption{Two transactions executed in sequence and a serially equivalent interleaving.}
 		\label{fig:background:serial-equivalence}
 		\end{figure}
 		
@@ -127,9 +127,7 @@
 		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
 		
 		\subsection{Consensus}
-		Traditionally consensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}.\todo[inline]{Be precise about PAXOS failure modes. Then conclude that it cannot handle malicious agents because it does not handle byzantine failures.} The Paxos algorithm cannot handle byzantine failures with agents that collude, lie, or otherwise try to subvert the protocol, and can therefore not be used in this project. Furthermore election algorithms requires all agents of the election to be able to propose a single value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a single value, regular election algorithms cannot be used. 
-		
-		\todo[inline]{There are consensus algorithms that are not election algorithms. Are you confusing the two terms?}
+		Traditionally consensus in distributed systems is the process of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an election algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}.\todo[inline]{Be precise about PAXOS failure modes. Then conclude that it cannot handle malicious agents because it does not handle byzantine failures.} The Paxos algorithm cannot handle Byzantine failures with agents that collude, lie, or otherwise try to subvert the protocol, and can therefore not be used in this project. Furthermore election algorithms requires all agents of the election to be able to propose a single value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a single value, regular consensus algorithms cannot be used. 
         
         \newpar We generalise the concept of consensus from being agreement on a single value to finding a value to propose that is compatible with all values at voters. We will use this generalisation of consensus in \autoref{chap:order-of-execution}.
 		
