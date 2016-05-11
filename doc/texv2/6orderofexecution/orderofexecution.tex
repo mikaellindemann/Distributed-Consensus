@@ -180,7 +180,13 @@
 	\end{algorithm}
 	
 	\newpar The shown algorithm for transitive reduction has a time complexity of $O(n^3)$ where $n$ is the number of executions, since the algorithm has three nested for-loops over all executions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most executions. \todo{check if pathExists runs linearly}
-	\figuretodo{Figur der viser et før og efter resultat af reduction.}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.35\textheight]{6orderofexecution/images/reduce-before-after.pdf}
+		\caption{The result of reducing an order of execution with redundant edges.}
+		\label{fig:orderofexecution:reduce-before-after}
+	\end{figure}
 
 % Synes ikke det hører til her	
 %	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot tamper with the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
