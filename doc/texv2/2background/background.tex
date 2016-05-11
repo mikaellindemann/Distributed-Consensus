@@ -98,7 +98,7 @@
 		\begin{minipage}{0.45\textwidth}
 			\centering
 			\includegraphics[height=\textheight/5]{2background/images/strict-partial.pdf}
-		\caption{The strict partial order of $N$ ordered by divisibility resulting in a natural number.}
+		\caption{The strict partial order of $N$ ordered by divisibility resulting in a natural number. $A$ $\rightarrow$ $B$ denotes $A$ divides $B$.}
 		\label{fig:background:strict-partial}
 		\end{minipage}\hfill
 		\begin{minipage}{0.45\textwidth}
@@ -122,7 +122,7 @@
 		
 		\newpar Lamport argues that if a given system is not distributed, it is possible to create a history of events where the ordering is total, since it is possible for one process to use a logical clock to find out which event happened before another. In a distributed system however, this global ordering is not possible, since events have independent locical clocks that can have the same timestamp.
 		
-		\newpar Lamport describes these relations between events with the symbol $\rightarrow$ such that if $event$ $a$ happened before $event$ $b$ then $a \rightarrow b$. These relations can be created based on three cases, the first case is: if $event$ $a$ and $b$ happened on the same process and $a$ happened before $b$ measured with the local logical clock then $a \rightarrow b$. The second case: if process $i$ sends a message to process $j$ and $event$ $a$ is the event which initiates the sending and $event$ $b$ is the recieving of the message then $a \rightarrow b$. The third case is based on the transitive property such that if $a \rightarrow b$ and $b \rightarrow c$ then $a \rightarrow c$. If no relation exists between any event $a$ and $b$, the events are \textit{concurrent}, and logically occur at the same time, even though this might not be the case physically. Lamport therefore argues that it is only possible to find a partial order of events.\figuretodo{Disse happens before forhold kan også vises på en figur. Desuden, pilen bliver ikke beskrevet med et navn.}
+		\newpar Lamport describes these relations between events with the symbol $\rightarrow$ such that if $event$ $a$ happened before $event$ $b$ then $a \rightarrow b$. These relations can be created based on three cases, the first case is: if $event$ $a$ and $b$ happened on the same process and $a$ happened before $b$ measured with the local logical clock then $a \rightarrow b$. The second case: if process $i$ sends a message to process $j$ and $event$ $a$ is the event which initiates the sending and $event$ $b$ is the recieving of the message then $a \rightarrow b$. The third case is based on the transitive property such that if $a \rightarrow b$ and $b \rightarrow c$ then $a \rightarrow c$. If no relation exists between any event $a$ and $b$, the events are \textit{concurrent}, and logically occur at the same time, even though this might not be the case physically. Lamport therefore argues that it is only possible to find a partial order of events.\figuretodo{Disse happens before forhold kan også vises på en figur.}
 		
 		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
 		
