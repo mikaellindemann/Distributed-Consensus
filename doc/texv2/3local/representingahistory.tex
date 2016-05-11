@@ -70,31 +70,22 @@
 	
 	\newpar Now that a representation of an execution and its actions has been defined, it is necessary to define a way to connect and order these actions.
     
-    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}.\todo[inline]{Skal vi komme nærmere ind på udefrakommende relationer, når afsnittet nu ikke længere er begrænset til et single-event-workflow?} Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B. This can be defined mathematically as follows when actions are compared on their logical timestamps:
-	
-	%\begin{center}
-	%	$\forall_{x \in E_A}\forall_{y \in E_B} . (x < y) \lor \forall_{x \in E_A}\forall_{y \in E_B} . (y < x)$ \todo[inline]{Totality for executions?}
-	%\end{center}
-
-	\begin{center}
-		$max_{E_A} < min_{E_B} \lor max_{E_B} < min_{E_A}$
-	\end{center}
+    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}.\todo[inline]{Skal vi komme nærmere ind på udefrakommende relationer, når afsnittet nu ikke længere er begrænset til et single-event-workflow?} Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B.
     
-	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}.\todo[inline]{Mikael: Personligt har jeg ikke behov for også at have navnet på afsnittet igen. Ved ikke med jer.}
+	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents}.
 	
-    \begin{center}
-    	\label{math:distributedExecutionOrder}
-		$\forall_{x \in E_A}\forall_{y \in E_B} . ((x \rightarrow y \lor x \not\rightarrow y) \land y \not\rightarrow x)$
-        
-        $\lor$
-        
-        $\forall_{x \in E_A}\forall_{y \in E_B} . ((y \rightarrow x \lor y \not\rightarrow x) \land x \not\rightarrow y)$
-        
-        $\lor$
-        
-        $\forall_{x \in E_A}\forall_{y \in E_B} . (x \not\rightarrow y \land y \not\rightarrow x)$
-	\end{center}
-    \todo[inline]{Fiks Søren's kommentar: "I don't get this. What are you trying to show?"}\figuretodo{Mikael: Jeg tror det er nemmere at vise visuelt. Man kunne fx have en figur med to events, hvor event A kontakter event B, men event B afslutter en execution lige før den er kontaktet, og starter en ny lige efter. På to figurer er det så muligt at farvelægge de events der sker concurrently, før og efter event B's executions.}
+	\begin{figure}
+		\begin{center}
+		$\exists_{x\in E_A, y\in E_B}\left(x \rightarrow y\right) \implies \forall_{x\in E_A, y\in E_B}(y \not\rightarrow x) $\\$\land$\\$ \forall_{x\in E_A, y\in E_B}\left(x\not\rightarrow y \land y\not\rightarrow x\right)$
+		\end{center}
+		\caption{Invariant for the actions of executions in histories}
+		\label{fig:historyinvariant}
+	\end{figure}
+	
+	\newpar
+	Figure \ref{fig:historyinvariant} describes the invariant that must hold for all histories. It reads, if there exists an action, \textit{x}, in execution \textit{A}, and another action, \textit{y}, in execution \textit{B}, such that \textit{x} happens before \textit{y}, then for all actions \textit{x} in \textit{A} and all actions \textit{y} in \textit{B}, \textit{y} must not happen before \textit{x}. Otherwise there are no happens before relations between actions in \textit{A} and actions in \textit{B}
+	
+    \todo[inline]{Fiks Søren's kommentar: "I don't get this. What are you trying to show?" - Old comment, left here for you to agree/while Søren looks at the new definition.}
     
 	\newpar One can easily argue that a strict partial order fits ordering of actions because:
 	\begin{enumerate}
