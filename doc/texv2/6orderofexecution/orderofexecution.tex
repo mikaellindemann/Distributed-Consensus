@@ -8,15 +8,15 @@
 	
 	\newpar In order to do this, we need to find a single entity denoting an execution, and identify actions that are part of that execution. 
 	
-	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph. 
+	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph.\todo[inline]{Dette er ikke noget vi umiddelbart har nævnt før?}
 	
 	\subsection{Use of the Transitive Closure in Order to Gain Extra Information}
-	In order to establish the happens-before relations of actions occurring on different events, increasing the reachability of actions in the history is beneficial, since every edge in the history denotes a happens-before relation. 
+	In order to establish the happens-before relations of actions occurring on different events, increasing the reachability of actions in the history is beneficial, since every edge in the history denotes a happens-before relation. \todo{hvad vil det sige at increase reachability?} 
 	
 	It might therefore be possible to establish that two actions have occurred after each other after increasing reachability, since an edge between these two actions has then been found.
 	
 	\newpar Since the history is represented as a directed acyclic graph, the transitive closure of the graph can be found to find more happens-before relations. 
-	After having found the transitive closure of the graph, actions that are either not an between \texttt{Execution start} and \texttt{Execution finish} action types can be filtered away from the graph. One of these execution types should denote an entire execution.
+	After having found the transitive closure of the graph, actions that are either not in between \texttt{Execution start} and \texttt{Execution finish} action types can be filtered away from the graph. One of these execution types should denote an entire execution.
 	
 	This does not affect the order of the executions, since the execute action types are now connected after having found the transitive closure.
 	
@@ -24,10 +24,10 @@
 	
 	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure of the joined histories of two events is shown. 
 	Compare the result to the result of using the \textit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order.
-	The actions marked with a grey color are happening concurrently after the transitive closure has been found, but actually happen in order, which is seen when using the \textit{Collapse} approach. 
+	The actions marked with a grey color are happening concurrently after the transitive closure has been found, but actually happen in order, which is seen when using the \textit{Collapse} approach.\todo[inline]{Der er ikke noget her der er farvet gråt, og det er lidt mærkeligt at begynde at beskrive collapse-figuren allerede heroppe. Fint at beholde den som reference dog.}
 	
 	\subsubsection{Complexity}
-	We implemented finding the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}, and this approach has been determined as the better way of finding the order of execution.
+	We implemented finding the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}, and this approach has been determined as the better way of finding the order of execution.\todo[inline]{Igen, mærkeligt at snakke om collapse når denne ikke er defineret endnu.}
 	
 	\begin{figure}
 		\centering
@@ -50,14 +50,14 @@
 	\newpar 
 	\todo[inline]{Wat. Forstår overhovedet ikke noget fra her... }
 	Due to the property of an execution stated in \ref{math:distributedExecutionOrder} which states that for an execution, some actions might be concurrent with other actions, while other actions in the execution is able to establish happen before relation to those same actions, it creates complications since executions then happens both concurrent and not concurrently at the same time. 
-	\todo[inline]{... til her.}
+	\todo[inline]{... til her. Mikael: Enig.}
 	
 	Because of this problem it is neccesary to formulate a method which is able to \textit{collapse} the execution into a single entity, which has the same happens before relations to actions outside of the execution.
 	
 	
-	To do so it is necessary to make an assumption which states that everything in an execution happens at the same time \todo[inline]{"at the same time" = concurrently?} and therefore any happens-before relation any action has with any action outside of the execution now applies to all events in the execution. When this is the case, every action inside the execution are equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity. 
+	To do so it is necessary to make an assumption which states that everything in an execution happens at the same time \todo[inline]{"at the same time" = concurrently? Mikael: Jeg tror simultaneously er bedre?} and therefore any happens-before relation any action has with any action outside of the execution now applies to all events in the execution. When this is the case, every action inside the execution are equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity. 
 	
-	The assumption that every action of an execution has the same happens-before relation as any other action in the execution cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent. This implies that two executions cannot affect the same event at interpolated\todo{wat?} allowing some actions to happen before, and some after, another execution.
+	The assumption that every action of an execution has the same happens-before relation as any other action in the execution cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent. This implies that two executions cannot affect the same event at interpolated\todo{wat? Det skal lige rettes til at beskrive at locking sørger for denne property?} allowing some actions to happen before, and some after, another execution.
 	
 	\newpar An example of this separation of executions can be found in \autoref{fig:orderofexecution:collapsing}. The figure shows actions that are part of an execution getting collapsed into a single execution, with preserved happens-before relations. 
 	
@@ -99,7 +99,7 @@
 %	\end{figure}
 %	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
-	\newpar The collapsing algorithm can be be seen on \ref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. Though different in approach, this produces the same end result \todo{same result as what?}.
+	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. Though different in approach, this produces the same end result \todo{same result as what?}.\figuretodo{Vis den endeligt collapsede figur, den kan fungere som overgang til hvorfor det efterfølgende er nødvendigt at reduce.}
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
@@ -146,11 +146,11 @@
 	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
 	
 	\newpar An example of a redundant edge in a collapsed order of execution can be seen in figure \autoref{fig:orderofexecution:collapsing}. The figure illustrates a case where a redundant edge exists between event $A$ and event $B$, since the edge from event $B$ through $C$ provides more information about the order in which the executions occurred. 
-	Recall that the order of execution is represented as a directed acyclic graph. For a directed acyclic graph a subgraph of the graph with the same ordering and reachability, but as few edges as possible, can be found, called a \textit{minimum equivalent graph}.
+	Recall that the order of execution is represented as a directed acyclic graph. For a directed acyclic graph a subgraph of the graph with the same ordering and reachability, but as few edges as possible, can be found, called a \textit{minimum equivalent graph}.\todo[inline]{Vi har brugt dette udtryk tidligere uden at beskrive hvad det var.}
 	
 	\newpar In directed acyclic graphs the transitive reduction of a given graph is a graph with the fewest possible number of edges, but the same reachability as the given graph.	That is, if there exists a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa.
 		
-	Furthermore, the transitive reduction will always be a subgraph of the given graph. For that reason the transitive reduction corresponds to the minimum equivalent graph.
+	Furthermore, the transitive reduction will always be a subgraph of the given graph. For that reason the transitive reduction corresponds to the minimum equivalent graph.\todo[inline]{Jeg (Mikael) har det lidt med subgraph som jeg har det med subset. Jeg er ikke helt sikker på hvad det betyder i denne sammenhæng - Altså, jeg synes ikke det hjælper til min forståelse af problemet (hvilket jeg i øvrigt synes er udpenslet nok på dette tidspunkt.)}
 	
 	The implementation for finding the transitive reduction on an order of execution is shown in \autoref{alg:orderofexecution:reduction}.
 	
@@ -179,6 +179,7 @@
 	\end{algorithm}
 	
 	\newpar The shown algorithm for transitive reduction has a time complexity of $O(n^3)$ where $n$ is the number of executions, since the algorithm has three nested for-loops over all executions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most executions. \todo{check if pathExists runs linearly}
+	\figuretodo{Figur der viser et før og efter resultat af reduction.}
 
 % Synes ikke det hører til her	
 %	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot tamper with the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
@@ -205,3 +206,4 @@
 	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo{Uddyb denne paragraf.}
 	
 	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem."}
+	\figuretodo{Kan vi på nogen måde vise resultatet af election?}

@@ -14,7 +14,7 @@
 		\item $Act$ is the set of actions. That is, a representation of what happens in the workflow when a given event is executed.
 		\item \condition (conditions) is a relation, which for all pairs of events which is present in the relation, means that the first event must be either excluded or executed for the second event to be executable.
 		\item \response (responses) is a relation, which for all pairs of events which is present in the relation, means that after the first event has been executed the second event must either be executed or excluded at some point.
-		\item $\pm$ defines the dynamic inclusion and exclusion of events. This partial function is a triple of two events and symbol defining whether the execution of the first event should result in an exclusion or inclusion of the second event. It is possible for an event to exclude itself.
+		\item $\pm$ defines the dynamic inclusion and exclusion of events. This partial function is a triple of two events and symbol defining whether the execution of the first event should result in an exclusion or inclusion of the second event. It is possible for an event to exclude itself, but one event cannot both include and exclude another.
 		\item $l$ is the labelling function, assigning an action to each event.
 	\end{itemize}
 		
@@ -24,7 +24,7 @@
 	Events can be safely distributed by defining \textit{projections} and \textit{compositions} of DCR graphs. This is described in \cite{hildebrandt2011safe}.
 	
 	\newpar
-	A projection of a DCR graph with respect to a subset of events of the graph and a subset of the labels of the graph. The label set must contain the labels of the events in the event set, as well as all labels of events that can affect the marking or the ability to execute an event in the projection, through relations.
+	A projection of a DCR graph with respect to a subset of events of the graph and a subset of the labels of the graph. The label set must contain the labels of the events in the event set, as well as all labels of events that can affect the marking or the ability to execute an event in the projection, through relations.\figuretodo{If this should be kept, there should be a figure representing the projection of a graph.}
 	
 	\newpar
 	Proposition 1 in \cite{hildebrandt2011safe} defines how an execution in a projection corresponds to the execution of events in the entire DCR graph the projection was made on. In short it describes if and how a transition in the projection corresponds to a transition in the entire DCR graph and vice versa.
@@ -44,7 +44,7 @@
 		$e$ is currently executable. If it is, it instructs remote events affected by firing $e$
 		to change state accordingly. Finally, it releases all locks.
 	\end{quotation}
-
+	\figuretodo{Man kunne indsætte et flowchart her. Jeg (Mikael) synes ikke det er nødvendigt.}
 %	\newpar For example the events \textit{"Begin production"} and \textit{"Production finished"} can represent the start and end of the activity \textit{"Produce item X"}, which is an activity possibly containing several events. An event \textit{"Accept draft"}, can also represent a decision made or the event \textit{"Change password"} can represent an atomic event.
 	
 %	A DCR graph can model a \textit{workflow}, which represents a work process. The DCR graph can then be used to represent the current state of the process, to see what parts of the process have been completed and what parts of the process remain to be completed or \textit{executed}. 
@@ -65,15 +65,16 @@
 	\todo[inline]{Add section for graph theory.}
 
 	\section{Distributed Systems}
-		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Coulouris:2011:DSC:2029110}. \todo{Tilføj cite til chapter eller bare hele bog?}
+		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Coulouris:2011:DSC:2029110}. \todo[inline]{Tilføj cite til chapter eller bare hele bog? Jeg (Mikael) er ret sikker på at denne beskrivelse kommer fra Lamports artikel om ordering af events og ikke fra Distributed Systems bogen.}
 		
 		\subsection{Serial Equivalence}
-		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operation happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message parsing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking, and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
+		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operation happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message passing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
+		\figuretodo{Man kunne godt tilføje en figur her, som på en eller anden måde viste seriel ækvivalens. Er det overflødigt?}
 		
 		\subsection{Ordering of Events}\label{subsec:orderingofevents}
 		In \cite{Lamport:1978:TCO:359545.359563} Leslie Lamport examines and describes the ordering of events (not to be confused with DCR events) in distributed systems based on their occurrence in time. Applying these concepts is very helpful when determining the order of execution in a DCR graph. 
 		
-		\newpar In set theory a total order is an order that is \textit{antisymmetric}, that is if $a \leq b$ and $b \leq a$ then $a = b$, as well as \textit{transitive}, that is if $a \leq b$ and $b \leq c$ then $a \leq c$, in addition to being \textit{total}, that is $a \leq b$ or $b \leq a$. For a total order to also be strict the \textit{irreflexivity} property must also be present, that is $not$ $a < a$. A \textit{strict partial order} is similar to a \textit{strict total order} in that a strict partial order also has the \textit{transitive}, \textit{antisymmetry} and \textit{irreflexivity} properties, but not the \textit{totality} property.
+		\newpar In set theory a total order is an order that is \textit{antisymmetric}, that is if $a \leq b$ and $b \leq a$ then $a = b$, as well as \textit{transitive}, that is if $a \leq b$ and $b \leq c$ then $a \leq c$, in addition to being \textit{total}, that is $a \leq b$ or $b \leq a$. For a total order to also be strict the \textit{irreflexivity} property must also be present, that is $not$ $a < a$. A \textit{strict partial order} is similar to a \textit{strict total order} in that a strict partial order also has the \textit{transitive}, \textit{antisymmetry} and \textit{irreflexivity} properties, but not the \textit{totality} property.\figuretodo{Man kunne godt stille nogle små figurer op ved siden af hinanden der visualiserede de her properties.}
 		
 		These orders can be described with two examples, using a subset of the natural numbers, $\{1, 2, 3, 4, 5, 6\}$ referred to as $N$. 
 		
@@ -84,7 +85,7 @@
 		\begin{minipage}{0.45\textwidth}
 			\centering
 			\includegraphics[height=\textheight/5]{2background/images/strict-partial.pdf}
-		\caption{The strict partial order of $N$ ordered by divisibility resulting in a natural number.}
+		\caption{The strict partial order of $N$ ordered by divisibility resulting in a natural number.\todo[inline]{Måske skulle vi beskrive hvordan man læser pilen.}}
 		\label{fig:background:strict-partial}
 		\end{minipage}\hfill
 		\begin{minipage}{0.45\textwidth}
@@ -95,11 +96,11 @@
 		\end{minipage}
 		\end{figure}
 		
-		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that enable determining the order of events in a distributed system. The clocks are \textit{logical} in the sense that they do not represent \textit{physical} time, since synchronising time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each event happening in a process. When a process receives a message, the counter must be set to a higher value than both the received timestamp, as well as the local clock. This also implies that each message must include the timestamp of the sending event.
+		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that enable determining the order of events in a distributed system. The clocks are \textit{logical} in the sense that they do not represent \textit{physical} time, since synchronising time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each event happening in a process. When a process receives a message, the counter must be set to a higher value than both the received timestamp, as well as the local clock. This also implies that each message must include the timestamp of the sending event.\figuretodo{figur der viser hvordan en besked med højere timestamp resulterer i et større increment hos den modtagende proces.}
 		
 		\newpar Lamport argues that if a given system is not distributed, it is possible to create a history of events where the ordering is total, since it is possible for one process to use a logical clock to find out which event happened before another. In a distributed system however, this global ordering is not possible, since events have independent locical clocks that can have the same timestamp.
 		
-		\newpar Lamport describes these relations between events with the symbol $\rightarrow$ such that if $event$ $a$ happened before $event$ $b$ then $a \rightarrow b$. These relations can be created based on three cases, the first case is: if $event$ $a$ and $b$ happened on the same process and $a$ happened before $b$ measured with the local logical clock then $a \rightarrow b$. The second case: if process $i$ sends a message to process $j$ and $event$ $a$ is the event which initiates the sending and $event$ $b$ is the recieving of the message then $a \rightarrow b$. The third case is based on the transitive property such that if $a \rightarrow b$ and $b \rightarrow c$ then $a \rightarrow c$. If no relation exists between any event $a$ and $b$, the events are \textit{concurrent}, and logically occur at the same time, even though this might not be the case physically. Lamport therefore argues that it is only possible to find a partial order of events.
+		\newpar Lamport describes these relations between events with the symbol $\rightarrow$ such that if $event$ $a$ happened before $event$ $b$ then $a \rightarrow b$. These relations can be created based on three cases, the first case is: if $event$ $a$ and $b$ happened on the same process and $a$ happened before $b$ measured with the local logical clock then $a \rightarrow b$. The second case: if process $i$ sends a message to process $j$ and $event$ $a$ is the event which initiates the sending and $event$ $b$ is the recieving of the message then $a \rightarrow b$. The third case is based on the transitive property such that if $a \rightarrow b$ and $b \rightarrow c$ then $a \rightarrow c$. If no relation exists between any event $a$ and $b$, the events are \textit{concurrent}, and logically occur at the same time, even though this might not be the case physically. Lamport therefore argues that it is only possible to find a partial order of events.\figuretodo{Disse happens before forhold kan også vises på en figur. Desuden, pilen bliver ikke beskrevet med et navn.}
 		
 		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
 		
@@ -119,7 +120,7 @@
 			\noindent\textit{The goal is to develop a functioning and correct, web-service based distributed workflow system that can support distributed coordination of workflows provided by the external and possibly international customers, and reconfigured if the workflow changes.}
 		\end{quotation}
 		
-		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required.
+		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required.\todo[inline]{Skulle man lige tilføje en note om at der findes flere relationer? Ellers virker denne sætning ligegyldig.}
 		
 		\newpar In order to fulfil the requirements we separated the project into smaller components:
 		
@@ -146,7 +147,7 @@
 		
 		There are no fine-grained access control, so read-only access to events, for instance, is not implemented.
 		
-		\newpar For each accessible event in a workflow, the client shows the name and state of the event. Furthermore, a button used to execute an event exists, which is deactivated if the event is not executable. The client also allows the user to get an overview of what happened in a given workflow. This feature was called "history", but was implemented by ordering each log entry by physical time.\footnote{This history feature has of course been replaced with the outcome of this bachelor project.}
+		\newpar For each accessible event in a workflow, the client shows the name and state of the event. Furthermore, a button used to execute an event exists, which is deactivated if the event is not executable. The client also allows the user to get an overview of what happened in a given workflow. This feature was called "history", but was implemented by ordering each log entry by physical time.\footnote{This history feature has of course been replaced with the outcome of this bachelor project.}\todo[inline]{Fjern evt. fodnoten og sæt teksten ind efter den forrige sætning.}
 		
 		\newpar The parser is a tool developed to make it easier to translate workflows from DCRGraphs.net into JSON that can the be used to create workflows in the system.
 		

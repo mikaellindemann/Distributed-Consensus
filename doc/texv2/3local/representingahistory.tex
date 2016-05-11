@@ -15,7 +15,7 @@
 		In a given effect where two events A and B are part of the effect, event B is \textbf{\textit{Counterpart}} of event A and event A is counterpart of event B.
 	\end{definition}
 	
-	\newpar Information about the event itself and the counterpart is required for creating an order of execution in DCR graphs with multiple events. Why this is the case is examined further in \autoref{chap:connecting-histories} onwards, therefore this information must be a part of the representation of an execution.
+	\newpar Information about the event itself and the counterpart is required for creating an order of execution in DCR graphs with multiple events. Why this is the case is examined further in \autoref{chap:connecting-histories} onwards, therefore this information must be a part of the representation of an execution.\todo[inline]{Den sidste del af sætningen knytter sig mere til den forrige sætning, end den den står umiddelbart efter.}
 	
 	\newpar The representation of an effect has been named \textit{\textbf{Action}} because it can be seen as an action performed by an event in the DCR graph. An \textit{\textbf{Action}} is defined as:
 	
@@ -47,11 +47,11 @@
 	\newpar The action types 1 through 8 are related to the functionality of DCR graphs, i.e. \textit{Includes} is an action that happens when an event $A$ includes event $B$, similarly \textit{Included by} is an action that happens on event $A$ when event $B$ includes it. Action types 9 and 10 are action types that happen when an event starts executing and finishes executing. 
     
     \newpar
-    An Action is part of an execution if the Event ID is the same and it has happened between a pair of \textit{Execute start} and \textit{Execute finish} actions. Furthermore, when an execution has an outgoing action the corresponding ingoing action is part of the execution as well. This is explained in \autoref{chap:order-of-execution}.
+    An Action is part of an execution if the Event ID is the same and it has happened between a pair of \textit{Execute start} and \textit{Execute finish} actions.\figuretodo{Evt. en figur der viser en execution med et par udgående relationer.} Furthermore, when an execution has an outgoing action the corresponding ingoing action is part of the execution as well. This is explained in \autoref{chap:order-of-execution}.
 	
 	\newpar Now that a representation of actions has been defined, it is necessary to define a way to connect and order these actions.
     
-    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementations must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B. This can be defined mathematically as follows when actions are compared on their logical timestamps:
+    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}.\todo[inline]{Skal vi komme nærmere ind på udefrakommende relationer, når afsnittet nu ikke længere er begrænset til et single-event-workflow?} Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B. This can be defined mathematically as follows when actions are compared on their logical timestamps:
 	
 	%\begin{center}
 	%	$\forall_{x \in E_A}\forall_{y \in E_B} . (x < y) \lor \forall_{x \in E_A}\forall_{y \in E_B} . (y < x)$ \todo[inline]{Totality for executions?}
@@ -61,7 +61,7 @@
 		$max_{E_A} < min_{E_B} \lor max_{E_B} < min_{E_A}$
 	\end{center}
     
-	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}. 
+	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents} - \nameref{subsec:orderingofevents}.\todo[inline]{Mikael: Personligt har jeg ikke behov for også at have navnet på afsnittet igen. Ved ikke med jer.}
 	
     \begin{center}
     	\label{math:distributedExecutionOrder}
@@ -75,7 +75,7 @@
         
         $\forall_{x \in E_A}\forall_{y \in E_B} . (x \not\rightarrow y \land y \not\rightarrow x)$
 	\end{center}
-    \todo[inline]{Fiks Søren's kommentar: "I don't get this. What are you trying to show?"}
+    \todo[inline]{Fiks Søren's kommentar: "I don't get this. What are you trying to show?"}\figuretodo{Mikael: Jeg tror det er nemmere at vise visuelt. Man kunne fx have en figur med to events, hvor event A kontakter event B, men event B afslutter en execution lige før den er kontaktet, og starter en ny lige efter. På to figurer er det så muligt at farvelægge de events der sker concurrently, før og efter event B's executions.}
     
 	\newpar One can easily argue that a strict partial order fits ordering of actions because:
 	\begin{enumerate}
@@ -100,7 +100,7 @@
 	\end{definition}
 	
     \newpar 
-    A \textit{global history} is the strict partial order of the actions of all events in the workflow. A \textit{local history} is a strict total order of the actions that have happened on a single event. 
+    A \textit{global history} is the strict partial order of the actions of all events in the workflow. A \textit{local history} is a strict total order of the actions that have happened on a single event. \todo[inline]{Kan definitionen og den efterfølgende tekst ikke komme før vi nævner det med DAC?}
 	
 %	\begin{figure}
 %		\centering

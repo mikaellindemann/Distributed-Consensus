@@ -5,20 +5,20 @@
 	This chapter defines the merging of actions from multiple histories into one history.
 	
     \newpar
-    Given a set of local histories, we would like to connect the actions of the histories such that the result has the fewest possible concurrent actions, while requiring that for every history, B, that was part of the creation of history A, for any path from one action to another in B, this path must also exist in history A.
+    Given a set of local histories, we would like to connect the actions of the histories such that the result has the fewest possible concurrent actions, while requiring that for every history, B, that was part of the creation of history A, for any path from one action to another in B, this path must also exist in history A.\todo[inline]{Mikael: Jeg tror det skal gøres tydeligere at B er en lokal historik og A er den globale. Og så er det lidt underligt at B defineres før A.}\figuretodo{Jeg ved ikke om det er for komplekst at starte med. Men man kan godt lave en figur der præsenterer det ønskede resultat.}
     
     \newpar
     The concept of happens-before relations helps determining what actions have happened before others across events. Recall that individual actions which happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$.
-	Also recall that edges can be created between actions on two different events.
+	Also recall that edges can be created between actions on two different events.\todo[inline]{Recall: Bør vi henvise til hvor det er nævnt?}
 	
     \newpar
-	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange.
+	Actions with action types 1 through 8 in \autoref{def:actiontype} are part of pairs of actions, which represent sides of the same message exchange.\figuretodo{Figur der viser idéen? Eller er det overkill?}
 	
 	The \textit{outgoing action types} are action types \ref{actiontype:includes}, \ref{actiontype:excludes}, \ref{actiontype:setspending}, and \ref{actiontype:checkscondition}, while \textit{incoming action types} are \ref{actiontype:includedby}, \ref{actiontype:excludedby}, \ref{actiontype:setpendingby}, and \ref{actiontype:checkedconditionby}. Each outgoing action type corresponds to an incoming action type by the following definition:
 	
 	\begin{definition}
 		\label{def:happensbeforeaction}
-		The types of actions that correspond and thereby form happens-before from an \textbf{outgoing action} and an \textbf{incoming action} relations are:
+		The types of actions that correspond and thereby form happens-before from an \textbf{outgoing action} and an \textbf{incoming action} relations are:\todo[inline]{Var det her Søren gerne ville fremhæve hvad det var vi definerede? Sådan som jeg husker det er det vel i virkeligheden \textbf{correspond} der bare skulle gøres fed?}
 			\begin{itemize}
 				\item Includes $\rightarrow$ Included by
 				\item Excludes $\rightarrow$ Excluded by
@@ -32,7 +32,7 @@
 	\newpar For any action on an event with action type 1 through 8, there might exist any number of actions with corresponding action types. However, because a pair of actions are part of the same message exchange, there is only one corresponding action.
 	
 	Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the performing and counterpart event to ensure that matches are unique.
-    Pairs of actions correspond if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.
+    Pairs of actions correspond if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.\figuretodo{Igen, måske for meget. Men man kunne godt lave en figur hvor man først matcher en action med alle andre actions der har corresponding action types, og på anden del af figuren viser at der kun er ét korrekt match.}
     
     \begin{definition}
     	\label{def:action:matching}
