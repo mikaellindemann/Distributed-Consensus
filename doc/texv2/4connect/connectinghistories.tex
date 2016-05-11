@@ -60,7 +60,7 @@
 
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
 	
-	\todo[inline]{Figur med før efter merge af to historikker.}
+	\figuretodo{Figur med før efter merge af to historikker.}
 	\todo[inline]{write merge algorithm}
 	
 	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
@@ -86,7 +86,7 @@
     
     Unfortunately central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. Therefore it could be desirable to create a peer to peer based gathering algorithm but this introduced a new set of challenges.
     
-    \todo[inline]{måske figur af en client der kontater en server der har pile ud til alle events}
+    \figuretodo{måske figur af en client der kontater en server der har pile ud til alle events}
     
     \subsection{Recursive Traversal of the Distributed Graph / Gathering Without a Central Server}
 	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   
@@ -114,6 +114,7 @@
 	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history their history with the ID of the event appended to the \texttt{request trace}. 
 	
 	\subsubsection{Implementation}
+	\begin{algorithm}
 	\begin{algorithmic}
 		\State Event receives request for history with a \texttt{request trace}, $T$.
 		\State Event has internal \texttt{wait for}, $W$
@@ -134,10 +135,13 @@
 			\Return stitched histories
 		\EndIf
 	\end{algorithmic}
+	\caption{The \textit{\textbf{Fetch}} algorithm}
+	\label{alg:fetch}
+	\end{algorithm}
 	
 	\newpar This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
 	
-	\todo[inline]{måske en figur af en dcr graph med nogle ekstra pile der viser algoritmens gang}
+	\figuretodo{måske en figur af en dcr graph med nogle ekstra pile der viser algoritmens gang}
 	
 	\subsubsection{Correctness}
 	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
@@ -164,4 +168,4 @@
 	
 	The requirements for making it possible to validate the gathered history are described in the following section. 
 	
-	\todo[inline]{måske figur der viser besværligheden ved at nogle dele af graphen nås gennem en "evil"}
+	\figuretodo{måske figur der viser besværligheden ved at nogle dele af graphen nås gennem en "evil"}
