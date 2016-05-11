@@ -40,7 +40,21 @@
     	A pair of actions, $a$ and $b$, \textit{\textbf{matches}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Also the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
     \end{definition}
     
-    \todo[inline]{Figur af nogle events der matcher og nogen der ikke matcher - med timestamps of hele mollevitten}
+    \begin{figure}[H]
+		\centering
+		\begin{minipage}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{4connect/images/actions-match.pdf}
+		\caption{Two actions that match.}
+		\label{fig:connect:actions-match}
+		\end{minipage}\hfill
+		\begin{minipage}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{4connect/images/actions-do-not-match.pdf}
+		\caption{Two actions that do not match. Fields that do not match are marked with red.}
+		\label{fig:connect:actions-do-not-match}
+		\end{minipage}
+		\end{figure}
     
     \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
