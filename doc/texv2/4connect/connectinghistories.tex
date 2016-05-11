@@ -6,6 +6,7 @@
 	
     \newpar
     Given a set of local histories, we would like to connect the actions of the histories such that the result has the fewest possible concurrent actions, while requiring that for every history, B, that was part of the creation of history A, for any path from one action to another in B, this path must also exist in history A.\todo[inline]{Mikael: Jeg tror det skal gøres tydeligere at B er en lokal historik og A er den globale. Og så er det lidt underligt at B defineres før A.}\figuretodo{Jeg ved ikke om det er for komplekst at starte med. Men man kan godt lave en figur der præsenterer det ønskede resultat.}
+    	\tidi[inline]{Det ovenstende er skrevet på basis af Sørens kommentar, at han gerne ville se en "Hvad er målet, og hvordan laver vi de trin der opnår målet" inden vi beskrev dem. Det er derfor det virker lidt "omvendt".}
     
     \newpar
     The concept of happens-before relations helps determining what actions have happened before others across events. Recall that individual actions which happened on an event will have happens-before relations between them, according to the rule that if $A$ and $B$ occur on the same process, then $A \rightarrow B$ if $A$ happened before $B$ on event $E$.
