@@ -220,19 +220,6 @@
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
-			\Function{BuildCounterMap}{counterMap}
-				\State CounterMap: a map mapping executions to their countervalue.
-				\ForAll{Execution from in graph}
-					\ForAll{Execution to in from.OutgoingEdges}
-						\State counter $\leftarrow$ \Call{Map.Get}{to, CounterMap}
-						\State \Call{Map.AddOrUpdate}{to, (counter+1), CounterMap}
-					\EndFor
-				\EndFor
-				\Return CounterMap
-			\EndFunction
-			
-			\State
-			
 			\Function{UpdateState}{state, event, relationType}
 				\State locals: DCR rules
 				\State (included, pending, executed) $\leftarrow$ \Call{Map.Get}{event, state}
@@ -244,17 +231,6 @@
 					\State \Call{Map.AddOrUpdate}{event, (false, pending, executed), state}
 				\EndIf
 				\State \Return state
-			\EndFunction
-			
-			\State
-			
-			\Function{UpdateCountermap}{execution, counterMap}
-				\State counterMap $\leftarrow$ \Call{Map.Remove}{execution.Id, counterMap}
-				\ForAll{Executions e in action.Edges}
-					\State counter $\leftarrow$ \Call{Map.Get}{e, counterMap}
-					\State counterMap $\leftarrow$ \Call{Map.AddOrUpdate}{action, counter-1, counterMap}
-				\EndFor
-				\Return counterMap
 			\EndFunction
 			
 			\State
@@ -275,25 +251,26 @@
 			\State
 			
 			\Function{Execute}{state, DCRRules, execution}
-				\State conditions $leftarrow$ \Call{List.Where}{id == execution.Id and conditionType, DCRRules}
-				\State relations $leftarrow$ \Call{List.Where}{id == execution.Id and not conditionType, DCRRules}
-				\State state $leftarrow$ \Call{UpdateState}{state, execution, r}
+				\State conditions $leftarrow$ \Call{List.Where}{id == execution.Id and is conditionType, DCRRules}
+				\State relations $leftarrow$ \Call{List.Where}{id == execution.Id and not is conditionType, DCRRules}
+				\State state' $leftarrow$ \Call{UpdateState}{state, execution, r}
 				\ForAll{event e, relation r in relations}
 					\State state $leftarrow$ \Call{UpdateState}{state, e, r}
 				\EndFor
-				\Return \Call{IsExecutable}{state, conditions, execution}
+				\If{\Call{IsExecutable}{state, conditions, execution}}
+					\Return Success state'
+				\ElsIf
+					\Return Failure state' 
+				\EndIf
 			\EndFunction
 			
 			\State
 			
 			\Function{Simulation}{Graph, DCRRules, state}
-			\State counterMap $\leftarrow$ Map.Empty
-			\ForAll{Executions e in Graph}
-				\State \Call{Map.AddOrUpdate}{e,0,counterMap}
-			\EndFor
+			\State orderedExecutions $\leftarrow$ \Call{Graph.TopilogicalSort}{Graph} \Comment Returns a queue
 			\State failures $\leftarrow$ List.Empty
-			\While{not Countermap.isEmpty}
-				\State execution $\leftarrow$ \Call{Map.Head}{\Call{Map.Filter}{value=0, counterMap}}
+			\While{not orderedExecutions.isEmpty}
+				\State execution $\leftarrow$ \Call{Queue.Pop}{orderedExecutions}
 				\State executeResult $\leftarrow$ \Call{Execute}{state, DCRRules, execution}
 				\If{executeResult.IsFailure}
 					\State failures $leftarrow$ \Call{List.Add}{execution, failures}
