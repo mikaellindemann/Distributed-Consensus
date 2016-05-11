@@ -60,7 +60,13 @@
 
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
 	
-	\figuretodo{Figur med før efter merge af to historikker.}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{4connect/images/match-before-after.pdf}
+		\caption{Actions of two merged histories before and after being matched.}
+		\label{fig:connecting:match-before-after}
+	\end{figure}
+	
 	\todo[inline]{write merge algorithm}
 	
 	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
@@ -86,7 +92,12 @@
     
     Unfortunately central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. Therefore it could be desirable to create a peer to peer based gathering algorithm but this introduced a new set of challenges.
     
-    \figuretodo{måske figur af en client der kontater en server der har pile ud til alle events}
+    \begin{figure}[H]
+		\centering
+		\includegraphics[height=\textheight/6]{4connect/images/server-contacts-events.pdf}
+		\caption{The client requesting history from events and receiving it.}
+		\label{fig:connecting:server-contacts-events}
+	\end{figure}
     
     \subsection{Recursive Traversal of the Distributed Graph / Gathering Without a Central Server}
 	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   

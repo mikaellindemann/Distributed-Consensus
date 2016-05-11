@@ -99,8 +99,8 @@
 %	\end{figure}
 %	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
-	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. Though different in approach, this produces the same end result \todo{same result as what?}.\figuretodo{Vis den endeligt collapsede figur, den kan fungere som overgang til hvorfor det efterfølgende er nødvendigt at reduce.}
-	\todo[inline]{THIS TODO DOES BELONG HERE Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved. THIS TODO DOES BELONG HERE}
+	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. Though different in approach, this produces the same end result \todo{same result as what?}.
+	\todo[inline]{Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved.}
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
@@ -144,7 +144,7 @@
 	
 	\subsection{Transitive Reduction}
 	
-	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
+	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed, as seen in \autoref{fig:orderofexecution:collapsing}. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
 	
 	\newpar An example of a redundant edge in a collapsed order of execution can be seen in figure \autoref{fig:orderofexecution:collapsing}. The figure illustrates a case where a redundant edge exists between event $A$ and event $B$, since the edge from event $B$ through $C$ provides more information about the order in which the executions occurred. 
 	Recall that the order of execution is represented as a directed acyclic graph and that it is possible to find a minimal equivalent graph for such a graph. 
@@ -180,7 +180,13 @@
 	\end{algorithm}
 	
 	\newpar The shown algorithm for transitive reduction has a time complexity of $O(n^3)$ where $n$ is the number of executions, since the algorithm has three nested for-loops over all executions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most executions. \todo{check if pathExists runs linearly}
-	\figuretodo{Figur der viser et før og efter resultat af reduction.}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.35\textheight]{6orderofexecution/images/reduce-before-after.pdf}
+		\caption{The result of reducing an order of execution with redundant edges.}
+		\label{fig:orderofexecution:reduce-before-after}
+	\end{figure}
 
 % Synes ikke det hører til her	
 %	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot tamper with the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 

@@ -65,10 +65,10 @@
 	With these new informations the definition of a representation of an exeuction can be revised to:
 	
 	\begin{definition}
-		An \textbf{execution} of an event can be represented as a finite set of actions.
+		An \textbf{execution} of an event can be represented as a finite set of actions, which represents the effects that happened in the execution.
 	\end{definition}
 	
-	\newpar Now that a representation of an execution and it's actions has been defined, it is necessary to define a way to connect and order these actions.
+	\newpar Now that a representation of an execution and its actions has been defined, it is necessary to define a way to connect and order these actions.
     
     \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}.\todo[inline]{Skal vi komme nærmere ind på udefrakommende relationer, når afsnittet nu ikke længere er begrænset til et single-event-workflow?} Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B.
     
