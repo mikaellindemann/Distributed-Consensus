@@ -69,7 +69,13 @@
 		
 		\subsection{Serial Equivalence}
 		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operation happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message passing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
-		\figuretodo{Man kunne godt tilføje en figur her, som på en eller anden måde viste seriel ækvivalens. Er det overflødigt?}
+		
+		\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{2background/images/serial-equivalence.pdf}
+		\caption{Two transactions executed in sequence and their serially equivalent interleaving.}
+		\label{fig:validation:cycle-prevention}
+	\end{figure}
 		
 		\subsection{Ordering of Events}\label{subsec:orderingofevents}
 		In \cite{Lamport:1978:TCO:359545.359563} Leslie Lamport examines and describes the ordering of events (not to be confused with DCR events) in distributed systems based on their occurrence in time. Applying these concepts is very helpful when determining the order of execution in a DCR graph. 
