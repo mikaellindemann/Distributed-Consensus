@@ -12,3 +12,6 @@ To reach distributed consensus on the order of execution, each event can examine
 \newpar We have tried multiple approaches to the problem over the course of project, and a lot of them has been loose ends with problems that were not solvable easily or without putting up requirements which would tighten the use case of the algorithms. The fact that only at most two events share information and that no event knows the global order made it difficult to use election algorithms as a way of handling malicious behavior. Furthermore gathering information in a peer to peer fashion proved even more difficult when introducing malicious nodes.
 
 \newpar Overall an algorithm has been provided which solves the problem in most cases. There are multiple areas which could be extended upon in future reports, for example how malicious nodes are handled if they are identified and in what cases it is still possible to still find and order of execution if any malicious behaviour has happened. Furthermore a peer to peer based gathering algorithm which can handle malicious events could be researched.
+
+
+\todo[inline]{man kunne undersøge hvad man kan gøre for at redde et workflow hvor der er nogen der har snydt}
