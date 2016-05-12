@@ -24,7 +24,6 @@
 	
 	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure of the joined histories of two events is shown. 
 	Compare the result to the result of using the \textit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order.
-	The actions marked with a grey color are happening concurrently after the transitive closure has been found, but actually happen in order, which is seen when using the \textit{Collapse} approach.\todo[inline]{Der er ikke noget her der er farvet gråt, og det er lidt mærkeligt at begynde at beskrive collapse-figuren allerede heroppe. Fint at beholde den som reference dog.}
 	
 	\subsubsection{Complexity}
 	We implemented finding the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}, and this approach has been determined as the better way of finding the order of execution.\todo[inline]{Igen, mærkeligt at snakke om collapse når denne ikke er defineret endnu.}
