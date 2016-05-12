@@ -133,9 +133,9 @@
 			\item Integrity: If the correct processes all proposed the same value, then any correct process in the decided state has chosen that value
 		\end{itemize}
 		
-		Such problems are often achieved by using an consensus algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}, Raft \cite{Raft:Ongaro:184040} etc.
+		\newpar Such problems are often achieved by using an consensus algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}, Raft \cite{Raft:Ongaro:184040} etc.
 		
-		Assumptions about the distributed system are made for Paxos and Raft. Processes operate at an arbitrary speed, may experience failures, may recover after a crash by storing their state, and do not collude, lie or attempt to subvert the protocol - in short, byzantine failures do not occur.
+		Assumptions about the distributed system are made for Paxos and Raft, namely, processes operate at an arbitrary speed, may experience failures, may recover after a crash by storing their state, and do not collude, lie or attempt to subvert the protocol - in short: byzantine failures do not occur.
 		
 		In our problem domain processes may operate at an arbitrary speed, may experience failures, \textit{cannot} recover from a crash, and \textit{may} collude, lie or attempt to subvert the protocol - byzantine failures \textit{do} occur.
 		Due to the assumptions made for Paxos to work and differences with our problem domain, it is not possible to use Paxos for this project. 
