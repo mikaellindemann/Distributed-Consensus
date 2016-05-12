@@ -74,7 +74,7 @@
 		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Lamport:1978:TCO:359545.359563}.
 		
 		\subsection{Serial Equivalence}
-		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operation happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message passing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
+		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operations happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message passing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
 		
 		\begin{figure}[H]
 		\centering
@@ -142,7 +142,7 @@
 		 
 		Furthermore, most election based consensus algorithms requires all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.
 		
-		\newpar The \textit{Byzantine generals problem} is a special version \todo{"case" instead of "version"?} of the consensus problem. Instead of having multiple proposers, the commander is introduced. In this case byzantine failures are allowed and handled by signing messages. Though in this case each process needs to be connected to each other and there is a limit of $f=N/3$ mailicious processes that can exist in the system. The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
+		\newpar The \textit{Byzantine generals problem} is a special version \todo{"case" instead of "version"?} of the consensus problem. Instead of having multiple proposers, the commander is introduced. In this case byzantine failures are allowed and handled by signing messages. Though in this case each process needs to be connected to each other and there is a limit of $f=N/3$ mailicious processes that can exist in the system. The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
 		
 		\todo[inline]{Describe other kinds of consensus algorithms, not just election-based kinds. Describe blockchain algorithm, and how it solves a different problem than the one we have. }
 
@@ -156,7 +156,7 @@
 			\noindent\textit{The goal is to develop a functioning and correct, web-service based distributed workflow system that can support distributed coordination of workflows provided by the external and possibly international customers, and reconfigured if the workflow changes.}
 		\end{quotation}
 		
-		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required, even though other relations exists, such as Milestone relations and Spawn relations. 
+		\newpar At the time of implementation, only Condition, Response, Inclusion, and Exclusion relations were required, even though other relations exists, such as the Milestone and Spawn relations. 
 		
 		\newpar In order to fulfil the requirements we separated the project into smaller components:
 		

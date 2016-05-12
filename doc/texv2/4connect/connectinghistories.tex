@@ -2,17 +2,16 @@
 % !TeX spellcheck = en_GB
 \chapter{Connecting Histories} 
 \label{chap:connecting-histories}
-	After determining how to represent histories, we want to combine actions from multiple into one history. This chapter defines the this merging of actions.
+	After determining how to represent histories, we want to combine multiple histories into one history by using the information on actions. This chapter defines the this merging of actions. \todo{jeg forstår ikke sidste sætning}
 	
     \newpar
-    Given a set of local histories, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions. 
-    
-    Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
+    Given a set of local histories, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
+    \todo[inline]{jeg tror faktisk jeg godt kan se at vi måske mangler lidt noget argumentation for hvorfor vi gør det her. Altså skrive at at hvert event kun har sin egen totalle orden og vi bliver derfor nød til at have noget der markerer orderner mellem dem. Og eftersom at actions er gemt kan disse bruge til at etablere happens before relations.}
     
     \figuretodo{Jeg ved ikke om det er for komplekst at starte med. Men man kan godt lave en figur der præsenterer det ønskede resultat.}
     
     \newpar
-    The concept of happens-before relations, as described in \autoref{subsec:orderingofevents} helps determining what actions have happened before others across events.
+    The concept of happens-before relations, as described in \autoref{subsec:orderingofevents} helps determining which actions have happened before others across events. \todo{ved ikke om den her sætning er nødvendig}
 	
     \newpar
 	Actions can form pairs according to their action types. Action types 1 through 8 in \autoref{def:actiontype} represent the two sides of actions of the same message exchange.
@@ -62,7 +61,7 @@
 		\label{fig:connect:actions-do-not-match}
 		\end{minipage}
 		\end{figure}
-    
+    \todo{figur 4.2 skal lige retets så den faktisk er valid. ligenu er countertimestamp ikke højere en local timestamp på E1}
     \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
 	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
