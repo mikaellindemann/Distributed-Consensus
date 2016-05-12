@@ -37,6 +37,7 @@
 
 \newcommand{\algorithmautorefname}{algorithm}
 \newcommand{\definitionautorefname}{definition}
+\newcommand{\invariantautorefname}{invariant}
 
 \addto\extrasenglish{%
 	\renewcommand{\subsectionautorefname}{section}%
@@ -44,3 +45,7 @@
 }
 
 \MakeRobust{\Call}
+
+\floatstyle{plain}
+\newfloat{invariant}{tbph!}{inv}
+\floatname{invariant}{Invariant}
