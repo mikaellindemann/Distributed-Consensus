@@ -8,7 +8,7 @@
 	
 	\newpar In order to do this, we need to find a single entity denoting an execution, and identify actions that are part of that execution. 
 	
-	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph.\todo[inline]{Dette er ikke noget vi umiddelbart har nævnt før?}
+	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph.
 	
 	\subsection{Use of the Transitive Closure in Order to Gain Extra Information}
 	One approach to finding a single representation of an execution, it could be examined if a single action of the execution could describe all the relations to all the other executions. To do so involves filtering all actions not chosen to be the representative of the execution, and since filtering nodes remove happen before relations, increasing the connectivity of the graph could be beneficial.
