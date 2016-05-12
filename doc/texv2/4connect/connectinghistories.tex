@@ -159,7 +159,12 @@
 	
 	\newpar This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
 	
-	\figuretodo{måske en figur af en dcr graph med nogle ekstra pile der viser algoritmens gang}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{4connect/images/recursive.pdf}
+		\caption{An illustration showing the recursive traversal through a graph. Note the avoidance of creating a deadlock.}
+		\label{fig:connecting:recursive}
+	\end{figure}
 	
 	\subsubsection{Correctness}
 	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
@@ -186,4 +191,9 @@
 	
 	The requirements for making it possible to validate the gathered history are described in the following section. 
 	
-	\figuretodo{måske figur der viser besværligheden ved at nogle dele af graphen nås gennem en "evil"}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{4connect/images/recursive-evil-node.pdf}
+		\caption{A malicious node in a graph. Note that it is not possible to ensure that any history passing through the malicious node is valid.}
+		\label{fig:connecting:recursive-evil-node}
+	\end{figure}
