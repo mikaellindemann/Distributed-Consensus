@@ -243,5 +243,11 @@
 	
 	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result. \todo[inline]{Giver det her stadig mening?}
 	
-	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem."}
+	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem." WIND: i dont know if this was it but i tried PIL NED}
+	
+	If the algorithm has found the correct solution then correctly functioning events must be decide to accept the result. By proof of contradiction if the correctly functioning events do not vote for the history then that implies that happens before relations are missing from the global history, which would then imply that the proposed global order was incorrect and therefore that the proposer is malicious.
+	
+	This algorithm solves the initial problem which was to achieve distributed consensus on the order of execution. It does so because each individual event can accept a proposed value by the commander, and if the commander is correct then all the events will have decided the same value, and distributed consensus is hereby achieved.
+	
+	
 	\figuretodo{Tilføj figur: Kan vi på nogen måde vise resultatet af election?}
