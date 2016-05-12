@@ -106,7 +106,7 @@
 		\label{fig:connecting:server-contacts-events}
 	\end{figure}
     
-    \subsection{Recursive Traversal of the Distributed Graph / Gathering Without a Central Server}
+    \subsection{Gathering Without a Central Server}
 	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   
 	
 	In order to gather history from a given workflow using recursive traversal, a single starting event must be known. This event will - hopefully - have relations to some other events, and these events will - hopefully - have relations to other events in the DCR graph.

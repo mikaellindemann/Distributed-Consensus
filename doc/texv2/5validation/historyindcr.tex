@@ -13,7 +13,6 @@
 	\begin{definition}
 		\textbf{Cheating} is the act of not following the rules of the DCR graph workflow the event is part of, or the act of reporting a history which does not correspond to the executions the event is part of.
 	\end{definition}
-	\todo[inline]{Fisk: Der mangler en rigtig definition. Jeg er ret sikker på, at Søren ville have en bedre definition af hvad "cheating" egentlig er. Mikael: Vi har ændret definitionen til at være mere præcis siden vi afleverede sidst.}
 	
 	\section{Validating histories}
 	In order to identify malicious events in a given history, we need to define what a valid history is:
@@ -201,94 +200,44 @@
 	\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing 
 
     \subsection{Simulation}\label{sec:historyindcr:simulation}
-    One of the more difficult validity properties to check is whether events only executed when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its, conditions also need to be taken into perspective, furthermore the state of the workflow possibly changes over time with each execution. In addition since the history is a strictly partially ordered set some executions happen concurrently which does not match physical time in which the events hav executed in.
+    One of the more difficult validity properties to check is whether events have executed only when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its conditions also need to be taken into perspective, furthermore the state of the workflow most likely changes over time with each execution. In addition since the history is a strictly partially ordered set, some executions happen concurrently which does not match physical time in which the events have executed.\todo[inline]{Jeg har lidt svært ved at indlede dette afsnit, men jeg synes ikke det skal starte med at det her er sværere end de andre validations.}
     
-    \newpar An approach to this problem is to simulate the executions of the workflow. To do so, it is required that the rules of the workflow and the initial state of every event in the workflow is known. Furthermore it is required that an order of execution has been found, this is examined in the next chapter but we assume it is available. 
+    \newpar One approach to this problem is to simulate the executions of the workflow. To do so, it is required that the rules of the workflow and the initial state of every event in the workflow is known. Furthermore it is required that an order of execution has been found, this is examined in the next chapter but we assume it is available. 
     
-    Given the order of execution each execution has either zero or more ingoing edges. Each ingoing edge states which executions must have happened before, therefore an execution can first happen when all of its ingoing edges have executed. Therefore each execution have a counter based on the amount of ingoing edges which can be decreased each time one of the ingoing edges executes. An order of execution based on a valid history will always have some executions which have no ingoing edges since no cycles appear and some events must happen before all their relations. 
+    Given the order of execution each execution has either zero or more ingoing edges. Each ingoing edge states which executions must have happened before, therefore an execution can first happen when all of its ingoing edges have executed. Therefore each execution have a counter based on the amount of ingoing edges which can be decreased each time one of the ingoing edges executes. An order of execution based on a valid history will always have some executions which have no ingoing edges since no cycles appear and some events\todo{executions? eller?} must happen before all their relations.
     
-    \newpar To check if an execution was possible, first it is checked if the the state of the corresponding event is executable. Then the state of every condition the event has are checked for being either excluded or executed. If the event was executable, the state of the workflow is changed according to the rules of the workflow. Then for every outgoing edge in the order of execution the counter is reduced by one. 
+    \newpar To check if the execution of an event is possible, it is checked if the event is included and that the state of every condition of the event is either excluded or executed.\todo[inline]{Behøver vi skrive hvad det vil sige at være executable?} If the event was executable, the state of the workflow is changed according to the rules of the workflow.\todo[inline]{Vi opdaterer også state selvom den ikke er executable}
     
-    \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. The order is created based on the counter value, where lower values are taken first. The order of which executions have happened are adhered to, but concurrent executions happen in a random order.
+    \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. One way to create a topological order from an order of execution is to map each of the executions to the amount of executions that happens directly before an execution itself. An execution can be chosen as the next if and only if its counter reaches 0. When an execution is chosen, all of the executions it happens before has their counter decremented by 1.The order of which executions have happened are adhered to, but concurrent executions happen in a random order.\todo[inline]{Mikael: Jeg har omskrevet det her lidt, men ladet nogle sætninger være. Check gerne at det giver mening}
     
-    Executions can only be concurrent if the events they belong to do not share outgoing relations. If two events share outgoing relations, one of them must affect the shared event before the other and an order would be able to be created. Therefore in an order of execution only one of the ingoing edges can be of an ingoing relation, the rest must be based on outgoing relations which can determine that the execution happens after some other executionn. The order of which concurrent executions are simulate therefore does not matter since they order of which they execute can only result in one state change which affects common outgoing edges.
+    Executions can only be concurrent if the events they belong to do not share outgoing relations. If two events share outgoing relations, one of them must affect the shared event before the other and an order would be able to be created. Therefore in an order of execution only one of the ingoing edges can be of an ingoing relation, the rest must be based on outgoing relations which can determine that the execution happens after some other execution. The order of which concurrent executions are simulated therefore does not matter since they order of which they execute can only result in one state change which affects common outgoing edges.\todo[inline]{hvad siger vi her?}
     
-    \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.
+    \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.\todo[inline]{Mikael: Jeg har svært ved at forstå hvad vi vil med denne paragraf. Måske en figur kan hjælpe?}
 
-	\newpar On \todo{create and ref} the algorithm can be seen. It runs in linear time to the amount of nodes
+	\newpar In \autoref{alg:simulation} the simulation algorithm can be seen. It runs in time linear to the amount of executions.
 	
-	\figuretodo{figur over en order of executions med counters på hver executions - eventuelt en ekstra med hvordan det ser ud efter at x events har executed}
+	\figuretodo{figur over en order of executions med counters på hver executions - eventuelt en ekstra med hvordan det ser ud efter at x events har executed. Mikael: For mig er det ikke det essentielle ved algoritmen "Simulation".}
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
-			\Function{UpdateRelation}{state, event, relationType}
-				\State locals: DCR rules
-				\State (included, pending, executed) $\leftarrow$ \Call{Map.Get}{event, state}
-				\If{relationType is SetsPending}
-					\State \Call{Map.AddOrUpdate}{event, (included, true, executed), state}
-				\ElsIf{relationType is Includes}
-					\State \Call{Map.AddOrUpdate}{event, (true, pending, executed), state}
-				\ElsIf{relationType is Excludes}
-					\State \Call{Map.AddOrUpdate}{event, (false, pending, executed), state}
-				\EndIf
-				\State \Return state
-			\EndFunction
-			
-			\State
-			
-			\Function{IsExecutable}{state, conditions, execution}
-				\If{not \Call{Map.Get}{event, state}.Included}
-					\Return false
-				\EndIf
-				\ForAll{event e, in conditions}
-					\State localState $\leftarrow$ \Call{Map.Get}{event, state}
-					\If{not localState.included OR not localState.executed}
-						\Return false
-					\EndIf
-				\EndFor
-				\State \Return true
-			\EndFunction
-			
-			\State
-			
-			\Function{Execute}{state, DCRRules, execution}
-				\State conditions $\leftarrow$ \Call{List.Where}{id == execution.Id and is conditionType, DCRRules}
-				\State relations $\leftarrow$ \Call{List.Where}{id == execution.Id and not is conditionType, DCRRules}
-				\State state' $\leftarrow$ \Call{SetExecutedTrue}{state, execution}
-				\ForAll{event e, relation r in relations}
-					\State state' $\leftarrow$ \Call{UpdateState}{state', e, r}
-				\EndFor
-				\If{\Call{IsExecutable}{state, conditions, execution}}
-					\State \Return Success state'
-				\Else
-					\State \Return Failure state' 
-				\EndIf
-			\EndFunction
-			
-			\State
-			
-			\Function{Simulation}{Graph, DCRRules, state}
-			\State orderedExecutions $\leftarrow$ \Call{Graph.TopilogicalSort}{Graph} \Comment Returns a queue
+			\Function{Simulation}{orderOfExecution, DCRRules, state}
+			\State orderedExecutions $\leftarrow$ \Call{TopilogicalSort}{orderOfExecution} \Comment Returns a queue
 			\State failures $\leftarrow$ List.Empty
 			\While{not orderedExecutions.isEmpty}
 				\State execution $\leftarrow$ \Call{Queue.Pop}{orderedExecutions}
-				\State executeResult $\leftarrow$ \Call{Execute}{state, DCRRules, execution}
-				\If{executeResult.IsFailure}
+					\If{not \Call{IsExecutable}{execution.Event, state}}
 					\State failures $\leftarrow$ \Call{List.Add}{execution, failures}
 				\EndIf
-				\State state $\leftarrow$ execute.ResultState
-				\State counterMap $\leftarrow$ \Call{UpdateCounterMap}{execution, counterMap}
+				\State state $\leftarrow$ \Call{ApplyExecution}{execution.Event, DCRRules, state}
 			\EndWhile
 			\State\Return failures
 			\EndFunction
-			
-			
 		\end{algorithmic}
 		\caption{Simulation algorithm}
 		\label{alg:simulation}
 	\end{algorithm}
-	\todo{Check lige op på algoritmen generelt}
+	\todo[inline]{Check lige op på algoritmen generelt}
 	
-	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog}, which also runs in linear time and is used to see if a knowledge base can entail a proposition. 
+	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog. Mikael: Jeg synes det er fedt at vi har anvendt viden fra det fag, men synes at det stikker lidt uden for de ting vi har sagt er nødvendigt for at forstå denne opgave. Jeg har også forsøgt at formulere i teksten ovenfor hvordan man kan anvende algoritmen til at finde denne order, men uden at gå alt for teknisk til værks.}, which also runs in linear time and is used to see if a knowledge base can entail a proposition.
 	
     \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.
