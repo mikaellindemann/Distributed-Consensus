@@ -87,16 +87,15 @@
 	\newpar
 	Figure \ref{fig:historyinvariant} describes the invariant that must hold for all histories. It reads, if there exists an action, \textit{x}, in execution \textit{A}, and another action, \textit{y}, in execution \textit{B}, such that \textit{x} happens before \textit{y}, then for all actions \textit{x} in \textit{A} and all actions \textit{y} in \textit{B}, \textit{y} must not happen before \textit{x}. Otherwise there are no happens before relations between actions in \textit{A} and actions in \textit{B}.
 	
-    \todo[inline]{Fiks Søren's kommentar: "I don't get this. What are you trying to show?" - Old comment, left here for you to agree/while Søren looks at the new definition.}
+    \todo[inline]{Venter på Wind's input... \\Fiks Søren's kommentar: "I don't get this. What are you trying to show?" - Old comment, left here for you to agree/while Søren looks at the new definition.}
     
 	\newpar One can easily argue that a strict partial order fits ordering of actions because:
 	\begin{enumerate}
 		\item An action $A$ cannot happen before itself, therefore the order must be irreflexive.
-		\item Actions $A$ and $B$, cannot both be happening before and after each other, therefore the order must be anti-symmetric.
+		\item Actions $A$ and $B$ cannot both be happening before and after each other, therefore the order must be anti-symmetric.
 		\item If action $A$ happened before action $B$ and $B$ happened before $C$ then $A$ happened before $C$ and the order must be therefore transitive.
 		\item Actions can in distributed systems be concurrent and the order can therefore not be total.
 	\end{enumerate}
-	\newpar Since a finite strict order can be represented as a directed acyclic graph the history can therefore also be represented as such, where actions are nodes and the order in which the actions have happened is represented as edges.
 	%\begin{enumerate}
 	%	\item Actions can be represented as nodes in the graph. The ordering of actions can be represented as the edges between the nodes.
 	%	\item Paths from one action to another can be found by going over edges. Finding these paths explain which transitive relations each action has.
@@ -111,8 +110,10 @@
 		A \textit{\textbf{History}} is a strict partial order of actions.
 	\end{definition}
 	
-    \newpar 
-    A \textit{global history} is the strict partial order of the actions of all events in the workflow. A \textit{local history} is a strict total order of the actions that have happened on a single event. \todo[inline]{Kan definitionen og den efterfølgende tekst ikke komme før vi nævner det med DAC?}
+    \noindent A \textit{global history} is the strict partial order of the actions of all events in the workflow. A \textit{local history} is a strict total order of the actions that have happened on a single event.
+    
+    \newpar Since a finite strict order can be represented as a directed acyclic graph the history can therefore also be represented as such, where actions are nodes and the order in which the actions have happened is represented as edges.
+
 	
 %	\begin{figure}
 %		\centering
