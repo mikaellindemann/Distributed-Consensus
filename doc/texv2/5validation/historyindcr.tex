@@ -13,7 +13,7 @@
 	\begin{definition}
 		\textbf{Cheating} is the act of not following the rules of the DCR graph workflow the event is part of, or the act of reporting a history which does not correspond to the executions the event is part of.
 	\end{definition}
-	\todo[inline]{Fisk: Der mangler en rigtig definition. Jeg er ret sikker på, at Søren ville have en bedre definition af hvad "cheating" egentlig er.}
+	\todo[inline]{Fisk: Der mangler en rigtig definition. Jeg er ret sikker på, at Søren ville have en bedre definition af hvad "cheating" egentlig er. Mikael: Vi har ændret definitionen til at være mere præcis siden vi afleverede sidst.}
 	
 	\section{Validating histories}
 	In order to identify malicious events in a given history, we need to define what a valid history is:
@@ -241,22 +241,22 @@
 					\Return false
 				\EndIf
 				\ForAll{event e, in conditions}
-					\State localState $leftarrow$ \Call{Map.Get}{event, state}
+					\State localState $\leftarrow$ \Call{Map.Get}{event, state}
 					\If{not localState.included OR not localState.executed}
 						\Return false
 					\EndIf
 				\EndFor
-				\Return true
+				\State \Return true
 			\EndFunction
 			
 			\State
 			
 			\Function{Execute}{state, DCRRules, execution}
-				\State conditions $leftarrow$ \Call{List.Where}{id == execution.Id and is conditionType, DCRRules}
-				\State relations $leftarrow$ \Call{List.Where}{id == execution.Id and not is conditionType, DCRRules}
-				\State state' $leftarrow$ \Call{SetExecutedTrue}{state, execution}
+				\State conditions $\leftarrow$ \Call{List.Where}{id == execution.Id and is conditionType, DCRRules}
+				\State relations $\leftarrow$ \Call{List.Where}{id == execution.Id and not is conditionType, DCRRules}
+				\State state' $\leftarrow$ \Call{SetExecutedTrue}{state, execution}
 				\ForAll{event e, relation r in relations}
-					\State state' $leftarrow$ \Call{UpdateState}{state', e, r}
+					\State state' $\leftarrow$ \Call{UpdateState}{state', e, r}
 				\EndFor
 				\If{\Call{IsExecutable}{state, conditions, execution}}
 					\State \Return Success state'
@@ -274,12 +274,12 @@
 				\State execution $\leftarrow$ \Call{Queue.Pop}{orderedExecutions}
 				\State executeResult $\leftarrow$ \Call{Execute}{state, DCRRules, execution}
 				\If{executeResult.IsFailure}
-					\State failures $leftarrow$ \Call{List.Add}{execution, failures}
+					\State failures $\leftarrow$ \Call{List.Add}{execution, failures}
 				\EndIf
-				\State state $leftarrow$ execute.ResultState
-				\State counterMap $leftarrow$ \Call{UpdateCounterMap}{execution, counterMap}
+				\State state $\leftarrow$ execute.ResultState
+				\State counterMap $\leftarrow$ \Call{UpdateCounterMap}{execution, counterMap}
 			\EndWhile
-			\Return failures
+			\State\Return failures
 			\EndFunction
 			
 			
