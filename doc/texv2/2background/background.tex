@@ -142,7 +142,7 @@
 		 
 		Furthermore, most election based consensus algorithms requires all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.
 		
-		\newpar The Byzantine generals problem is a special version of the consensus problem. Instead of having multiple proposers, the commander is introduced. In this case byzantine failures are allowed and handled by signing messages. Though in this case each process needs to be connected to each other and there is a limit of $f=N/3$ mailicious processes that can exist in the system. The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
+		\newpar The \textit{Byzantine generals problem} is a special version \todo{"case" instead of "version"?} of the consensus problem. Instead of having multiple proposers, the commander is introduced. In this case byzantine failures are allowed and handled by signing messages. Though in this case each process needs to be connected to each other and there is a limit of $f=N/3$ mailicious processes that can exist in the system. The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
 		
 		\todo[inline]{Describe other kinds of consensus algorithms, not just election-based kinds. Describe blockchain algorithm, and how it solves a different problem than the one we have. }
 
@@ -167,7 +167,9 @@
 			\item A parser and uploader to set up the workflows
 		\end{itemize}
 		
-		\newpar The event server can contain zero or more events. For each of these events, the server persists the state of the event. The state consists of an identity, a name to show in the client, 3 boolean values for include, response, and execute respectively. Furthermore the initial values of these boolean values are saved in order to restore the workflow to the original state. Also the following relations of an event are stored: For inclusions, exclusions, and responses this means that an executed event will send a request to update another events state. For conditions, the event that is about to execute sends requests to the events that must be either executed or excluded, in order to determine if these conditions are fulfilled.
+		\newpar The event server can contain zero or more events. For each of these events, the server persists the state of the event. The state consists of an identity, a name to show in the client, three boolean values for include, response, and execute, respectively. Furthermore the initial values of these boolean values are saved in order to restore the workflow to the original state. 
+		
+		Also the following relations of an event are stored: For inclusions, exclusions, and responses this means that an executed event will send a request to update another events state. For conditions, the event that is about to execute sends requests to the events that must be either executed or excluded, in order to determine if these conditions are fulfilled.
 		
 		As mentioned above and as opposed to the definition of DCR graphs in \cite{hildebrandt2011declarative} the states of workflows are not saved as markings. Instead the event machine saves the state of each of the events it hosts.
 		
@@ -179,7 +181,7 @@
 		
 		\newpar As workflows can contain events that should only be visible and executable for different roles, it exposes information about which roles can access which events of the workflow. This enables an adversary to make requests on behalf of other roles, but since security was not a requirement of the original project, this flaw is still present.
 		
-		\newpar The client is the one actually using the information about roles. When a user logs in, the server sends information about which roles the user has access to in the workflows he is connected to. The client can then filter the events of a chosen workflow, so the user only sees events where he or she has the rights to execute.
+		\newpar The client is the one \todo{Evt. fjern "ise the one" og bare skriv "the client uses"?} actually using the information about roles. When a user logs in, the server sends information about which roles the user has access to in the workflows he is connected to. The client can then filter the events of a chosen workflow, so the user only sees events where he or she has the rights to execute.
 		
 		There are no fine-grained access control, so read-only access to events, for instance, is not implemented.
 		
@@ -188,8 +190,8 @@
 		\newpar The parser is a tool developed to make it easier to translate workflows from DCRGraphs.net into JSON that can the be used to create workflows in the system.
 		
 		\subsection{Changes to the original implementation}
-			When starting this project, we discovered a few mistakes in the original implementation. Most importantly conditions were checked before locking the target events, which could mean that this conditioning event could change its state, and therefore change whether or not the condition was fulfilled, before the locks on other events were obtained. 
+			When starting this project, we discovered a few mistakes in the original implementation. Most importantly, conditions were checked before locking the target events, which could mean that this conditioning event could change its state, and therefore change whether or not the condition was fulfilled, before the locks on other events were obtained. 
             
-            Furthermore, the aforementioned history implementation has been thrown out, as well as the parser is now included in the main client project.
+            Furthermore, the aforementioned history implementation has been removed, and the parser is now included in the main client project.
 
 			\newpar In the aforementioned report, the user guide points to certain URLs that should contain the web services of the system. These web services are no longer running.
