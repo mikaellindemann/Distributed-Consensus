@@ -163,12 +163,10 @@
 	\end{figure}
 	
 	\subsubsection{Correctness}
-	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
+	Since this algorithm is a modified version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
 	
 	\subsubsection{Performance}
-	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This occurs when the graph is fully connected, and all events therefore have relations to all other events in the graph. 
-	
-	Realistically this situation will rarely occur since DCR graphs. \todo{Since wat?}
+	This algorithm has a worst case message performance is exponential. This is due to the wanted redundancy since for each node every path to any other reachable node needs to be examined. This worst case is when the graph is fully connected and every node has a node to any other node. As we will see in the next chapter high connectivity in the graph is a wanted property since it allows for better validation of the histories.
 	
 	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents new problems. 
 	
