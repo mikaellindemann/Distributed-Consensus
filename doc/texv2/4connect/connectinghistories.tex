@@ -65,7 +65,26 @@
     
     \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
-	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
+	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
+	
+	\begin{algorithm}
+		\begin{algorithmic}
+			\Function{Merge}{history1, history2}
+			\State combinedHistory $\leftarrow$ \Call{UnionNodesAndEdges}{history1, history2}
+			\ForAll{action \textit{in} combinedHistory}
+			\If{\Call{IsOutgoing}{action}}
+			\State match $\leftarrow$ \Call{FindMatchingAction}{action, combinedHistory}
+			\If{\Call{IsNotNull}{match}}
+			\State combinedHistory $\leftarrow$ \Call{AddEdge}{action, match, combinedHistory}
+			\EndIf
+			\EndIf
+			\EndFor
+			\State\Return combinedHistory
+			\EndFunction
+		\end{algorithmic}
+		\caption{The \textit{\textbf{Merge}} algorithm}
+		\label{alg:merge}
+	\end{algorithm}
 	
 	\begin{figure}[H]
 		\centering
@@ -73,8 +92,6 @@
 		\caption{Actions of two merged histories before and after being matched.}
 		\label{fig:connecting:match-before-after}
 	\end{figure}
-	
-	\todo[inline]{write merge algorithm}
 	
 	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
 		graph, a distribution of it, and a run for
