@@ -17,7 +17,7 @@
 	In order to identify malicious events in a given history, we need to define what a valid history is:
 	
 		\begin{definition}
-			A \textit{\textbf{Valid History}} is a history, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in a strict partial order. 
+			A \textit{\textbf{Valid History}} is a history, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. 
 		\end{definition}
 		
 	This also introduces a special kind of cheating:
@@ -26,6 +26,8 @@
 			\textbf{Inconsistent cheating} is the act of manipulating a history in a way where the result is not valid.
 			\textbf{Inconsistent cheating} is the act of participating in the creation of histories which are not valid.
 		\end{definition}
+		
+	\todo{Fisk: Jeg føler lidt, at der mangler noget om consistent cheating her også, siden inconsistent nævnes. Evt. bare noget med, at det står senere.}
 		
 	\subsection{DCR Rules}
 	A given execution must abide to the rules of the DCR graph it is part of. That includes the following:
