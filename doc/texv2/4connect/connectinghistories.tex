@@ -69,7 +69,7 @@
 	
 	\begin{algorithm}
 		\begin{algorithmic}
-			\Function{Merge}{history1, history2}
+			\Function{Merge}{history1, history2} \textbf{returns} \textit{a merged history}
 			\State combinedHistory $\leftarrow$ \Call{UnionNodesAndEdges}{history1, history2}
 			\ForAll{action \textit{in} combinedHistory}
 			\If{\Call{IsOutgoing}{action}}
@@ -210,3 +210,4 @@
 		\caption{A malicious node in a graph. Note that it is not possible to ensure that any history passing through the malicious node is valid.}
 		\label{fig:connecting:recursive-evil-node}
 	\end{figure}
+	\todo[inline]{Mikael: Der er to knuder der hedder e2 herover. Desuden, det er lidt mærkeligt at det øverste E2 også er farvet delvist rødt?}
