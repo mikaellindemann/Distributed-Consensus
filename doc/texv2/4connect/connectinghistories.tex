@@ -141,10 +141,10 @@
 	
 	This is accomplished by recursively contacting neighbouring events and asking them for their history while stitching the neighbours' history with its own history. To handle cycles, the use of a trace of previously contacted events is send from each event to the next.
 	
-	\newpar The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
+	\newpar The implementation of this solution uses two lists, called \texttt{request trace} and \texttt{wait for} for tracing and cycle avoidance.
 	The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. 
 	
-	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history their history with the ID of the event appended to the \texttt{request trace}. 
+	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history with the ID of the event appended to the \texttt{request trace}. 
 	
 	\subsubsection{Implementation}
 	\begin{algorithm}
