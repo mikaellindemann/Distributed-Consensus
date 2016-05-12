@@ -65,7 +65,26 @@
     
     \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
-	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains.
+	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
+	
+	\begin{algorithm}
+		\begin{algorithmic}
+			\Function{Merge}{history1, history2} \textbf{returns} \textit{a merged history}
+			\State combinedHistory $\leftarrow$ \Call{UnionNodesAndEdges}{history1, history2}
+			\ForAll{action \textit{in} combinedHistory}
+			\If{\Call{IsOutgoing}{action}}
+			\State match $\leftarrow$ \Call{FindMatchingAction}{action, combinedHistory}
+			\If{\Call{IsNotNull}{match}}
+			\State combinedHistory $\leftarrow$ \Call{AddEdge}{action, match, combinedHistory}
+			\EndIf
+			\EndIf
+			\EndFor
+			\State\Return combinedHistory
+			\EndFunction
+		\end{algorithmic}
+		\caption{The \textit{\textbf{Merge}} algorithm}
+		\label{alg:merge}
+	\end{algorithm}
 	
 	\begin{figure}[H]
 		\centering
@@ -73,8 +92,6 @@
 		\caption{Actions of two merged histories before and after being matched.}
 		\label{fig:connecting:match-before-after}
 	\end{figure}
-	
-	\todo[inline]{write merge algorithm}
 	
 	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
 		graph, a distribution of it, and a run for
@@ -163,12 +180,10 @@
 	\end{figure}
 	
 	\subsubsection{Correctness}
-	Since this algorithm is a modfied version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
+	Since this algorithm is a modified version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
 	
 	\subsubsection{Performance}
-	This algorithm has a worst case message performance of O(2*N$^2$) where N is the number of events in the system. This occurs when the graph is fully connected, and all events therefore have relations to all other events in the graph. 
-	
-	Realistically this situation will rarely occur since DCR graphs. \todo{Since wat?}
+	This algorithm has a worst case message performance is exponential. This is due to the wanted redundancy since for each node every path to any other reachable node needs to be examined. This worst case is when the graph is fully connected and every node has a node to any other node. As we will see in the next chapter high connectivity in the graph is a wanted property since it allows for better validation of the histories.
 	
 	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents new problems. 
 	
@@ -193,3 +208,4 @@
 		\caption{A malicious node in a graph. Note that it is not possible to ensure that any history passing through the malicious node is valid.}
 		\label{fig:connecting:recursive-evil-node}
 	\end{figure}
+	\todo[inline]{Mikael: Der er to knuder der hedder e2 herover. Desuden, det er lidt mærkeligt at det øverste E2 også er farvet delvist rødt?}

@@ -126,16 +126,24 @@
 		%\newpar Lamport then introduces a function $C_i(event)$ where $C_i$ is the clock function on process $i$ that if $a \rightarrow b$ then $C_i(a) < C_i(b)$. This clock can then be used to describe in values which event happened first. \todo{maybe this section is not neccesary. Or maybe it needs to be introduced before}
 		
 		\subsection{Consensus}
-		Traditionally consensus in distributed systems is the activity of reaching agreement among the participants in the system on a proposed value. This is often achieved by using an consensus algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}, Raft \cite{Raft:Ongaro:184040} etc.
+		Traditionally consensus in distributed systems is the activity of reaching agreement among the participants in the system on a proposed value. In \todo{disitrbuted systems bog side 669 kapitel 15} the consensus problem has the following three requirements:
+		\begin{itemize}
+			\item Termination: Eventually each correct process sets its decision variable
+			\item Agreement: The decision value of all correct processes is the same
+			\item Integrity: If the correct processes all proposed the same value, then any correct process in the decided state has chosen that value
+		\end{itemize}
+		
+		Such problems are often achieved by using an consensus algorithm such as Paxos\cite{Lamport:1998:PP:279227.279229}, Raft \cite{Raft:Ongaro:184040} etc.
 		
 		Assumptions about the distributed system are made for Paxos and Raft. Processes operate at an arbitrary speed, may experience failures, may recover after a crash by storing their state, and do not collude, lie or attempt to subvert the protocol - in short, byzantine failures do not occur.
 		
 		In our problem domain processes may operate at an arbitrary speed, may experience failures, \textit{cannot} recover from a crash, and \textit{may} collude, lie or attempt to subvert the protocol - byzantine failures \textit{do} occur.
 		Due to the assumptions made for Paxos to work and differences with our problem domain, it is not possible to use Paxos for this project. 
 		 
-		Furthermore, most consensus algorithms requires all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used. 
+		Furthermore, most election based consensus algorithms requires all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.
 		
-		\newpar The Byzantine generals problem is a special version of the consensus algorithm. Instead of having multiple proposers, the commander is introduced. The requirements of this kind of algorithm is that it terminates, correct processes reach the same decision and if the commander proposes a correct value then all correct processes will decide that value.\todo{disitrbuted systems bog side 662 kapitel 15} This definition of the consensus algorithm matches the problem of this project better since each event would be able to agree upon a global order of execution given their individual information. We will use this version of consensus in \autoref{chap:order-of-execution}.
+		\newpar The Byzantine generals problem is a special version of the consensus problem. Instead of having multiple proposers, the commander is introduced. In this case byzantine failures are allowed and handled by signing messages. Though in this case each process needs to be connected to each other and there is a limit of $f=N/3$ mailicious processes that can exist in the system. The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
+		
 		\todo[inline]{Describe other kinds of consensus algorithms, not just election-based kinds. Describe blockchain algorithm, and how it solves a different problem than the one we have. }
 
 		

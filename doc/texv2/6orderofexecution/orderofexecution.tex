@@ -3,6 +3,7 @@
 \chapter{Reducing Histories to Orders of Execution}
 \label{chap:order-of-execution}
 \section{Order of Execution}
+\todo[inline]{Mikael: Er det nødvendigt at have denne section når nu der ikke er en anden introduktion til hele kapitlet?}
 	A produced combined history represents every action that has occurred on all the events of the workflow.
 	It is desired to find an order of execution with excess information in the history removed without losing information regarding the order of the executions. 
 	
@@ -43,20 +44,15 @@
 	\end{figure}
 	
 	\subsection{Collapsing}
-	In definition \todo{Lav label til definitions.} we saw that an execution was defined to be all the actions between \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though the receiver \todo{Introduktion til receiver og performer mangler.} saves incoming actions, these actions are still initiated by the performer, and these actions can therefore be seen as being parts of the performers execution. Since an event is only affected by the effects of other events executing or itself, it must be true that any action is always caused by the execution of \textit{some} event, and therefore no action can happened outside any execution.
+	In \autoref{def:execution} an execution is defined to be all the actions between \texttt{execution start} and \texttt{execution finish} actions. Furthermore even though incoming actions are saved on other events than the ones performing the executions, these actions are still initiated by the executing event and are therefore seen as being part of the execution. Since an event is only affected by the effects of other events or itself executing, any action is always caused by the execution of \textit{some} event, and therefore no action can happen outside an execution.
 	
+	\newpar In \autoref{inv:historyinvariant} it is said that if a single action in one execution happens before another action in another execution, then no action from the second execution can happen before an action in the first. In other words this means, if there exists an action in execution $A$, that happens before an action in execution $B$, then $A$ happens before $B$, and $B$ cannot happen before $A$. Note that this does not mean that all actions in $A$ happens before all actions in $B$, which means some of the actions are in fact concurrent. This creates the need for an argument that $A$ \textit{does} happen before $B$ despite that some actions are concurrent.
 	
-	\newpar 
-	\todo[inline]{Wat. Forstår overhovedet ikke noget fra her... }
-	Due to the property of an execution stated in \autoref{fig:historyinvariant} which states that for an execution, some actions might be concurrent with other actions, while other actions in the execution is able to establish happen before relation to those same actions, it creates complications since executions then happens both concurrent and not concurrently at the same time. 
-	\todo[inline]{... til her. Mikael: Enig.}
+	\todo[inline]{Serial equivalence in executions - Herfra og ned skal stadig lige kigges igennem og rettes til for sammenhæng.}
 	
-	Because of this problem it is neccesary to formulate a method which is able to \textit{collapse} the execution into a single entity, which has the same happens before relations to actions outside of the execution.
+	To do so it is necessary to make an assumption which states that everything in an execution happens simultaneously and therefore any happens before relation any action has with any action outside of the execution now applies to all events in the execution. When this is the case, every action inside the execution are equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity. 
 	
-	
-	To do so it is necessary to make an assumption which states that everything in an execution happens at the same time \todo[inline]{"at the same time" = concurrently? Mikael: Jeg tror simultaneously er bedre?} and therefore any happens-before relation any action has with any action outside of the execution now applies to all events in the execution. When this is the case, every action inside the execution are equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity. 
-	
-	The assumption that every action of an execution has the same happens-before relation as any other action in the execution cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent. This implies that two executions cannot affect the same event at interpolated\todo{wat? Det skal lige rettes til at beskrive at locking sørger for denne property?} allowing some actions to happen before, and some after, another execution.
+	The assumption that every action of an execution has the same happens before relation as any other action in the execution cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent. This implies that two executions cannot affect the same event at interpolated\todo[inline]{wat? Mikael: Det jeg tror vi gerne vil sige ca her, er at hvis 2 executions er concurrent, så må de 2 ikke have en relation til et fælles event, da dette event så ville kunne afgøre i hvilken rækkefølge de 2 executions var sket.} allowing some actions to happen before, and some after, another execution.
 	
 	\newpar An example of this separation of executions can be found in \autoref{fig:orderofexecution:collapsing}. The figure shows actions that are part of an execution getting collapsed into a single execution, with preserved happens-before relations. 
 	
@@ -98,7 +94,7 @@
 %	\end{figure}
 %	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
-	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. To argue that the collapse algorithm correctly describes the relations between executions \autoref{fig:historyinvariant} is examined. It states that if there exist any action in execution A with a relation to execution B, then it must not be true the other way around. Therefore for collapse to be correct each single execution entity must have the same property. Since the set of relations the single entity has to other executions is the union of the set of all the actions had to other executions, it must be so that the set cannot contain relations which violates the invariant, because then the invariant would already be broken before the collapse. By proof of contraditction, it it was so that the invariant is broken in the union set, then there is a value where A happens before B and B happens before A, then the original collection of sets must already have had these two relations.
+	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. To argue that the collapse algorithm correctly describes the relations between executions \autoref{inv:historyinvariant} is examined. It states that if there exist any action in execution A with a relation to execution B, then it must not be true the other way around. Therefore for collapse to be correct each single execution entity must have the same property. Since the set of relations the single entity has to other executions is the union of the set of all the actions had to other executions, it must be so that the set cannot contain relations which violates the invariant, because then the invariant would already be broken before the collapse. By proof of contraditction, it it was so that the invariant is broken in the union set, then there is a value where A happens before B and B happens before A, then the original collection of sets must already have had these two relations.
 	
 	\todo[inline]{Check if you like this argumentation.}
 	
@@ -138,7 +134,7 @@
 		\end{algorithmic}
 		\caption{Collapse algorithm}
 		\label{alg:collapse}
-	\end{algorithm}
+	\end{algorithm}\todo[inline]{Mikael: Jeg kunne godt tænke mig hvis vi definerede hjælperne i teksten, og kun havde essensen af collapse tilbage. Jeg ved ikke om dette er en \textbf{for} grov frasortering?}
 	
 	\newpar The algorithm runs in a time complexity of $O(n^2)$ where $n$ is the number of actions in the history. This must be so since $CreateExecution$ runs linearly in $n$ if $Add$ on $map$ is constant and $CreateExecution$ worst case gets called $n/2$ times if every action in the history are executions. \todo{write better more correct yes}
 	
@@ -247,5 +243,11 @@
 	
 	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result.
 	
-	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem."}
+	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem." WIND: i dont know if this was it but i tried PIL NED}
+	
+	If the algorithm has found the correct solution then correctly functioning events must be decide to accept the result. By proof of contradiction if the correctly functioning events do not vote for the history then that implies that happens before relations are missing from the global history, which would then imply that the proposed global order was incorrect and therefore that the proposer is malicious.
+	
+	This algorithm solves the initial problem which was to achieve distributed consensus on the order of execution. It does so because each individual event can accept a proposed value by the commander, and if the commander is correct then all the events will have decided the same value, and distributed consensus is hereby achieved.
+	
+	
 	\figuretodo{Tilføj figur: Kan vi på nogen måde vise resultatet af election?}
