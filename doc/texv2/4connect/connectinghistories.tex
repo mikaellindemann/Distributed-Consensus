@@ -38,12 +38,12 @@
 	
 	\newpar For any action on an event with action type 1 through 8, there might exist any number of actions with corresponding action types. However, because a pair of actions are part of the same message exchange, there is only one corresponding action.
 	
-	Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the performing and counterpart event to ensure that matches are unique.
+	Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the performing and counterpart \todo{Fisk: Det er lidt som om at vores performer/receiver-concept er væk her?} event to ensure that matches are unique.
     Pairs of actions correspond if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.\figuretodo{Igen, måske for meget. Men man kunne godt lave en figur hvor man først matcher en action med alle andre actions der har corresponding action types, og på anden del af figuren viser at der kun er ét korrekt match.}
     
     \begin{definition}
     	\label{def:action:matching}
-    	A pair of actions, $a$ and $b$, \textit{\textbf{matches}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Also the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
+    	A pair of actions, $a$ and $b$, \textit{\textbf{match}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Furthermore, the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
     \end{definition}
     
     \begin{figure}[H]
@@ -64,7 +64,7 @@
     \todo{figur 4.2 skal lige retets så den faktisk er valid. ligenu er countertimestamp ikke højere en local timestamp på E1}
     \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
-	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
+	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found, the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
 	
 	\begin{algorithm}
 		\begin{algorithmic}
@@ -107,9 +107,11 @@
     
     \section{Gathering of History}
    
-    To merge the histories together it is necessary to acquire access to all the events of the DCR graph first. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the history of each event individually. This method is easy and only relies on the central server to the extent that it in fact returns all the events of the DCR graph. 
+    To merge the histories together it is necessary to acquire access \todo{Fisk: "acquire access" lyder lidt underligt IMO. } to all the events of the DCR graph first. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the history of each event individually. This method is simple and only relies on the central server to the extent that it in fact returns all the events of the DCR graph. 
     
-    Unfortunately central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. Therefore it could be desirable to create a peer to peer based gathering algorithm but this introduced a new set of challenges.
+    Unfortunately, central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. 
+    
+    Therefore it could be desirable to create a peer to peer-based gathering algorithm, but this introduces a new set of challenges.
     
     \begin{figure}[H]
 		\centering
@@ -119,29 +121,29 @@
 	\end{figure}
     
     \subsection{Gathering Without a Central Server}
-	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings it has.   
+	Presumed that it is desired to know nothing about the distribution of distributed events in the DCR graph, and therefore have no central all-knowing service handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings of the approach. 
 	
 	In order to gather history from a given workflow using recursive traversal, a single starting event must be known. This event will - hopefully - have relations to some other events, and these events will - hopefully - have relations to other events in the DCR graph.
 	If the event has no relations, the final gathered history will only contain the history of the contacted event. 
 	
-	The more connected the DCR graph is, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered, if the DCR graph is not fully connected.  
+	The more connected the DCR graph is, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered if the DCR graph is not fully connected.  
 	
 	It is desired that any given event in a distributed DCR graph is able to initiate a gathering and production of an order of execution, in cooperation with reachable events in the graph. 
 	
 	\subsubsection{Analysis}
 	If each event only knows a subset of the other events of a workflow, then simply merging the histories of that subset of neighbours will not create a complete history of what has happened up until that moment in time. 
 	
-	Because of these problems an algorithm which is able to gather information from the entire workflow without knowing all the nodes is developed. Such an algorithm needs to be measured in its ability to reach all reachable events in the graph, as well as its ability to handle relation cycles. 
+	Because of this, an algorithm which is able to gather information from the entire workflow without knowing all the nodes is developed. Such an algorithm needs to be measured in its ability to reach all reachable events in the graph, as well as its ability to handle cycles in relations between events. 
 	
 	\subsubsection{The Produce Algorithm}
 	Given a DCR graph where all events are not reachable from the starting event, the algorithm should fetch and merge the histories of each event in the graph into one history.
 	
 	This is accomplished by recursively contacting neighbouring events and asking them for their history while stitching the neighbours' history with its own history. To handle cycles, the use of a trace of previously contacted events is send from each event to the next.
 	
-	\newpar The implementation uses two lists, called \texttt{request trace} and \texttt{wait for}.
+	\newpar The implementation of this solution uses two lists, called \texttt{request trace} and \texttt{wait for} for tracing and cycle avoidance.
 	The algorithm propagates throughout the graph using recursion with checks during execution in order to avoid infinite cycles of requests. 
 	
-	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history their history with the ID of the event appended to the \texttt{request trace}. 
+	When an event receives a request for its history, it adds every reachable event from itself to \texttt{wait for}. Then the event crosschecks the event IDs of the \texttt{request trace} and the event's own \texttt{wait for} list. Any event ID in \texttt{wait for} that exists in \texttt{request trace} is removed and the history of the event is returned to the requester. Any remaining events in \texttt{wait for} gets sent requests for history with the ID of the event appended to the \texttt{request trace}. 
 	
 	\subsubsection{Implementation}
 	\begin{algorithm}
@@ -169,7 +171,7 @@
 	\label{alg:fetch}
 	\end{algorithm}
 	
-	\newpar This algorithm is in fact a modified version of the flooding search algorithm for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the produce algorithm.
+	\newpar This algorithm is in fact a modified version of the \textit{flooding search algorithm} \todo{Fisk: ref.?} for searching in unstructured peer to peer networks. In produce each node visited returns something and not only the searched for node. Furthermore the flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more effeciently in the fetch algorithm.
 	
 	\begin{figure}[H]
 		\centering
@@ -179,17 +181,16 @@
 	\end{figure}
 	
 	\subsubsection{Correctness}
-	Since this algorithm is a modified version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. 
+	Since this algorithm is a modified version of the flooding algorithm it has most of the same traits with respect to reachability of the algorithm. If there exits a path from the beginning node to all other nodes in the workflow, the algorithm is. \todo{Fisk: Is what?} 
 	
 	\subsubsection{Performance}
-	This algorithm has a worst case message performance is exponential. This is due to the wanted redundancy since for each node every path to any other reachable node needs to be examined. This worst case is when the graph is fully connected and every node has a node to any other node. As we will see in the next chapter high connectivity in the graph is a wanted property since it allows for better validation of the histories.
+	This algorithm has a worst case message performance is exponential. \todo{Fisk: What?} This is due to the want to have redundant history every path from a given node to any other reachable node needs to be examined. The worst case is when the graph is fully connected and every node therefore has a node to any other node. High connectivity in the graph is a wanted property since it allows for better validation of the histories. \todo{Fisk: Måske uddyb hvorfor dette er tilfældet? Eller i hvert fald så kæde sammen med nedenstående?}
 	
 	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents new problems. 
 	
 	Certain issues arise if an event with neighbours is the last event in what would have been a produce cycle and due to tracing returns its own local history which would then be cached. This event would then never return the histories of its neighbours if contacted again from a different event, but would instead only return its own history due to caching. 
 	
 	The neighbours history of the neighbours would then only be produced once, and therefore pass through a single, possibly malicious, node. The lack of redundancy in the system therefore presents an issue when validating histories.
-	
 	It is therefore necessary to produce redundant histories, which makes caching impossible.
 	
 	\subsubsection{Issues with Recursive Traversal of the Distributed Graph}
@@ -208,3 +209,5 @@
 		\label{fig:connecting:recursive-evil-node}
 	\end{figure}
 	\todo[inline]{Mikael: Der er to knuder der hedder e2 herover. Desuden, det er lidt mærkeligt at det øverste E2 også er farvet delvist rødt?}
+	\todo[inline]{Fisk: Jeg har ordnet figuren (ups). den er delvist farvet, da den kan være fucked up, hvis E1 får historik fra den via E2.}
+	\todo[inline]{Fisk: Slutteligt skal vi slef. lige sige, at denne algoritme derfor ikke er anvendt.}

@@ -19,9 +19,10 @@
 		In a given effect where two events A and B are part of the effect, event B is \textbf{\textit{Counterpart}} of event A and event A is counterpart of event B.
 	\end{definition}
 	
+
 	\todo{måske bør vi også bare definere performer og reciever heroppe?}
 	
-	\newpar To be able to determine which event is performing the effect and which is the counterpart, it is necessary to use the ids of both. Furthermore to distinguish effects from eachother an effect type is necessary. Since an execution can happen multiple times and therefore affect the same counterpart multiple times, the counterpart timestamp is also necessary to distinguish different effects on the counterpart from each other. To distinguish multiple executions from each other an execution must have a start time and end time.
+	\newpar To be able to determine which event is performing the effect and which is the counterpart, it is necessary to use the IDs of both. Furthermore to distinguish effects from eachother an effect type is necessary. Since an execution can happen multiple times and therefore affect the same counterpart multiple times, the counterpart timestamp is also necessary to distinguish different effects on the counterpart from each other. To distinguish multiple executions from each other an execution must have a start time and end time.
 	
 	\newpar For an event to know that something has happened it is neccesary to store it for later retrieval. This must be done not only for all the effects which happen in an execution but also when the event gets affected by another event.
 	
@@ -65,14 +66,14 @@
 		\label{fig:representing:execution}
 	\end{figure}\todo{måske skal vi gøre klart med event navn på hver side af stregen. og så også skrive at dette er resultat efter at præcis bla og bla har executed i bla rækkefølge}
     
-	With these new informations the definition of a representation of an exeuction can be revised to:
+	\noindent With these new informations the definition of a representation of an exeuction can be revised to:
 	
 	\begin{definition}
 		An \textbf{execution} of an event can be represented as a finite set of actions, which represents the effects that happened in the execution including two actions with action types \textbf{Execute start} and \textbf{Execute finish}, respectively.
 		\label{def:execution}
 	\end{definition}
 	
-	\noindent Now that a representation of an execution and its actions has been defined, it is necessary to define a way to connect and order these actions.
+	\noindent Now that a representation of an execution and its actions has been defined, it is necessary to find a way to connect and order these actions.
     
     \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution $A$ must either happen before or after all actions in execution $B$ if the two executions are executions of the same event.
     

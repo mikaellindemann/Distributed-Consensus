@@ -6,7 +6,7 @@
 	
 	\newpar We introduce malicious nodes in a given distributed DCR graph. These nodes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
 	
-	Traditionally malicious agents can tamper with messages in transfer by altering, replaying and withholding messages as described in \cite{Coulouris:2011:DSC:2029110:chapter2}. We assume that any of these kinds of corruption of messages in transfer are not present in this system. 
+	Traditionally malicious agents can tamper with messages in transfer by altering, replaying and withholding messages, as described in \cite{Coulouris:2011:DSC:2029110:chapter2}. We assume that any of these kinds of corruption of messages in transfer are not present in this system. 
 	
 	\newpar Therefore the kinds of cheating examined in this project are the following:
 	\begin{definition}
@@ -17,7 +17,7 @@
 	In order to identify malicious events in a given history, we need to define what a valid history is:
 	
 		\begin{definition}
-			A \textit{\textbf{Valid History}} is a history, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in a strict partial order. 
+			A \textit{\textbf{Valid History}} is a history, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. 
 		\end{definition}
 		
 	This also introduces a special kind of cheating:
@@ -26,6 +26,8 @@
 			\textbf{Inconsistent cheating} is the act of manipulating a history in a way where the result is not valid.
 			\textbf{Inconsistent cheating} is the act of participating in the creation of histories which are not valid.
 		\end{definition}
+		
+	\todo{Fisk: Jeg føler lidt, at der mangler noget om consistent cheating her også, siden inconsistent nævnes. Evt. bare noget med, at det står senere.}
 		
 	\subsection{DCR Rules}
 	A given execution must abide to the rules of the DCR graph it is part of. That includes the following:
@@ -98,12 +100,12 @@
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
 	\begin{definition}
 		\textbf{Consistent cheating} is the act of manipulating data in a way where the history is still valid.
-		\textbf{Consistent cheating} is the act of participating in the creation of histories which are incorrect but valid.
+		\textbf{Consistent cheating} is the act of participating in the creation of histories which are incorrect, but valid.
 	\end{definition}
 	
 	\newpar Consistent cheating can take a number of forms:
 
-	\newpar \textbf{Incorrect timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still being in accordance to Lamport's logical clocks
+	\noindent \textbf{Incorrect timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still being in accordance to Lamport's logical clocks
 	\figuretodo{to historikker der er ens bortset fra timestamps}
 	The only actions which more that one event know of are the action which are part of a relation. The consequence of this is that it is only possible to check if events disagree on the timestamps of these actions and not the rest. To make this validation each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the events must be malicious. 
 	
@@ -115,7 +117,9 @@
 	\figuretodo{to historikker hvor antallet af incoming groups ikke matcher }
 	This type of cheating is already checked for by the method introduced in the previous paragraph.
 	
-	\newpar To argue there are no more ways to consistently cheat it is necessary to examine what possible activities an event can take part of. An event can execute or it can be affected by an execution. Not executing is just as valid as doing so (if the state of the workflow allows it). Furthermore, an action with a timestamp which is in accordance to Lamport's logical clocks, can have another timestamp which is also in accordance and therefore it is not possible to distinguish the correct timestamp from the incorrect. \todo[inline]{this paragraph has bullshit argumentation of the types being complete. plz help it}
+	\newpar To argue that there are no other ways to consistently cheat it is necessary to examine what possible activities an event can take part of. 
+	
+	An event can execute or it can be affected by an execution. Not executing is just as valid as doing so (if the state of the workflow allows it). Furthermore, an action with a timestamp which is in accordance to Lamport's logical clocks can have another timestamp which is also in accordance. Therefore it is not possible to distinguish the correct timestamp from the incorrect. \todo[inline]{this paragraph has bullshit argumentation of the types being complete. plz help it}
 	
 	\subsection{Cases}
 	Detecting and identifying consistently cheating events is difficult, because it is not possible to look at a single event's history and determine if it is valid or not. We will now examine how the structure of the DCR graph, and the connection between malicious events contribute to the ability to detect and identifying consistent cheating. The type of relation has no influence on the cases and relations are therefore visualised as a simple arrow from event to event.
@@ -192,11 +196,20 @@
 		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar In none of these cases had the property of being able to identify which of the events are malicious (in case 1 and 2 it is not possible to observe and therefore neither to identify), which creates some interesting questions as to how one can try to identify which of the events are cheating. One method could be to determine by counting how many of the neighbouring events disagree with you and if a majority disagrees the event will be marked as evil. Unfortunately that method has pitfalls since a good event with connection only to evil events could be marked as malicious. If we require a new property of the DCR graph which states that in all neighbourhoods with $N$ events, a maximum of $N/2-1$ are malicious an election would not be able to falsely accuse a good event of being malicious. This property is commonly used for distributed systems which uses elections, but traditionally is only used to describe the amount of malicious nodes in the entire system. Therefore this property is more strict and perhaps more difficult to adhere to. To worsen the situation substantially even if this property is adhered to, if an event is malicious does not mean that it is always malicious meaning it would be able to trick an election into not having a majority against it, so it is not possible to say that each event which disagrees with the values are malicious, which places us in the same situation as to begin with where we can only say one of two events must be malicious.
+	\newpar In none of these cases it was possible to identify which of the events are malicious (in case 1 and 2 it is not possible to observe and therefore neither to identify). 
 	
-	\newpar It becomes apparent that the structure of the DCR graph has a great influence on whether it is possible to observe consistent cheating or not - especially in cases where a lot of malicious events create interconnected or not connected to any other event at all it can be difficult to say anything about the state of the history. One could argue what implications consistent cheating have on sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state and these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The true problems clearly happen in situation 6 and 7 where for example a company can own a sub part of the graph with many events working together to create a falsified image of what has happened. 
+	This creates some interesting questions as to how one can try to identify which of the events are cheating. 
+	One method could be to determine by counting how many of the neighbouring events disagree with you and if a majority disagrees the event will be marked as evil. Unfortunately that method has pitfalls since a good event with connection only to evil events could be marked as malicious. 
 	
-	\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing 
+	If we require a new property of the DCR graph which states that in all neighbourhoods with $N$ events, a maximum of $N/2-1$ are malicious an election would not be able to falsely accuse a good event of being malicious. This property is commonly used for distributed systems which uses elections, but traditionally is only used to describe the amount of malicious nodes in the entire system. Therefore this property is more strict and perhaps more difficult to adhere to. 
+	
+	To worsen the situation substantially even if this property is adhered to, if an event is malicious does not mean that it is always malicious meaning it would be able to trick an election into not having a majority against it, so it is not possible to say that each event which disagrees with the values are malicious, which places us in the same situation to begin with, where we can only say one of two events must be malicious.
+	
+	\newpar It becomes apparent that the structure of the DCR graph has a great influence on whether it is possible to observe consistent cheating or not - especially in cases where a lot of malicious events are either interconnected or not connected to any other event at all it can be difficult to say anything about the state of the history. 
+	
+	One could argue what implications consistent cheating have on sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state. Therefore these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The major problems are apparent in situation 6 and 7 where, for example, a company can own a sub-part of the graph with many events working together to create a falsified image of what has actually happened. 
+	
+	\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing \todo{Fisk: Observing what?} 
 
     \subsection{Simulation}\label{sec:historyindcr:simulation}
     One of the more difficult validity properties to check is whether events have executed only when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its conditions also need to be taken into perspective, furthermore the state of the workflow most likely changes over time with each execution. In addition since the history is a strictly partially ordered set, some executions happen concurrently which does not match physical time in which the events have executed.\todo[inline]{Jeg har lidt svært ved at indlede dette afsnit, men jeg synes ikke det skal starte med at det her er sværere end de andre validations.}
@@ -207,11 +220,12 @@
     
     \newpar To check if the execution of an event is possible, it is checked if the event is included and that the state of every condition of the event is either excluded or executed.\todo[inline]{Behøver vi skrive hvad det vil sige at være executable?} If the event was executable, the state of the workflow is changed according to the rules of the workflow.\todo[inline]{Vi opdaterer også state selvom den ikke er executable}
     
-    \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. One way to create a topological order from an order of execution is to map each of the executions to the amount of executions that happens directly before an execution itself. An execution can be chosen as the next if and only if its counter reaches 0. When an execution is chosen, all of the executions it happens before has their counter decremented by 1.The order of which executions have happened are adhered to, but concurrent executions happen in a random order.\todo[inline]{Mikael: Jeg har omskrevet det her lidt, men ladet nogle sætninger være. Check gerne at det giver mening}
+    \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. One way to create a topological order from an order of execution is to map each of the executions to the amount of executions that happens directly before an execution itself. An execution can be chosen as the next if and only if its counter reaches 0. When an execution is chosen, all of the executions it happens before has their counter decremented by 1. The order of which executions have happened are adhered to, but concurrent executions happen in a random order.\todo[inline]{Mikael: Jeg har omskrevet det her lidt, men ladet nogle sætninger være. Check gerne at det giver mening}
     
     Executions can only be concurrent if the events they belong to do not share outgoing relations. If two events share outgoing relations, one of them must affect the shared event before the other and an order would be able to be created. Therefore in an order of execution only one of the ingoing edges can be of an ingoing relation, the rest must be based on outgoing relations which can determine that the execution happens after some other execution. The order of which concurrent executions are simulated therefore does not matter since they order of which they execute can only result in one state change which affects common outgoing edges.\todo[inline]{hvad siger vi her?}
     
     \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.\todo[inline]{Mikael: Jeg har svært ved at forstå hvad vi vil med denne paragraf. Måske en figur kan hjælpe?}
+    \todo[inline]{Fisk: Jeg har generelt at forstå det her afsnit. Det skal vi nok lige gå igennem igen.}
 
 	\newpar In \autoref{alg:simulation} the simulation algorithm can be seen. It runs in time linear to the amount of executions.
 	
@@ -238,5 +252,6 @@
 	\todo[inline]{Check lige op på algoritmen generelt}
 	
 	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog. Mikael: Jeg synes det er fedt at vi har anvendt viden fra det fag, men synes at det stikker lidt uden for de ting vi har sagt er nødvendigt for at forstå denne opgave. Jeg har også forsøgt at formulere i teksten ovenfor hvordan man kan anvende algoritmen til at finde denne order, men uden at gå alt for teknisk til værks.}, which also runs in linear time and is used to see if a knowledge base can entail a proposition.
+	\todo[inline]{Fisk: Verdens vildeste TODO. -----------------------------------------------$\rightarrow$}
 	
     \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.
