@@ -1,7 +1,6 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Validation of Histories}
-\todo[inline]{Wind: Jeg er ret sikker på at der var nogle lange "Søren-kommentarer" her vi ikke har håndteret.}
 \label{chap:consensusindcr}
 	This chapter defines how histories from malicious events are observed and possibly identified.
 	
@@ -204,7 +203,7 @@
     
     \newpar One approach to this problem is to simulate the executions of the workflow. To do so, it is required that the rules of the workflow and the initial state of every event in the workflow is known. Furthermore it is required that an order of execution has been found, this is examined in the next chapter but we assume it is available. 
     
-    Given the order of execution each execution has either zero or more ingoing edges. Each ingoing edge states which executions must have happened before, therefore an execution can first happen when all of its ingoing edges have executed. Therefore each execution have a counter based on the amount of ingoing edges which can be decreased each time one of the ingoing edges executes. An order of execution based on a valid history will always have some executions which have no ingoing edges since no cycles appear and some events\todo{executions? eller?} must happen before all their relations.
+    Given the order of execution each execution has either zero or more ingoing edges. Each ingoing edge states which executions must have happened before, therefore an execution can first happen when all of its ingoing edges have executed. Therefore each execution have a counter based on the amount of ingoing edges which can be decreased each time one of the ingoing edges executes. An order of execution based on a valid history will always have some executions which have no ingoing edges since no cycles appear and some events \todo{executions? eller?}must happen before all their relations.
     
     \newpar To check if the execution of an event is possible, it is checked if the event is included and that the state of every condition of the event is either excluded or executed.\todo[inline]{Behøver vi skrive hvad det vil sige at være executable?} If the event was executable, the state of the workflow is changed according to the rules of the workflow.\todo[inline]{Vi opdaterer også state selvom den ikke er executable}
     
@@ -233,7 +232,7 @@
 			\State\Return failures
 			\EndFunction
 		\end{algorithmic}
-		\caption{Simulation algorithm}
+		\caption{The \textbf{Simulation} algorithm}
 		\label{alg:simulation}
 	\end{algorithm}
 	\todo[inline]{Check lige op på algoritmen generelt}

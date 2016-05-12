@@ -65,10 +65,11 @@
 	With these new informations the definition of a representation of an exeuction can be revised to:
 	
 	\begin{definition}
-		An \textbf{execution} of an event can be represented as a finite set of actions, which represents the effects that happened in the execution.
+		An \textbf{execution} of an event can be represented as a finite set of actions, which represents the effects that happened in the execution including two actions with action types \textbf{Execute start} and \textbf{Execute finish}, respectively.
+		\label{def:execution}
 	\end{definition}
 	
-	\newpar Now that a representation of an execution and its actions has been defined, it is necessary to define a way to connect and order these actions.
+	\noindent Now that a representation of an execution and its actions has been defined, it is necessary to define a way to connect and order these actions.
     
     \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution A must either happen before or after all actions in execution B.
     
@@ -81,11 +82,11 @@
 			\lnot(\exists{x\in E_A, y\in E_B}(x \rightarrow y)) &\implies \forall{x\in E_A, y\in E_B}(x\not\rightarrow y\land y\not\rightarrow x)
 		\end{align*}
 		\caption{Invariant for the actions of executions in histories}
-		\label{fig:historyinvariant}
+		\label{inv:historyinvariant}
 	\end{invariant}
 	
 	\newpar
-	Invariant \ref{fig:historyinvariant} describes the invariant that must hold for all histories. It reads, if there exists an action, \textit{x}, in execution \textit{A}, and another action, \textit{y}, in execution \textit{B}, such that \textit{x} happens before \textit{y}, then for all actions \textit{x} in \textit{A} and all actions \textit{y} in \textit{B}, \textit{y} must not happen before \textit{x}. Otherwise there are no happens before relations between actions in \textit{A} and actions in \textit{B}.
+	Invariant \ref{inv:historyinvariant} describes the invariant that must hold for all histories. It reads, if there exists an action, \textit{x}, in execution \textit{A}, and another action, \textit{y}, in execution \textit{B}, such that \textit{x} happens before \textit{y}, then for all actions \textit{x} in \textit{A} and all actions \textit{y} in \textit{B}, \textit{y} must not happen before \textit{x}. Otherwise there are no happens before relations between actions in \textit{A} and actions in \textit{B}.
     
 	\newpar One can easily argue that a strict partial order fits ordering of actions because:
 	\begin{enumerate}
