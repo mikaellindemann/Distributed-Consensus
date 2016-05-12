@@ -75,13 +75,11 @@
 	\newpar Due to this property, executions happening on the same event are in  \textit{strict total order}. A strict total order can be represented as a list, but this is unfortunately not the case when the problem is extended with multiple events. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents}.
 	
 	\begin{invariant}
-		\begin{center}
 		\begin{align*}
 			(\exists{x\in E_A, y\in E_B}(x\rightarrow y) &\implies \forall{x\in E_A, y\in E_B}(y\not\rightarrow x))\\
 			&\land \\
 			\lnot(\exists{x\in E_A, y\in E_B}(x \rightarrow y)) &\implies \forall{x\in E_A, y\in E_B}(x\not\rightarrow y\land y\not\rightarrow x)
 		\end{align*}
-		\end{center}
 		\caption{Invariant for the actions of executions in histories}
 		\label{fig:historyinvariant}
 	\end{invariant}
