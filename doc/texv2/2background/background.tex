@@ -71,7 +71,7 @@
 	
 
 	\section{Distributed Systems}
-		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Coulouris:2011:DSC:2029110}. \todo[inline]{Tilføj cite til chapter eller bare hele bog? Jeg (Mikael) er ret sikker på at denne beskrivelse kommer fra Lamports artikel om ordering af events og ikke fra Distributed Systems bogen.}
+		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process. Traditionally these systems are distributed on computers in a network \cite{Lamport:1978:TCO:359545.359563}.
 		
 		\subsection{Serial Equivalence}
 		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operation happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message passing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in extension of one another. Common implementations of achieving serial equivalence in distributed systems include locking and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
