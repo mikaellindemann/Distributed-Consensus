@@ -11,9 +11,9 @@
 	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph.\todo[inline]{Dette er ikke noget vi umiddelbart har nævnt før?}
 	
 	\subsection{Use of the Transitive Closure in Order to Gain Extra Information}
-	In order to establish the happens-before relations of actions occurring on different events, increasing the reachability of actions in the history is beneficial, since every edge in the history denotes a happens-before relation. \todo{hvad vil det sige at increase reachability?} 
+	One approach to finding a single representation of an execution, it could be examined if a single action of the execution could describe all the relations to all the other executions. To do so involves filtering all actions not chosen to be the representative of the execution, and since filtering nodes remove happen before relations, increasing the connectivity of the graph could be beneficial.
 	
-	It might therefore be possible to establish that two actions have occurred after each other after increasing reachability, since an edge between these two actions has then been found.
+	It might therefore be possible to establish that two actions have occurred after each other, if each transitive relation in the graph is available on all actions chosen to represent the execution.
 	
 	\newpar Since the history is represented as a directed acyclic graph, the transitive closure of the graph can be found to find more happens-before relations. 
 	After having found the transitive closure of the graph, actions that are either not in between \texttt{Execution start} and \texttt{Execution finish} action types can be filtered away from the graph. One of these execution types should denote an entire execution.
@@ -98,8 +98,9 @@
 %	\end{figure}
 %	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
-	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. Though different in approach, this produces the same end result \todo{same result as what?}.
-	\todo[inline]{Remember correctness why is there the least amount of concurrent actions while all paths of the local histories are preserved.}
+	\newpar The collapsing algorithm can be be seen on \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. To argue that the collapse algorithm correctly describes the relations between executions \autoref{fig:historyinvariant} is examined. It states that if there exist any action in execution A with a relation to execution B, then it must not be true the other way around. Therefore for collapse to be correct each single execution entity must have the same property. Since the set of relations the single entity has to other executions is the union of the set of all the actions had to other executions, it must be so that the set cannot contain relations which violates the invariant, because then the invariant would already be broken before the collapse. By proof of contraditction, it it was so that the invariant is broken in the union set, then there is a value where A happens before B and B happens before A, then the original collection of sets must already have had these two relations.
+	
+	\todo[inline]{Check if you like this argumentation.}
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
