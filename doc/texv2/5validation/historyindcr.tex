@@ -1,6 +1,7 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Validation of Histories}
+\todo[inline]{Wind: Jeg er ret sikker på at der var nogle lange søren kommentarer her vi ikke har håndteret.}
 \label{chap:consensusindcr}
 	This chapter defines how histories from malicious events are observed and possibly identified.
 	
@@ -220,7 +221,7 @@
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
-			\Function{UpdateState}{state, event, relationType}
+			\Function{UpdateRelation}{state, event, relationType}
 				\State locals: DCR rules
 				\State (included, pending, executed) $\leftarrow$ \Call{Map.Get}{event, state}
 				\If{relationType is SetsPending}
@@ -253,14 +254,14 @@
 			\Function{Execute}{state, DCRRules, execution}
 				\State conditions $leftarrow$ \Call{List.Where}{id == execution.Id and is conditionType, DCRRules}
 				\State relations $leftarrow$ \Call{List.Where}{id == execution.Id and not is conditionType, DCRRules}
-				\State state' $leftarrow$ \Call{UpdateState}{state, execution, r}
+				\State state' $leftarrow$ \Call{SetExecutedTrue}{state, execution}
 				\ForAll{event e, relation r in relations}
-					\State state $leftarrow$ \Call{UpdateState}{state, e, r}
+					\State state' $leftarrow$ \Call{UpdateState}{state', e, r}
 				\EndFor
 				\If{\Call{IsExecutable}{state, conditions, execution}}
-					\Return Success state'
-				\ElsIf
-					\Return Failure state' 
+					\State \Return Success state'
+				\Else
+					\State \Return Failure state' 
 				\EndIf
 			\EndFunction
 			
@@ -286,7 +287,7 @@
 		\caption{Simulation algorithm}
 		\label{alg:simulation}
 	\end{algorithm}
-	\todo{Check lige op på hvorfor vi tjekker executability efter det er vi opdaterer state i execute metoden}
+	\todo{Check lige op på algoritmen generelt}
 	
 	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog}, which also runs in linear time and is used to see if a knowledge base can entail a proposition. 
 	
