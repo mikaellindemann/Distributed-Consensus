@@ -5,8 +5,10 @@
 	
 	\newpar We introduce malicious nodes in a given distributed DCR graph. These nodes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
 	
-    \todo[inline]{Flyttet fra Background: The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.}\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
-    \todo[inline]{Flyttet fra Background: Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.}
+	
+    \todo[inline]{Flyttet fra Background herfra...}
+    The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
+    Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.\todo[inline]{... Flyttet fra Background hertil}
     
 	Traditionally malicious agents can tamper with messages in transfer by altering, replaying and withholding messages, as described in \cite{Coulouris:2011:DSC:2029110:chapter2}. We assume that any of these kinds of corruption of messages in transfer are not present in this system. 
 	
@@ -252,6 +254,5 @@
 	\todo[inline]{Check lige op på algoritmen generelt}
 	
 	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog. Mikael: Jeg synes det er fedt at vi har anvendt viden fra det fag, men synes at det stikker lidt uden for de ting vi har sagt er nødvendigt for at forstå denne opgave. Jeg har også forsøgt at formulere i teksten ovenfor hvordan man kan anvende algoritmen til at finde denne order, men uden at gå alt for teknisk til værks.}, which also runs in linear time and is used to see if a knowledge base can entail a proposition.
-	\todo[inline]{Fisk: Verdens vildeste TODO. -----------------------------------------------$\rightarrow$}
 	
     \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.

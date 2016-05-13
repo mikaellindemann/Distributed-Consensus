@@ -9,10 +9,10 @@
 	\newpar In order to simplify this problem it is assumed that all local histories are \textit{\textbf{valid}}. That is:
     
     \begin{definition}
-    A \textit{\textbf{valid history}} is a history, for which it applies that\todo{Er dette ikke den lange udgave af "where?"} all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. Also, a valid history \textbf{must} contain exactly the actions that \textbf{did} happen in the execution of events.
+    A \textit{\textbf{valid history}} is a history, where all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. Also, a valid history \textbf{must} contain exactly the actions that \textbf{did} happen in the execution of events.
     \end{definition} 
 
-	\noindent The observation and identification of invalid histories are described in \autoref{chap:validation}.\todo{Skulle man tilføje at vi vil snakke lidt om hvorfor det er nødvendigt at input er valid sidst i afsnittet?}
+	\noindent The observation and identification of invalid histories are described in \autoref{chap:validation}. Why it is necessary to have this assumption is discussed in the end of this section.
 
     \newpar Given valid local histories of several events, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions using happens before relations. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
     
@@ -102,7 +102,7 @@
     \todo[inline]{Måske noget med at vi pga. dataen ikke kan gøre noget ved dette.}
     
     \section{Gathering of History}
-    To merge the histories together it is necessary to acquire the local histories of the events of the DCR graph. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the histories of each event individually. This method is simple and only relies on the central server to the addresses of all the events in the workflow. Furthermore the amount of messages sent to recieve all histories is $2N+2$ where N denotes the amount of events in the system. An illustration of this architecture is shown on \autoref{fig:connecting:server-contacts-events}.
+    To merge the histories together it is necessary to acquire the local histories of the events of the DCR graph. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the histories of each event individually. This method is simple and only relies on the central server to get the addresses of all the events in the workflow. Furthermore the amount of messages sent to recieve all histories is $2N+2$ where N denotes the amount of events in the system. An illustration of this architecture is shown on \autoref{fig:connecting:server-contacts-events}.
     
     \begin{figure}[H]
     	\centering
@@ -111,7 +111,7 @@
     	\label{fig:connecting:server-contacts-events}
     \end{figure}
     
-    \newpar Unfortunately, central server systems have drawbacks. E.g. if the server crashes then it is not possible to acquire the addresses of any of the events and the server has to do the entire workload instead of distributing it out across the peers.
+    \newpar Unfortunately, central server systems have drawbacks. E.g. if the server crashes then it is not possible to acquire the addresses of any of the events and the server has to do the entire workload instead of distributing it out across the peers.\todo{Mikael: Jeg er med på den første del af denne sætning, men forstår ikke resten.}
     
     Therefore it could be desirable to create a peer to peer-based gathering algorithm, but this introduces a new set of challenges.
     
@@ -120,7 +120,7 @@
 	
 	\newpar In order to gather history from a given workflow using recursive traversal, a single starting event must be known. The reachability of this event should preferably be the set of all other events in the workflow. If the reachability is a subset of all the events, then only a subset of all the local histories of the events can be gathered. Therefore the greater the reachability of the beginning event, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered if the DCR graph is not fully connected. This constitutes the first drawback of this approach.
 	
-	Therefore it is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursions.
+	Therefore it is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursions.\todo{Det er underligt at denne sætning starter med therefore når den foregående siger noget om en drawback der ikke gøres noget ved.}
 	
 	\subsubsection{The Produce Algorithm}
 	Given a DCR graph where all events are reachable from the starting event, the algorithm should fetch and merge the histories of each event in the graph into one global history.
@@ -136,25 +136,28 @@
 		\State Event receives request for history with a \texttt{request trace}, $T$.
 		\State Event has internal \texttt{wait for}, $W$
 		\State
-		\State $W\gets W::$ reachable events \Comment Add all reachable events to \texttt{wait for}.
-		\If {$W=\emptyset$}
-			\Return own history
-		\Else
-			\State $W\gets W-T$ \Comment Remove every event in $T$ from $W$. Cycles avoided.
-			\State $T\gets T::ownID$ \Comment Append own event ID to $T$.
-			\State
-			\ForAll {$w$ in $W$} 
-				\State request history from $w$ with $T$ \Comment Request from neighbours with new \texttt{trace}.
-			\EndFor
-			\State wait for receiving histories
-			\State stitch received histories with own history
-			\State
-			\Return stitched histories
-		\EndIf
+		
+		\Function{Produce}{T, W, event}
+			\State $W\gets$ \Call{Union}{$W$, event.Neighbours}\Comment Add all neighbouring events to \texttt{wait for}.
+			\If {$W=\emptyset$}
+				\Return own history
+			\Else
+				\State $W\gets$\Call{Minus}{W, T}\Comment Remove every event in $T$ from $W$. Cycles avoided.
+				\State $T'\gets$\Call{Append}{event.Id, T}\Comment Append own event ID to $T$.
+				\State
+				\ForAll {$w$ in $W$} 
+					\State request history from $w$ with $T'$
+				\EndFor
+				\State wait for receiving histories
+				\State merge received histories with own history
+				\State
+				\Return merged histories
+			\EndIf
+		\EndFunction
 	\end{algorithmic}
 	\caption{The \textit{\textbf{Produce}} algorithm}
 	\label{alg:produce}
-	\end{algorithm}
+	\end{algorithm}\todo{Mikael: Er wait for ikke altid det samme som naboerne? Jeg har i øvrigt forsøgt at gøre det lidt mere pseudo end f\#}
 		
 	\begin{figure}[H]
 		\centering
@@ -185,9 +188,7 @@
 		\caption{A malicious node in a graph. Note that it is not possible to ensure that any history passing through the malicious node is valid.}
 		\label{fig:connecting:recursive-evil-node}
 	\end{figure}
-	\todo[inline]{Mikael: Der er to knuder der hedder e2 herover. Desuden, det er lidt mærkeligt at det øverste E2 også er farvet delvist rødt?}
-	\todo[inline]{Fisk: Jeg har ordnet figuren (ups). den er delvist farvet, da den kan være fucked up, hvis E1 får historik fra den via E2.}
-	\todo[inline]{Fisk: Slutteligt skal vi slef. lige sige, at denne algoritme derfor ikke er anvendt.}
+	\todo[inline]{Mikael: Det er lidt mærkeligt at det øverste E2 også er farvet delvist rødt?\\Fisk: Den er delvist farvet, da den kan være fucked up, hvis E1 får historik fra den via E2. Slutteligt skal vi slef. lige sige, at denne algoritme derfor ikke er anvendt.\\Mikael: Men man får jo både historikken fra E6 og E2, men du har nok ret.}
 	
 	\subsubsection{Performance}
 	This algorithm has a worst case message performance is exponential. \todo{Fisk: What?} This is due to the want to have redundant history every path from a given node to any other reachable node needs to be examined. The worst case is when the graph is fully connected and every node therefore has a node to any other node. High connectivity in the graph is a wanted property since it allows for better validation of the histories. \todo{Fisk: Måske uddyb hvorfor dette er tilfældet? Eller i hvert fald så kæde sammen med nedenstående?}
@@ -197,4 +198,4 @@
 	Certain issues arise if an event with neighbours is the last event in what would have been a produce cycle and due to tracing returns its own local history which would then be cached. This event would then never return the histories of its neighbours if contacted again from a different event, but would instead only return its own history due to caching. 
 	
 	The neighbours history of the neighbours would then only be produced once, and therefore pass through a single, possibly malicious, node. The lack of redundancy in the system therefore presents an issue when validating histories.
-	It is therefore necessary to produce redundant histories, which makes caching impossible.
+	It is therefore necessary to produce redundant histories, which makes caching impossible.\todo{Vi snakkede om med søren på et tidspunkt at vi også hellere ville exploite DCR end at gøre det distribueret, og at der var flere muligheder for at snyde ved at gøre det på denne måde.}
