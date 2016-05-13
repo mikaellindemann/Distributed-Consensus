@@ -1,81 +1,77 @@
 % !TeX root = DistributedConsensus.tex
 % !TeX spellcheck = en_GB
-\chapter{Connecting Histories} 
-\label{chap:connecting-histories}
-	After determining how to represent histories, we want to combine multiple histories into one history by using the information on actions. This chapter defines the this merging of actions. \todo{jeg forstår ikke sidste sætning}
-	
-    \newpar
-    Given a set of local histories, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
-    \todo[inline]{jeg tror faktisk jeg godt kan se at vi måske mangler lidt noget argumentation for hvorfor vi gør det her. Altså skrive at at hvert event kun har sin egen totalle orden og vi bliver derfor nød til at have noget der markerer orderner mellem dem. Og eftersom at actions er gemt kan disse bruge til at etablere happens before relations.}
+\chapter{Connecting Histories}\label{chap:connecting-histories}
+	After determining how to represent histories, we want to combine multiple histories into one history using the information of actions.
     
-    \figuretodo{Jeg ved ikke om det er for komplekst at starte med. Men man kan godt lave en figur der præsenterer det ønskede resultat.}
+    \section{Merging Histories}\label{sec:connecting:merge}
+    Having defined the representation of history, and the fact that the actions of executions are distributed among several events, we need a way to connect the actions by happens before relations.
+
+	\newpar In order to simplify this problem it is assumed that all local histories are \textit{\textbf{valid}}. That is:
     
-    \newpar
-    The concept of happens-before relations, as described in \autoref{subsec:orderingofevents} helps determining which actions have happened before others across events. \todo{ved ikke om den her sætning er nødvendig}
-	
-    \newpar
-	Actions can form pairs according to their action types. Action types 1 through 8 in \autoref{def:actiontype} represent the two sides of actions of the same message exchange.
-	
-	\begin{itemize}
-		\item \textit{Outgoing action types} are action types \ref{actiontype:includes}, \ref{actiontype:excludes}, \ref{actiontype:setspending}, and \ref{actiontype:checkscondition}.
-		\item \textit{Incoming action types} are action types \ref{actiontype:includedby}, \ref{actiontype:excludedby}, \ref{actiontype:setpendingby}, and \ref{actiontype:checkedconditionby}. 
-	\end{itemize}
-		
-	\noindent Each outgoing action type corresponds to an incoming action type by the following definition:
+    \begin{definition}
+    A \textit{\textbf{valid history}} is a history, for which it applies that\todo{Er dette ikke den lange udgave af "where?"} all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. Also, a valid history \textbf{must} contain exactly the actions that \textbf{did} happen in the execution of events.
+    \end{definition} 
+
+	\noindent The observation and identification of invalid histories are described in \autoref{chap:validation}.\todo{Skulle man tilføje at vi vil snakke lidt om hvorfor det er nødvendigt at input er valid sidst i afsnittet?}
+
+    \newpar Given valid local histories of several events, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions using happens before relations. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
+    
+    \newpar We will use the local histories in \todo[backgroundcolor=green]{Indsæt figur som er input til merge algoritmen.} as an example for the remainder of this section.
+    
+    \newpar The concept of happens before relations, as described in \autoref{subsec:orderingofevents} helps determining which actions have happened before others across events. For each outgoing action in a history, there must be another incoming action, because these actions are the two sides of the same effect. Therefore, each outgoing action type corresponds to an incoming action type by the following definition:
 	
 	\begin{definition}
 		\label{def:happensbeforeaction}
 		The action types that \textbf{correspond} are:
 			\begin{itemize}
-				\item Includes $\rightarrow$ Included by
-				\item Excludes $\rightarrow$ Excluded by
-				\item Sets pending $\rightarrow$ Set pending by
 				\item Checks condition $\rightarrow$ Checked condition by
+                \item Excludes $\rightarrow$ Excluded by
+				\item Includes $\rightarrow$ Included by
+				\item Sets pending $\rightarrow$ Set pending by
 			\end{itemize}
 	\end{definition}
 	
-	\noindent For readability an \textit{outgoing action} is an action with an outgoing action type. In the same fashion an \textit{incoming action} is an action with an incoming action type.
-	
-	\newpar For any action on an event with action type 1 through 8, there might exist any number of actions with corresponding action types. However, because a pair of actions are part of the same message exchange, there is only one corresponding action.
-	
-	Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the performing and counterpart \todo{Fisk: Det er lidt som om at vores performer/receiver-concept er væk her?} event to ensure that matches are unique.
-    Pairs of actions correspond if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.\figuretodo{Igen, måske for meget. Men man kunne godt lave en figur hvor man først matcher en action med alle andre actions der har corresponding action types, og på anden del af figuren viser at der kun er ét korrekt match.}
+	\noindent For any outgoing or incoming action on an event, there might exist any number of actions with corresponding action types. Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the executing and counterpart event to ensure that matches are unique.
+    Pairs of actions \textbf{\textit{match}} if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.
     
     \begin{definition}
     	\label{def:action:matching}
     	A pair of actions, $a$ and $b$, \textit{\textbf{match}} if and only if they have corresponding action types and the ID and timestamp of $a$ is identical with the counterpart ID and counterpart timestamp of $b$. Furthermore, the ID and timestamp of $b$ must be identical with the counterpart ID and counterpart timestamp of $a$.
     \end{definition}
     
+    \noindent Figure \ref{fig:connect:actions-match} is an example of a pair of matching actions.  In \autoref{fig:connect:actions-do-not-match} the actions do not match.
+    
     \begin{figure}[H]
 		\centering
 		\begin{minipage}{0.45\textwidth}
 			\centering
 			\includegraphics[width=\textwidth]{4connect/images/actions-match.pdf}
-		\caption{Two actions that match.}
-		\label{fig:connect:actions-match}
+			\caption{Two actions that match.}
+			\label{fig:connect:actions-match}
 		\end{minipage}\hfill
 		\begin{minipage}{0.45\textwidth}
 			\centering
 			\includegraphics[width=\textwidth]{4connect/images/actions-do-not-match.pdf}
-		\caption{Two actions that do not match. Fields that do not match are marked with red.}
-		\label{fig:connect:actions-do-not-match}
+            \caption{Two actions that do not match. Fields that do not match are marked with red.}
+            \label{fig:connect:actions-do-not-match}
 		\end{minipage}
-		\end{figure}
-    \todo{figur 4.2 skal lige retets så den faktisk er valid. ligenu er countertimestamp ikke højere en local timestamp på E1}
-    \newpar An outgoing action must happen before its incoming counterpart, because they together represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
+    \end{figure}
+        
+    \noindent An outgoing action must happen before its incoming counterpart, because together they represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
 
-	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found, the edge is added from the performing action to the counterpart action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
+	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found, the edge is added from the outgoing action to the incoming action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
 	
 	\begin{algorithm}
 		\begin{algorithmic}
 			\Function{Merge}{history1, history2} \textbf{returns} \textit{a merged history}
 			\State combinedHistory $\leftarrow$ \Call{UnionNodesAndEdges}{history1, history2}
-			\ForAll{action \textit{in} combinedHistory}
+			\ForAll{action \textbf{in} combinedHistory}
 			\If{\Call{IsOutgoing}{action}}
-			\State match $\leftarrow$ \Call{FindMatchingAction}{action, combinedHistory}
-			\If{\Call{IsNotNull}{match}}
-			\State combinedHistory $\leftarrow$ \Call{AddEdge}{action, match, combinedHistory}
-			\EndIf
+            	\ForAll{action' \textbf{in} combinedHistory}
+                	\If{\Call{Matches}{action, action'}}
+						\State combinedHistory $\leftarrow$ \Call{AddEdge}{action, action', combinedHistory}                    	
+                    \EndIf
+                \EndFor
 			\EndIf
 			\EndFor
 			\State\Return combinedHistory
@@ -85,28 +81,29 @@
 		\label{alg:merge}
 	\end{algorithm}
 	
+    \noindent Figure \ref{fig:connecting:match-before-after} shows the histories of two events, before and after a matching pair of actions have been found.
+    
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{4connect/images/match-before-after.pdf}
 		\caption{Actions of two merged histories before and after being matched.}
 		\label{fig:connecting:match-before-after}
-	\end{figure}
+	\end{figure}\todo[inline]{Make sure that timestamps match the previous figures, and that they are correct with regards to Lamport timestamps.}
 	
-	\todo[inline]{SØREN: Give an example. Pick a tiny DCR
-		graph, a distribution of it, and a run for
-		it, that you can use as an example
-		throughout the report.}
-	\todo[inline]{SØREN: I think you should move the definition
-		of valid history up here, and gives
-		some form of proof that following the
-		algorithm yields a valid history, and
-		that you have thus solved the
-		consensus problem in the special case
-		where no node is malicious/there are
-		no byzantine failures.}
+    \subsection{Correctness}
+    In order to show that we have solved the problem of merging histories, we must show that all existing happens before relations of the local histories are still preserved and that we have added all of the possible happens before relations across histories.\todo{Er possible godt nok?}
+    
+    \newpar Since the method takes the union of all of the histories action and happens before sets, and because no action and happens before relation are removed, all the existing actions and happens before relations are preserved in the global history, which means that all paths in the local histories are present in the global history.
+    
+    \newpar Given that the union of all local histories contains the actions of every message exchange that has happened in the workflow and we have found all matching actions, corresponding to every message exchange, then every message exchange must be part of the global history. Because we can only find happens before relations across processes when they have exchanged a message, we have found all happens before relations between events.
+    
+    \newpar If we do not assume that all local histories are valid, it is not possible to assert that the union of the local histories contains all the actions and happens before relations between the actions that has happened, and therefore the global history will not be a representation of the actual global history of the workflow. This also means that we cannot assert that message exchanges, and actions in general, are not created, omitted, or changed. In the end, the algorithm would return an invalid global history.
+    
+    \todo[inline]{Måske noget med at vi pga. dataen ikke kan gøre noget ved dette.}
+    
+	\todo[inline]{SØREN: I think you should move the definition of valid history up here, and gives form of proof that following the algorithm yields a valid history, and that you have thus solved the consensus problem in the special case where no node is malicious/there are no byzantine failures.}
     
     \section{Gathering of History}
-   
     To merge the histories together it is necessary to acquire access \todo{Fisk: "acquire access" lyder lidt underligt IMO. } to all the events of the DCR graph first. In a central server system where the server has access to all the individual events it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the history of each event individually. This method is simple and only relies on the central server to the extent that it in fact returns all the events of the DCR graph. 
     
     Unfortunately, central server systems have downfalls. Some of these downfalls include: if the server crashes then it is not possible to acquire access to any of the events, the server has to do the entire workload instead of distributing it out across the peers. 

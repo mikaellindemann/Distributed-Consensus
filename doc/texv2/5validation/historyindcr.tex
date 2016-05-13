@@ -1,11 +1,13 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
-\chapter{Validation of Histories}
-\label{chap:consensusindcr}
+\chapter{Validation of Histories}\label{chap:validation}
 	This chapter defines how histories from malicious events are observed and possibly identified.
 	
 	\newpar We introduce malicious nodes in a given distributed DCR graph. These nodes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
 	
+    \todo[inline]{Flyttet fra Background: The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.}\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
+    \todo[inline]{Flyttet fra Background: Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.}
+    
 	Traditionally malicious agents can tamper with messages in transfer by altering, replaying and withholding messages, as described in \cite{Coulouris:2011:DSC:2029110:chapter2}. We assume that any of these kinds of corruption of messages in transfer are not present in this system. 
 	
 	\newpar Therefore the kinds of cheating examined in this project are the following:
@@ -16,9 +18,7 @@
 	\section{Validating histories}
 	In order to identify malicious events in a given history, we need to define what a valid history is:
 	
-		\begin{definition}
-			A \textit{\textbf{Valid History}} is a history, for which it applies that all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. 
-		\end{definition}
+		\todo[inline]{This is where valid history was moved from!}
 		
 	This also introduces a special kind of cheating:
 	
