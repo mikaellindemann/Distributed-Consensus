@@ -198,5 +198,12 @@
 	
 	Certain issues arise if an event with neighbours is the last event in what would have been a produce cycle and due to tracing returns its own local history which would then be cached. This event would then never return the histories of its neighbours if contacted again from a different event, but would instead only return its own history due to caching. 
 	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.20\textheight]{4connect/images/caching.pdf}
+		\caption{An example of a recursive gathering where caching would result in a incomplete history being returned.}
+		\label{fig:connecting:caching}
+	\end{figure}
+	
 	The neighbours history of the neighbours would then only be produced once, and therefore pass through a single, possibly malicious, node. The lack of redundancy in the system therefore presents an issue when validating histories.
 	It is therefore necessary to produce redundant histories, which makes caching impossible.\todo{Vi snakkede om med søren på et tidspunkt at vi også hellere ville exploite DCR end at gøre det distribueret, og at der var flere muligheder for at snyde ved at gøre det på denne måde.}
