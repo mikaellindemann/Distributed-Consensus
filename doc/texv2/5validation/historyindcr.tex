@@ -1,7 +1,7 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Validation of Histories}\label{chap:validation}
-	This chapter defines how histories from malicious events are observed and possibly identified.
+	This chapter defines how histories from events on malicious processes are observed and possibly identified.
 	
 	\newpar We introduce malicious processes in distributed DCR graphs. These processes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
     
@@ -27,6 +27,8 @@
 	\end{definition}
 	
 	\noindent Definition \ref{def:inconsistentcheating} defines that inconsistent cheating is the act of creating a history which could not have happened, according to the rules of the workflow, serial equivalence or strict partial ordering of actions. Definition \ref{def:consistentcheating} defines that consistent cheating is the act of creating a history which could have happened, but did not.
+	
+	\newpar A malicious process is a process which participates in consistent or inconsistent cheating.
 	
 	\section{Inconsistent Cheating}
 	To examine inconsistent cheating in depth, we must explore cheating where each of the properties 2, 3, and 4 are violated. We will see that either property violation can be identified separately.
@@ -102,11 +104,11 @@
 	\noindent The algorithm used to check \autoref{rule:completeexecutions} for outgoing relations is also used to check \autoref{rule:non-disruptedexecutions}.
 	
 	\begin{ruledef}
-		\textbf{Wait for complete execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
+		\textbf{Wait for complete execution}: A given event, $A$ must be affected by all its ingoing relations from an event, $B$ when $B$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
 		\label{rule:wait-for-complete-execution}
 	\end{ruledef}
 	
-	\noindent Figure \ref{fig:validation:wait-for-complete-execution} shows a situation where $B$ is included by $A$ but executes before the other relation from $A$ is present in the history.
+	\noindent Figure \ref{fig:validation:wait-for-complete-execution} shows a situation where $B$ is included by $A$ but executes before the response relation from $A$ is present in the history.
 	
 	\begin{figure}[H]
 		\centering
@@ -115,62 +117,78 @@
 		\label{fig:validation:wait-for-complete-execution}
 	\end{figure}
 	
-	\noindent The algorithm used to check \autoref{rule:completeexecutions} for incoming relations is also used to check\autoref{rule:non-disruptedexecutions}.
+	\noindent The algorithm used to check \autoref{rule:completeexecutions} for incoming relations is also used to check \autoref{rule:non-disruptedexecutions}.
 	
 	\subsection{Lamport's Logical Clocks}
-	A given history must abide the rules of being a strict partial order. That includes the following:
+	A given history must conform to the rules of Lamport's logical clocks. That includes the following:
 	
-	\newpar \textbf{Total Order of Local Timestamps}: Every action in the history of an event must be in strict total order according to the timestamp.
+	\begin{ruledef}
+		\textbf{Total Order of Timestamps}: Every action in the local history of an event must have a timestamp less than the timestamp of any action it happens before.
+		\label{rule:total-order-timestamps}
+	\end{ruledef}
 	
-	This kind of inconsistency can be checked by examining each action on a single event. If the timestamps are not increasing for each edge in the graph then the event must be cheating. 
+	\noindent This kind of inconsistency can be checked by examining each action on a single event. If the timestamps are not increasing for each edge in the graph then the event must be cheating.
 	
-	\newpar \textbf{Total Order of Counterpart Timestamps}: In the history of an event actions with the same counterpart ID must have its counterpart timestamp in strict total order.  The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be be lower.
+	\begin{ruledef}
+		\textbf{Message Exchange Timestamp Order}: For every pair of actions that represent a message exchange, the timestamp of the outgoing action must be less than the timestamp of the incoming action.
+		\label{rule:message-exchange-timestamp-order}
+	\end{ruledef}
 	
-	A validation of this kind of inconsistency can be done on each single event. Since each action that is part of an relation must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. If a new timestamp for a counterpart is lower then the event must be malicious.
+	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
 	
-	\newpar \textbf{Outgoing Relations Timestamp Order}: When an action is part of an outgoing relation the counterpart's corresponding action's timestamp must be higher than the outgoing one.
+	\begin{ruledef}
+		\textbf{Total Order of Counterpart Timestamps}: In the local history of an event, actions with the same counterpart ID must have a counterpart timestamp less than the counterpart timestamp of all other actions with the same counterpart ID that it happened before. The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be one lower.
+		\label{rule:total-order-counterpart-timestamps}
+	\end{ruledef}
 	
-	A validation of this kind of inconsistency can be done on each single event. Each outgoing action can be examined. If their counterpart is not larger than their own then the event is malicious.
+	\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. \todo{Husk at skrive dette!} If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
 	
-	\newpar Together, these rules make sure that no cycles can exist. If any action on an outgoing edge must have a higher timestamp than the the one preceding it, it will never be so that an edge can go to a previous action, since such an action would have a lower timestamp. This is illustrated in \autoref{fig:validation:cycle-prevention}.
+	\newpar Because histories are represented as directed acyclic graphs, cycles must not exist. Rule \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} makes it possible to observe cycles and identify the local histories from where the cycles originate.
 	
-	\figuretodo{udvid figur til at vise hvordan hvilke situationer der kan opstå i alle tre tilfælde}
+	Together, these rules make sure that no cycles can exist. If an action happens before another action with a lower timestamp, at least one of rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} have been violated. Examples of violations of rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} are shown in figures \ref{fig:validation:message-exchange-timestamp-order-cycle} and \ref{fig:validation:message-exchange-timestamp-order-cycle}.
+	
     \begin{figure}[H]
 		\centering
-		\includegraphics[]{5validation/images/cycle-prevention.pdf}
-		\caption{CAPTION.}
-		\label{fig:validation:cycle-prevention}
+    	\begin{minipage}{.45\textwidth}
+			\includegraphics[width=.89\textwidth]{5validation/images/total-order-of-timestamps-cycle.pdf}
+			\caption{An example of two histories forming a cycle by violation of \autoref{rule:total-order-timestamps}.}
+			\label{fig:validation:total-order-of-timestamps-cycle}
+    	\end{minipage}
+		\hfill
+		\begin{minipage}{.45\textwidth}
+	    	\includegraphics[width=\textwidth]{5validation/images/message-exchange-timestamp-order-cycle.pdf}
+	    	\caption{An example of three histories forming a cycle by violation of \autoref{rule:message-exchange-timestamp-order}.}
+	    	\label{fig:validation:message-exchange-timestamp-order-cycle}
+		\end{minipage}
 	\end{figure}
 	
+	\noindent On \autoref{fig:validation:total-order-of-timestamps-cycle} a cycle is created when event $A$ changes the order of its actions, violating \autoref{rule:total-order-timestamps} while still keeping the timestamps of message exchanges in an increasing order.
+	
+	\newpar On \autoref{fig:validation:message-exchange-timestamp-order-cycle} a cycle is created when timestamps of message exchanges are not kept in an increasing order, violating \autoref{rule:message-exchange-timestamp-order}. The timestamps of actions in the local histories are in increasing order which means that \autoref{rule:total-order-timestamps} is not violated.
+	
 	\section{Consistent Cheating}
-	\todo[inline]{Søren: Up until now, and I fear it will continue,
-		chapter 5 has been quite hard to
-		follow. As a reader you get the
-		impression that I'm just plowing the
-		web a rise of definitions that has, yes,
-		something to do with DCR graphs and
-		executing histories, but the exact
-		connection is not clear to me, nor
-		where we're going. I think you might
-		need a bit more text helping the reader
-		along the way, with comments like "We
-		now look at the problem of ... We saw
-		this with timestamps, which help}
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
 
-	\todo[inline]{The definition of consistent cheating waz here}
-	
 	\newpar Consistent cheating can take a number of forms:
 
-	\noindent \textbf{Incorrect timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still being in accordance to Lamport's logical clocks
+	\begin{ruledef}
+		\textbf{Incorrect timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still being in accordance to Lamport's logical clocks
+	\end{ruledef}
+	
 	\figuretodo{to historikker der er ens bortset fra timestamps}
 	The only actions which more that one event know of are the action which are part of a relation. The consequence of this is that it is only possible to check if events disagree on the timestamps of these actions and not the rest. To make this validation each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the events must be malicious. 
 	
-	\newpar \textbf{Incorrect number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.
+	\begin{ruledef}
+		\textbf{Incorrect number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.		
+	\end{ruledef}
+
 	\figuretodo{to historikker hvor antallet af executions ikke matcher}
 	To check for this kind of cheating each pair of events that have relations are examined. If event A and event B is examined, then the amount of every outgoing action from A to B must match the amount of ingoing actions on B from A. If the amount does not match then one of the events must be malicious and vice versa.
 	
-	\newpar \textbf{Incorrect number of incoming actions}: The history of a malicious event states that it has been affected either fewer or more times than what has happened.
+	\begin{ruledef}
+		\textbf{Incorrect number of incoming actions}: The history of a malicious event states that it has been affected either fewer or more times than what has happened.
+	\end{ruledef}
+	
 	\figuretodo{to historikker hvor antallet af incoming groups ikke matcher }
 	This type of cheating is already checked for by the method introduced in the previous paragraph.
 	
@@ -315,6 +333,8 @@
     \todo[inline]{Flyttet fra Background herfra...}
     The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
     Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.\todo[inline]{... Flyttet fra Background hertil}
+    
+    \section{Observability and identifiability}
     
     \section{Correctness}
     Note that property 1 must be violated in order to violate either property 2, 3, or 4. 
