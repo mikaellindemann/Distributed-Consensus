@@ -114,35 +114,34 @@
     Therefore it is desirable to create a peer to peer-based gathering algorithm, but this introduces a new set of challenges.
     
     \subsection{Gathering Without a Central Server}
-	Presumed that it is desired to know nothing about the distribution events in the DCR graph, and therefore have no central all-knowing server handling gathering of history, an alternative approach of gathering history using recursive traversal of the DCR graph can be developed. The following section describes this approach, and the shortcomings of it. 
+    In order to use a peer-to-peer algorithm to gather history from a given workflow, it is necessary to study the structure of the distributed DCR graph.
+    
+    \newpar In distributed DCR graphs, events are connected only by their relations. Since there is no overall policy governing the placement of events on nodes in the network, a distributed DCR graph is unstructured. Therefore the only way of contacting events, is using recursive traversal of relations of events, and a single starting event must be known. The reachability of this event should preferably be the set of all other events in the workflow. If the reachability is a subset of all the events, then only a subset of all the local histories of the events can be gathered. Therefore the greater the reachability of the beginning event, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered if the DCR graph is not fully connected. This constitutes the first drawback of this approach.
 	
-	\newpar In order to gather history from a given workflow using recursive traversal, a single starting event must be known. The reachability of this event should preferably be the set of all other events in the workflow. If the reachability is a subset of all the events, then only a subset of all the local histories of the events can be gathered. Therefore the greater the reachability of the beginning event, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered if the DCR graph is not fully connected. This constitutes the first drawback of this approach.
-	
-	It is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursions.
+	It is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursion.
 		
-	\subsubsection{The Produce Algorithm}
+	\subsubsection{The Produce Algorithm\todo{Sørg for konsistens mellem antal af sections osv,}}
 	Given a DCR graph where all events are reachable from the starting event, the algorithm should gather and merge the histories of each event in the graph into one global history.
 	
-	This is accomplished by recursively contacting neighbouring events and asking them for their history while merging the neighbours' histories with its own history. To handle cycles, the use of a \textit{trace set} of previously contacted events is sent from each event to the next.
+	This is accomplished by recursively requesting the histories of neighbouring events and afterwards merging these histories with its own. To handle cycles, the use of a \textit{trace set} of previously contacted events is sent from each event to the next.
 	
-	\newpar The implementation of this solution uses two sets, called \texttt{request trace} and \texttt{wait for}, which is used for tracing and cycle avoidance respectively. The algorithm propagates throughout the graph using recursion while avoiding infinite cycles of requests. 
+	\newpar The implementation of this solution uses a set, called \texttt{request trace}, which is used for tracing and cycle avoidance respectively.
 	
-	When an event receives a request for its history, it adds every neighbouring event to \texttt{wait for}, and \texttt{request trace} set is subtracted from the \texttt{wait for} set. If the \texttt{wait for} is the empty set, the history of the event is returned. If \texttt{wait for} is not empty the event sends requests to all events in \texttt{wait for} with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce}. A run of the produce algorithm is illustrated in \autoref{fig:connecting:recursive}.
+	When an event receives a request for its history, it subtracts all the events from the \texttt{request trace} from the set of its neighbours. The result is the set of events to request history from. If this set is empty, the history of the event is returned. If the set is not empty the event sends requests to all of the events with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce}. A run of the algorithm is illustrated in \autoref{fig:connecting:recursive}.
 	
 	\begin{algorithm}
 		\begin{algorithmic}
 			\State Event receives request for history with a \texttt{request trace}, $T$.
-			\State Event has internal \texttt{wait for}, $W$
 			\State
 			\Function{Produce}{T, event}
-				\State $W\gets$ \Call{Minus}{event.Neighbours, $T$}\Comment{Cycle-avoidance}
-				\If {$W=\emptyset$}
+				\State waitFor $\gets$ \Call{Minus}{event.Neighbours, $T$}\Comment{Subtract $T$ from neighbours.}
+				\If {waitFor $= \emptyset$}
 					\Return event.History
 				\Else
 					\State $T'\gets$\Call{Add}{event.Id, T}
 					\State
 					\State gatheredHistories $\leftarrow$ event.History
-					\ForAll {$event'$ in $W$} 
+					\ForAll {$event'$ in waitFor} 
 						\State history' $\leftarrow$ \Call{Produce}{$T'$, $event'$}\Comment{Requests history of $event'$ recursively}
 						\State gatheredHistories $\leftarrow$ \Call{Merge}{history', gatheredHistories}
 					\EndFor
