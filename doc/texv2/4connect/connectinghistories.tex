@@ -153,12 +153,19 @@
 		\caption{The \textit{\textbf{Produce}} algorithm}
 		\label{alg:produce}
 	\end{algorithm}
-		
+	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{4connect/images/recursive.pdf}
-		\caption{An illustration showing the recursive traversal through a graph. Note the avoidance of creating a deadlock.}
-		\label{fig:connecting:recursive}
+		\caption{An illustration showing the recursive traversal the DCR graph seen on \autoref{fig:connecting:dcr-graph-cycle}. Note the avoidance of creating a deadlock.}
+		\label{fig:connecting:dcr-graph-cycle}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.15\textheight]{4connect/images/dcr-graph-cycle.pdf}
+		\caption{An example of a DCR graph with cycles.}
+		\label{fig:connecting:dcr-graph-cycle}
 	\end{figure}
 		
 	\newpar This algorithm is in fact a modified version of the \textit{flooding search algorithm} \todo{Kapitel 6, side 250 distributed bog} for searching in unstructured peer to peer networks. Contrary to the flooding algorithm, the produce algorithm not only returns the value at the searched for node, but returns every value at every reachable node. The flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more efficiently in the produce algorithm. Furthermore in the produce algorithm, every path to a node returns the value of that node. 
