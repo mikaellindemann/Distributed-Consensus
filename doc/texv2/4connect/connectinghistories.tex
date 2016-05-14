@@ -120,8 +120,8 @@
 	
 	\newpar In order to gather history from a given workflow using recursive traversal, a single starting event must be known. The reachability of this event should preferably be the set of all other events in the workflow. If the reachability is a subset of all the events, then only a subset of all the local histories of the events can be gathered. Therefore the greater the reachability of the beginning event, the more complete the gathered history will be. It can therefore not be guaranteed that history from every event will be gathered if the DCR graph is not fully connected. This constitutes the first drawback of this approach.
 	
-	Therefore it is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursions.\todo{Det er underligt at denne sætning starter med therefore når den foregående siger noget om en drawback der ikke gøres noget ved.}
-	
+	It is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursions.
+		
 	\subsubsection{The Produce Algorithm}
 	Given a DCR graph where all events are reachable from the starting event, the algorithm should fetch and merge the histories of each event in the graph into one global history.
 	
