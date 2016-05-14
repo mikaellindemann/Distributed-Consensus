@@ -98,13 +98,13 @@
     \newpar Given that the union of all local histories contains the actions of every message exchange that has happened in the workflow and we have found all matching actions, corresponding to every message exchange, then every message exchange must be part of the global history. Because we can only find happens before relations across processes when they have exchanged a message, we have found all happens before relations between events.
     
     \newpar Why it is necessary to assume that all local histories are valid, we must first describe the implications of local histories being invalid. If we do not assume that all local histories are valid, it is not possible to assert that the union of the local histories contains all the actions and happens before relations between the actions that have happened, and therefore the global history will not be a representation of the actual global history of the workflow. This also means that we cannot assert that message exchanges, and actions in general, are not created, omitted, or changed. In the end, the algorithm could return an invalid global history if we do not assume that all local histories are valid.
-    
+
     \section{Gathering of History}
     To merge the histories together it is necessary to acquire the local histories of the events of the DCR graph. In a central server system where the server has access to all the individual events, it is a trivial task to gather the histories. Simply request the server to get access to all the events and then request the histories of each event individually. This method is simple and only relies on the central server to get the addresses of all the events in the workflow. Furthermore the amount of messages sent to recieve all histories is $2N+2$ where N denotes the amount of events in the system. This is because the client has to send a message to the server and receive a response from it. Afterwards it has to create a message exchange with each of the events. An illustration of this architecture is shown on \autoref{fig:connecting:server-contacts-events}.
     
     \begin{figure}[H]
     	\centering
-    	\includegraphics[height=\textheight/6]{4connect/images/server-contacts-events.pdf}
+    	\includegraphics[width=\textwidth]{4connect/images/server-contacts-events.pdf}
     	\caption{The client requesting history from events and receiving it.}
     	\label{fig:connecting:server-contacts-events}
     \end{figure}\figuretodo{Tilføj server til figur, og sæt en slags timestamp så man kan se at serveren blev kontaktet før eventsne.}
