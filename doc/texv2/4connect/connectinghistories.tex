@@ -125,11 +125,11 @@
 	\subsubsection{The Produce Algorithm}
 	Given a DCR graph where all events are reachable from the starting event, the algorithm should gather and merge the histories of each event in the graph into one global history.
 	
-	This is accomplished by recursively contacting neighbouring events and asking them for their history while merging the neighbours' histories with its own history. To handle cycles, the use of a trace set of previously contacted events is sent from each event to the next.
+	This is accomplished by recursively contacting neighbouring events and asking them for their history while merging the neighbours' histories with its own history. To handle cycles, the use of a \textit{trace set} of previously contacted events is sent from each event to the next.
 	
 	\newpar The implementation of this solution uses two sets, called \texttt{request trace} and \texttt{wait for}, which is used for tracing and cycle avoidance respectively. The algorithm propagates throughout the graph using recursion while avoiding infinite cycles of requests. 
 	
-	When an event receives a request for its history, it adds every neighbouring event to \texttt{wait for}. Then every event in the \texttt{request trace} set is subtracted from the \texttt{wait for} set. If the \texttt{wait for} is the empty set, the history of the event is returned. If \texttt{wait for} is not empty the event sends requests to all events in \texttt{wait for} with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce}. A run of the produce algorithm is illustrated in \autoref{fig:connecting:recursive}.
+	When an event receives a request for its history, it adds every neighbouring event to \texttt{wait for}, and \texttt{request trace} set is subtracted from the \texttt{wait for} set. If the \texttt{wait for} is the empty set, the history of the event is returned. If \texttt{wait for} is not empty the event sends requests to all events in \texttt{wait for} with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce}. A run of the produce algorithm is illustrated in \autoref{fig:connecting:recursive}.
 	
 	\begin{algorithm}
 	\begin{algorithmic}
