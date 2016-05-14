@@ -97,7 +97,7 @@
     
     \newpar Given that the union of all local histories contains the actions of every message exchange that has happened in the workflow and we have found all matching actions, corresponding to every message exchange, then every message exchange must be part of the global history. Because we can only find happens before relations across processes when they have exchanged a message, we have found all happens before relations between events.
     
-    \newpar If we do not assume that all local histories are valid, it is not possible to assert that the union of the local histories contains all the actions and happens before relations between the actions that have happened, and therefore the global history will not be a representation of the actual global history of the workflow. This also means that we cannot assert that message exchanges, and actions in general, are not created, omitted, or changed. In the end, the algorithm would return an invalid global history if we do assume that all local histories are valid.
+    \newpar If we do not assume that all local histories are valid, it is not possible to assert that the union of the local histories contains all the actions and happens before relations between the actions that have happened, and therefore the global history will not be a representation of the actual global history of the workflow. This also means that we cannot assert that message exchanges, and actions in general are not created, omitted, or changed. In the end, the algorithm would return an invalid global history if we do assume that all local histories are valid.
     
     \todo[inline]{Måske noget med at vi pga. dataen ikke kan gøre noget ved dette.}
     
@@ -106,7 +106,7 @@
     
     \begin{figure}[H]
     	\centering
-    	\includegraphics[height=\textheight/6]{4connect/images/server-contacts-events.pdf}
+    	\includegraphics[width=\textwidth]{4connect/images/server-contacts-events.pdf}
     	\caption{The client requesting history from events and receiving it.}
     	\label{fig:connecting:server-contacts-events}
     \end{figure}
