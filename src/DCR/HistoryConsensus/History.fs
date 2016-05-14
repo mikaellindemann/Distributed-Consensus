@@ -31,6 +31,15 @@ module History =
             | None -> None
             | Some graph -> stitch graph histories'
 
+    let rec union (localHistory:Graph) (histories:Graph list) : Graph option =
+        match histories with
+        | [] -> Some localHistory
+        | history::histories' -> 
+            let historyAsSet = Set.ofList <| Map.toList history.Nodes
+            let localHistoryAsSet = Set.ofList <| Map.toList localHistory.Nodes
+            let unionList = Set.union historyAsSet localHistoryAsSet |> Set.toList
+            union ({Nodes=Map.ofList unionList}) histories'
+
     /// Externally calls the produce request on neighboring nodes, and returns the result as
     /// an option type.
     let callProduce eventId trace uri =

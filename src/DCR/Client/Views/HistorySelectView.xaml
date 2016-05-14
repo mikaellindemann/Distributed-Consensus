@@ -33,7 +33,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding UseDummyConnection, Mode=TwoWay}" IsEnabled="{Binding CanPressButtons}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" CheckedContent="Test histories" UncheckedContent="Real Histories" Width="125" />
+                <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding UseDummyConnection, Mode=TwoWay}" IsEnabled="{Binding CanPressButtons}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" CheckedContent=" Test histories " UncheckedContent=" Real Histories " Width="140" />
             </StackPanel>
             <TextBlock 
                 DockPanel.Dock="Right" 
@@ -86,6 +86,10 @@
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Filter malicious Events" HorizontalAlignment="Center"/>
                         <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" IsEnabled="{Binding ShouldValidate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <Label Content="Merging" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldMerge, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Collapsing" HorizontalAlignment="Center"/>

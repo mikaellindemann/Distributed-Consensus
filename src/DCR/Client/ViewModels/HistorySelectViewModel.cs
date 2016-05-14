@@ -34,12 +34,14 @@ namespace Client.ViewModels
         private bool _canPressButtons;
         private bool _useDummyConnection;
 
-        private bool 
+        private bool
             _shouldValidate = true,
             _shouldFilter = true,
+            _shouldMerge = true,
             _shouldCollapse = true,
             _shouldReduce = true,
             _shouldSimulate = true;
+            
 
         private string _executionTime;
         private string _status;
@@ -158,6 +160,17 @@ namespace Client.ViewModels
             }
         }
 
+        public bool ShouldMerge
+        {
+            get { return _shouldMerge; }
+            set
+            {
+                if (_shouldMerge == value) return;
+                _shouldMerge = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public bool ShouldCollapse
         {
             get { return _shouldCollapse; }
@@ -240,9 +253,16 @@ namespace Client.ViewModels
                     localHistories = localHistories.Where(id => wrongHistories.All(badTuple => badTuple.Item1 != id.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);                    
                 }
                 Graph.Graph mergedGraph = Graph.empty;
-                if (localHistories.Count != 0) // can only merge if there is something to remove
+                if (localHistories.Count != 0) // can only merge if there is something to merge
                 {
-                    mergedGraph = await Merging(localHistories);
+                    if (ShouldMerge) 
+                    {
+                        mergedGraph = await Merging(localHistories);
+                    }
+                    else
+                    {
+                        mergedGraph = await Union(localHistories);
+                    }
                 }
                 if (ShouldCollapse)
                 {
@@ -299,6 +319,18 @@ namespace Client.ViewModels
                         .Select(tuple => tuple.Value));
 
             var result = await Task.Run(() => History.stitch(first, rest));
+            return FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
+        }
+
+        private static async Task<Graph.Graph> Union(Dictionary<string, Graph.Graph> localHistories)
+        {
+            var first = localHistories.First().Value;
+            var rest =
+                ToFSharpList(
+                    localHistories.Where(elem => !ReferenceEquals(elem.Value, first))
+                        .Select(tuple => tuple.Value));
+
+            var result = await Task.Run(() => History.union(first, rest));
             return FSharpOption<Graph.Graph>.get_IsSome(result) ? result.Value : null;
         }
 
