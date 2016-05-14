@@ -107,7 +107,7 @@
     	\includegraphics[width=\textwidth]{4connect/images/server-contacts-events.pdf}
     	\caption{The client requesting history from events and receiving it.}
     	\label{fig:connecting:server-contacts-events}
-    \end{figure}\figuretodo{Tilføj server til figur, og sæt en slags timestamp så man kan se at serveren blev kontaktet før eventsne.}
+    \end{figure}
     
     \newpar Unfortunately, central server systems have drawbacks. E.g. if the server crashes or if it is busy processing other requests, then it is not possible to acquire the addresses of any of the events.
     
@@ -160,21 +160,21 @@
 		\label{fig:connecting:recursive}
 	\end{figure}
 		
-	\newpar This algorithm is in fact a modified version of the \textit{flooding search algorithm} \todo{Kapitel 6, side 250 distributed bog} for searching in unstructured peer to peer networks. Contrary to the flooding algorithm, the produce algorithm not only returns the value at the searched for node, but returns every value at every reachable node. The flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more efficiently in the produce algorithm. Furthermore in the produce algorithm, every path to a node returns the value of that node. 
+	\newpar This algorithm is in fact a modified version of the \textit{flooding search algorithm} \todo{Kapitel 6, side 250 distributed bog} for searching in unstructured peer-to-peer networks. Contrary to flooding, the produce algorithm not only returns the value at the searched for node, but returns every value at every reachable node. The flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more efficiently in the produce algorithm. Furthermore in the produce algorithm, every path to a node returns the value of that node.
 	
 	\subsubsection{Correctness}
-	To argue that the produce algorithm correctly gathers all the local histories in the workflow we must show that every event is contacted. Since the algorithm takes the neighbour of every contacted event, and the beginning event has a reachability of every event in the workflow, the set of contacted events must be all events in the workflow. If it is assumed that every event returns their history, as well as any recursively contacted event, then every history of the workflow must be returned to the beginning node. 
+	To argue that the produce algorithm correctly gathers all the local histories in the workflow we must show that every event is contacted. Since the algorithm contacts the neighbour of every contacted event, and the beginning event has a reachability of every event in the workflow, the set of contacted events must be all events in the workflow. If it is assumed that every event returns their history, as well as any recursively contacted event, then every history of the workflow must be returned to the beginning node. 
 	
 	The assumption that every event returns the history of every recursively contacted event, is unsafe in systems with Byzantine errors.
 	
 	\subsubsection{Issues with Recursive Traversal of the Distributed Graph}
-	\todo[inline]{Omformulér afsnit om, at det er tæt på umuligt at validere historik (specielt vha. DCR-regler) uden at kende hele workflowet.}
+	If malicious processes are introduced in the DCR graph, the problem similar to not having full reachability from the beginning event arise. If the path to a given event, goes through an event on a malicious process, then that malicious process can either add, remove or change the history. That implies that any history retrieved from that event, might not be valid. The effects of this malicious behavior is worsened if the path to a great number of events goes through a malicious process. An illustration of this effect is shown in \autoref{fig:connecting:recursive-evil-node}. If there exists no path to an event that does not go through a malicious process, then the beginning node will potentially not have any valid version of that history. Even if it is possible to assert that the history is invalid, it is not possible to identify which event along the path has acted maliciously.
 	
-	If malicious processes are introduced in the DCR graph, the problem similar to not having full reachability from the beginning event arise. If the path to a given event, goes through an event on a malicious process, then that malicious process can either add, remove or change the history. That implies that any history retrieved from that event, might not be valid. The effects of this malicious behavior is worsened if the event is reached early on during the gathering. An illustration of this is shown in \autoref{fig:connecting:recursive-evil-node}. If there exists no path to an event that does not go through a malicious process, then the beginning node will potentially not have any valid version of that history. Even if it is possible to assert that the history is invalid, it is not possible to identify which event along the path has acted maliciously.
+	\newpar Furthermore, this uncertainty is amplified because for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existing events. Therefore some action must be taken to handle these pitfalls.
 	
-	\newpar That is, if the neighbouring events do not know enough of each other, there is no way of making sure that the returned history is correct. Furthermore, this uncertainty is amplified due to the fact that for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existent events. Therefore some action must be taken to handle these pitfalls.
+	\newpar One way to handle processes changing and adding histories of other events is to sign the histories before returning them to the requester. This is the approach to solve the Byzantine Generals Problem. Since the process starting the produce algorithm, does not know the address of all events, then it is possible for other processes to sign changed or added histories with its own certificate, and tell anyone who want to confirm the certificate to contact the malicious process itself. In order for these certificates to be effective, all processes must therefore know the certificate or location of any other process in the system.
 	
-	The requirements for making it possible to validate the gathered history are described in the following section. 
+	\newpar If the certificates of all processes are known beforehand, a security breach would leave the entire system open for attacks. On the other hand, if the addresses of all events are known, then we have a situation where the central server algorithm is sufficient, because certificates of messages are no longer required, under the assumption that man-in-the-middle attacks does not occur.
 	
 	\begin{figure}[H]
 		\centering
@@ -182,7 +182,6 @@
 		\caption{A malicious node in a graph. Note that it is not possible to ensure that any history passing through the malicious node is valid.}
 		\label{fig:connecting:recursive-evil-node}
 	\end{figure}
-	\todo[inline]{Mikael: Det er lidt mærkeligt at det øverste E2 også er farvet delvist rødt?\\Fisk: Den er delvist farvet, da den kan være fucked up, hvis E1 får historik fra den via E2. Slutteligt skal vi slef. lige sige, at denne algoritme derfor ikke er anvendt.\\Mikael: Men man får jo både historikken fra E6 og E2, men du har nok ret.}
 	
 	\subsubsection{Performance}
 	This algorithm has a worst case message performance is exponential. \todo{Fisk: What?} This is due to the want to have redundant history every path from a given node to any other reachable node needs to be examined. The worst case is when the graph is fully connected and every node therefore has a node to any other node. High connectivity in the graph is a wanted property since it allows for better validation of the histories. \todo{Fisk: Måske uddyb hvorfor dette er tilfældet? Eller i hvert fald så kæde sammen med nedenstående?}
