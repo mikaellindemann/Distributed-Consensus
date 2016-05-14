@@ -191,11 +191,9 @@
 	\end{figure}
 	
 	\subsubsection{Performance}
-	This algorithm has a worst case message performance is exponential. \todo{Fisk: What?} This is due to the want to have redundant history every path from a given node to any other reachable node needs to be examined. The worst case is when the graph is fully connected and every node therefore has a node to any other node. High connectivity in the graph is a wanted property since it allows for better validation of the histories. \todo{Fisk: Måske uddyb hvorfor dette er tilfældet? Eller i hvert fald så kæde sammen med nedenstående?}
+	The produce algorithm sends an exponential number of messages in the amount of events in the worst case. Redundant history from every path from a given node to any other reachable node is wanted. This is the reason that the complexity is exponential. The worst case is when the graph is fully connected and every node therefore has an edge to any other node. High connectivity in the graph is a wanted property since it allows for better validation of the histories. This is explained in \autoref{chap:validation}.
 	
-	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents new problems. 
-	
-	Certain issues arise if an event with neighbours is the last event in what would have been a produce cycle and due to tracing returns its own local history which would then be cached. This event would then never return the histories of its neighbours if contacted again from a different event, but would instead only return its own history due to caching. 
+	\newpar Caching history produced of an event before transferring it to a requesting event could improve performance, but presents a new problem. This problem is most easily illustrated with a figure. In \autoref{fig:connecting:caching} we have a situation where 4 events, $A$, $B$, $C$, and $D$ gather histories. $A$ starts by contacting $B$, which in turn contacts $C$ who contacts $D$. $D$ returns its local history to $C$ because $B$ is already part of the trace. $C$ then caches the result of $D$ and its local history. $C$ then returns the history to $B$ who caches the result along with its local history. $B$ returns the history to $A$, who can then contact $C$ for its history. When $C$ is contacted, it just returns its cached history, which does not contain the history of $B$. The history of $B$ can therefore not be confirmed on multiple paths.
 	
 	\begin{figure}[H]
 		\centering
