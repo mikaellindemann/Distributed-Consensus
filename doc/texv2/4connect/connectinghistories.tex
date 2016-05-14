@@ -91,7 +91,7 @@
 	\end{figure}
 	
     \subsection{Correctness}
-    In order to show that we have solved the problem of merging histories, we must show that all existing happens before relations of the local histories are still preserved and that we have added all of the possible happens before relations across histories.\todo{Er possible godt nok?}
+    In order to show that we have solved the problem of merging histories, we must show that all existing happens before relations of the local histories are still preserved and that we have added all of the possible happens before relations across histories.
     
     \newpar Since the method takes the union of all of the histories, which implies the union of all the action sets and happens before sets, and because no actions or happens before relations are removed, all the existing actions and happens before relations are preserved in the global history, which means that all paths in the local histories are present in the global history.
     
@@ -111,7 +111,7 @@
     	\label{fig:connecting:server-contacts-events}
     \end{figure}
     
-    \newpar Unfortunately, central server systems have drawbacks. E.g. if the server crashes then it is not possible to acquire the addresses of any of the events and the server has to do the entire workload instead of distributing it out across the peers.\todo{Mikael: Jeg er med på den første del af denne sætning, men forstår ikke resten.}
+    \newpar Unfortunately, central server systems have drawbacks. E.g. if the server crashes then it is not possible to acquire the addresses of any of the events and the workload.
     
     Therefore it could be desirable to create a peer to peer-based gathering algorithm, but this introduces a new set of challenges.
     
@@ -132,32 +132,29 @@
 	When an event receives a request for its history, it adds every neighbouring event to \texttt{wait for}, and \texttt{request trace} set is subtracted from the \texttt{wait for} set. If the \texttt{wait for} is the empty set, the history of the event is returned. If \texttt{wait for} is not empty the event sends requests to all events in \texttt{wait for} with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce}. A run of the produce algorithm is illustrated in \autoref{fig:connecting:recursive}.
 	
 	\begin{algorithm}
-	\begin{algorithmic}
-		\State Event receives request for history with a \texttt{request trace}, $T$.
-		\State Event has internal \texttt{wait for}, $W$
-		\State
-		
-		\Function{Produce}{T, W, event}
-			\State $W\gets$ \Call{Union}{$W$, event.Neighbours}\Comment Add all neighbouring events to \texttt{wait for}.
-			\If {$W=\emptyset$}
-				\Return own history
-			\Else
-				\State $W\gets$\Call{Minus}{W, T}\Comment Remove every event in $T$ from $W$. Cycles avoided.
-				\State $T'\gets$\Call{Append}{event.Id, T}\Comment Append own event ID to $T$.
-				\State
-				\ForAll {$w$ in $W$} 
-					\State request history from $w$ with $T'$
-				\EndFor
-				\State wait for receiving histories
-				\State merge received histories with own history
-				\State
-				\Return merged histories
-			\EndIf
-		\EndFunction
-	\end{algorithmic}
-	\caption{The \textit{\textbf{Produce}} algorithm}
-	\label{alg:produce}
-	\end{algorithm}\todo{Mikael: Er wait for ikke altid det samme som naboerne? Jeg har i øvrigt forsøgt at gøre det lidt mere pseudo end f\#}
+		\begin{algorithmic}
+			\State Event receives request for history with a \texttt{request trace}, $T$.
+			\State Event has internal \texttt{wait for}, $W$
+			\State
+			\Function{Produce}{T, event}
+				\State $W\gets$ \Call{Minus}{event.Neighbours, $T$}\Comment{Cycle-avoidance}
+				\If {$W=\emptyset$}
+					\Return event.History
+				\Else
+					\State $T'\gets$\Call{Add}{event.Id, T}
+					\State
+					\State gatheredHistories $\leftarrow$ event.History
+					\ForAll {$event'$ in $W$} 
+						\State history' $\leftarrow$ \Call{Produce}{$T'$, $event'$}\Comment{Requests history of $event'$ recursively}
+						\State gatheredHistories $\leftarrow$ \Call{Merge}{history', gatheredHistories}
+					\EndFor
+					\State\Return gatheredHistories
+				\EndIf
+			\EndFunction
+		\end{algorithmic}
+		\caption{The \textit{\textbf{Produce}} algorithm}
+		\label{alg:produce}
+	\end{algorithm}
 		
 	\begin{figure}[H]
 		\centering
