@@ -35,33 +35,88 @@
 	A given local history must abide to the rules of the workflow it has been created from. 
 	In order to validate a local history against these rules, the events, their relations and the initial state of the workflow must be known. The following sections each describe an assertion that can be made in order to guarantee that the history has followed the rules of the workflow.\todo{Revise the last sentence}
 	
-	\newpar \textbf{Valid relations}: The local history of an event must only contain outgoing actions to events it has relations to in the workflow. Similarly the local history of an event must only contain incoming actions from events that has relations to it in the workflow.\todo{Sørg for at dette er defineret således at typerne skal være klare i forhold til historikken.}
+	\newpar As seen in \autoref{chap:representing-a-history} actions are based on the effects that happen when an event executes. Actions match the relations of a workflow, if the event ID, counterpart ID and action type correspond to the start node, end node, and type of the relation in the DCR graph. We will use this notion to explain the DCR rules that a history must follow.
 	
-	\figuretodo{figur der viser en action i en execution der ikke skal være der - og en anden der har en ingoing der ikke skal være der.}
-	The validation of valid relations can be done by examining every action in the local history, and for each outgoing and incoming action, the counterpart and action type must be present in the rules of the workflow.
+	\begin{ruledef}
+		\textbf{Only specified relations}: The local history of an event must only contain actions of corresponding relations in the workflow.
+		\label{rule:validrelations}
+	\end{ruledef}
 	
-	\newpar \textbf{Complete executions}: A given event, $e1$ must have actions for each of its outgoing relation when executing. Each of the counterparts of these actions must have a corresponding action in their history after $e1$ has executed.
-	\figuretodo{Figur hvor der ikke er 2 outgoing selvom den burde}
-	\figuretodo{figur hvor der ikke er 2 ingoing selvom den burde}
-	To check for this kind of inconsistency, each action in an execution can be examined. If an outgoing action is not represented for each relation that event has, then the event must be malicious. The same tactic applies for incoming actions.
+	\noindent An example of a DCR graph and the local histories of the events are shown in \autoref{fig:validation:only-specified-relations}. All events, $A$, $B$, and $C$, contain relations that are not specified in the workflow.
 	
-	\newpar \textbf{Executions only in Valid States}: The history of an event must only contain executions when the event is executable. That is, the event is included and all of its conditions are either excluded or executed. This implies that the entirety of the history must match a run of the DCR workflow it represents.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{5validation/images/only-specified-relations.pdf}
+		\caption{A DCR graph and three examples of local histories violating \autoref{rule:validrelations}.}
+		\label{fig:validation:only-specified-relations}
+	\end{figure}
 	
-	Checking for this kind of inconsistency is non trivial. A method of doing so is described in \autoref{sec:historyindcr:simulation}.
+	\noindent It can be validated that local histories adhere to \autoref{rule:validrelations} by examining every action, and for each outgoing and incoming action, the event, its counterpart, and action type must be present in the rules of the workflow.
+	
+	\begin{ruledef}
+		\textbf{Only complete executions}: A given event, $E$, must have actions for each of its outgoing relations when executing. Each of the counterparts of these actions must have a corresponding action in their history after $E$ has executed. For any execution there must be exactly one action of type \textup{Execute start} happening before a single action of type \textup{Execute finish}.
+		\label{rule:completeexecutions}
+	\end{ruledef}
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{5validation/images/only-complete-executions.pdf}
+		\caption{A DCR graph and two examples of local histories violating \autoref{rule:completeexecutions}.}
+		\label{fig:validation:only-complete-executions}
+	\end{figure}
+
+	\noindent In \autoref{fig:validation:only-complete-executions} event $A$ does not contain an outgoing action of type \textit{Sets pending} and event $B$ does not contain an incoming action of type \textit{Included by}.
+
+	\newpar In order to validate \autoref{rule:completeexecutions} for outgoing relations the following approach is taken: When an action of type \textit{Execute start} is encountered in the local history, a set of required actions for the execution is created from the rules of the workflow.
+	
+	For example, if event $A$ includes event $B$ and excludes itself, this set must contain an outgoing action corresponding to the inclusion of $B$, and two actions, one outgoing and one incoming, corresponding to the exclusion of event $A$ itself.
+	
+	Each consecutive action in the history, must be one of the actions in the set. The action is then removed from the set. When the set is empty, the next action in the history must have type \textit{Execute finish}.
+	
+	\newpar In order to validate \autoref{rule:completeexecutions} for incoming relations where the counterpart is not the event iself the following approach is taken: When an incoming action from an event $A$ is found, all actions corresponding to the remaining rules that specify that $A$ has a relation to the current event, is added. While the set is not empty, the consecutive actions in the history must exist in the set. An action is removed from the set when it is encountered.
+
+	\begin{ruledef}
+		\textbf{Executions only in Valid States}: The history of an event must only contain executions when the event is executable. This implies that the entirety of the history must match a run of the DCR graph it represents.
+		\label{rule:executionvalidstate}
+	\end{ruledef}
+	
+	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:historyindcr:simulation}.
 	
 	\subsection{Serial Equivalence Rules}
-	A given execution must abide the rules of serially equivalence. That includes the following:
+	A given execution must comply to the rules of serial equivalence. That includes the following:
 	
-	\newpar \textbf{Non-disrupted Executions}: A given event, $e1$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case an incoming action is allowed.
-	\figuretodo{en figur der viser en ingoing inde i en execution}
+	\begin{ruledef}
+		\textbf{Only non-disrupted executions}: A given event, $E$ must not contain ingoing relations or execute starts when already executing. Furthermore if an execution is started, it must also finish. The exception to the rule of ingoing relations is when an event has a relation to itself in which case that incoming action is allowed.
+		\label{rule:non-disruptedexecutions}
+	\end{ruledef}
 	
-	To check for this, the history of each event is iterated over, when an execute start is met, there must only be outgoing action types until the execute finish action type. In addition when an execute start action type is met there must be a corresponding execute finish, before any other execute start.
+	\noindent Figure \ref{fig:validation:only-non-disrupted-executions} shows an example where an execution of event $A$ is interrupted by an incoming action from another event.
 	
-	\newpar \textbf{Wait for Complete Execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
-	\figuretodo{Figur der viser en der bliver påvirket af en anden ind imellem at den blvier påvirker af en anden.}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.7\textwidth]{5validation/images/only-nondisrupted-executions.pdf}
+		\caption{A DCR graph and an example of a history where \autoref{rule:non-disruptedexecutions} is violated}
+		\label{fig:validation:only-non-disrupted-executions}
+	\end{figure}
+		
+	\noindent The algorithm used to check \autoref{rule:completeexecutions} for outgoing relations is also used to check \autoref{rule:non-disruptedexecutions}.
 	
-	To validate for this type of cheating, an algorithm which iterates over the history of each single event. When an ingoing action is met it looks up the DCR rules for that counterpart and makes sure that the following actions corresponds to those types, one by one.
-	%\subsection{History Graph Rules / Strict Partial Ordering}
+	\begin{ruledef}
+		\textbf{Wait for complete execution}: A given event, $e1$ must be affected by all its ingoing relations from an event, $e2$ when $e2$ executes before anything else happens. The exception to the rule is when an event has a relation to itself in which case actions from the execution are allowed before the next incoming action happens. 
+		\label{rule:wait-for-complete-execution}
+	\end{ruledef}
+	
+	\noindent Figure \ref{fig:validation:wait-for-complete-execution} shows a situation where $B$ is included by $A$ but executes before the other relation from $A$ is present in the history.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.7\textwidth]{5validation/images/wait-for-complete-execution.pdf}
+		\caption{A DCR graph and an example of a history where \autoref{rule:wait-for-complete-execution} is violated}
+		\label{fig:validation:wait-for-complete-execution}
+	\end{figure}
+	
+	\noindent The algorithm used to check \autoref{rule:completeexecutions} for incoming relations is also used to check\autoref{rule:non-disruptedexecutions}.
+	
 	\subsection{Lamport's Logical Clocks}
 	A given history must abide the rules of being a strict partial order. That includes the following:
 	
@@ -213,7 +268,7 @@
 	
 	\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing \todo{Fisk: Observing what?} 
 
-    \subsection{Simulation}\label{sec:historyindcr:simulation}
+    \section{Simulation}\label{sec:historyindcr:simulation}
     One of the more difficult validity properties to check is whether events have executed only when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its conditions also need to be taken into perspective, furthermore the state of the workflow most likely changes over time with each execution. In addition since the history is a strictly partially ordered set, some executions happen concurrently which does not match physical time in which the events have executed.\todo[inline]{Jeg har lidt svært ved at indlede dette afsnit, men jeg synes ikke det skal starte med at det her er sværere end de andre validations.}
     
     \newpar One approach to this problem is to simulate the executions of the workflow. To do so, it is required that the rules of the workflow and the initial state of every event in the workflow is known. Furthermore it is required that an order of execution has been found, this is examined in the next chapter but we assume it is available. 
