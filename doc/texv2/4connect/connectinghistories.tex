@@ -123,7 +123,7 @@
 	It is desired to develop an algorithm that, given an event with the desired reachability, is able to recursively gather all the local histories of the workflow. Since DCR graphs can contain cycles the algorithm also has to avoid endless recursions.
 		
 	\subsubsection{The Produce Algorithm}
-	Given a DCR graph where all events are reachable from the starting event, the algorithm should fetch and merge the histories of each event in the graph into one global history.
+	Given a DCR graph where all events are reachable from the starting event, the algorithm should gather and merge the histories of each event in the graph into one global history.
 	
 	This is accomplished by recursively contacting neighbouring events and asking them for their history while merging the neighbours' histories with its own history. To handle cycles, the use of a trace set of previously contacted events is sent from each event to the next.
 	
