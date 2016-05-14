@@ -3,33 +3,33 @@
 \chapter{Validation of Histories}\label{chap:validation}
 	This chapter defines how histories from malicious events are observed and possibly identified.
 	
-	\newpar We introduce malicious nodes in a given distributed DCR graph. These nodes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
-	
-	
-    \todo[inline]{Flyttet fra Background herfra...}
-    The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
-    Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.\todo[inline]{... Flyttet fra Background hertil}
+	\newpar We introduce malicious processes in distributed DCR graphs. These processes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
     
-	Traditionally malicious agents can tamper with messages in transfer by altering, replaying and withholding messages, as described in \cite{Coulouris:2011:DSC:2029110:chapter2}. We assume that any of these kinds of corruption of messages in transfer are not present in this system. 
+    \newpar As mentioned in \autoref{def:validhistory} the valid history has the following properties:
+    
+    \begin{enumerate}
+    	\item Actions in the history are not invented, changed or removed.
+    	\item The rules of the workflow are followed.
+    	\item The history abides to serial equivalence.
+    	\item The history is in a strict partial order.
+    \end{enumerate}
 	
-	\newpar Therefore the kinds of cheating examined in this project are the following:
+	\noindent Cheating is the act of creating histories which violates at least one of these properties. This leads us to two different kinds of cheating:
+	
 	\begin{definition}
-		\textbf{Cheating} is the act of not following the rules of the DCR graph workflow the event is part of, or the act of reporting a history which does not correspond to the executions the event is part of.
+		\textbf{Inconsistent cheating} violates property 1, and at least one of 2, 3, and 4.
+		\label{def:inconsistentcheating}
 	\end{definition}
 	
-	\section{Validating histories}
-	In order to identify malicious events in a given history, we need to define what a valid history is:
+	\begin{definition}
+		\textbf{Consistent cheating} violates property 1, but not 2, 3, and 4.
+		\label{def:consistentcheating}
+	\end{definition}
 	
-		\todo[inline]{This is where valid history was moved from!}
-		
-	This also introduces a special kind of cheating:
+	\noindent Definition \ref{def:inconsistentcheating} defines that inconsistent cheating is the act of creating a history which could not have happened, according to the rules of the workflow, serial equivalence or strict partial ordering of actions. Definition \ref{def:consistentcheating} defines that consistent cheating is the act of creating a history which could have happened, but did not.
 	
-		\begin{definition}
-			\textbf{Inconsistent cheating} is the act of manipulating a history in a way where the result is not valid.
-			\textbf{Inconsistent cheating} is the act of participating in the creation of histories which are not valid.
-		\end{definition}
-		
-	\todo{Fisk: Jeg føler lidt, at der mangler noget om consistent cheating her også, siden inconsistent nævnes. Evt. bare noget med, at det står senere.}
+	\section{Inconsistent Cheating}
+	To examine inconsistent cheating in depth,
 		
 	\subsection{DCR Rules}
 	A given execution must abide to the rules of the DCR graph it is part of. That includes the following:
@@ -100,10 +100,8 @@
 		now look at the problem of ... We saw
 		this with timestamps, which help}
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
-	\begin{definition}
-		\textbf{Consistent cheating} is the act of manipulating data in a way where the history is still valid.
-		\textbf{Consistent cheating} is the act of participating in the creation of histories which are incorrect, but valid.
-	\end{definition}
+
+	\todo[inline]{The definition of consistent cheating waz here}
 	
 	\newpar Consistent cheating can take a number of forms:
 
@@ -256,3 +254,12 @@
 	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog. Mikael: Jeg synes det er fedt at vi har anvendt viden fra det fag, men synes at det stikker lidt uden for de ting vi har sagt er nødvendigt for at forstå denne opgave. Jeg har også forsøgt at formulere i teksten ovenfor hvordan man kan anvende algoritmen til at finde denne order, men uden at gå alt for teknisk til værks.}, which also runs in linear time and is used to see if a knowledge base can entail a proposition.
 	
     \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.
+    
+    \todo[inline]{Flyttet fra Background herfra...}
+    The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
+    Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.\todo[inline]{... Flyttet fra Background hertil}
+    
+    \section{Correctness}
+    Note that property 1 must be violated in order to violate either property 2, 3, or 4. 
+    
+    If it is possible to detect both consistent and inconsistent cheating, then it is possible to decide if a history is valid or invalid.
