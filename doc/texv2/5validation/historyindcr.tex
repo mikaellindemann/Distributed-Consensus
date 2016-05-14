@@ -29,14 +29,16 @@
 	\noindent Definition \ref{def:inconsistentcheating} defines that inconsistent cheating is the act of creating a history which could not have happened, according to the rules of the workflow, serial equivalence or strict partial ordering of actions. Definition \ref{def:consistentcheating} defines that consistent cheating is the act of creating a history which could have happened, but did not.
 	
 	\section{Inconsistent Cheating}
-	To examine inconsistent cheating in depth,
+	To examine inconsistent cheating in depth, we must explore cheating where each of the properties 2, 3, and 4 are violated. We will see that either property violation can be identified separately.
 		
 	\subsection{DCR Rules}
-	A given execution must abide to the rules of the DCR graph it is part of. That includes the following:
+	A given local history must abide to the rules of the workflow it has been created from. 
+	In order to validate a local history against these rules, the events, their relations and the initial state of the workflow must be known. The following sections each describe an assertion that can be made in order to guarantee that the history has followed the rules of the workflow.\todo{Revise the last sentence}
 	
-	\newpar \textbf{Valid relations}: A given history for an event must only contain actions which represents relations to another event where there exists such a relation in the DCR graph definition and vice versa. 
-	\figuretodo{figur der viser en action i en execution der iokke skal være der - og en anden der har en ingoing der ikek skal være der.}
-	To check for this kind of inconsistency, every action for a particular event can be examined. If an action has an incorrect incoming or outgoing action type then that event must be malicious. 
+	\newpar \textbf{Valid relations}: The local history of an event must only contain outgoing actions to events it has relations to in the workflow. Similarly the local history of an event must only contain incoming actions from events that has relations to it in the workflow.\todo{Sørg for at dette er defineret således at typerne skal være klare i forhold til historikken.}
+	
+	\figuretodo{figur der viser en action i en execution der ikke skal være der - og en anden der har en ingoing der ikke skal være der.}
+	The validation of valid relations can be done by examining every action in the local history, and for each outgoing and incoming action, the counterpart and action type must be present in the rules of the workflow.
 	
 	\newpar \textbf{Complete executions}: A given event, $e1$ must have actions for each of its outgoing relation when executing. Each of the counterparts of these actions must have a corresponding action in their history after $e1$ has executed.
 	\figuretodo{Figur hvor der ikke er 2 outgoing selvom den burde}
