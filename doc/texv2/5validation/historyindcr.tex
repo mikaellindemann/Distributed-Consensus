@@ -84,6 +84,9 @@
 	
 	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:historyindcr:simulation}.
 	
+	\subsubsection{Correctness}
+	To argue that rules 1 through 3 covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. In the definition the relations are explained as pairs of events with a special type. Because these sets are finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in the workflow. Furthermore the finite set \textit{Act} is introduced as the set of actions that happens when an event executes. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition also states when an execution is executable and we will see in \autoref{sec:historyindcr:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements as to how it functions and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
+	
 	\subsection{Serial Equivalence Rules}
 	A given execution must comply to the rules of serial equivalence. That includes the following:
 	
@@ -187,9 +190,17 @@
 	
 	\newpar Recall that the definition of inconsistent cheating specified that actions could be added, removed or changed and the resulting history must violate at least one of the properties 2, 3 and 4 of valid histories. To argue that every violation of a property is covered, each of them are examined in detail:
 	
-	\subsubsection{DCR}
+	
 	
 	\subsubsection{Lamport}
+	Lamport states that a timestamp on a given action on a given event must be lower than any following action, provided that the given action happens before the following action. 
+	By validating that every timestamp in the local history of an event has a lower timestamp than any action it happens before (\autoref{rule:total-order-timestamps}), this condition is satisfied, since a higher timestamp would signify that the action happens after.
+	
+	Lamport also states that for any message exchange between two processes, the local timestamp of the process receiving the event must be set to a higher timestamp than that of the sending. 
+	Since an incoming and outgoing action form a message exchange and a happens-before relation, and it is validated (\autoref{rule:message-exchange-timestamp-order})that the timestamp of the outgoing action is less than the incoming action, they must also form a happens-before relation, and this condition is then satisfied. 
+	
+	Since messages are received in the order they are sent \todo{Ref. til at bakke op? }, and Lamport states that an event must increase its local timestamp for every action it makes, every action received at a receiving event must have a timestamp that is higher than every previous action received from that event. 
+	By checking that the counterpart timestamp of a given incoming action always is higher than other actions received that happen before the given action, this is guaranteed (\autoref{rule:total-order-counterpart-timestamps}). Since timestamps increase for every action taken, every incoming action must therefore happen after any previous incoming action.
 	
 	\section{Consistent Cheating}
 	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat consistently. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
