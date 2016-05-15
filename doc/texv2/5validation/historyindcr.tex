@@ -84,8 +84,7 @@
 	
 	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:historyindcr:simulation}.
 	
-	\subsubsection{Correctness}
-	To argue that rules 1 through 3 covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. In the definition the relations are explained as pairs of events with a special type. Because these sets are finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in the workflow. Furthermore the finite set \textit{Act} is introduced as the set of actions that happens when an event executes. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition also states when an execution is executable and we will see in \autoref{sec:historyindcr:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements as to how it functions and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
+	To argue that rules 1 through 3 covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. From the definition it is possible to make a set of all relations where each element is a triple of two events and the type of the relation. Because this set is finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in that set. Furthermore since the relations can be filtered by events it is possible to get the set of relations that happen in an execution. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition of DCR graphs also declares what the state of the workflow must be for an event to be executable and we will see in \autoref{sec:historyindcr:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements for the run of a workflow and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
 	
 	\subsection{Serial Equivalence Rules}
 	A given execution must comply to the rules of serial equivalence. That includes the following:
@@ -122,13 +121,41 @@
 	
 	\noindent The algorithm used to check \autoref{rule:completeexecutions} for incoming relations is also used to check \autoref{rule:non-disruptedexecutions}.
 	
-	\newpar Recall that serial equivalence requires that any interleaving of transactions must create the same result, as if the transactions had happened in sequence. The implementation of a good process in distributed DCR graphs must therefore only allow executions of events in a serially equivalent fashion. As described in \autoref{sec:background:implementation} the provided implementation uses locking to achieve serial equivalence. In the implementation \todo{beskriv dette sammen med stedet der skal beskrive hvornår vi gemmer ting?}an action of type \textit{Execute start} is saved when a process has received all locks on events it affects during the executiong of an event. Also an action of type \textit{Execution finish} is saved just before all locks are released. This means, for all good nodes, any group of actions representing an execution must be performed when all affected events are locked. If this property is violated, this can be present in histories in the following three ways:
+		\begin{ruledef}
+			\textbf{Message Exchange Timestamp Order}: For every pair of actions that represent a message exchange, the timestamp of the outgoing action must be less than the timestamp of the incoming action.
+			\label{rule:message-exchange-timestamp-order}
+		\end{ruledef}
+		
+		\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
+		
+		\begin{ruledef}
+			\textbf{Total Order of Counterpart Timestamps}: In the local history of an event, actions with the same counterpart ID must have a counterpart timestamp less than the counterpart timestamp of all other actions with the same counterpart ID that it happened before. The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be one lower.
+			\label{rule:total-order-counterpart-timestamps}
+		\end{ruledef}
+		
+		\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. \todo{Husk at skrive dette!} If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{5validation/images/total-order-of-counterpart-timestamps-cycle.pdf}
+			\caption{An example of two histories violating both serial equivalence and \autoref{rule:total-order-counterpart-timestamps}.}
+			\label{fig:validation:total-order-of-counterpart-timestamps}
+		\end{figure}
+		
+		\newpar Figure \ref{fig:validation:total-order-of-counterpart-timestamps} shows i situation where the counterpart timestamps are not in order on neither event A nor B which violates \autoref{rule:total-order-counterpart-timestamps}. Because the implementation requires serial equivalent executions, and because message transfers happen synchronously such a violation will never happen on a correct process. Imagine the situation on the \autoref{fig:validation:total-order-of-counterpart-timestamps}, event A includes B and sets the counterpart timestamp to 3. Then it finishes its execution and  gets included by B, but it receives a counterpart timestamp of 1. This must imply one of two things, either the timestamps on event B are out of order, or event B has been executing and accepting incoming actions simultaneously, creating a situation which is not serially equivalent. 
+		
+		This kind of violating the serially equivalence of executions, could have been detected by creating algorithms specifically for this, but using the counterpart timestamps makes it possible to validate on each local history rather than a combination of multiple events.
+	
+	
+	\newpar To argue that rules \ref{rule:non-disruptedexecutions} and \ref{rule:wait-for-complete-execution} cover the requirements of serial equivalence, recall that serial equivalence requires that any interleaving of transactions must create the same result, as if the transactions had happened in sequence. The implementation of a correct process in distributed DCR graphs must therefore only allow executions of events in a serially equivalent manner. As described in \autoref{sec:background:implementation} the provided implementation uses locking to achieve serial equivalence. Furthermore all message exchanges happen synchronously, that is the sending process receives confirmation that the message has been received, before continuing the execution. In the implementation, \todo{beskriv dette sammen med stedet der skal beskrive hvornår vi gemmer ting?}an action of type \textit{Execute start} is saved when a process has received all locks on events it affects during the execution of an event. Also an action of type \textit{Execution finish} is saved just before all locks are released. This means, for all correct processes, any group of actions representing an execution must be performed when all affected events are locked. Furthermore no actions from other executions must be present in between the actions of an execution. If this property is violated, this can be present in histories in the following three ways:
 	
 	\begin{itemize}
-		\item An incoming action is inside an execution of another event. This is the case presented in \ref{fig:validation:only-non-disrupted-executions} and can be found by applying \autoref{rule:non-disruptedexecutions}.
-		\item Any action is between (at least) two incoming actions, that together represents the execution of another event. This is the case presented in \ref{fig:validation:wait-for-complete-execution} and can be found by applying \autoref{rule:wait-for-complete-execution}.\todo{fix this argumentation. It is not *ANY* action}
-		\item In a local history an action of type \textit{Execute start} has a path to another action of type \textit{Execute start} in which no action of type \textit{Execute finish} exists. This case is not presented in a figure, but can be found by applying \autoref{rule:non-disruptedexecutions}.
+		\item An incoming action is inside an execution of another event. This is the case presented in \autoref{fig:validation:only-non-disrupted-executions} and can be found by applying \autoref{rule:non-disruptedexecutions}.
+		\item Any action, not part of an execution $E$, is between at least two incoming actions part of execution $E$. This is the case presented in \autoref{fig:validation:wait-for-complete-execution} and can be found by applying \autoref{rule:wait-for-complete-execution}.
+		\item In a local history an action of type \textit{Execute start} has a path to another action of type \textit{Execute start} in which no action of type \textit{Execute finish} exists. This case can be found by applying \autoref{rule:non-disruptedexecutions}.
 	\end{itemize}
+	
+	Together these three ways of violating serial equivalence cover all cases of an event being affected while being locked. There is a case where two processes can participate in the creation of a history where each of the local histories are serially equivalent but when the acitons of the executions are connected, serial equivalence is violated because message exchanging was not done synchronously. That case is covered by \autoref{rule:total-order-counterpart-timestamps} explained in the next section.
 	
 	\subsection{Lamport's Logical Clocks}
 	A given history must conform to the rules of Lamport's logical clocks. That includes the following:
@@ -139,20 +166,6 @@
 	\end{ruledef}
 	
 	\noindent This kind of inconsistency can be checked by examining each action on a single event. If the timestamps are not increasing for each edge in the graph then the event must be cheating.
-	
-	\begin{ruledef}
-		\textbf{Message Exchange Timestamp Order}: For every pair of actions that represent a message exchange, the timestamp of the outgoing action must be less than the timestamp of the incoming action.
-		\label{rule:message-exchange-timestamp-order}
-	\end{ruledef}
-	
-	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
-	
-	\begin{ruledef}
-		\textbf{Total Order of Counterpart Timestamps}: In the local history of an event, actions with the same counterpart ID must have a counterpart timestamp less than the counterpart timestamp of all other actions with the same counterpart ID that it happened before. The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be one lower.
-		\label{rule:total-order-counterpart-timestamps}
-	\end{ruledef}
-	
-	\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. \todo{Husk at skrive dette!} If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
 	
 	\newpar Because histories are represented as directed acyclic graphs, cycles must not exist. Rule \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} makes it possible to observe cycles and identify the local histories from where the cycles originate.
 	
@@ -176,30 +189,15 @@
 	\noindent On \autoref{fig:validation:total-order-of-timestamps-cycle} a cycle is created when event $A$ changes the order of its actions, violating \autoref{rule:total-order-timestamps} while still keeping the timestamps of message exchanges in an increasing order.
 	
 	\newpar On \autoref{fig:validation:message-exchange-timestamp-order-cycle} a cycle is created when timestamps of message exchanges are not kept in an increasing order, violating \autoref{rule:message-exchange-timestamp-order}. The timestamps of actions in the local histories are in increasing order which means that \autoref{rule:total-order-timestamps} is not violated.
-
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=.5\textwidth]{5validation/images/total-order-of-counterpart-timestamps-cycle.pdf}
-		\caption{An example of two histories violating both serial equivalence and \autoref{rule:total-order-counterpart-timestamps}.}
-		\label{fig:validation:total-order-of-counterpart-timestamps}
-	\end{figure}
-	
-	\newpar Figure \ref{fig:validation:total-order-of-counterpart-timestamps} shows i situation where the counterpart timestamps are not in order on neither event A nor B which violates \autoref{rule:total-order-counterpart-timestamps}. Because the implementation requires serial equivalent executions, and because message transfers happen synchronously such a violation will never happen on a correct process. Imagine the situation on the \autoref{fig:validation:total-order-of-counterpart-timestamps}, event A includes B and sets the counterpart timestamp to 3. Then it finishes its execution and  gets included by B, but it receives a counterpart timestamp of 1. This must imply one of two things, either the timestamps on event B are out of order, or event B has been executing and accepting incoming actions simultaneously, creating a situation which is not serially equivalent. 
-	
-	This kind of violating the serially equivalence of executions, could have been detected by creating algorithms specifically for this, but using the counterpart timestamps makes it possible to validate on each local history rather than a combination of multiple events.
-	
-	\newpar Recall that the definition of inconsistent cheating specified that actions could be added, removed or changed and the resulting history must violate at least one of the properties 2, 3 and 4 of valid histories. To argue that every violation of a property is covered, each of them are examined in detail:
 	
 	
+	\newpar To argue that rules \ref{rule:total-order-timestamps} through \ref{rule:total-order-counterpart-timestamps} cover the requirements of Lamport's logical clocks recall that Lamport states that a timestamp on a given action on a given process must be lower than any action it happens before. This is covered by \autoref{rule:total-order-timestamps}.
 	
-	\subsubsection{Lamport}
-	Lamport states that a timestamp on a given action on a given event must be lower than any following action, provided that the given action happens before the following action. 
-	By validating that every timestamp in the local history of an event has a lower timestamp than any action it happens before (\autoref{rule:total-order-timestamps}), this condition is satisfied, since a higher timestamp would signify that the action happens after.
+	Lamport also states that for any message exchange between two processes, the local timestamp of the process receiving the event must be set to a higher timestamp than that of the sending. this is covered by \autoref{rule:message-exchange-timestamp-order}.
 	
-	Lamport also states that for any message exchange between two processes, the local timestamp of the process receiving the event must be set to a higher timestamp than that of the sending. 
-	Since an incoming and outgoing action form a message exchange and a happens-before relation, and it is validated (\autoref{rule:message-exchange-timestamp-order})that the timestamp of the outgoing action is less than the incoming action, they must also form a happens-before relation, and this condition is then satisfied. 
+	Due to rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order}
 	
-	Since messages are received in the order they are sent \todo{Ref. til at bakke op? }, and Lamport states that an event must increase its local timestamp for every action it makes, every action received at a receiving event must have a timestamp that is higher than every previous action received from that event. 
+	Since messages are received in the order they are sent because the message exchange happens synchronously, and Lamport states that an event must increase its local timestamp for every action it makes, every action received at a receiving event must have a timestamp that is higher than every previous action received from that event. 
 	By checking that the counterpart timestamp of a given incoming action always is higher than other actions received that happen before the given action, this is guaranteed (\autoref{rule:total-order-counterpart-timestamps}). Since timestamps increase for every action taken, every incoming action must therefore happen after any previous incoming action.
 	
 	\section{Consistent Cheating}
