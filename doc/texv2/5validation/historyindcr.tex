@@ -120,13 +120,6 @@
 	\end{figure}
 	
 	\noindent The algorithm used to check \autoref{rule:completeexecutions} for incoming relations is also used to check \autoref{rule:non-disruptedexecutions}.
-	
-		\begin{ruledef}
-			\textbf{Message Exchange Timestamp Order}: For every pair of actions that represent a message exchange, the timestamp of the outgoing action must be less than the timestamp of the incoming action.
-			\label{rule:message-exchange-timestamp-order}
-		\end{ruledef}
-		
-		\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
 		
 		\begin{ruledef}
 			\textbf{Total Order of Counterpart Timestamps}: In the local history of an event, actions with the same counterpart ID must have a counterpart timestamp less than the counterpart timestamp of all other actions with the same counterpart ID that it happened before. The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be one lower.
@@ -167,6 +160,13 @@
 	
 	\noindent This kind of inconsistency can be checked by examining each action on a single event. If the timestamps are not increasing for each edge in the graph then the event must be cheating.
 	
+	\begin{ruledef}
+		\textbf{Message Exchange Timestamp Order}: For every pair of actions that represent a message exchange, the timestamp of the outgoing action must be less than the timestamp of the incoming action.
+		\label{rule:message-exchange-timestamp-order}
+	\end{ruledef}
+	
+	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
+	
 	\newpar Because histories are represented as directed acyclic graphs, cycles must not exist. Rule \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} makes it possible to observe cycles and identify the local histories from where the cycles originate.
 	
 	Together, these rules make sure that no cycles can exist. If an action happens before another action with a lower timestamp, at least one of rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} have been violated. Examples of violations of rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} are shown in figures \ref{fig:validation:message-exchange-timestamp-order-cycle} and \ref{fig:validation:message-exchange-timestamp-order-cycle}.
@@ -190,8 +190,7 @@
 	
 	\newpar On \autoref{fig:validation:message-exchange-timestamp-order-cycle} a cycle is created when timestamps of message exchanges are not kept in an increasing order, violating \autoref{rule:message-exchange-timestamp-order}. The timestamps of actions in the local histories are in increasing order which means that \autoref{rule:total-order-timestamps} is not violated.
 	
-	
-	\newpar To argue that rules \ref{rule:total-order-timestamps} through \ref{rule:total-order-counterpart-timestamps} cover the requirements of Lamport's logical clocks recall that Lamport states that a timestamp on a given action on a given process must be lower than any action it happens before. This is covered by \autoref{rule:total-order-timestamps}.
+	\newpar To argue that rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} cover the requirements of Lamport's logical clocks recall that Lamport states that a timestamp on a given action on a given process must be lower than any action it happens before. This is covered by \autoref{rule:total-order-timestamps}.
 	
 	Lamport also states that for any message exchange between two processes, the local timestamp of the process receiving the event must be set to a higher timestamp than that of the sending. this is covered by \autoref{rule:message-exchange-timestamp-order}.
 	
