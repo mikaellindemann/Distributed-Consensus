@@ -121,23 +121,23 @@
 	
 	\noindent The algorithm used to check \autoref{rule:completeexecutions} for incoming relations is also used to check \autoref{rule:non-disruptedexecutions}.
 		
-		\begin{ruledef}
-			\textbf{Total Order of Counterpart Timestamps}: In the local history of an event, actions with the same counterpart ID must have a counterpart timestamp less than the counterpart timestamp of all other actions with the same counterpart ID that it happened before. The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be one lower.
-			\label{rule:total-order-counterpart-timestamps}
-		\end{ruledef}
-		
-		\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. \todo{Husk at skrive dette!} If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
-		
-		\begin{figure}[H]
-			\centering
-			\includegraphics[width=.5\textwidth]{5validation/images/total-order-of-counterpart-timestamps-cycle.pdf}
-			\caption{An example of two histories violating both serial equivalence and \autoref{rule:total-order-counterpart-timestamps}.}
-			\label{fig:validation:total-order-of-counterpart-timestamps}
-		\end{figure}
-		
-		\newpar Figure \ref{fig:validation:total-order-of-counterpart-timestamps} shows i situation where the counterpart timestamps are not in order on neither event A nor B which violates \autoref{rule:total-order-counterpart-timestamps}. Because the implementation requires serial equivalent executions, and because message transfers happen synchronously such a violation will never happen on a correct process. Imagine the situation on the \autoref{fig:validation:total-order-of-counterpart-timestamps}, event A includes B and sets the counterpart timestamp to 3. Then it finishes its execution and  gets included by B, but it receives a counterpart timestamp of 1. This must imply one of two things, either the timestamps on event B are out of order, or event B has been executing and accepting incoming actions simultaneously, creating a situation which is not serially equivalent. 
-		
-		This kind of violating the serially equivalence of executions, could have been detected by creating algorithms specifically for this, but using the counterpart timestamps makes it possible to validate on each local history rather than a combination of multiple events.
+	\begin{ruledef}
+		\textbf{Synchronous Message Exchanges}: If message exchanges happen synchronously outgoing or incoming actions must have counterpart timestamps higher than any counterpart timestamp of actions that happen before it. The exception to the rule is when an event has a relation to itself in which case counterpart timestamp can be one lower.
+		\label{rule:total-order-counterpart-timestamps}
+	\end{ruledef}
+	
+	\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. \todo{Husk at skrive dette!} If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.5\textwidth]{5validation/images/total-order-of-counterpart-timestamps-cycle.pdf}
+		\caption{An example of two histories violating both serial equivalence and \autoref{rule:total-order-counterpart-timestamps}.}
+		\label{fig:validation:total-order-of-counterpart-timestamps}
+	\end{figure}
+	
+	\newpar Figure \ref{fig:validation:total-order-of-counterpart-timestamps} shows i situation where the counterpart timestamps are not in order on neither event A nor B which violates \autoref{rule:total-order-counterpart-timestamps}. Because the implementation requires serial equivalent executions, and because message transfers happen synchronously such a violation will never happen on a correct process. Imagine the situation on the \autoref{fig:validation:total-order-of-counterpart-timestamps}, event A includes B and sets the counterpart timestamp to 3. Then it finishes its execution and  gets included by B, but it receives a counterpart timestamp of 1. This must imply one of two things, either the timestamps on event B are out of order, or event B has been executing and accepting incoming actions simultaneously, creating a situation which is not serially equivalent. 
+	
+	This kind of violating the serially equivalence of executions, could have been detected by creating algorithms specifically for this, but using the counterpart timestamps makes it possible to validate on each local history rather than a combination of multiple events.
 	
 	
 	\newpar To argue that rules \ref{rule:non-disruptedexecutions} and \ref{rule:wait-for-complete-execution} cover the requirements of serial equivalence, recall that serial equivalence requires that any interleaving of transactions must create the same result, as if the transactions had happened in sequence. The implementation of a correct process in distributed DCR graphs must therefore only allow executions of events in a serially equivalent manner. As described in \autoref{sec:background:implementation} the provided implementation uses locking to achieve serial equivalence. Furthermore all message exchanges happen synchronously, that is the sending process receives confirmation that the message has been received, before continuing the execution. In the implementation, \todo{beskriv dette sammen med stedet der skal beskrive hvornår vi gemmer ting?}an action of type \textit{Execute start} is saved when a process has received all locks on events it affects during the execution of an event. Also an action of type \textit{Execution finish} is saved just before all locks are released. This means, for all correct processes, any group of actions representing an execution must be performed when all affected events are locked. Furthermore no actions from other executions must be present in between the actions of an execution. If this property is violated, this can be present in histories in the following three ways:
