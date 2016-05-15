@@ -84,6 +84,9 @@
 	
 	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:historyindcr:simulation}.
 	
+	\subsubsection{Correctness}
+	To argue that rules 1 through 3 covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. In the definition the relations are explained as pairs of events with a special type. Because these sets are finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in the workflow. Furthermore the finite set \textit{Act} is introduced as the set of actions that happens when an event executes. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition also states when an execution is executable and we will see in \autoref{sec:historyindcr:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements as to how it functions and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
+	
 	\subsection{Serial Equivalence Rules}
 	A given execution must comply to the rules of serial equivalence. That includes the following:
 	
@@ -179,7 +182,7 @@
 	
 	\newpar Recall that the definition of inconsistent cheating specified that actions could be added, removed or changed and the resulting history must violate at least one of the properties 2, 3 and 4 of valid histories. To argue that every violation of a property is covered, each of them are examined in detail:
 	
-	\subsubsection{DCR}
+	
 	
 	\subsubsection{Serially Equiv}
 	
