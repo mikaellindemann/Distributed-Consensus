@@ -187,7 +187,7 @@
 		\label{rule:agreement-on-original-timestamps}
 	\end{ruledef}
 	
-	When actions are matched together to form happens before relations between the histories of two events, the timestamps and counterpart timestamps are used to uniquely identify a pair of matching actions. If however it is not possible to match actions because timestamps are mismatched, then at least one of the histories must have been changed. 
+	\noindent When actions are matched together to form happens before relations between the histories of two events, the timestamps and counterpart timestamps are used to uniquely identify a pair of matching actions. If however it is not possible to match actions because timestamps are mismatched, then at least one of the histories must have been changed. 
 	
 	\begin{figure}[H]
 		\centering
@@ -198,16 +198,16 @@
 	
 	An example of two events not having matching actions in their histories because of the timestamps can be seen on \autoref{fig:agreement-on-original-timestamps}. Notice that it is not possible to distinguish the two include actions from each other, and that is therefore not possible to identify which of the two histories are invalid.
 	
-	\newpar To validate for this kind of cheating, pairs of local histories where the events have relations to eachother is examined. each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the processes hosting the events must be malicious. 
+	\newpar To validate for this kind of cheating, pairs of local histories where a relation exists between them are examined. Each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the processes hosting the events must be malicious. Since the original timestamps are unknown, it is not possible to distinguish an original timestamp from an unoriginal one, and therefore two events can agree on unoriginal timestamps without failing this validation.
 	
 	\begin{ruledef}
 		\textbf{Agreement on the original amount of executions}: If an event A has a relation to an event B then the two events must agree on the number of executions of A in their histories.
 		\label{rule:agreement-on-the-original-amount-of-executions}
 	\end{ruledef}
 	
-	To check for this kind of cheating the local histories of each pair of events which are part of a relation are examined. If event A and event B are examined, then the amount of every outgoing action from A to B must match the amount of incoming actions on B from A. If the amount does not match then one of the processes hosting the events must be malicious.
+	\noindent To check for this kind of cheating the local histories of each pair of events which are part of a relation are examined. If event $A$ and event $B$ are examined, then the amount of every outgoing action from $A$ to $B$ must match the amount of incoming actions on $B$ from $A$. If the amount does not match then one of the processes hosting the events must be malicious.
 	
-	\newpar On \autoref{fig:agreement-on-the-original-amount-of-executions-1} an example of violation of this rule is shown. In the shown histories, event A states that it has executed two times but event B states that A have only executed one time. Similarly on \autoref{fig:agreement-on-the-original-amount-of-executions-1} the two events do not agree on the amount of executions of A. But in that case Event A states that it only has executed one time, but B states that A has executed two times. Notice that is is not possible to distinguish the two situations from one another and it therefore is not possible to identify which of the two histories are invalid.
+	\newpar On \autoref{fig:agreement-on-the-original-amount-of-executions-1} an example of violation of \autoref{rule:agreement-on-the-original-amount-of-executions} is shown. In the shown histories, event A states that it has executed two times but event $B$ states that $A$ have only executed one time. Similarly on \autoref{fig:agreement-on-the-original-amount-of-executions-1} the two events do not agree on the amount of executions of $A$. But in that case Event $A$ states that it only has executed one time, but $B$ states that $A$ has executed two times. Notice that is is not possible to distinguish the two situations from one another and it therefore is not possible to identify which of the two histories are invalid.
 	
 	\begin{figure}[H]
 		\centering
@@ -224,9 +224,13 @@
 		\end{minipage}
 	\end{figure}
 	
-	\newpar To argue that there are no other ways to consistently cheat it is necessary to examine what possible activities an event can take part of. 
+	\newpar Recall that the definition of consistent cheating specified that actions could be added, removed or changed but the resulting history must still have the properties 2, 3 and 4 of valid histories. To argue that the rules \ref{rule:agreement-on-original-timestamps} and \ref{rule:agreement-on-the-original-amount-of-executions} cover the adding, removing and changing of actions each of these scenarios are examined.
 	
-	An event can execute or it can be affected by an execution. Not executing is just as valid as doing so (if the state of the workflow allows it). Furthermore, an action with a timestamp which is in accordance to Lamport's logical clocks can have another timestamp which is also in accordance. Therefore it is not possible to distinguish the correct timestamp from the incorrect. \todo[inline]{this paragraph has bullshit argumentation of the types being complete. plz help it}
+	\begin{itemize}
+		\item \textbf{Adding actions}: The rules of inconsistent cheating implies that the only consistent addition of actions are groups actions representing executions, or groups of actions representing the execution of other events affecting the current event. Rule  \ref{rule:agreement-on-the-original-amount-of-executions} handles this kind of violation.
+		\item \textbf{Removing actions}: The rules of inconsistent cheating implies that the only consistent subtraction of actions are groups actions representing executions, or groups of actions representing the exection of other events affecting the current event. Rule  \ref{rule:agreement-on-the-original-amount-of-executions} handles this kind of violation.
+		\item \textbf{Changing actions}: Recall that an action consists of an ID, a timestamp, a counterpart ID, a counterpart timestamp, and an action type. The rules of inconsistent cheating implies that it is not possible to change the ID, the counterpart ID, or the action type consistently. This leaves the timestamp and counterpart timestamp as the only two values which can be altered consistently, since unoriginal timestamp values can still abide to Lamport's logical clocks. Therefore \autoref{rule:agreement-on-original-timestamps} covers this violation.
+	\end{itemize}
 	
 	\subsection{Cases}
 	Detecting and identifying consistently cheating events is difficult, because it is not possible to look at a single event's history and determine if it is valid or not. We will now examine how the structure of the DCR graph, and the connection between malicious events contribute to the ability to detect and identifying consistent cheating. The type of relation has no influence on the cases and relations are therefore visualised as a simple arrow from event to event.
