@@ -184,6 +184,14 @@
 	\subsubsection{Serially Equiv}
 	
 	\subsubsection{Lamport}
+	Lamport states that a lower timestamp on a given action on a given event must be lower than the following action, given that the action happens before the following action. 
+	By validating that every timestamp in the local history of an event has a lower timestamp than any action it happens before, this condition is satisfied, since a higher timestamp would signify that the action happens after.
+	
+	Lamport also states that for any message exchange between two processes, the local timestamp of the process receiving the event must be set to a higher timestamp than that of the sending process. 
+	Since an incoming and outgoing action form a message exchange, and it is validated that the timestamp of the outgoing action is less than the incoming action, this condition is satisfied. 
+	
+	Since messages are received in the order they are sent \todo{Ref. til at bakke op? }, and Lamport states that an event must increase its local timestamp for every action it makes, every action received at a receiving event must have a timestamp that is higher than every action corresponding to that event. 
+	By checking that the counterpart timestamp of incoming actions always has a lower timestamp, this is guaranteed. Since timestamps increase for every action taken, every incoming action must therefore happen after any previous incoming action. Every incoming action with a timestamp higher than any other incoming action must therefore happen after that action.  
 	
 	\section{Consistent Cheating}
 	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat consistently. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
