@@ -3,7 +3,7 @@
 \chapter{Validation of Histories}\label{chap:validation}
 	This chapter defines how histories from events on malicious processes are observed and possibly identified.
 	
-	\newpar We introduce malicious processes in distributed DCR graphs. These processes can corrupt data in many ways. Therefore it is desired to have a mechanism which can observe, identify, and handle these corruptions in a predictable way. 
+	\newpar We introduce malicious processes in distributed DCR graphs. The implementation allows multiple events to be hosted by a single process, but in this chapter it is assumed that any process only hosts a single event. Malicious processes corrupts data in many ways and therefore it is desired to have a mechanism which can observe, and if possible identify these corruptions and the processes which created them in a predictable way. 
     
     \newpar As mentioned in \autoref{def:validhistory} the valid history has the following properties:
     
@@ -187,7 +187,7 @@
 		\label{rule:agreement-on-original-timestamps}
 	\end{ruledef}
 	
-	When actions are matched together to form happens before relations between the histories of two events, the timestamps and counterpart timestamps are used to uniquely identify a pair of matching actions. If however it is not possible to match actions because timestamps are mismatched, then at least one of the histories must have been changed.
+	When actions are matched together to form happens before relations between the histories of two events, the timestamps and counterpart timestamps are used to uniquely identify a pair of matching actions. If however it is not possible to match actions because timestamps are mismatched, then at least one of the histories must have been changed. 
 	
 	\begin{figure}[H]
 		\centering
@@ -196,23 +196,33 @@
 		\label{fig:agreement-on-original-timestamps}
 	\end{figure}
 	
-	An example of two events not having matching actions in their histories because of the timestamps can be seen \autoref{fig:agreement-on-original-timestamps}.
+	An example of two events not having matching actions in their histories because of the timestamps can be seen on \autoref{fig:agreement-on-original-timestamps}. Notice that it is not possible to distinguish the two include actions from each other, and that is therefore not possible to identify which of the two histories are invalid.
 	
-	\newpar To validate for this kind of cheating, pairs of local histories where the events have relations to eachother is examined. each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the events must be malicious. 
-	
-	\begin{ruledef}
-		\textbf{Agreement on the original amount of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.		
-	\end{ruledef}
-
-	\figuretodo{to historikker hvor antallet af executions ikke matcher}
-	To check for this kind of cheating each pair of events that have relations are examined. If event A and event B is examined, then the amount of every outgoing action from A to B must match the amount of ingoing actions on B from A. If the amount does not match then one of the events must be malicious and vice versa.
+	\newpar To validate for this kind of cheating, pairs of local histories where the events have relations to eachother is examined. each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the processes hosting the events must be malicious. 
 	
 	\begin{ruledef}
-		\textbf{Agreement on the original amount of counterpart executions}: The history of a malicious event states that it has been affected either fewer or more times than what has happened.
+		\textbf{Agreement on the original amount of executions}: If an event A has a relation to an event B then the two events must agree on the number of executions of A in their histories.
+		\label{rule:agreement-on-the-original-amount-of-executions}
 	\end{ruledef}
 	
-	\figuretodo{to historikker hvor antallet af incoming groups ikke matcher }
-	This type of cheating is already checked for by the method introduced in the previous paragraph.
+	To check for this kind of cheating the local histories of each pair of events which are part of a relation are examined. If event A and event B are examined, then the amount of every outgoing action from A to B must match the amount of incoming actions on B from A. If the amount does not match then one of the processes hosting the events must be malicious.
+	
+	\newpar On \autoref{fig:agreement-on-the-original-amount-of-executions-1} an example of violation of this rule is shown. In the shown histories, event A states that it has executed two times but event B states that A have only executed one time. Similarly on \autoref{fig:agreement-on-the-original-amount-of-executions-1} the two events do not agree on the amount of executions of A. But in that case Event A states that it only has executed one time, but B states that A has executed two times. Notice that is is not possible to distinguish the two situations from one another and it therefore is not possible to identify which of the two histories are invalid.
+	
+	\begin{figure}[H]
+		\centering
+		\begin{minipage}{.45\textwidth}
+			\includegraphics[width=\textwidth]{5validation/images/agreement-on-original-amount-of-executions-1.pdf}
+			\caption{An example of two histories not agreeing on the amount of executions of A, violating \autoref{rule:agreement-on-the-original-amount-of-executions}.}
+			\label{fig:agreement-on-the-original-amount-of-executions-1}
+		\end{minipage}
+		\hfill
+		\begin{minipage}{.45\textwidth}
+			\includegraphics[width=\textwidth]{5validation/images/agreement-on-original-amount-of-executions-2.pdf}
+			\caption{An example of two histories not agreeing on the amount of executions of A, violating \autoref{rule:agreement-on-the-original-amount-of-executions}.}
+			\label{fig:agreement-on-the-original-amount-of-executions-2}
+		\end{minipage}
+	\end{figure}
 	
 	\newpar To argue that there are no other ways to consistently cheat it is necessary to examine what possible activities an event can take part of. 
 	
