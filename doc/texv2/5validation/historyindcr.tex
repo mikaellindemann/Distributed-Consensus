@@ -352,34 +352,34 @@
 
 	\begin{table}[]
 		\centering
-		\caption{Table of the observability and identifiability of the different inconsistent cheating types}
 		\label{table:inconsistent-cheating-properties}
 		\begin{tabular}{lll}
-			Inconsistent Cheating                     & Observable & Identifiable \\
-			Rule 1 (Only specified relations)         & Y          & N            \\
-			Rule 2 (Only complete executions)         & Y          & N            \\
-			Rule 3 (Executions only in valid states)  & Y          & N            \\
-			Rule 4 (Only non disrupted executions)    & Y          & Y            \\
-			Rule 5 (Wait for complete execution)      & Y          & Y            \\
-			Rule 6 (Synchronous message exchange)     & Y          & Y            \\
-			Rule 7 (Total order of timestamps)        & Y          & Y            \\
-			Rule 8 (Message exchange timestamp order) & Y          & Y           
+			\textbf{Inconsistent Cheating} & \textbf{Observable} & \textbf{Identifiable} \\
+			\textit{Rule 1 (Only specified relations)}         & X          & -            \\
+			\textit{Rule 2 (Only complete executions)}         & X          & -            \\
+			\textit{Rule 3 (Executions only in valid states)}  & X          & -            \\
+			\textit{Rule 4 (Only non disrupted executions)}    & X          & X            \\
+			\textit{Rule 5 (Wait for complete execution)}      & X          & X            \\
+			\textit{Rule 6 (Synchronous message exchange)}     & X          & X            \\
+			\textit{Rule 7 (Total order of timestamps)}        & X          & X            \\
+			\textit{Rule 8 (Message exchange timestamp order)} & X          & X           
 		\end{tabular}
+		\caption{Table of the observability and identifiability of the different inconsistent cheating types}
 	\end{table}
 	
 	\begin{table}[]
 		\centering
-		\caption{My caption}
 		\label{my-label}
 		\begin{tabular}{llll}
-			Consistent Cheating & Agreement on original timestamps & Agreement on amount of executions (incoming) & Agreement on amount of executions (outgoing) \\
-			Case 1              & Not observable                   & Not observable                               & Not observable                               \\
-			Case 2              & Not observable                   & Not observable                               & Not observable                               \\
-			Case 3              & Not observable                   & Not observable                               & Not observable                               \\
-			Case 4              & Not observable                   & Not observable                               & Not observable                               \\
-			Case 5              & Not observable                   & Not observable                               & Not observable                               \\
-			Case 6              & Not observable                   & Not observable                               & Not observable                              
+			\textbf{Consistent Cheating} & \textbf{Agreement on original timestamps} & \textbf{Agreement on amount of executions (incoming)} & \textbf{Agreement on amount of executions (outgoing)} \\
+			\textit{Case 1}              & Not observable                   & Not observable                               & Not observable                               \\
+			\textit{Case 2}              & Not observable                   & Not observable                               & Not observable                               \\
+			\textit{Case 3}              & Not observable                   & Not observable                               & Not observable                               \\
+			\textit{Case 4}              & Not observable                   & Not observable                               & Not observable                               \\
+			\textit{Case 5}              & Not observable                   & Not observable                               & Not observable                               \\
+			\textit{Case 6}              & Not observable                   & Not observable                               & Not observable                              
 		\end{tabular}
+		\caption{There should be a caption here.}
 	\end{table}
 	\todo{write about it}
 
