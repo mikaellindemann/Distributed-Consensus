@@ -165,6 +165,13 @@
 	\noindent On \autoref{fig:validation:total-order-of-timestamps-cycle} a cycle is created when event $A$ changes the order of its actions, violating \autoref{rule:total-order-timestamps} while still keeping the timestamps of message exchanges in an increasing order.
 	
 	\newpar On \autoref{fig:validation:message-exchange-timestamp-order-cycle} a cycle is created when timestamps of message exchanges are not kept in an increasing order, violating \autoref{rule:message-exchange-timestamp-order}. The timestamps of actions in the local histories are in increasing order which means that \autoref{rule:total-order-timestamps} is not violated.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.5\textwidth]{5validation/images/total-order-of-counterpart-timestamps-cycle.pdf}
+		\caption{An example of two histories violating both serial equivalence and \autoref{rule:total-order-counterpart-timestamps}.}
+		\label{fig:validation:total-order-of-counterpart-timestamps-cycle}
+	\end{figure}
 	
 	\section{Consistent Cheating}
 	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
