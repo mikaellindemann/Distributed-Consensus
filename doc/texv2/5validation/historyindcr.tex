@@ -170,30 +170,45 @@
 		\centering
 		\includegraphics[width=.5\textwidth]{5validation/images/total-order-of-counterpart-timestamps-cycle.pdf}
 		\caption{An example of two histories violating both serial equivalence and \autoref{rule:total-order-counterpart-timestamps}.}
-		\label{fig:validation:total-order-of-counterpart-timestamps-cycle}
+		\label{fig:validation:total-order-of-counterpart-timestamps}
 	\end{figure}
 	
+	\newpar Figure \ref{fig:validation:total-order-of-counterpart-timestamps} shows i situation where the counterpart timestamps are not in order on neither event A nor B which violates \autoref{rule:total-order-counterpart-timestamps}. Because the implementation requires serial equivalent executions, and because message transfers happen synchronously such a violation will never happen on a correct process. Imagine the situation on the \autoref{fig:validation:total-order-of-counterpart-timestamps}, event A includes B and sets the counterpart timestamp to 3. Then it finishes its execution and  gets included by B, but it receives a counterpart timestamp of 1. This must imply one of two things, either the timestamps on event B are out of order, or event B has been executing and accepting incoming actions simultaneously, creating a situation which is not serially equivalent. 
+	
+	This kind of violating the serially equivalence of executions, could have been detected by creating algorithms specifically for this, but using the counterpart timestamps makes it possible to validate on each local history rather than a combination of multiple events.
+	
 	\section{Consistent Cheating}
-	Until now we have examined inconsistent cheating, but malicious events are also able to cheat consistently:
+	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat consistently. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
 
-	\newpar Consistent cheating can take a number of forms:
+	\newpar Consistent cheating is present if one of the following rules are violated:
 
 	\begin{ruledef}
-		\textbf{Incorrect timestamps}: A malicious event manipulates the timestamps of the actions in the history, while still being in accordance to Lamport's logical clocks
+		\textbf{Agreement on original timestamps}: Two events must agree on the original timestamps of their actions corresponding to their relations to each other.
+		\label{rule:agreement-on-original-timestamps}
 	\end{ruledef}
 	
-	\figuretodo{to historikker der er ens bortset fra timestamps}
-	The only actions which more that one event know of are the action which are part of a relation. The consequence of this is that it is only possible to check if events disagree on the timestamps of these actions and not the rest. To make this validation each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the events must be malicious. 
+	When actions are matched together to form happens before relations between the histories of two events, the timestamps and counterpart timestamps are used to uniquely identify a pair of matching actions. If however it is not possible to match actions because timestamps are mismatched, then at least one of the histories must have been changed.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.7\textwidth]{5validation/images/agreement-on-original-timestamps.pdf}
+		\caption{An example of two local histories with no inconsistent cheating, not agreeing on the timestamps thereby violating \autoref{rule:agreement-on-original-timestamps}. Dashed actions marked with a red colour denote the actions which are not present but are expected by the counterpart.}
+		\label{fig:agreement-on-original-timestamps}
+	\end{figure}
+	
+	An example of two events not having matching actions in their histories because of the timestamps can be seen \autoref{fig:agreement-on-original-timestamps}.
+	
+	\newpar To validate for this kind of cheating, pairs of local histories where the events have relations to eachother is examined. each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the events must be malicious. 
 	
 	\begin{ruledef}
-		\textbf{Incorrect number of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.		
+		\textbf{Agreement on the original amount of executions}: The history of a malicious event states that it has executed either fewer or more times than it has done.		
 	\end{ruledef}
 
 	\figuretodo{to historikker hvor antallet af executions ikke matcher}
 	To check for this kind of cheating each pair of events that have relations are examined. If event A and event B is examined, then the amount of every outgoing action from A to B must match the amount of ingoing actions on B from A. If the amount does not match then one of the events must be malicious and vice versa.
 	
 	\begin{ruledef}
-		\textbf{Incorrect number of incoming actions}: The history of a malicious event states that it has been affected either fewer or more times than what has happened.
+		\textbf{Agreement on the original amount of counterpart executions}: The history of a malicious event states that it has been affected either fewer or more times than what has happened.
 	\end{ruledef}
 	
 	\figuretodo{to historikker hvor antallet af incoming groups ikke matcher }
