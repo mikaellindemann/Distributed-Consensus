@@ -264,104 +264,90 @@
 	Detecting and identifying consistently cheating processes is difficult, because it is not always possible to look at the history of a single event and determine if it is valid or not. It is now examined how the structure of the DCR graph and the placement of the malicious processes contribute to the ability to detect and identify consistent cheating. The type of relation has no influence on the cases and relations are therefore visualised as an arrow from event to event.
 	
 	\begin{case}
-		\textbf{Single Malicious Event}: In this case (see \autoref{fig:consensus:single-malicious}), the event does not share relations with any other event, there is no one to disagree with any timestamps on actions and, in addition, completely oppose to the fact that an execution has happened or not. Therefore in workflows or subworkflows that include such events, it is not possible to identify or even observe if any kind of consistent cheating has happened.
+		In this case the workflow contains an event that does not share relations with any other event but may have relations to itself. If the event is hosted on a malicious process and it consistently cheats, there is no one to disagree with any timestamps on actions or oppose the amount of executions that have happened. Therefore in workflows with such a structure, it is not possible to identify or even observe if any kind of consistent cheating has happened on this event. 
+		\label{case:malicious-alone}
 	\end{case}
 	
-	\begin{figure}[H]
-		\centering
-		\includegraphics[]{5validation/images/1.pdf}
-		\caption{}
-		\label{fig:consensus:single-malicious}
-	\end{figure}
-	
 	\begin{case}
-		\textbf{Single Malicious Event With Relation to Self}: This case (see \autoref{fig:consensus:single-malicious-with-relation}), just like case 1, in this case there are no one but the event itself to disrupt the cheating and therefore it is not possible to observe or identify consistent cheating.
-	\end{case}
-	
-	\begin{figure}[H]
-		\centering
-		\includegraphics[]{5validation/images/5.pdf}
-		\caption{}
-		\label{fig:consensus:single-malicious-with-relation}
-	\end{figure}
-	
-	\begin{case}
-		\textbf{Single Malicious Event With Relation to Good Event}: In this case (see \autoref{fig:consensus:single-malicious-with-good-relation}), the malicious event has a relation to a correctly working event. If the malicious event tries to cheat by changing the timestamps, it can do so in two ways. It can try to change the timestamps of the actions corresponding to the relation with the correctly working event, but in that case the two events will not agree on what happened and we are able to observe that one of them must cheat. Due to the fact that any of the two events could be malicious and change the timestamps it would not be possible to identify which of the two are evil.
-		If the timestamp changes are on action which not related to the good event then it is not possible to observe nor identify. 
-		\figuretodo{figur eksempler til tekst, der viser hvordan at to events kan være uenige}
-		In the same way when looking at more or fewer executions, the relation action in the executions should have a counterpart but might not have. In the scenario where there are fewer executions the correctly working event will have actions with no counterpart and therefore it is only possible to observe and not identify this kind of cheating. 
+		In this case the workflow contains an event on a malicious process that has a relation to an event on a correct process as shown in \autoref{fig:consensus:single-malicious-with-good-relation}. The malicious process can cheat consistently with the timestamps in two ways: It can change the timestamps of the actions corresponding to the relations with the counterpart, but in that case the two events will not agree on what happened and it is observable that that one of the processes hosting the event must cheat. If the timestamp changes are on actions not related to the good event then it is not possible to observe nor identify. An example of this is has been shown on \autoref{fig:agreement-on-original-timestamps}.
+		
+		In the same way when looking at the amount of executions of the event on the malicious process, the malicious process might add more or remove some executions. In the case that it adds more executions, the event on the correct process will state that fewer executions happened, and vice versa. However the malicious process is not able to disagree with the number of executions of the event on the correct process consistently. 
+		
+		Therefore it is possible to observe but not identify consistent cheating in this case. 
+		\label{case:malicious-to-good}
 	\end{case}
 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/3.pdf}
-		\caption{}
+		\caption{A workflow containing an event on a malicious process that has a relation to an event on a correct process.}
 		\label{fig:consensus:single-malicious-with-good-relation}
 	\end{figure}
 	
 	\begin{case}
-		\textbf{Single Good Event With Relation to Single Malicious Event}: In this case (see \autoref{fig:consensus:single-good-with-malicious-relation}), a good event has a relation to a malicious event. Similarly to case 3 timestamp changes are observable due to the same factors, but instead of disagreeing on the outgoing relation in this case the malicious event will disagree on whether the good event executed or not. Due to the fact that when the malicious event executes the good event will not have any information about it, because it is not affected by that execution, the malicious event is able change the number of executions to its liking.
-		\figuretodo{figur helt ens til den overfor men nu med den anden historik ond}
+		In this case the workflow contains an event with a relation to an event on a malicious process as shown in \autoref{fig:consensus:single-good-with-malicious-relation}. Similarly to \autoref{case:malicious-to-good} timestamp changes are observable due to the same factors, but agreeing on exeuctions has another form. Instead of agreeing on the amount of executions of the event on the malicious process, the disagreement will be about the amount of executions of the event on the correct process. Furthermore the malicious process is free to report any number of executions as in case one because no event can disagree on any outgoing actions. 
+		\label{case:good-to-malicious}
 	\end{case}
 	 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/2.pdf}
-		\caption{}
+		\caption{A workflow containing an event on a correct process that has a relation to an event on a malicious process.}
 		\label{fig:consensus:single-good-with-malicious-relation}
 	\end{figure}
+
+	\noindent Note that it is not possible to distinguish between disagreements as a result of cases \ref{case:malicious-to-good} and \ref{case:good-to-malicious}, since they can create the exact same histories with the exact same disagreements.
 	
 	\begin{case}
-		\textbf{Single Good and Single Malicious Event with Relations to each other}: In this case (see \autoref{fig:consensus:single-good-with-twoway-malicious-relation}), the situation is similar to that of case 3 and 4 in the sense that it provides the same ability to observe and the cheater.
+		In this case the workflow contains two events with relations to each other where one of the events is hosted on a malicious process, as shown on \autoref{fig:consensus:single-good-with-twoway-malicious-relation}. The ability to observe and identify consistent cheating is similar to that of the cases \ref{case:malicious-to-good} and \ref{case:good-to-malicious} because the two events are able to disagree on both timestamps and the amount of executions of both events.
 	\end{case}
 	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/6.pdf}
-		\caption{}
+		\caption{A workflow containing an event on a malicious process and an event on a correct process where the events have relations to each other.}
 		\label{fig:consensus:single-good-with-twoway-malicious-relation}
 	\end{figure}
 	
 	\begin{case}
-		\textbf{Single Malicious Event A with relation to Single Malicious Event B}: In this case (see \autoref{fig:consensus:single-malicious-with-twoway-malicious-relation}), two malicious events work in collaboration to manipulate the data. Because a malicious event is also unpredictable, one of the events could function as a correctly functioning event and create the same depicting scenarios as in case 3 and 4, any absence of manipulation actually corresponds to the event functioning correctly.
+		In this case the workflow contains an event on a malicious process with a relation to another event on a malicious process as shown in \autoref{fig:consensus:single-malicious-with-twoway-malicious-relation}. The two processes can work in collaboration to manipulate the histories of the two events. 
 		
-		If it is assumed that both events work in collaboration to manipulate the history, it is both possible to change timestamps in such a way that it is not observable if they agree on the numbers, or observable if they disagree. Furthermore fewer or more executions is equally easily obscured if they agree on it.
-		
-		\figuretodo{figur: eksempel på hvordan de kan tilføje flere executions sammen}
+		If it is assumed that they work in collaboration, then they are able to change timestamps and the amount of executions in such a way that it is not observable because it is present in both the histories. If they however do not change the timestamps or the amount of executions in collaboration, then they will disagree on the values and it is possible to observe that at least one of the processes are malicious.
+		\label{case:malicious-to-malicious}
 	\end{case}
 	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/4.pdf}
-		\caption{}
+		\caption{A workflow containing two events on malicious processes where one event has a relation to the other.}
 		\label{fig:consensus:single-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
 	\begin{case}
-		\textbf{Two Malicious Events With Relations To Eachother}: In this case (see \autoref{fig:consensus:two-malicious-with-twoway-malicious-relation}), two malicious events work in collaboration with to manipulate data with both their relations. This situation has the same properties as case 6.
+		In this case the workflow contains two events hosted on malicious processes with relations to each other as shown in \autoref{fig:consensus:two-malicious-with-twoway-malicious-relation}. This situation has the same properties as \autoref{case:malicious-to-malicious}.
+		\label{case:malicious-to-from-malicious}
 	\end{case}
 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[]{5validation/images/7.pdf}
-		\caption{}
+		\caption{A workflow containing two events on malicious processes where the events has relations to each other.}
 		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar In none of these cases it was possible to identify which of the events are malicious (in case 1 and 2 it is not possible to observe and therefore neither to identify). 
+	\newpar It is not possible to identify which of the events are hosted on malicious processes, in any of these cases. Furthermore in cases \ref{case:malicious-alone}, \ref{case:malicious-to-malicious}, and \ref{case:malicious-to-from-malicious} it is not even possible to observe consistent cheating if the processes collaborate.
 	
-	This creates some interesting questions as to how one can try to identify which of the events are cheating. 
-	One method could be to determine by counting how many of the neighbouring events disagree with you and if a majority disagrees the event will be marked as evil. Unfortunately that method has pitfalls since a good event with connection only to evil events could be marked as malicious. 
+	\newpar This creates some interesting questions about how one can try to identify which of the events are cheating when cheating is observed. One method of doing so could be to determine the malicious process by counting how many of the neighbouring events disagree with the event on the process. If the majority of the neighbours disagree, the process hosting the event will be marked as malicious. Unfortunately that method has drawbacks since an event on a correct process with connections only to events on malicious processes could itself be marked as malicious. 
 	
-	If we require a new property of the DCR graph which states that in all neighbourhoods with $N$ events, a maximum of $N/2-1$ are malicious an election would not be able to falsely accuse a good event of being malicious. This property is commonly used for distributed systems which uses elections, but traditionally is only used to describe the amount of malicious nodes in the entire system. Therefore this property is more strict and perhaps more difficult to adhere to. 
+	If we require that in all neighbourhoods (the sets of neighbours of all events) of the DCR graph, with $N$ events, a maximum of $N/2-1$ events are hosted on malicious processes, then an election would not be able to falsely accuse an event on a correct process of being malicious. This requirement is often needed in distributed systems that use elections, but traditionally it is only used to describe the amount of malicious nodes in the entire system and not in each neighbourhood. Therefore this requirement is more strict and perhaps more difficult to accomplish.
 	
-	To worsen the situation substantially even if this property is adhered to, if an event is malicious does not mean that it is always malicious meaning it would be able to trick an election into not having a majority against it, so it is not possible to say that each event which disagrees with the values are malicious, which places us in the same situation to begin with, where we can only say one of two events must be malicious.
+	\newpar To make the situation substantially worse, even if this requirement is accomplished, a malicious process does not have to cheat with the actions related to a majority of neighbours of the event. An example could be a workflow with four events fully connected where one of the events is hosted on a malicious process. The malicious process could consistently cheat with one its relations but keep the rest of its history valid. In that situation only one of the neighbours would vote against it. 
 	
-	\newpar It becomes apparent that the structure of the DCR graph has a great influence on whether it is possible to observe consistent cheating or not - especially in cases where a lot of malicious events are either interconnected or not connected to any other event at all it can be difficult to say anything about the state of the history. 
+	As described in the example it would be possible for the malicious process to trick an election into not having a majority against it. Therefore an election cannot conclude that a process \textit{is} correct, which leaves the situation no better than the initial situation, where it was only possible to detect that at least one of the processes were malicious.
 	
-	One could argue what implications consistent cheating have on sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state. Therefore these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The major problems are apparent in situation 6 and 7 where, for example, a company can own a sub-part of the graph with many events working together to create a falsified image of what has actually happened. 
+	\newpar From the cases shown above it becomes apparent that the structure of the DCR graph has a great influence on whether or not it is possible to observe consistent cheating - especially in cases where a lot of malicious events are either interconnected or not connected to any other event at all. In these cases it can be difficult to observe any malicious activity. Furthermore, the cases also show that the more relations events on malicious processes have to events on correct processes and vice versa, the more it is possible to observe the malicious activity. Therefore a more connected a DCR graph is preffered, because the probability for an event on a malicious process to be connected to an event on a correct process is higher.
 	
-	\newpar Therefore a highly interconnected DCR graph is preferred if the users want to have a high probability of observing \todo{Fisk: Observing what?} 
+%	\newpar One could argue the implications of consistent cheating in sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state. Therefore these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The major problems are apparent in situation 6 and 7 where, for example, a company can own a sub-part of the graph with many events working together to create a falsified image of what has actually happened. 
 
     \section{Simulation}\label{sec:historyindcr:simulation}
     One of the more difficult validity properties to check is whether events have executed only when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its conditions also need to be taken into perspective, furthermore the state of the workflow most likely changes over time with each execution. In addition since the history is a strictly partially ordered set, some executions happen concurrently which does not match physical time in which the events have executed.\todo[inline]{Jeg har lidt svært ved at indlede dette afsnit, men jeg synes ikke det skal starte med at det her er sværere end de andre validations.}
