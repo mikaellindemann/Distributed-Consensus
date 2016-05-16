@@ -117,24 +117,19 @@ module Graph =
         checkID && checkRelation fromNode.Type toNode.Type
 
     let merge localGraph otherGraph =
-        let addToUsedActions action corner = Set.add action.Id corner
-
-        let hasRelation first second corner =
-            (first.Id <> second.Id)
-                && hasRelation first second
-                && not <| Set.contains second.Id corner
+        let hasRelation first second = (first.Id <> second.Id) && hasRelation first second
 
         let combinedGraph = Map.fold (fun graph key value -> addNode value graph) localGraph otherGraph.Nodes
         let combinedGraphAsSeq = Seq.map (fun (id,action) -> action) <| Map.toSeq combinedGraph.Nodes
 
-        let findFirstRelation action corner = Seq.tryFind (fun action' -> hasRelation action action' corner) combinedGraphAsSeq
+        let findFirstRelation action = Seq.tryFind (fun action' -> hasRelation action action') combinedGraphAsSeq
 
-        let edgesSet,_ =
-            Seq.fold (fun (newEdgesSet,corner) action ->
-                    match findFirstRelation action corner with
-                    | Some action' -> (Set.add (action, action') newEdgesSet, addToUsedActions action' corner)
-                    | None -> newEdgesSet,corner
-                ) (Set.empty, Set.empty) combinedGraphAsSeq
+        let edgesSet =
+            Seq.fold (fun newEdgesSet action ->
+                    match findFirstRelation action with
+                    | Some action' -> (Set.add (action, action') newEdgesSet)
+                    | None -> newEdgesSet
+                ) Set.empty combinedGraphAsSeq
 
         Some <| Set.fold (fun graph (fromNode, toNode) -> addEdge fromNode.Id toNode.Id graph) combinedGraph edgesSet
 

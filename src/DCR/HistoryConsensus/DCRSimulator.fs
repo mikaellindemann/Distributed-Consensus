@@ -86,12 +86,12 @@ module DCRSimulator =
             (Graph.getNode history actionId).Edges
 
 
-    let simulate (history : Graph) (initialState : DCRState) (rules : DCRRules) : Result<Graph, Graph> =
+    let simulate (history : Graph) (initialState : DCRState) (rules : DCRRules) : Result<Graph, ActionId> =
         let initialCounterMap = buildCounterMap history
         
-        let rec simulateExecution state counterMap failureList : ActionId list =
+        let rec simulateExecution state counterMap : Result<Graph, ActionId> =
             if Map.isEmpty counterMap
-            then failureList
+            then Success history
             else
                 // Take the first action that has a counter of 0
                 let ((eventId, _) as actionId,_) = 
@@ -101,18 +101,8 @@ module DCRSimulator =
 
                 match execute state rules eventId with // Execute if possible
                 | Failure state' -> 
-                    simulateExecution state' counterMap' (actionId :: failureList)
+                    Failure actionId // Fail fast!
                 | Success state' -> 
-                    simulateExecution state' counterMap' failureList // Recursive step
+                    simulateExecution state' counterMap' // Recursive step
 
-        let failures = simulateExecution initialState initialCounterMap []
-
-        if List.isEmpty failures
-        then Success history
-        else
-            Failure <| List.fold 
-                (fun hist fail -> 
-                    let node = Graph.getNode hist fail
-                    Graph.addNode { node with FailureTypes = Set.add ExecutedWithoutProperState node.FailureTypes } hist)
-                history
-                failures
+        simulateExecution initialState initialCounterMap
