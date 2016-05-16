@@ -279,7 +279,7 @@
 
 	\begin{figure}[H]
 		\centering
-		\includegraphics[]{5validation/images/3.pdf}
+		\includegraphics{5validation/images/3.pdf}
 		\caption{A workflow containing an event on a malicious process that has a relation to an event on a correct process.}
 		\label{fig:consensus:single-malicious-with-good-relation}
 	\end{figure}
@@ -291,7 +291,7 @@
 	 
 	\begin{figure}[H]
 		\centering
-		\includegraphics[]{5validation/images/2.pdf}
+		\includegraphics{5validation/images/2.pdf}
 		\caption{A workflow containing an event on a correct process that has a relation to an event on a malicious process.}
 		\label{fig:consensus:single-good-with-malicious-relation}
 	\end{figure}
@@ -304,7 +304,7 @@
 	
 	\begin{figure}[H]
 		\centering
-		\includegraphics[]{5validation/images/6.pdf}
+		\includegraphics{5validation/images/6.pdf}
 		\caption{A workflow containing an event on a malicious process and an event on a correct process where the events have relations to each other.}
 		\label{fig:consensus:single-good-with-twoway-malicious-relation}
 	\end{figure}
@@ -318,7 +318,7 @@
 	
 	\begin{figure}[H]
 		\centering
-		\includegraphics[]{5validation/images/4.pdf}
+		\includegraphics{5validation/images/4.pdf}
 		\caption{A workflow containing two events on malicious processes where one event has a relation to the other.}
 		\label{fig:consensus:single-malicious-with-twoway-malicious-relation}
 	\end{figure}
@@ -330,7 +330,7 @@
 
 	\begin{figure}[H]
 		\centering
-		\includegraphics[]{5validation/images/7.pdf}
+		\includegraphics{5validation/images/7.pdf}
 		\caption{A workflow containing two events on malicious processes where the events has relations to each other.}
 		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
 	\end{figure}
@@ -350,7 +350,7 @@
 %	\newpar One could argue the implications of consistent cheating in sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state. Therefore these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The major problems are apparent in situation 6 and 7 where, for example, a company can own a sub-part of the graph with many events working together to create a falsified image of what has actually happened. 
 
 
-	\begin{table}[]
+	\begin{table}
 		\centering
 		\label{table:inconsistent-cheating-properties}
 		\begin{tabular}{lll}
@@ -367,19 +367,19 @@
 		\caption{Table of the observability and identifiability of the different inconsistent cheating types}
 	\end{table}
 	
-	\begin{table}[]
+	\begin{table}
 		\centering
 		\label{my-label}
-		\begin{tabular}{llll}
-			\textbf{Consistent Cheating} & \textbf{Agreement on original timestamps} & \textbf{Agreement on amount of executions (incoming)} & \textbf{Agreement on amount of executions (outgoing)} \\
-			\textit{Case 1}              & Not observable                   & Not observable                               & Not observable                               \\
-			\textit{Case 2}              & Not observable                   & Not observable                               & Not observable                               \\
-			\textit{Case 3}              & Not observable                   & Not observable                               & Not observable                               \\
-			\textit{Case 4}              & Not observable                   & Not observable                               & Not observable                               \\
-			\textit{Case 5}              & Not observable                   & Not observable                               & Not observable                               \\
-			\textit{Case 6}              & Not observable                   & Not observable                               & Not observable                              
-		\end{tabular}
-		\caption{There should be a caption here.}
+		\begin{tabularx}{\textwidth}{|X|X|X|X|}
+			\hline\textbf{Consistent Cheating\-} & \textbf{Timestamp changes\-} & \textbf{Execution amt. of 1st event} & \textbf{Execution amt. of 2nd event} \\\hline
+			\textit{Case 1} & No & No & N/A \\\hline
+			\textit{Case 2} & Yes & Yes & No \\\hline
+			\textit{Case 3} & Yes & No & Yes \\\hline
+			\textit{Case 4} & Yes & Yes & Yes \\\hline
+			\textit{Case 5} & No & No & No \\\hline
+			\textit{Case 6} & No & No & No \\\hline
+		\end{tabularx}
+		\caption{Table presenting whether or not it is possible to observe consistent cheating in the 6 cases.}
 	\end{table}
 	\todo{write about it}
 
