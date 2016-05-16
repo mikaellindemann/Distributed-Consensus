@@ -1,32 +1,20 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
-\chapter{Reducing Histories to Orders of Execution}
-\label{chap:order-of-execution}
+\chapter{Reducing Histories to Orders of Execution}\label{chap:order-of-execution}
+	In this chapter, it is examined how it is possible to find an order of execution from a valid global history and it is shown that consensus can be reached on the found order of execution with an election.
+
 \section{Order of Execution}
-\todo[inline]{Mikael: Er det nødvendigt at have denne section når nu der ikke er en anden introduktion til hele kapitlet?}
-\todo[inline]{Fisk: Måske smelt de her to mini-paragraffer sammen til én. Jeg synes det fungerer godt som intro, så.}
-	A produced combined history represents every action that has occurred on all the events of the workflow.
-	It is desired to find an order of execution with excess information in the history removed without losing information regarding the order of the executions. 
+	A valid global history represents every action that has occurred on all the events of the workflow.
+	It is desired to find an order of execution with excess information in the history removed without losing information regarding the order of the executions. To do this, we need to represent an execution as a single entity and furthermore find the minimum equivalent graph of the resulting order.
 	
-	\newpar In order to do this, we need to find a single entity denoting an execution, and identify actions that are part of that execution. 
+	\subsection{Single Entity Representing an Execution}
+	In order to find a single representation of an execution, one approach could be to examine if a single action of an execution could describe all the relations to all the other executions. Doing this involves filtering all actions not chosen to be the representative of the execution, and since filtering nodes also removes their edges, happen before relations between executions would be lost. Therefore it is necessary to add a direct edge between representatives if there is already a path from one to the other in the history. Since the history is represented as a directed acyclic graph, the transitive closure of the graph provides the desired relations. Having found the transitive closure of the history, actions that are not the representative for an execution are removed from the graph along with their edge.
 	
-	Furthermore, redundant edges between these entities should be removed without losing information about the order of the entities, which corresponds to finding a so-called minimum equivalent graph.
+	Since every execution has actions of types \textit{Execute start} and \textit{Execute finish}, choosing one of these as the representative seems like a sensible choice. For any execution in a history, an action of type \textit{Execute start} always has a path to an action of type \textit{Execute finish}. Therefore the transitive property of directed acyclic graphs, states that in an execution the reachability of an action of type \textit{Execute start} is a superset of the reachability of the action of type \textit{Execute finish}, and therefore it contains more information about happens before relations. To conclude, actions of type \textit{Execute start} are the most sensible choice of these two types.
 	
-	\subsection{Use of the Transitive Closure in Order to Gain Extra Information}
-	One approach to finding a single representation of an execution could be to examine if a single action of the execution could describe all the relations to all the other executions. Doing this involves filtering all actions not chosen to be the representative of the execution, and since filtering nodes remove happen-before relations, increasing the connectivity of the graph before filtering would be necessary.
+	A situation where actions of type \textit{Execute start} is chosen as representatives is shown in \autoref{fig:problem:trans}. What becomes apparent in this figure, is that the first execution of event $A$ must happen before the first execution of event $B$. This is because two events that have a happen before relation must have any kind of relation in the workflow. If the events have a relation in the workflow, then they must execute serially equivalent. This ensures that an execution of one of the events must happen either before, or after an execution of the other. Therefore another approach must be taken.
 	
-	It might therefore be possible to establish that two actions have occurred after each other, if each transitive relation in the graph is available on all actions chosen to represent the execution.
-	
-	\newpar Since the history is represented as a directed acyclic graph, the transitive closure of the graph can be found to find more happens-before relations. 
-	After having found the transitive closure of the graph, actions that are either not in between \textit{Execute start} and \textit{Execute finish} action types can be filtered away from the graph. One of these execution types should denote an entire execution. This does not affect the order of the executions, since the execute action types are now connected after having found the transitive closure.
-	
-	\newpar Finding the transitive closure and filtering does not always give the best possible results however, since actions might appear to happen concurrently after having found the transitive closure, when it is in fact possible to determine that the actions have happened in order. 
-	
-	\newpar In \autoref{fig:problem:trans} the result of finding the transitive closure of the joined histories of two events is shown. 
-	Compare the result to the result of using the \textit{Collapse} approach in \autoref{fig:problem:collapse}, where it can be seen that is is fact possible to determine that these actions happens in order. \textit{Collapse} is described below.
-	
-	\subsubsection{Complexity}
-	We implemented finding the transitive closure as a depth first search, which has a running time of $\mathcal{O}(V + E)$. \textit{Collapse} is therefore a more efficient as well as a more precise way of finding an order of execution as described in \autoref{chap:order-of-execution}, and this approach has been determined as the better way of finding the order of execution.\todo[inline]{Igen, mærkeligt at snakke om collapse når denne ikke er defineret endnu.}
+	\newpar In \cite{sedgewick2011algorithms}, Sedgewick et. al. describes an implementation of transitive closure, which has a time complexity of $\mathcal{O}(V * (V + E))$ where V is the number of nodes and E is the number of edges in the graph.
 	
 	\begin{figure}
 		\centering
@@ -35,25 +23,23 @@
 		\label{fig:problem:trans}
 	\end{figure}
 	
-	\begin{figure}
-		\centering
-		\includegraphics[width=\textwidth]{5orderofexecution/images/collapse.pdf}
-		\caption{The result of finding an execution using \textit{Collapse}. Note that executions that previously were concurrent (\autoref{fig:problem:trans}) are now ordered.}
-		\label{fig:problem:collapse}
-	\end{figure}
-	
 	\subsection{Collapsing}
-	In \autoref{def:execution} an execution is defined to be all the actions between \textit{Execute start} and \textit{Execute finish} actions. Even though incoming actions are saved on other events than the ones performing the executions, these actions are still initiated by the executing event and are therefore seen as being part of the execution. Since an event is only affected by the effects of other events or itself executing, any action is always caused by the execution of \textit{some} event, and therefore no action can happen outside an execution.
+	As described above, transitive closures are not an ideal way of representing an execution as a single entity and therefore collapsing is introduced.
+	
+	\newpar In \autoref{def:execution} an execution is defined to be all the actions representing the effects of the execution, as well as two actions with types \textit{Execute start} and \textit{Execute finish}. Even though incoming actions are stored on other events than the ones performing the executions, these actions are still initiated by the executing event and are therefore seen as being part of the execution. Since an event is only affected by the effects of other events or itself executing, any action is always part of \textit{some} execution of \textit{some} event, and therefore no action can happen outside an execution.
 	
 	\newpar In \autoref{inv:historyinvariant} it is said that if a single action in one execution happens before another action in another execution, then no action from the second execution can happen before an action in the first. In other words this means, if there exists an action in execution $A$, that happens before an action in execution $B$, then $A$ happens before $B$, and $B$ cannot happen before $A$. Note that this does not mean that all actions in $A$ happens before all actions in $B$, which means some of the actions are in fact concurrent. This creates the need for an argument that $A$ \textit{does} happen before $B$ despite that some actions are concurrent.
 	
-	\todo[inline]{Serial equivalence in executions - Herfra og ned skal stadig lige kigges igennem og rettes til for sammenhæng.}
+	\newpar As stated in the previous section, because of serial equivalence, two events, where one has a relation to the other, can only execute in a way such that the result is the same as if one had executed before the other. Therefore any happens before relation any action in an execution has with any action outside of that execution actually applies to all actions in the execution. When this is the case, every action inside an execution is equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity.
 	
-	To do so it is necessary to make an assumption which states that everything in an execution happens simultaneously and therefore any happens before relation any action has with any action outside of the execution now applies to all events in the execution. When this is the case, every action inside the execution are equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity. 
+	\newpar An example of collapsing actions into executions are shown in \autoref{fig:orderofexecution:collapse}. This is the same example as used when describing transitive reduction. We now see that the first execution of $A$ happens before the first execution of $B$.
 	
-	The assumption that every action of an execution has the same happens before relation as any other action in the execution cannot contradict any existing relations, when it is taken into consideration that the events execute serially equivalent. This implies that two executions cannot affect the same event at interpolated\todo[inline]{wat? Mikael: Det jeg tror vi gerne vil sige ca her, er at hvis 2 executions er concurrent, så må de 2 ikke have en relation til et fælles event, da dette event så ville kunne afgøre i hvilken rækkefølge de 2 executions var sket.} allowing some actions to happen before, and some after, another execution.
-	
-	\newpar An example of this separation of executions can be found in \autoref{fig:orderofexecution:collapsing}. The figure shows actions that are part of an execution getting collapsed into a single execution, with preserved happens-before relations. 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{5orderofexecution/images/collapse.pdf}
+		\caption{The result of finding an execution using \textit{Collapse}. Note that executions that previously were concurrent (\autoref{fig:problem:trans}) are now ordered.}
+		\label{fig:orderofexecution:collapse}
+	\end{figure}
 	
 %	\newpar It then is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} constitutes looking at all actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connecting these events into a single entity, representing an entire execution. 
 
@@ -64,36 +50,18 @@
 
 %	In the implemented solution the the \texttt{ExecuteFinish} type has been chosen to denote a collapsed execution in order to avoid creating a new action type. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
 
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=\textwidth]{5orderofexecution/images/transitive-example-collapse.pdf}
-		\caption{The result of collapsing actions in the histories of three events.}
-		\label{fig:orderofexecution:collapsing}
-	\end{figure}
-	
-%	\begin{figure}
-%		\centering
-%		\def\svgwidth{0.42\columnwidth}
-%		\fontsize{6}{8}\selectfont
-%		\import{4connect/images/}{before_collapsing.pdf_tex}
-%		\caption{Separation of executions}
-%		\label{fig:before-collapsing}
-%	\end{figure}
-%	\todo{Denne figur skal laves ud fra GasWorkflow.}
-%	
-%	\todo{udvid (find bedre eksempel) med at særlige tilfælde kræver transitive reduction efter\-følgende}
-%	
-%%	\begin{figure}
-%		\centering
-%		\def\svgwidth{0.22\columnwidth}
-%		\fontsize{6}{8}\selectfont
-%		\import{4connect/images/}{after_collapsing.pdf_tex}
-%		\caption{Executions after collapsing}
-%		\label{fig:after-collapsing}
-%	\end{figure}
-%	\todo{Denne figur skal laves ud fra GasWorkflow.}
 	
 	\newpar The collapsing algorithm can be be seen in \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. 
+	
+	\noindent One of the properties the collapsed order of execution has, is that, for two executions to be concurrent the executing events must be independent, as described in \cite{debois2015concurrency}, however, not all independent events create concurrent executions. To show that all non-independ events cannot be concurrent, we will show that if any of the properties of independent events are not present between a pair of events, making them non-independent, then collapse will order the executions.
+	
+	\begin{enumerate}
+		\item \textit{No event included by $E$ is excluded by $F$ and vice versa}: This property is violated if $E$ includes an event, $G$ that $F$ excludes. The incoming actions on $G$ will allow collapse to order the executions of $E$ and $F$.
+		\item \textit{$E$ requires a response from some $G$ iff $F$ does}: This property is violated if $E$ has a response relation to $F$, but $F$ does not have a response relation to itself. In this case, an execution of $E$ results in incoming actions on $F$. Any execution of $F$ is always before or after these incoming actions.
+		\item \textit{Neither event is a condition for the other}: This property is violated if $E$ is a condition for $F$. In this case the incoming actions from the execution of $F$ on $E$, enables the ordering of executions of the events.
+		\item \textit{Neither event includes or excludes the other}: This property is violated if $E$ includes $F$. In this case the incoming actions from the execution of $E$ on $F$, enables the ordering of executions of the events.
+		\item \textit{Neither event includes or excludes a condition of the other}: This property is violated if $E$ excludes $G$ which is a condition of $F$. Recall that conditions in the implementation are checked by the executing event. This means that any execution of $F$ will result in incoming actions on $G$. Also the execution of $E$ will result in incoming actions on $G$. Therefore the incoming actions on $G$ will allow collapse to order the executions of $E$ and $F$.
+	\end{enumerate}
 	
 	To argue that the collapse algorithm correctly describes the relations between executions \autoref{inv:historyinvariant} is examined. It states that if there exist any action in execution $A$ with a relation to execution $B$, then it must not be true the other way around. Therefore for collapse to be correct each single execution entity must have the same property. 
 	
@@ -145,6 +113,12 @@
 	\newpar The algorithm runs in a time complexity of $O(n^2)$ where $n$ is the number of actions in the history. This must be so since $CreateExecution$ runs linearly in $n$ if $Add$ on $map$ is constant and $CreateExecution$ worst case gets called $n/2$ times if every action in the history are executions. \todo{write better more correct yes}
 	
 	\subsection{Transitive Reduction}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{5orderofexecution/images/transitive-example-collapse.pdf}
+		\caption{The result of collapsing actions in the histories of three events.}
+		\label{fig:orderofexecution:collapsing}
+	\end{figure}
 	
 	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed, as seen in \autoref{fig:orderofexecution:collapsing}. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
 	
