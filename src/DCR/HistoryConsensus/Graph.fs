@@ -88,10 +88,10 @@ module Graph =
         let ifEdgeThenCheckFurther sourceNodeId sourceAction neighbourNodeId neighbourAction graphNeighbour = 
             if (hasPath sourceAction neighbourNodeId graphNeighbour)
             then 
-                Map.fold
-                    ( fun graphDestination destinationNodeId destinationNodeAction -> 
-                        ifTransitiveClosureThenReduce sourceNodeId sourceAction neighbourAction destinationNodeId graphDestination
-                    ) graphNeighbour graphNeighbour.Nodes
+                Set.fold
+                    ( fun graphDestination destinationNodeAction -> 
+                        ifTransitiveClosureThenReduce sourceNodeId sourceAction neighbourAction destinationNodeAction.Id graphDestination
+                    ) graphNeighbour (getNodesS graph neighbourAction.Edges)
             else graphNeighbour
 
         Map.fold 

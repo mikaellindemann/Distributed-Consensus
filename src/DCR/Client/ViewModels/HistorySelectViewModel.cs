@@ -348,9 +348,14 @@ namespace Client.ViewModels
             {
                 var failureResult = result.GetFailure;
 
-                wrongHistories.Add(new Tuple<string, FailureTypes.FailureType>(failureResult.Item1, FailureTypes.FailureType.ExecutedWithoutProperState));
-                
-                mergedGraph.Nodes.Single(action => action.Key == failureResult).Value.FailureTypes.Add(FailureTypes.FailureType.ExecutedWithoutProperState);
+                wrongHistories.Add(
+                    new Tuple<string, FailureTypes.FailureType>(
+                        failureResult.Nodes.Single(
+                            action => action.Value.FailureTypes.Contains(FailureTypes.FailureType.ExecutedWithoutProperState)
+                        ).Key.Item1, // tag the event as executing without proper state.
+                    FailureTypes.FailureType.ExecutedWithoutProperState));
+
+                mergedGraph = failureResult;
             }
             return mergedGraph;
         }
