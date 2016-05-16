@@ -17,7 +17,7 @@
 	\noindent Cheating is the act of creating histories which violates at least one of these properties. This leads us to two different kinds of cheating:
 	
 	\begin{definition}
-		\textbf{Inconsistent cheating} violates property 1, and at least one of 2, 3, and 4.
+		\textbf{Inconsistent cheating} violates at least one of properties 2, 3, and 4.
 		\label{def:inconsistentcheating}
 	\end{definition}
 	
@@ -82,9 +82,9 @@
 		\label{rule:executionvalidstate}
 	\end{ruledef}
 	
-	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:historyindcr:simulation}.
+	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:validation:simulation}.
 	
-	To argue that rules \ref{rule:validrelations} through \ref{rule:executionvalidstate} covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. From the definition it is possible to make a set of all relations where each element is a triple of two events and the type of the relation. Because this set is finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in that set. Furthermore since the relations can be filtered by events it is possible to get the set of relations that happen in an execution. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition of DCR graphs also declares what the state of the workflow must be for an event to be executable and we will see in \autoref{sec:historyindcr:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements for the run of a workflow and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
+	\newpar To argue that rules \ref{rule:validrelations} through \ref{rule:executionvalidstate} covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. From the definition it is possible to make a set of all relations where each element is a triple of two events and the type of the relation. Because this set is finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in that set. Furthermore since the relations can be filtered by events it is possible to get the set of relations that happen in an execution. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition of DCR graphs also declares what the state of the workflow must be for an event to be executable and we will see in \autoref{sec:validation:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements for the run of a workflow and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
 	
 	\subsection{Serial Equivalence Rules}
 	A given execution must comply to the rules of serial equivalence. That includes the following:
@@ -204,6 +204,25 @@
 	\newpar To argue that rules \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} cover the requirements of Lamport's logical clocks, recall that Lamport states that the timestamp of a given action on a given process must be lower than any action it happens before. This is covered by \autoref{rule:total-order-timestamps}.
 	
 	Lamport also states that for any message exchange between two processes, the local timestamp of the process receiving the event, must be set to a higher timestamp than that of the sending process. This is covered by \autoref{rule:message-exchange-timestamp-order}. Together these two rules cover the requirements of Lamports logical clocks.
+	
+	\begin{table}[H]
+		\centering
+		\begin{tabularx}{\textwidth}{Xll}
+			\textbf{Inconsistent Cheating} & \textbf{Observable} & \textbf{Identifiable} \\\hline
+			\textit{Rule 1 (Only specified relations)}         & Yes          & No            \\
+			\textit{Rule 2 (Only complete executions)}         & Yes          & No            \\
+			\textit{Rule 3 (Executions only in valid states)}  & Yes          & No            \\
+			\textit{Rule 4 (Only non disrupted executions)}    & Yes          & Yes            \\
+			\textit{Rule 5 (Wait for complete execution)}      & Yes          & Yes            \\
+			\textit{Rule 6 (Synchronous message exchange)}     & Yes          & Yes            \\
+			\textit{Rule 7 (Total order of timestamps)}        & Yes          & Yes            \\
+			\textit{Rule 8 (Message exchange timestamp order)} & Yes          & Yes           
+		\end{tabularx}
+		\caption{Table of the observability and identifiability of the different inconsistent cheating types}
+		\label{table:inconsistent-cheating-properties}
+	\end{table}
+	
+	\noindent Table \ref{table:inconsistent-cheating-properties} summarises the observability and identifiability of violations of each of the rules \ref{rule:validrelations} through \ref{rule:message-exchange-timestamp-order}. We will see in \autoref{sec:validation:simulation} why \autoref{rule:executionvalidstate} is observable but not identifiable. In the table it becomes apparent that in most cases it is possible to identify the single process that cheats, but in the cases where the violated rules regards the rules of the workflow, it is only possible to observe inconsistent cheating.
 	
 	\section{Consistent Cheating}
 	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat consistently. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
@@ -345,95 +364,84 @@
 	
 	As described in the example it would be possible for the malicious process to trick an election into not having a majority against it. Therefore an election cannot conclude that a process \textit{is} correct, which leaves the situation no better than the initial situation, where it was only possible to detect that at least one of the processes were malicious.
 	
-	\newpar From the cases shown above it becomes apparent that the structure of the workflow has a great influence on whether or not it is possible to observe consistent cheating - especially in cases where a lot of malicious events are either interconnected or not connected to any other event at all. In these cases it can be difficult to observe any malicious activity. Furthermore, the cases also show that the more relations events on malicious processes have to events on correct processes and vice versa, the more it is possible to observe the malicious activity. Therefore a more connected workflow is preferred, because the probability for an event on a malicious process to be connected to an event on a correct process is higher.
-	
-%	\newpar One could argue the implications of consistent cheating in sub-graphs such as those of case 1 and 2, since their these events have little consequences on the rest of the workflow state. Therefore these events can only exist in two states (before and after they are executed) and therefore not being able to handle these kinds of situations is not that big a flaw. The major problems are apparent in situation 6 and 7 where, for example, a company can own a sub-part of the graph with many events working together to create a falsified image of what has actually happened. 
-
-
-	\begin{table}
+	\begin{table}[H]
 		\centering
-		\label{table:inconsistent-cheating-properties}
-		\begin{tabular}{lll}
-			\textbf{Inconsistent Cheating} & \textbf{Observable} & \textbf{Identifiable} \\
-			\textit{Rule 1 (Only specified relations)}         & Yes          & No            \\
-			\textit{Rule 2 (Only complete executions)}         & Yes          & No            \\
-			\textit{Rule 3 (Executions only in valid states)}  & Yes          & No            \\
-			\textit{Rule 4 (Only non disrupted executions)}    & Yes          & Yes            \\
-			\textit{Rule 5 (Wait for complete execution)}      & Yes          & Yes            \\
-			\textit{Rule 6 (Synchronous message exchange)}     & Yes          & Yes            \\
-			\textit{Rule 7 (Total order of timestamps)}        & Yes        & Yes            \\
-			\textit{Rule 8 (Message exchange timestamp order)} & Yes          & Yes           
-		\end{tabular}
-		\caption{Table of the observability and identifiability of the different inconsistent cheating types}
-	\end{table}
-	
-	\begin{table}
-		\centering
-		\label{my-label}
-		\begin{tabularx}{\textwidth}{|X|X|X|X|}
-			\hline\textbf{Consistent Cheating\-} & \textbf{Timestamp changes\-} & \textbf{Execution amt. of 1st event} & \textbf{Execution amt. of 2nd event} \\\hline
-			\textit{Case 1} & No & No & N/A \\\hline
-			\textit{Case 2} & Yes & Yes & No \\\hline
-			\textit{Case 3} & Yes & No & Yes \\\hline
-			\textit{Case 4} & Yes & Yes & Yes \\\hline
-			\textit{Case 5} & No & No & No \\\hline
-			\textit{Case 6} & No & No & No \\\hline
+
+		\begin{tabularx}{\textwidth}{XXXX}
+			\textbf{Consistent Cheating\-} & \textbf{Timestamp changes\-} & \textbf{Execution amt. of 1st event} & \textbf{Execution amt. of 2nd event} \\\hline
+			\textit{Case 1} & No & No & N/A \\
+			\textit{Case 2} & Yes & Yes & No \\
+			\textit{Case 3} & Yes & No & Yes \\
+			\textit{Case 4} & Yes & Yes & Yes \\
+			\textit{Case 5} & No & No & No \\
+			\textit{Case 6} & No & No & No \\
 		\end{tabularx}
 		\caption{Table presenting whether or not it is possible to observe consistent cheating in the 6 cases.}
+		\label{table:consistent-cheating-properties}
 	\end{table}
-	\todo{write about it}
 
-    \section{Simulation}\label{sec:historyindcr:simulation}
-    One of the more difficult validity properties to check is whether events have executed only when the state of the workflow allowed it. To do so, a lot of challenges must be addressed, it is not enough to check if the initial state of the event is executable, its conditions also need to be taken into perspective, furthermore the state of the workflow most likely changes over time with each execution. In addition since the history is a strictly partially ordered set, some executions happen concurrently which does not match physical time in which the events have executed.\todo[inline]{Jeg har lidt svært ved at indlede dette afsnit, men jeg synes ikke det skal starte med at det her er sværere end de andre validations.}
-    
-    \newpar One approach to this problem is to simulate the executions of the workflow. To do so, it is required that the rules of the workflow and the initial state of every event in the workflow is known. Furthermore it is required that an order of execution has been found, this is examined in the next chapter but we assume it is available. 
-    
-    Given the order of execution each execution has either zero or more ingoing edges. Each ingoing edge states which executions must have happened before, therefore an execution can first happen when all of its ingoing edges have executed. Therefore each execution have a counter based on the amount of ingoing edges which can be decreased each time one of the ingoing edges executes. An order of execution based on a valid history will always have some executions which have no ingoing edges since no cycles appear and some events \todo{executions? eller?}must happen before all their relations.
-    
-    \newpar To check if the execution of an event is possible, it is checked if the event is included and that the state of every condition of the event is either excluded or executed.\todo[inline]{Behøver vi skrive hvad det vil sige at være executable?} If the event was executable, the state of the workflow is changed according to the rules of the workflow.\todo[inline]{Vi opdaterer også state selvom den ikke er executable}
-    
-    \newpar To simulate the entire order of execution, the executions are checked for their ability to execute in a topological order. One way to create a topological order from an order of execution is to map each of the executions to the amount of executions that happens directly before an execution itself. An execution can be chosen as the next if and only if its counter reaches 0. When an execution is chosen, all of the executions it happens before has their counter decremented by 1. The order of which executions have happened are adhered to, but concurrent executions happen in a random order.\todo[inline]{Mikael: Jeg har omskrevet det her lidt, men ladet nogle sætninger være. Check gerne at det giver mening}
-    
-    Executions can only be concurrent if the events they belong to do not share outgoing relations. If two events share outgoing relations, one of them must affect the shared event before the other and an order would be able to be created. Therefore in an order of execution only one of the ingoing edges can be of an ingoing relation, the rest must be based on outgoing relations which can determine that the execution happens after some other execution. The order of which concurrent executions are simulated therefore does not matter since they order of which they execute can only result in one state change which affects common outgoing edges.\todo[inline]{hvad siger vi her?}
-    
-    \newpar If an execution was not executable, it is possible to identify if it is the event itself which is malicious or if it is one or more of the condition events. If the state of the event was not executable then the event must be malicious, note that the conditions in this case also could be malicious. If the state is executable and the conditions are included and not executed, another situation arises. The conditions could have returned false information to the executing event, or the executing event could have executed regardless of the values returned. Therefore in this case only a set of possible malicious events can be determined.\todo[inline]{Mikael: Jeg har svært ved at forstå hvad vi vil med denne paragraf. Måske en figur kan hjælpe?}
-    \todo[inline]{Fisk: Jeg har generelt at forstå det her afsnit. Det skal vi nok lige gå igennem igen.}
+	\noindent From \autoref{table:consistent-cheating-properties} it becomes apparent that the structure of the workflow has a great influence on whether or not it is possible to observe consistent cheating - especially in cases where a lot of malicious processes are either interconnected or not connected to any other process at all. In these cases it can be difficult to observe any malicious activity. Furthermore, the cases also show that the more relations events on malicious processes have to events on correct processes and vice versa, the more it is possible to observe the malicious activity. Therefore a more connected workflow is preferred, because the probability for an event on a malicious process to be connected to an event on a correct process is higher.
 
-	\newpar In \autoref{alg:simulation} the simulation algorithm can be seen. It runs in time linear to the amount of executions.
+    \section{Simulation}\label{sec:validation:simulation}
+    In order to validate that executions of events have only happened when the events were in an executable state, it is necessary examine each marking the workflow has transisted through. Because we only know the initial marking and the current marking of the workflow, but no markings in between, we cannot validate  each execution without calculating the intermediate markings, because each execution of an event can change the marking of the workflow.
+    
+    \newpar One approach to this problem is to \textit{simulate} the executions of the workflow, that is, given the initial marking, apply every execution from the order of execution, while validating that every marking, created by the previous executions, allows for the next execution to happen.
+    
+    \newpar Because an order of execution can only be collapsed from a valid global history and valid global history can only be merged from valid local histories, it does not make sense to perform simulation if any kind of cheating has been observed.
+    
+    \newpar In order to simulate an order of execution, it is required that the rules and the initial marking of the workflow is known. Furthermore to simulate concurrent executions in a non-distributed environment it is required to find a total order of execution from the partial order.
+    
+    \newpar
+	\todo{Sørg for at inkluder dette i background - måske fjern cite?}
+	Since the order of execution states the happens before relations of all executions, simulation must require that any execution must be applied to the marking, before any other execution it happens before. Recall that the topological order of a directed acyclic graph is a total ordering where for each edge from $A$ to $B$, $A$ before $B$. Since the topological ordering has the properties we need to execute concurrent executions in a non-distributed environment, we need to argue that any order of concurrent executions result in the same marking as applying the executions simultaneously.
 	
-	\figuretodo{figur over en order of executions med counters på hver executions - eventuelt en ekstra med hvordan det ser ud efter at x events har executed. Mikael: For mig er det ikke det essentielle ved algoritmen "Simulation".}
+	As argued in ,\todo{Refer to argumentation of collapse} concurrent executions only happen if the executed events are independent. In \cite{debois2015concurrency}, Debois et. al. conclude that any order of execution of independent events results in the same marking. Therefore any topological ordering of an order of execution is sufficient to simulate any ordering of concurrent events.
+    
+    When a topological ordering of executions have been found, each execution is applied to the marking one at a time resulting in a new marking.
+    
+    \newpar If a marking does not allow for the next execution to happen, either the process hosting the executing event or the processes hosting any of its conditions are malicious. If the marking states that the executing event is not included, then the process hosting the executing event must be malicious. Alternatively, if the executing event is included in the marking, but at least one of its conditions are not fulfilled, this means that either the process hosting the condition returned incorrect information, or the process of the executing event disregarded the correct information of the condition. In these situations it is not possible to identify the cheating processes.
+
+	\newpar Furthermore, if the marking does not allow for the next execution to happen, multiple approaches can be taken. We have chosen to fail and return the invalid execution, because by choosing to apply the invalid execution or not to the marking, an assumption has been made about the rest of the executions.
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
-			\Function{Simulation}{orderOfExecution, DCRRules, state}
+			\Function{Simulation}{orderOfExecution, DCRRules, initialMarking}
 			\State orderedExecutions $\leftarrow$ \Call{TopilogicalSort}{orderOfExecution} \Comment Returns a queue
-			\State failures $\leftarrow$ List.Empty
-			\While{not orderedExecutions.isEmpty}
-				\State execution $\leftarrow$ \Call{Queue.Pop}{orderedExecutions}
+			\State marking $\leftarrow$ initialMarking
+			\While{\Call{HasElements}{orderedExecutions}}
+				\State execution $\leftarrow$ \Call{Pop}{orderedExecutions}
 					\If{not \Call{IsExecutable}{execution.Event, state}}
-					\State failures $\leftarrow$ \Call{List.Add}{execution, failures}
+					\State\Return\Call{Failure}{execution}
 				\EndIf
 				\State state $\leftarrow$ \Call{ApplyExecution}{execution.Event, DCRRules, state}
 			\EndWhile
-			\State\Return failures
+			\State\Return Success
 			\EndFunction
 		\end{algorithmic}
 		\caption{The \textbf{Simulation} algorithm}
 		\label{alg:simulation}
 	\end{algorithm}
-	\todo[inline]{Check lige op på algoritmen generelt}
 	
-	\newpar This algorithm is based on the forward chaining algorithm of entailment in propositional theorem proving\todo{ref section 7.5 in SISP bog. Mikael: Jeg synes det er fedt at vi har anvendt viden fra det fag, men synes at det stikker lidt uden for de ting vi har sagt er nødvendigt for at forstå denne opgave. Jeg har også forsøgt at formulere i teksten ovenfor hvordan man kan anvende algoritmen til at finde denne order, men uden at gå alt for teknisk til værks.}, which also runs in linear time and is used to see if a knowledge base can entail a proposition.
+	\newpar In \autoref{alg:simulation} the simulation algorithm can be seen.
 	
-    \newpar There is a couple of challenges and approaches to how it is handled both if cheating has been observed before the simulation or cheating is observed during the simulation. We have chosen the approach to mark if an execution was inconsistent, but allow it to "execute" and then change the state to see if the rest of the order of execution was consistent. One could easily check the rest of the order of execution without the state change of the inconsistent execution to see what implications that cheating could have had.
+	If every execution is simulated in a marking equal to the marking of the workflow at the time of execution, then we have shown that the order of execution \textit{is} a run of the workflow. If it was not possible to simulate every execution, then the global history used to create the order of execution is not valid. Therefore the simulation algorithm must find violations of \autoref{rule:executionvalidstate}-
+	
+	\newpar The simulation algorithm runs in time linear to the amount of executions plus the amount of happens before relations between the executions. This is because topological sort can be implemented with a time complexity of $\mathcal{O}(n + m)$ where n is the number of nodes (executions) and m is the number of edges (happens before relations), and the rest of the algorithm has a time complexity of $\mathcal{O}(n)$ because all other operations have time complexities of $\mathcal{O}(1)$. A run of \autoref{alg:simulation} can be seen on \autoref{fig:validation:simulation}.\todo[inline]{Mention that the IsExecutable and ApplyExecution functions are not constant, but depends on the nodes and edges of the DCR graph.}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{5validation/images/simulation.pdf}
+		\caption{A simulation of a topological order of execution, based on the run of a workflow shown to the right. The marking is shown before and after each execution.}
+		\label{fig:validation:simulation}
+	\end{figure}
+    
+    \section{Correctness}
+    
+    
+    Note that property 1 must be violated in order to violate either property 2, 3, or 4. 
+    
+    If it is possible to detect both consistent and inconsistent cheating, then it is possible to decide if a history is valid or invalid.
     
     \todo[inline]{Flyttet fra Background herfra...}
     The reason why typical Byzantine general problem algorithms cannot be used in this project is that the commander needs to use information from the potentially malicious processes to decide on a correct value to propose. Again since at most two events share the information the requirement that maximum $f=N/3$ malicious is not kept in regards to information gathering and it is therefore impossible to get ensure correct information from each event.\todo{måske er der noget af det her der skal rykkes ned i validation og election så vi faktisk bare beskriver hvad det er.}
     Furthermore, most consensus algorithms require all processes of the election to be able to propose a value which should be agreed upon, but since each DCR event does not know nor is able to produce the entire history of the workflow, and therefore cannot propose a value which other events would be able to agree on, such algorithms cannot be used.\todo[inline]{... Flyttet fra Background hertil}
-    
-    \section{Observability and identifiability}
-    
-    \section{Correctness}
-    Note that property 1 must be violated in order to violate either property 2, 3, or 4. 
-    
-    If it is possible to detect both consistent and inconsistent cheating, then it is possible to decide if a history is valid or invalid.
