@@ -394,10 +394,9 @@
     \newpar In order to simulate an order of execution, it is required that the rules and the initial marking of the workflow is known. Furthermore to simulate concurrent executions in a non-distributed environment it is required to find a total order of execution from the partial order.
     
     \newpar
-	\todo{Sørg for at inkluder dette i background - måske fjern cite?}
 	Since the order of execution states the happens before relations of all executions, simulation must require that any execution must be applied to the marking, before any other execution it happens before. Recall that the topological order of a directed acyclic graph is a total ordering where for each edge from $A$ to $B$, $A$ before $B$. Since the topological ordering has the properties we need to execute concurrent executions in a non-distributed environment, we need to argue that any order of concurrent executions result in the same marking as applying the executions simultaneously.
 	
-	As argued in ,\todo{Refer to argumentation of collapse} concurrent executions only happen if the executed events are independent. In \cite{debois2015concurrency}, Debois et. al. conclude that any order of execution of independent events results in the same marking. Therefore any topological ordering of an order of execution is sufficient to simulate any ordering of concurrent events.
+	As argued in \autoref{chap:order-of-execution}, concurrent executions only happen if the executed events are independent. In \cite{debois2015concurrency}, Debois et. al. conclude that any order of execution of independent events results in the same marking. Therefore any topological ordering of an order of execution is sufficient to simulate any ordering of concurrent events.
     
     When a topological ordering of executions have been found, each execution is applied to the marking one at a time resulting in a new marking.
     
@@ -428,7 +427,7 @@
 	
 	If every execution is simulated in a marking equal to the marking of the workflow at the time of execution, then we have shown that the order of execution \textit{is} a run of the workflow. If it was not possible to simulate every execution, then the global history used to create the order of execution is not valid. Therefore the simulation algorithm must find violations of \autoref{rule:executionvalidstate}-
 	
-	\newpar The simulation algorithm runs in time linear to the amount of executions plus the amount of happens before relations between the executions. This is because topological sort can be implemented with a time complexity of $\mathcal{O}(n + m)$ where n is the number of nodes (executions) and m is the number of edges (happens before relations), and the rest of the algorithm has a time complexity of $\mathcal{O}(n)$ because all other operations have time complexities of $\mathcal{O}(1)$. A run of \autoref{alg:simulation} can be seen on \autoref{fig:validation:simulation}.\todo[inline]{Mention that the IsExecutable and ApplyExecution functions are not constant, but depends on the nodes and edges of the DCR graph.}
+	\newpar The simulation algorithm runs in time linear to the amount of executions plus the amount of happens before relations between the executions. This is because topological sort can be implemented with a time complexity of $\mathcal{O}(N + E)$ where $N$ is the number of nodes (executions) and $E$ is the number of edges (happens before relations), and the rest of the algorithm has a time complexity of $\mathcal{O}(N)$ because even though \texttt{IsExecutable} and \texttt{ApplyExecution} have time complexities of $\mathcal{O}(R)$ where $R$ is the amount of relations in the workflow, the amount of executions will be the dominant factor most often. A run of \autoref{alg:simulation} can be seen on \autoref{fig:validation:simulation}.
 	
 	\begin{figure}[H]
 		\centering

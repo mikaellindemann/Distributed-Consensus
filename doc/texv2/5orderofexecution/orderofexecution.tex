@@ -87,7 +87,7 @@
 		\item \textit{Neither event is a condition for the other}: This property is violated if $E$ is a condition for $F$. In this case the incoming actions from the execution of $F$ on $E$, enables the ordering of executions of the events.
 		\item \textit{Neither event includes or excludes the other}: This property is violated if $E$ includes $F$. In this case the incoming actions from the execution of $E$ on $F$, enables the ordering of executions of the events.
 		\item \textit{Neither event includes or excludes a condition of the other}: This property is violated if $E$ excludes $G$ which is a condition of $F$. Recall that conditions in the implementation are checked by the executing event. This means that any execution of $F$ will result in incoming actions on $G$. Also the execution of $E$ will result in incoming actions on $G$. Therefore the incoming actions on $G$ will allow collapse to order the executions of $E$ and $F$.
-	\end{enumerate}\todo[inline]{Insert independent in background of dcr graphs}
+	\end{enumerate}
 	
 	To argue that the collapse algorithm correctly describes the relations between executions \autoref{inv:historyinvariant} is examined. The invariant states that if there exist any action in execution $A$ with a relation to execution $B$, then it must not be true the other way around. Therefore for collapse to be correct every single execution entity must have the abide to the invariant. 
 	
