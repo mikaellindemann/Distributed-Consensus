@@ -27,33 +27,59 @@
 	As described above, transitive closures are not an ideal way of representing an execution as a single entity and therefore collapsing is introduced.
 	
 	\newpar In \autoref{def:execution} an execution is defined to be all the actions representing the effects of the execution, as well as two actions with types \textit{Execute start} and \textit{Execute finish}. Even though incoming actions are stored on other events than the ones performing the executions, these actions are still initiated by the executing event and are therefore seen as being part of the execution. Since an event is only affected by the effects of other events or itself executing, any action is always part of \textit{some} execution of \textit{some} event, and therefore no action can happen outside an execution.
+
+	\newpar In a global history, given an action of type \textit{Execute start}, the set of actions representing a single execution is found by taking each consecutive action with the same event ID until an action of type \textit{Execute finish} is found. Furthermore the incoming actions corresponding to the outgoing actions already found in the execution are added to the set.
 	
 	\newpar In \autoref{inv:historyinvariant} it is said that if a single action in one execution happens before another action in another execution, then no action from the second execution can happen before an action in the first. In other words this means, if there exists an action in execution $A$, that happens before an action in execution $B$, then $A$ happens before $B$, and $B$ cannot happen before $A$. Note that this does not mean that all actions in $A$ happens before all actions in $B$, which means some of the actions are in fact concurrent. This creates the need for an argument that $A$ \textit{does} happen before $B$ despite that some actions are concurrent.
 	
 	\newpar As stated in the previous section, because of serial equivalence, two events, where one has a relation to the other, can only execute in a way such that the result is the same as if one had executed before the other. Therefore any happens before relation any action in an execution has with any action outside of that execution actually applies to all actions in the execution. When this is the case, every action inside an execution is equal in terms of happens-before relations and therefore we can \textit{collapse} the execution into one single entity.
 	
-	\newpar An example of collapsing actions into executions are shown in \autoref{fig:orderofexecution:collapse}. This is the same example as used when describing transitive reduction. We now see that the first execution of $A$ happens before the first execution of $B$.
+	\newpar An example of collapsing actions into executions is shown in \autoref{fig:orderofexecution:collapse}. This is the same example as used when describing transitive closure. Contrary to \autoref{fig:problem:trans}, the first execution of $A$ happens before the first execution of $B$.
 	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{5orderofexecution/images/collapse.pdf}
-		\caption{The result of finding an execution using \textit{Collapse}. Note that executions that previously were concurrent (\autoref{fig:problem:trans}) are now ordered.}
+		\caption{The result of finding an execution using \textit{Collapse}. Note that some executions that previously were concurrent (\autoref{fig:problem:trans}) are now ordered.}
 		\label{fig:orderofexecution:collapse}
 	\end{figure}
 	
-%	\newpar It then is necessary to research a way to \textit{collapse} an execution in order to overcome these problems. \textit{Collapsing} constitutes looking at all actions between an \texttt{ExecuteStart} action and an \texttt{ExecuteFinish} action of an event and connecting these events into a single entity, representing an entire execution. 
-
-
-%	\newpar When actions contained in an execution have been found, it is necessary to decide what should happen to the grouping of the actions. It is desired to keep all relations intact, to avoid modifying the history and only simplify it. 
+	\newpar The collapsing algorithm can be be seen in \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. In order to do so, it uses a few helper functions. \texttt{GetEdgesToOtherExecutions} together with \texttt{MapOldEdgesToNewIDs} represent the translation of edges of actions in one execution to actions in another execution, to edges from execution entity to execution entity.
 	
-%	By pointing all ingoing edges to the current event towards a new \textit{collapsed node}, and adding all outgoing edges to the new node, this is accomplished. This new \textit{collapsed node} then represents the entire execution. 
-
-%	In the implemented solution the the \texttt{ExecuteFinish} type has been chosen to denote a collapsed execution in order to avoid creating a new action type. As it can be seen in \autoref{fig:after-collapsing} the collapsing of executions results in an order of execution.
-
+	\begin{algorithm}[H]
+		\begin{algorithmic}
+			\Function{Collapse}{history} \textbf{returns} an order of execution \State
+			actionMapper $\leftarrow$ \Call{EmptyMap}{ }
+			\State executeStartActions $\leftarrow$ \Call{FilterByType}{ExecuteStart, history}
+			\State
+			\ForAll{action \textbf{in} executeStartActions}
+				\Comment Loop 1
+				\State execution $\leftarrow$ \Call{FindSingleExecution}{action}
+				\State uniqueId $\leftarrow$ \Call{GenerateUniqueId}{ }
+				\ForAll{executionAction \textbf{in} execution}\State
+					actionMapper $\leftarrow$ \Call{Add}{action.Id, uniqueId, actionMapper} 
+				\EndFor
+			\EndFor
+			\State
+			\State orderOfExecution $\leftarrow$ \Call{EmptyGraph}{ }
+			\State
+			\ForAll{oldActionID, newActionID \textbf{in} actionMapper}
+				\Comment Loop 2
+				\State oldEdges $\leftarrow$ \Call{GetEdgesToOtherExecutions}{oldActionId, history}
+				\State edges $\leftarrow$ \Call{MapOldEdgesToNewIDs}{oldEdges, actionMapper}
+				\State newAction $\leftarrow$ \Call{CreateAction}{newActionId, edges}
+			\State
+			orderOfExecution $\leftarrow$ \Call{AddNode}{newAction, orderOfExecution} \State\Comment{This requires \Call{AddNode}{} to merge edge sets when existing nodes are added}
+			\EndFor\State
+			\Return orderOfExecution
+			\EndFunction
+		\end{algorithmic}
+		\caption{Collapse algorithm}
+		\label{alg:collapse}
+	\end{algorithm}
 	
-	\newpar The collapsing algorithm can be be seen in \autoref{alg:collapse}. The algorithm gathers all actions of an execution and, after the single entity execution is created, creates all happens-before relations. 
+	\noindent One of the properties the collapsed order of execution has, is that, for two executions to be concurrent the executing events must be independent, as described in \cite{debois2015concurrency}, however, not all independent\- events create concurrent executions.
 	
-	\noindent One of the properties the collapsed order of execution has, is that, for two executions to be concurrent the executing events must be independent, as described in \cite{debois2015concurrency}, however, not all independent events create concurrent executions. To show that all non-independ events cannot be concurrent, we will show that if any of the properties of independent events are not present between a pair of events, making them non-independent, then collapse will order the executions.
+	All non-independent events cannot execute concurrently, and to demonstrate this, we will show that if any of the properties of independent events are not present between a pair of events, therefore making them non-independent, then collapse will order the executions.
 	
 	\begin{enumerate}
 		\item \textit{No event included by $E$ is excluded by $F$ and vice versa}: This property is violated if $E$ includes an event, $G$ that $F$ excludes. The incoming actions on $G$ will allow collapse to order the executions of $E$ and $F$.
@@ -61,58 +87,19 @@
 		\item \textit{Neither event is a condition for the other}: This property is violated if $E$ is a condition for $F$. In this case the incoming actions from the execution of $F$ on $E$, enables the ordering of executions of the events.
 		\item \textit{Neither event includes or excludes the other}: This property is violated if $E$ includes $F$. In this case the incoming actions from the execution of $E$ on $F$, enables the ordering of executions of the events.
 		\item \textit{Neither event includes or excludes a condition of the other}: This property is violated if $E$ excludes $G$ which is a condition of $F$. Recall that conditions in the implementation are checked by the executing event. This means that any execution of $F$ will result in incoming actions on $G$. Also the execution of $E$ will result in incoming actions on $G$. Therefore the incoming actions on $G$ will allow collapse to order the executions of $E$ and $F$.
-	\end{enumerate}
+	\end{enumerate}\todo[inline]{Insert independent in background of dcr graphs}
 	
-	To argue that the collapse algorithm correctly describes the relations between executions \autoref{inv:historyinvariant} is examined. It states that if there exist any action in execution $A$ with a relation to execution $B$, then it must not be true the other way around. Therefore for collapse to be correct each single execution entity must have the same property. 
+	To argue that the collapse algorithm correctly describes the relations between executions \autoref{inv:historyinvariant} is examined. The invariant states that if there exist any action in execution $A$ with a relation to execution $B$, then it must not be true the other way around. Therefore for collapse to be correct every single execution entity must have the abide to the invariant. 
 	
-	Since the set of relations the single entity has to other executions is the union of the set of all the actions had to other executions, it must be so that the set cannot contain relations which violates the invariant, because then the invariant would already be broken before the collapse. 
+	Since the set of relations the entity representing an execution has to other executions is the union of the sets of all the relations the actions of the execution had to other executions, then the set cannot contain relations which violates the invariant, because then the invariant would already be violated before collapsing. If the invariant is violated in the union set, then there must have been an action in an execution $A$ that happens before an action in an execution $B$ and an action in $B$ that happens before an action in $A$ in the original collection of sets representing the executions.
 	
-	By proof of contraditction, it it was so that the invariant is broken in the union set, then there is a value where $A$ happens before $B$ and $B$ happens before $A$, then the original collection of sets must already have had these two relations.
-	
-	\todo[inline]{Check if you like this argumentation.}
-	
-	\begin{algorithm}[H]
-		\begin{algorithmic}
-			\Function{Collapse}{graph}\State
-				locals: CollapseMap: Mapping from old to newaction IDs.
-				\State\hspace{28pt} Result: Graph, initially empty
-				\State
-				\State ExecuteStarts $\leftarrow$ \Call{Filter}{type = ExecuteStart, graph} \State
-				Executions $\leftarrow$ \Call{Map.map}{FindSingleExecution, ExecuteStarts}
-				\ForAll{executions in Executions}\State
-					CollapseMap $\leftarrow$ \Call{CreateExecutionMap}{execution, newExecutionId, CollapseMap}
-				\EndFor
-				\ForAll{oldActionID, newActionID in CollapseMap}
-					\State
-					NewAction $\leftarrow$ Action with \State\hspace{28pt}ID = newActionID and \State\hspace{28pt}Edges = edges from oldActionID in graph mapped to new IDs\State
-					Result $\leftarrow$ \Call{AddNode}{NewAction, Result} \State\Comment{This requires AddNode to merge edge sets when existing nodes are added}
-				\EndFor
-				
-			\EndFunction
-			\State
-			\Function{FindSingleExecution}{startAction}
-				\State locals: execution
-				\While{startAction.Type $\neq$ ExecuteFinish} \State
-					execution $\leftarrow$ \Call{AddRange}{startAction.Edges, execution}
-				\EndWhile\State
-				\Return execution
-			\EndFunction
-			\State
-			\Function{CreateExecutionMap}{ActionSet, newActionId, accumulatorMap}
-				\ForAll{actions in ActionSet}\State
-					accumulatorMap $\leftarrow$ \Call{Add}{action.Id, newActionId, accumulatorMap}
-				\EndFor \State
-				\Return accumulatorMap
-			\EndFunction
-		\end{algorithmic}
-		\caption{Collapse algorithm}
-		\label{alg:collapse}
-	\end{algorithm}\todo[inline]{Mikael: Jeg kunne godt tænke mig hvis vi definerede hjælperne i teksten, og kun havde essensen af collapse tilbage. Jeg ved ikke om dette er en \textbf{for} grov frasortering?}
-	\todo[inline]{Fisk: Synes det lyder som en god idé.}
-	
-	\newpar The algorithm runs in a time complexity of $O(n^2)$ where $n$ is the number of actions in the history. This must be so since $CreateExecution$ runs linearly in $n$ if $Add$ on $map$ is constant and $CreateExecution$ worst case gets called $n/2$ times if every action in the history are executions. \todo{write better more correct yes}
+	\newpar The algorithm runs in a time complexity of $\mathcal{O}(N+E)$ where $N$ is the number of actions and $E$ is the number of edges in the history. This is due to \texttt{FindSingleExecution} and \texttt{executeStartActions} are inversely proportional and together constitutes the amount of actions in the graph. Therefore the overall complexity of \texttt{loop 1} is linear to the amount of actions. \texttt{Loop 2} iterates over every action in the history, furthermore every edge in the history is iterated over since they are retrieved for every action with \texttt{GetEdgesToOTherExecutions}. \texttt{MapOldEdgesToNewIds}, \texttt{CreateAction} runs in constant time and \texttt{AddNode} runs linear time to the amount of edges between executions, then the first part of the second loop is the dominant factor. Therefore the second loop run in $\mathcal{O}(N+E)$, and is then the most dominant factor of the entire algorithm.
 	
 	\subsection{Transitive Reduction}
+	Redundant edges might still exist in between executions after collapsing a history. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions, as it only explicitly expresses what is implicitly available. Removing the direct edge will not affect the ordering or reachability of the order of execution, but rather simplify it.
+	
+	\newpar Figure \ref{fig:orderofexecution:collapsing} illustrates a case where a redundant edge exists between executions of event $B$ and $A$, since there is a path from the execution of event $B$ to the execution of $A$ through the execution of event $C$. Recall that the order of execution is represented as a directed acyclic graph and that it is possible to find a minimal equivalent graph for such a graph.
+	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{5orderofexecution/images/transitive-example-collapse.pdf}
@@ -120,42 +107,34 @@
 		\label{fig:orderofexecution:collapsing}
 	\end{figure}
 	
-	\newpar Redundant edges might still exist in the history after executions of the history have been collapsed, as seen in \autoref{fig:orderofexecution:collapsing}. An edge is redundant in cases where there exists a non-direct path from an execution to another execution, but there also exists a direct edge between the two executions. In this case the direct edge is redundant and can be removed, since it does not contribute extra information in regards to the ordering of the executions as it only explicitly expresses what is implicitly available. Removing it will not affect the ordering or reachability of the order of execution, but rather simplify the order of execution.
-	
-	\newpar An example of a redundant edge in a collapsed order of execution can be seen in figure \autoref{fig:orderofexecution:collapsing}. The figure illustrates a case where a redundant edge exists between event $A$ and event $B$, since the edge from event $B$ through $C$ provides more information about the order in which the executions occurred. 
-	Recall that the order of execution is represented as a directed acyclic graph and that it is possible to find a minimal equivalent graph for such a graph. 
-	
-	\newpar In directed acyclic graphs the transitive reduction of a given graph is a graph with the fewest possible number of edges, but the same reachability as the given graph.	That is, if there exists a path from an edge $x$ to an edge $y$ in graph G, there must also be a path from $x$ to $y$ in the transitive reduction of $G$, and vice versa.
-		
-	Furthermore, the transitive reduction will always be a subgraph of the given graph. For that reason the transitive reduction corresponds to the minimum equivalent graph.\todo[inline]{Jeg (Mikael) har det lidt med subgraph som jeg har det med subset. Jeg er ikke helt sikker på hvad det betyder i denne sammenhæng - Altså, jeg synes ikke det hjælper til min forståelse af problemet (hvilket jeg i øvrigt synes er udpenslet nok på dette tidspunkt.)}
-	
-	The implementation for finding the transitive reduction on an order of execution is shown in \autoref{alg:orderofexecution:reduction}.
+	\newpar In directed acyclic graphs the transitive reduction produces the minimal equivalent graph. A naive algorithm for finding the transitive reduction on an order of execution is shown in \autoref{alg:orderofexecution:reduction}.
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
-			\Function{Transitive-Reduction}{$history$}
-				\ForAll{$execution1$ \textbf{in} $history$}
-					\ForAll{$execution2$ \textbf{in} $history$}
-						\If{\Call{pathExists}{$execution1$, $execution2$, $history$}}
-							\ForAll{$execution3$ \textbf{in} $history$}
-								\If{\Call{edgeExists}{$execution2$, $execution3$, $history$}}
-									\If{\Call{edgeExists}{$execution1$, $execution3$, $history$}}
-										\State $history$ $\leftarrow$ \Call{removeEdge} {$execution1$, $execution3$, $history$}
-									\EndIf
+			\Function{Transitive-Reduction}{$orderOfExecution$}
+				\ForAll{$execution1$ \textbf{in} $orderOfExecution$}
+				\Comment Loop 1
+					\ForAll{$execution2$ \textbf{in} $orderOfExecution$}
+					\Comment Loop 2
+						\If{\Call{PathExists}{$execution1$, $execution2$, $orderOfExecution$}}
+							\ForAll{$execution3$ \textbf{in} $execution2.edges$}
+							\Comment Loop 3
+								\If{\Call{EdgeExists}{$execution1$, $execution3$}}
+									\State $orderOfExecution$ $\leftarrow$ \State \hspace{2em}\Call{RemoveEdge} {$execution1$, $execution3$, $orderOfExecution$}
 								\EndIf
 							\EndFor
 						\EndIf
 					\EndFor
 				\EndFor
 			\State
-			\Return $history$
+			\Return $orderOfExecution$
 			\EndFunction
 		\end{algorithmic}
 		\caption{Transitive Reduction Algorithm}
 		\label{alg:orderofexecution:reduction}
 	\end{algorithm}
 	
-	\newpar The shown algorithm for transitive reduction has a time complexity of $O(n^3)$ where $n$ is the number of executions, since the algorithm has three nested for-loops over all executions in the history. This is based on the requirements that $pathExist$ runs in linear time and $edgeExist$ is a constant lookup. In actual use cases the graph will not be totally connected and therefore the innermost loop will not be executed for most executions. \todo{check if pathExists runs linearly}
+	\newpar The shown algorithm for transitive reduction has a time complexity of $\mathcal{O}(n^2(n+e))$ where $n$ is the number of executions and $e$ is the number of happens-before relations between executions. Since \texttt{EdgeExists} and \texttt{RemoveEdge} run in constant time, \texttt{loop 3} has a time complexity of $\mathcal{O}(E)$ because in worst case \texttt{loop 2} iterates over all executions in the graph and \texttt{execution2.edges} represents all edges in the graph. \texttt{PathExists} has a time complexity of $\mathcal{O}(N+E)$ because each node is visited over each edge. Therefore \texttt{PathExists} becomes the dominant factor of the second loop. \texttt{Loop 1} and \text{Loop 2} has a time complexity of $\mathcal{O}(N^2)$ and therefore the combined time complexity of the entire algorithm is $\mathcal{O}(n^2(n+e))$.
 	
 	\begin{figure}[H]
 		\centering
