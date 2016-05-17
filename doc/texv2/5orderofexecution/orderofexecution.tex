@@ -21,16 +21,16 @@
 		\label{fig:representing:legend-extended}
 	\end{figure}
 	
-	A situation where actions of type \textit{Execute start} is chosen as representatives is shown in \autoref{fig:problem:trans}. What becomes apparent in this figure, is that the first execution of event $A$ must happen before the first execution of event $B$. This is because two events that have a happen before relation must have any kind of relation in the workflow. If the events have a relation in the workflow, then they must execute serially equivalent. This ensures that an execution of one of the events must happen either before, or after an execution of the other. Therefore another approach must be taken.
+	A situation where actions of type \textit{Execute start} are chosen as representatives is shown in \autoref{fig:problem:trans}. What becomes apparent in this figure, is that the first execution of event $A$ must happen before the first execution of event $B$. This is because two events that have a happens-before relation must have any kind of relation in the workflow. If the events have a relation in the workflow, then they must execute serially equivalent. This ensures that an execution of one of the events must happen either before, or after an execution of the other. Therefore another approach must be taken.
 	
-	\newpar In \cite{sedgewick2011algorithms}, Sedgewick et. al. describes an implementation of transitive closure, which has a time complexity of $\mathcal{O}(V * (V + E))$ where V is the number of nodes and E is the number of edges in the graph.
-	
-	\begin{figure}
+	\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{5orderofexecution/images/trans.pdf}
 		\caption{The result of finding the transitive closure on from the actions of an event. Note that the topmost executions happen concurrently. So do the two lower executions.}
 		\label{fig:problem:trans}
 	\end{figure}
+	
+	\newpar In \cite{sedgewick2011algorithms}, Sedgewick et. al. describes an implementation of transitive closure, which has a time complexity of $\mathcal{O}(V * (V + E))$ where V is the number of nodes and E is the number of edges in the graph.
 	
 	\subsection{Collapsing}
 	As described above, transitive closures are not an ideal way of representing an execution as a single entity and therefore collapsing is introduced.
