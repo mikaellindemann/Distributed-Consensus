@@ -49,7 +49,7 @@
 	\end{itemize}
 
 	\section{Distributed Systems}
-		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process\cite{Lamport:1978:TCO:359545.359563}. Traditionally these systems are distributed on computers in a network.
+		Distributed systems is an area of computer science which focuses on the concepts, problems and design of computer systems where message transmission among processes are not negligible compared to the time between events in a single process.\footnote{Lamport describes distributed systems as this in \cite{Lamport:1978:TCO:359545.359563}} Typically these systems are distributed on computers in a network.
 		
 		\subsection{Serial Equivalence}
 		Operations performed by two concurrent processes are serially equivalent if the resulting system state is the same as if any one of the processes' operations happened first, followed by the other. In distributed systems this term is used for transactions across machines in a network and is especially important since message passing over network connections introduce inconsistent and unpredictable delays. Therefore multiple messages can arrive at different times, even if they were supposed to happen in sequence. An example of a serial equivalent interleaving of two transactions is shown in \autoref{fig:background:serial-equivalence}. Common implementations of achieving serial equivalence in distributed systems include locking and optimistic concurrency control. In \cite{Coulouris:2011:DSC:2029110:chapter16} these concepts are explored in depth.
@@ -73,7 +73,7 @@
 		\begin{minipage}{0.45\textwidth}
 			\centering
 			\includegraphics[height=\textheight/5]{2background/images/strict-partial.pdf}
-		\caption{The strict partial order of $N$ ordered by the proper divisors. $A$ $\rightarrow$ $B$ denotes $A$ is a proper divisor $B$.}
+		\caption{The strict partial order of $N$ ordered by the proper divisors. $A$ $\rightarrow$ $B$ denotes $A$ is a proper divisor of $B$.}
 		\label{fig:background:strict-partial}
 		\end{minipage}\hfill
 		\begin{minipage}{0.45\textwidth}
