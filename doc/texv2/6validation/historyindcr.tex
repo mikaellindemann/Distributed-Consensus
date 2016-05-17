@@ -3,7 +3,7 @@
 \chapter{Validation of Histories}\label{chap:validation}
 	This chapter defines how histories from events on malicious processes are observed and possibly identified.
 	
-	\newpar We introduce malicious processes in distributed DCR graphs. The implementation allows multiple events to be hosted by a single process, but in this chapter it is assumed that any process only hosts a single event. Malicious processes corrupts data in many ways and therefore it is desired to have a mechanism which can observe, and if possible identify these corruptions and the processes which created them in a predictable way. 
+	\newpar We introduce malicious processes in distributed DCR graphs. The implementation allows multiple events to be hosted by a single process, but in this chapter it is assumed that any process only hosts a single event. Malicious processes corrupts data in many ways and therefore it is desired to have a mechanism which can observe and, if possible, identify these corruptions and the processes which created them in a predictable way. 
     
     \newpar As mentioned in \autoref{def:validhistory} the valid history has the following properties:
     
@@ -26,7 +26,7 @@
 		\label{def:consistentcheating}
 	\end{definition}
 	
-	\noindent Definition \ref{def:inconsistentcheating} defines that inconsistent cheating is the act of creating a history which could not have happened, according to the rules of the workflow, serial equivalence or strict partial ordering of actions. Definition \ref{def:consistentcheating} defines that consistent cheating is the act of creating a history which could have happened, but did not.
+	\noindent Definition \ref{def:inconsistentcheating} defines that inconsistent cheating is the act of creating a history which could not have happened according to the rules of the workflow, serial equivalence or strict partial ordering of actions. Definition \ref{def:consistentcheating} defines that consistent cheating is the act of creating a history which could have happened, but did not.
 	
 	\newpar A malicious process is a process which participates in consistent or inconsistent cheating.
 	
@@ -37,7 +37,7 @@
 	A given local history must abide to the rules of the workflow it has been created from. 
 	In order to validate a local history against these rules, the events, their relations and the initial state of the workflow must be known. The following sections each describe an assertion that can be made in order to guarantee that the history has followed the rules of the workflow.
 	
-	\newpar As seen in \autoref{chap:representing-a-history} actions are based on the effects that happen when an event executes. Actions match the relations of a workflow, if the event ID, counterpart ID and action type correspond to the start node, end node, and type of the relation in the DCR graph. We will use this notion to explain the DCR rules that a history must follow.
+	\newpar As seen in \autoref{chap:representing-a-history}, actions are based on the effects that happen when an event executes. Actions match the relations of a workflow if the event ID, counterpart ID and action type correspond to the start node, end node, and type of the relation in the DCR graph. We will use this notion to explain the DCR rules that a history must follow.
 	
 	\begin{ruledef}
 		\textbf{Only specified relations}: The local history of an event must only contain actions of corresponding relations in the workflow.
@@ -75,7 +75,7 @@
 	
 	Each consecutive action in the history, must be one of the actions in the set. The action is then removed from the set. When the set is empty, the next action in the history must have type \textit{Execute finish}.
 	
-	\newpar In order to validate \autoref{rule:completeexecutions} for incoming relations where the counterpart is not the event iself the following approach is taken: When an incoming action from an event $A$ is found, all actions corresponding to the remaining rules that specify that $A$ has a relation to the current event, is added. While the set is not empty, the consecutive actions in the history must exist in the set. An action is removed from the set when it is encountered.
+	\newpar In order to validate \autoref{rule:completeexecutions} for incoming relations where the counterpart is not the event iself the following approach is taken: When an incoming action from an event $A$ is found, all actions corresponding to the remaining rules that specify that $A$ has a relation to the current event is added. While the set is not empty the consecutive actions in the history must exist in the set. An action is removed from the set when it is encountered.
 
 	\begin{ruledef}
 		\textbf{Executions only in Valid States}: The history of an event must only contain executions when the event is executable. This implies that the entirety of the history must match a run of the DCR graph it represents.
@@ -84,7 +84,7 @@
 	
 	\noindent Checking for this kind of inconsistency is nontrivial. A method of doing so is described in \autoref{sec:validation:simulation}.
 	
-	\newpar To argue that rules \ref{rule:validrelations} through \ref{rule:executionvalidstate} covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. From the definition it is possible to make a set of all relations where each element is a triple of two events and the type of the relation. Because this set is finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in that set. Furthermore since the relations can be filtered by events it is possible to get the set of relations that happen in an execution. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition of DCR graphs also declares what the state of the workflow must be for an event to be executable and we will see in \autoref{sec:validation:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements for the run of a workflow and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
+	\newpar To argue that rules \ref{rule:validrelations} through \ref{rule:executionvalidstate} covers the DCR rules, the definition of DCR graphs is examined. In \autoref{sec:background:dcrgraphs} the definition of a DCR graph is described. From the definition it is possible to make a set of all relations where each element is a triple of two events and the type of the relation. Because this set is finite, \autoref{rule:validrelations} makes sure that the actions can only represent the relations that exists in that set. Furthermore, since the relations can be filtered by events it is possible to get the set of relations that happen in an execution. This is ensured by \autoref{rule:completeexecutions} which makes sure that every action that should happen, happens in an execution. The definition of DCR graphs also declares what the state of the workflow must be for an event to be executable and we will see in \autoref{sec:validation:simulation} that this case is also covered. The definition of a DCR graph does not have any more requirements for the run of a workflow and therefore these rules must cover all kinds of cheating which contradicts the rules of the workflow.
 	
 	\subsection{Serial Equivalence Rules}
 	A given execution must comply to the rules of serial equivalence. That includes the following:
@@ -137,7 +137,7 @@
 	
 	\newpar Figure \ref{fig:validation:total-order-of-counterpart-timestamps} shows a situation where the counterpart timestamps are not in order on neither event A nor B which violates \autoref{rule:total-order-counterpart-timestamps}. Because the implementation requires serial equivalent executions, and because message transfers happen synchronously such a violation will never happen on a correct process, as this would imply a pair of executions which happens before each other. Imagine the situation on the \autoref{fig:validation:total-order-of-counterpart-timestamps}, event A includes B and sets the counterpart timestamp to 3. Then it finishes its execution and gets included by B, but it receives a counterpart timestamp of 1. This must imply one of two things, either the timestamps on event B are out of order, or event B has been executing and accepting incoming actions simultaneously, creating a situation which is not serially equivalent. 
 	
-	\newpar To argue that rules \ref{rule:non-disruptedexecutions} through \ref{rule:total-order-counterpart-timestamps} cover the requirements of serial equivalence, recall that serial equivalence requires that any interleaving of transactions must create the same result, as if the transactions had happened in sequence. The implementation of a correct process in distributed DCR graphs must therefore only allow executions of events in a serially equivalent manner. As described in \autoref{sec:background:implementation} the provided implementation uses locking to achieve serial equivalence. Furthermore all message exchanges happen synchronously, that is the sending process receives confirmation that the message has been received, before continuing the execution. In the implementation, an action of type \textit{Execute start} is saved when a process has received all locks on events it affects during the execution of an event. Also an action of type \textit{Execution finish} is saved just before all locks are released. This means, for all correct processes, any group of actions representing an execution must be performed when all affected events are locked. Furthermore no actions from other executions must be present in between the actions of an execution. If this property is violated, this can be present in histories in the following three ways:
+	\newpar To argue that rules \ref{rule:non-disruptedexecutions} through \ref{rule:total-order-counterpart-timestamps} cover the requirements of serial equivalence, recall that serial equivalence requires that any interleaving of transactions must create the same result, as if the transactions had happened in sequence. The implementation of a correct process in distributed DCR graphs must therefore only allow executions of events in a serially equivalent manner. As described in \autoref{sec:background:implementation}, the provided implementation uses locking to achieve serial equivalence. Furthermore, all message exchanges happen synchronously, that is the sending process receives confirmation that the message has been received before continuing the execution. In the implementation an action of type \textit{Execute start} is saved when a process has received all locks on events it affects during the execution of an event. Also, an action of type \textit{Execution finish} is saved just before all locks are released. This means, for all correct processes, any group of actions representing an execution must be performed when all affected events are locked. Furthermore, no actions from other executions must be present in between the actions of an execution. If this property is violated, this can be present in histories in the following three ways:
 	
 	\begin{itemize}
 		\item An incoming action is inside an execution of another event. This is the case presented in \autoref{fig:validation:only-non-disrupted-executions} and can be found by applying \autoref{rule:non-disruptedexecutions}.
@@ -145,7 +145,7 @@
 		\item In a local history an action of type \textit{Execute start} has a path to another action of type \textit{Execute start} in which no action of type \textit{Execute finish} exists. This case can be found by applying \autoref{rule:non-disruptedexecutions}.
 	\end{itemize}
 	
-	Together these three ways of violating serial equivalence cover all cases of an event being affected while being locked. There is a case where two processes can participate in the creation of a history where each of the local histories are serially equivalent but when the actions of the executions are connected, serial equivalence is violated because message exchanging was not done synchronously. Figure \ref{fig:validation:synchronous-execution} illustrates a history and how it would look like if message confirmations were stored as part of synchronous message exchanges. This also explains why the situation in \autoref{fig:validation:total-order-of-counterpart-timestamps} is not valid because a cycle would be present if message confirmations were explicit as seen in \autoref{fig:validation:explicit-message-confirmations}. Because of this it can be concluded that both the execution of event $A$ and $B$, happens before each other. Serial equivalence requires that the interleaving is equivalent to the execution of one of the events first followed by the other, it can be concluded that this interleaving is not serially equivalent. This last form of serially equivalence violation is covered by \autoref{rule:total-order-counterpart-timestamps}.
+	\noindent Together, these three ways of violating serial equivalence cover all cases of an event being affected while being locked. There is a case where two processes can participate in the creation of a history where each of the local histories are serially equivalent, but when the actions of the executions are connected, serial equivalence is violated because message exchanging was not done synchronously. Figure \ref{fig:validation:synchronous-execution} illustrates a history and how it would look like if message confirmations were stored as part of synchronous message exchanges. This also explains why the situation in \autoref{fig:validation:total-order-of-counterpart-timestamps} is not valid, because a cycle would be present if message confirmations were explicit as seen in \autoref{fig:validation:explicit-message-confirmations}. Because of this, it can be concluded that both the execution of event $A$ and $B$, happens before each other. Serial equivalence requires that the interleaving is equivalent to the execution of one of the events, followed by the other, it can be concluded that this interleaving is not serially equivalent. This last form of serially equivalence violation is covered by \autoref{rule:total-order-counterpart-timestamps}.
 	
 	\begin{figure}[H]
 		\centering
@@ -176,7 +176,7 @@
 		\label{rule:message-exchange-timestamp-order}
 	\end{ruledef}
 	
-	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
+	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps, then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
 	
 	\newpar Because histories are represented as directed acyclic graphs, cycles must not exist. Rule \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} makes it possible to observe cycles and identify the local histories from where the cycles originate.
 	
@@ -225,7 +225,7 @@
 	\noindent Table \ref{table:inconsistent-cheating-properties} summarises the observability and identifiability of violations of each of the rules \ref{rule:validrelations} through \ref{rule:message-exchange-timestamp-order}. We will see in \autoref{sec:validation:simulation} why \autoref{rule:executionvalidstate} is observable but not identifiable. In the table it becomes apparent that in most cases it is possible to identify the single process that cheats, but in the cases where the violated rules regards the rules of the workflow, it is only possible to observe inconsistent cheating.
 	
 	\section{Consistent Cheating}
-	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat consistently. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
+	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat \textit{consistently}. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
 
 	\newpar Consistent cheating is present if one of the following rules are violated:
 
@@ -243,18 +243,18 @@
 		\label{fig:agreement-on-original-timestamps}
 	\end{figure}
 	
-	An example of two events not having matching actions in their histories because of the timestamps can be seen on \autoref{fig:agreement-on-original-timestamps}. Notice that it is not possible to distinguish the two include actions from each other, and that is therefore not possible to identify which of the two histories are invalid.
+	\noindent An example of two events not having matching actions in their histories because of the timestamps can be seen on \autoref{fig:agreement-on-original-timestamps}. Notice that it is not possible to distinguish the two include actions from each other, and that it is therefore not possible to identify which of the two histories are invalid.
 	
-	\newpar To validate for this kind of cheating, pairs of local histories where a relation exists between them are examined. Each ingoing action is matched with outgoing actions and if it is not possible to find a match, one of the processes hosting the events must be malicious. Since the original timestamps are unknown, it is not possible to distinguish an original timestamp from an unoriginal one, and therefore two events can agree on unoriginal timestamps without failing this validation.
+	\newpar To validate for this kind of cheating, pairs of local histories where a relation exists between them are examined. Each ingoing action is matched with outgoing actions, and if it is not possible to find a match, one of the processes hosting the events must be malicious. Since the original timestamps are unknown, it is not possible to distinguish an original timestamp from an unoriginal one, and therefore two events can agree on unoriginal timestamps without failing this validation.
 	
 	\begin{ruledef}
-		\textbf{Agreement on the original amount of executions}: If an event A has a relation to an event B then the two events must agree on the number of executions of A in their histories.%
+		\textbf{Agreement on the original amount of executions}: If an event A has a relation to an event B, then the two events must agree on the number of executions of A in their histories.%
 		\label{rule:agreement-on-the-original-amount-of-executions}
 	\end{ruledef}
 	
 	\noindent To check for this kind of cheating the local histories of each pair of events which are part of a relation are examined. If event $A$ and event $B$ are examined, then the amount of every outgoing action from $A$ to $B$ must match the amount of incoming actions on $B$ from $A$. If the amount does not match then one of the processes hosting the events must be malicious.
 	
-	\newpar On \autoref{fig:agreement-on-the-original-amount-of-executions-1} an example of violation of \autoref{rule:agreement-on-the-original-amount-of-executions} is shown. In the shown histories, event A states that it has executed two times but event $B$ states that $A$ have only executed one time. Similarly on \autoref{fig:agreement-on-the-original-amount-of-executions-1} the two events do not agree on the amount of executions of $A$. But in that case Event $A$ states that it only has executed one time, but $B$ states that $A$ has executed two times. Notice that is is not possible to distinguish the two situations from one another and it therefore is not possible to identify which of the two histories are invalid. Since the original amount of executions are unknown two events can agree on an unoriginal amount of executions without failing this validation. 
+	\newpar On \autoref{fig:agreement-on-the-original-amount-of-executions-1} an example of violation of \autoref{rule:agreement-on-the-original-amount-of-executions} is shown. In the shown histories, event A states that it has executed two times but event $B$ states that $A$ have only executed one time. Similarly on \autoref{fig:agreement-on-the-original-amount-of-executions-1} the two events do not agree on the amount of executions of $A$. But in that case Event $A$ states that it only has executed one time, but $B$ states that $A$ has executed two times. Notice that is is not possible to distinguish the two situations from one another and it therefore is not possible to identify which of the two histories are invalid. Since the original amount of executions are unknown, two events can agree on an unoriginal amount of executions without failing this validation. 
 	
 	\begin{figure}[H]
 		\centering
@@ -274,7 +274,7 @@
 	\newpar Recall that the definition of consistent cheating specified that actions could be added, removed or changed but the resulting history must still have the properties 2, 3 and 4 of valid histories. To argue that the rules \ref{rule:agreement-on-original-timestamps} and \ref{rule:agreement-on-the-original-amount-of-executions} cover the adding, removing and changing of actions each of these scenarios are examined:
 	
 	\begin{itemize}
-		\item \textbf{Adding actions}: The rules of inconsistent cheating implies that the only consistent addition of actions are groups actions representing executions, or groups of actions representing the execution of other events affecting the current event. Rule  \ref{rule:agreement-on-the-original-amount-of-executions} handles this kind of violation.
+		\item \textbf{Adding actions}: The rules of inconsistent cheating implies that the only consistent addition of actions are groups of actions representing executions, or groups of actions representing the execution of other events affecting the current event. Rule  \ref{rule:agreement-on-the-original-amount-of-executions} handles this kind of violation.
 		\item \textbf{Removing actions}: The rules of inconsistent cheating implies that the only consistent subtraction of actions are groups actions representing executions, or groups of actions representing the exection of other events affecting the current event. Rule  \ref{rule:agreement-on-the-original-amount-of-executions} handles this kind of violation.
 		\item \textbf{Changing actions}: Recall that an action consists of an ID, a timestamp, a counterpart ID, a counterpart timestamp, and an action type. The rules of inconsistent cheating implies that it is not possible to change the ID, the counterpart ID, or the action type consistently. This leaves the timestamp and counterpart timestamp as the only two values which can be altered consistently, since unoriginal timestamp values can still abide to Lamport's logical clocks. Therefore \autoref{rule:agreement-on-original-timestamps} covers this violation.
 	\end{itemize}
@@ -283,16 +283,16 @@
 	Detecting and identifying consistently cheating processes is difficult, because it is not always possible to look at the history of a single event and determine if it is valid or not. It is now examined how the structure of the DCR graph and the placement of the malicious processes contribute to the ability to detect and identify consistent cheating. The type of relation has no influence on the cases and relations are therefore visualised as an arrow from event to event.
 	
 	\begin{case}
-		In this case the workflow contains an event that does not share relations with any other event but may have relations to itself. If the event is hosted on a malicious process and it consistently cheats, there is no one to disagree with any timestamps on actions or oppose the amount of executions that have happened. Therefore in workflows with such a structure, it is not possible to identify or even observe if any kind of consistent cheating has happened on this event. 
+		In this case, the workflow contains an event that does not share relations with any other event, but may have relations to itself. If the event is hosted on a malicious process and it consistently cheats, there is no one to disagree with any timestamps on actions or oppose the amount of executions that have happened. Therefore, in workflows with such a structure, it is not possible to identify or even observe if any kind of consistent cheating has happened on this event. 
 		\label{case:malicious-alone}
 	\end{case}
 	
 	\begin{case}
-		In this case the workflow contains an event on a malicious process that has a relation to an event on a correct process as shown in \autoref{fig:consensus:single-malicious-with-good-relation}. The malicious process can cheat consistently with the timestamps in two ways: It can change the timestamps of the actions corresponding to the relations with the counterpart, but in that case the two events will not agree on what happened and it is observable that that one of the processes hosting the event must cheat. If the timestamp changes are on actions not related to the good event then it is not possible to observe nor identify. An example of this is has been shown on \autoref{fig:agreement-on-original-timestamps}.
+		In this case, the workflow contains an event on a malicious process that has a relation to an event on a correct process as shown in \autoref{fig:consensus:single-malicious-with-good-relation}. The malicious process can cheat consistently with the timestamps in two ways: It can change the timestamps of the actions corresponding to the relations with the counterpart, but in that case the two events will not agree on what happened and it is observable that that one of the processes hosting the event must cheat. If the timestamp changes are on actions not related to the good event then it is not possible to observe nor identify. An example of this is has been shown on \autoref{fig:agreement-on-original-timestamps}.
 		
-		In the same way when looking at the amount of executions of the event on the malicious process, the malicious process might add more or remove some executions. In the case that it adds more executions, the event on the correct process will state that fewer executions happened, and vice versa. However the malicious process is not able to disagree with the number of executions of the event on the correct process consistently. 
+		In the same way, when looking at the amount of executions of the event on the malicious process, the malicious process might add more or remove some executions. In the case that it adds more executions, the event on the correct process will state that fewer executions happened, and vice versa. However, the malicious process is not able to disagree with the number of executions of the event on the correct process consistently. 
 		
-		Therefore it is possible to observe but not identify consistent cheating in this case. 
+		Therefore it is possible to observe, but not identify, consistent cheating in this case. 
 		\label{case:malicious-to-good}
 	\end{case}
 
@@ -304,7 +304,7 @@
 	\end{figure}
 	
 	\begin{case}
-		In this case the workflow contains an event with a relation to an event on a malicious process as shown in \autoref{fig:consensus:single-good-with-malicious-relation}. Similarly to \autoref{case:malicious-to-good} timestamp changes are observable due to the same factors, but agreeing on exeuctions has another form. Instead of agreeing on the amount of executions of the event on the malicious process, the disagreement will be about the amount of executions of the event on the correct process. Furthermore the malicious process is free to report any number of executions as in case one because no event can disagree on any outgoing actions. 
+		In this case, the workflow contains an event with a relation to an event on a malicious process as shown in \autoref{fig:consensus:single-good-with-malicious-relation}. Similarly to \autoref{case:malicious-to-good}, timestamp changes are observable due to the same factors, but agreeing on exeuctions has another form. Instead of agreeing on the amount of executions of the event on the malicious process, the disagreement will be about the amount of executions of the event on the correct process. Furthermore, the malicious process is free to report any number of executions as in case one because no event can disagree on any outgoing actions. 
 		\label{case:good-to-malicious}
 	\end{case}
 	 
@@ -318,7 +318,7 @@
 	\noindent Note that it is not possible to distinguish between disagreements as a result of cases \ref{case:malicious-to-good} and \ref{case:good-to-malicious}, since they can create the exact same histories with the exact same disagreements.
 	
 	\begin{case}
-		In this case the workflow contains two events with relations to each other where one of the events is hosted on a malicious process, as shown on \autoref{fig:consensus:single-good-with-twoway-malicious-relation}. The ability to observe and identify consistent cheating is similar to that of the cases \ref{case:malicious-to-good} and \ref{case:good-to-malicious} because the two events are able to disagree on both timestamps and the amount of executions of both events.
+		In this case, the workflow contains two events with relations to each other where one of the events is hosted on a malicious process, as shown on \autoref{fig:consensus:single-good-with-twoway-malicious-relation}. The ability to observe and identify consistent cheating is similar to that of the cases \ref{case:malicious-to-good} and \ref{case:good-to-malicious} because the two events are able to disagree on both timestamps and the amount of executions of both events.
 	\end{case}
 	
 	\begin{figure}[H]
@@ -329,9 +329,9 @@
 	\end{figure}
 	
 	\begin{case}
-		In this case the workflow contains an event on a malicious process with a relation to another event on a malicious process as shown in \autoref{fig:consensus:single-malicious-with-twoway-malicious-relation}. The two processes can work in collaboration to manipulate the histories of the two events. 
+		In this case, the workflow contains an event on a malicious process with a relation to another event on a malicious process as shown in \autoref{fig:consensus:single-malicious-with-twoway-malicious-relation}. The two processes can work in collaboration to manipulate the histories of the two events. 
 		
-		If it is assumed that they work in collaboration, then they are able to change timestamps and the amount of executions in such a way that it is not observable because it is present in both the histories. If they however do not change the timestamps or the amount of executions in collaboration, then they will disagree on the values and it is possible to observe that at least one of the processes are malicious.
+		If it is assumed that they work in collaboration, then they are able to change timestamps and the amount of executions in such a way that it is not observable because it is present in both the histories. However, if they do not change the timestamps or the amount of executions in collaboration, then they will disagree on the values and it is possible to observe that at least one of the processes are malicious.
 		\label{case:malicious-to-malicious}
 	\end{case}
 	
@@ -343,7 +343,7 @@
 	\end{figure}
 	
 	\begin{case}
-		In this case the workflow contains two events hosted on malicious processes with relations to each other as shown in \autoref{fig:consensus:two-malicious-with-twoway-malicious-relation}. This situation has the same properties as \autoref{case:malicious-to-malicious}.
+		In this case, the workflow contains two events hosted on malicious processes with relations to each other as shown in \autoref{fig:consensus:two-malicious-with-twoway-malicious-relation}. This situation has the same properties as \autoref{case:malicious-to-malicious}.
 		\label{case:malicious-to-from-malicious}
 	\end{case}
 
@@ -354,17 +354,17 @@
 		\label{fig:consensus:two-malicious-with-twoway-malicious-relation}
 	\end{figure}
 	
-	\newpar It is not possible to identify which of the events are hosted on malicious processes, in any of these cases. Furthermore in cases \ref{case:malicious-alone}, \ref{case:malicious-to-malicious}, and \ref{case:malicious-to-from-malicious} it is not even possible to observe consistent cheating if the processes collaborate.
+	\newpar It is not possible to identify which of the events are hosted on malicious processes in any of these cases. Furthermore, in cases \ref{case:malicious-alone}, \ref{case:malicious-to-malicious}, and \ref{case:malicious-to-from-malicious} it is not even possible to observe consistent cheating if the processes collaborate.
 	
-	\newpar This creates some interesting questions about how one can try to identify which of the events are cheating when cheating is observed. One method of doing so could be to determine the malicious process by counting how many of the neighbouring events disagree with the event on the process. If the majority of the neighbours disagree, the process hosting the event will be marked as malicious. Unfortunately that method has drawbacks since an event on a correct process with connections only to events on malicious processes could itself be marked as malicious. 
+	\newpar This creates some interesting questions about how one can try to identify which of the events are cheating when cheating is observed. One method of doing so could be to determine the malicious process by counting how many of the neighbouring events disagree with the event on the process. If the majority of the neighbours disagree, the process hosting the event will be marked as malicious. Unfortunately that method has drawbacks, since an event on a correct process with connections only to events on malicious processes could itself be marked as malicious. 
 	
 	If we require that in all neighbourhoods (the sets of neighbours of all events) of the DCR graph, with $N$ events, a maximum of $N/2-1$ events are hosted on malicious processes, then an election would not be able to falsely accuse an event on a correct process of being malicious. This requirement is often needed in distributed systems that use elections, but traditionally it is only used to describe the amount of malicious nodes in the entire system and not in each neighbourhood. Therefore this requirement is more strict and perhaps more difficult to accomplish.
 	
-	To make the situation substantially worse, even if this requirement is accomplished, a malicious process does not have to cheat with the actions related to a majority of neighbours of the event. An example could be a workflow with four events fully connected where one of the events is hosted on a malicious process. The malicious process could consistently cheat with one its relations but keep the rest of its history valid. In that situation only one of the neighbours would vote against it. 
+	To make the situation substantially worse, even if this requirement is accomplished, a malicious process does not have to cheat with the actions related to a majority of neighbours of the event. An example could be a workflow with four events fully connected where one of the events is hosted on a malicious process. The malicious process could consistently cheat with one its relations, but keep the rest of its history valid. In that situation only one of the neighbours would vote against it. 
 	
-	As described in the example it would be possible for the malicious process to trick an election into not having a majority against it. Therefore an election cannot conclude that a process \textit{is} correct, which leaves the situation no better than the initial situation, where it was only possible to detect that at least one of the processes were malicious.
+	As described in the example, it would be possible for the malicious process to trick an election into not having a majority against it. Therefore an election cannot conclude that a process \textit{is} correct, which leaves the situation no better than the initial situation, where it was only possible to detect that at least one of the processes were malicious.
 	
-	\newpar Another approach is to apply the solution to the Byzantine generals problem. Imagine that events are generals and their message exchanges are the decision value, then because at most two events know about a message exchange between them, it contradicts the proven theorem, that the Byzantine generals problem cannot be solved for systems with two processes.
+	\newpar Another approach is to apply the solution to the Byzantine generals problem. Imagine that events are generals and their message exchanges are the decision value, then because at most two events know about a message exchange between them, it contradicts the proven theorem that the Byzantine generals problem cannot be solved for systems with two processes.
 	
 	\begin{table}[H]
 		\centering
@@ -387,18 +387,18 @@
     \section{Simulation}\label{sec:validation:simulation}
     In order to validate that executions of events have only happened when the events were in an executable state, it is necessary examine each marking the workflow has transisted through. Because we only know the initial marking and the current marking of the workflow, but no markings in between, we cannot validate  each execution without calculating the intermediate markings, because each execution of an event can change the marking of the workflow.
     
-    \newpar One approach to this problem is to \textit{simulate} the executions of the workflow, that is, given the initial marking, apply every execution from the order of execution, while validating that every marking, created by the previous executions, allows for the next execution to happen.
+    \newpar One approach to this problem is to \textit{simulate} the executions of the workflow, that is given the initial marking, apply every execution from the order of execution, while validating that every marking, created by the previous executions, allows for the next execution to happen.
     
     \newpar Because an order of execution can only be collapsed from a valid global history and valid global history can only be merged from valid local histories, it does not make sense to perform simulation if any kind of cheating has been observed.
     
-    \newpar In order to simulate an order of execution, it is required that the rules and the initial marking of the workflow is known. Furthermore to simulate concurrent executions in a non-distributed environment it is required to find a total order of execution from the partial order.
+    \newpar In order to simulate an order of execution, it is required that the rules and the initial marking of the workflow is known. Furthermore, to simulate concurrent executions in a non-distributed environment, it is required to find a total order of execution from the partial order.
     
     \newpar
 	Since the order of execution states the happens before relations of all executions, simulation must require that any execution must be applied to the marking, before any other execution it happens before. Recall that the topological order of a directed acyclic graph is a total ordering where for each edge from $A$ to $B$, $A$ before $B$. Since the topological ordering has the properties we need to execute concurrent executions in a non-distributed environment, we need to argue that any order of concurrent executions result in the same marking as applying the executions simultaneously.
 	
 	As argued in \autoref{chap:order-of-execution}, concurrent executions only happen if the executed events are independent. In \cite{debois2015concurrency}, Debois et. al. conclude that any order of execution of independent events results in the same marking. Therefore any topological ordering of an order of execution is sufficient to simulate any ordering of concurrent events.
     
-    When a topological ordering of executions have been found, each execution is applied to the marking one at a time resulting in a new marking.
+    When a topological ordering of executions have been found, each execution is applied to the marking one at a time, resulting in a new marking.
     
     \newpar If a marking does not allow for the next execution to happen, either the process hosting the executing event or the processes hosting any of its conditions are malicious. If the marking states that the executing event is not included, then the process hosting the executing event must be malicious. Alternatively, if the executing event is included in the marking, but at least one of its conditions are not fulfilled, this means that either the process hosting the condition returned incorrect information, or the process of the executing event disregarded the correct information of the condition. In these situations it is not possible to identify the cheating processes.
 
