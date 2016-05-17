@@ -146,6 +146,11 @@
     <Compile Include="Logic\LockingLogic.cs" />
     <Compile Include="Logic\MaliciousLogic.cs" />
     <Compile Include="Logic\StateLogic.cs" />
+    <Compile Include="Migrations\201605101335173_InitialCreate.cs" />
+    <Compile Include="Migrations\201605101335173_InitialCreate.Designer.cs">
+      <DependentUpon>201605101335173_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\CheatingType.cs" />
     <Compile Include="Models\EventRoleModel.cs" />
@@ -172,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\ficevent1 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\FlowitES1.pubxml" />
     <None Include="Properties\PublishProfiles\FlowitES2.pubxml" />
     <None Include="Web.Debug.config">
@@ -193,6 +199,11 @@
       <Project>{5e6bb204-f6dc-4b14-b20d-2244cf6e48dc}</Project>
       <Name>HistoryConsensus</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201605101335173_InitialCreate.resx">
+      <DependentUpon>201605101335173_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -68,7 +68,7 @@ namespace Event.Logic
 #if DEBUG
             IServerFromEvent serverCommunicator = new ServerCommunicator("http://localhost:13768/", eventDto.EventId, eventDto.WorkflowId);
 #else
-            IServerFromEvent serverCommunicator = new ServerCommunicator("http://flowit.azurewebsites.net/", eventDto.EventId, eventDto.WorkflowId);
+            IServerFromEvent serverCommunicator = new ServerCommunicator("http://ficserver.azurewebsites.net/", eventDto.EventId, eventDto.WorkflowId);
 #endif
 
             // If the following fails, an exception will be thrown, 
@@ -135,7 +135,7 @@ namespace Event.Logic
 #if DEBUG
             IServerFromEvent serverCommunicator = new ServerCommunicator("http://localhost:13768/", eventId, workflowId);
 #else
-            IServerFromEvent serverCommunicator = new ServerCommunicator("http://flowit.azurewebsites.net/", eventId, workflowId);
+            IServerFromEvent serverCommunicator = new ServerCommunicator("http://ficserver.azurewebsites.net/", eventId, workflowId);
 #endif
             await serverCommunicator.DeleteEventFromServer();
 
