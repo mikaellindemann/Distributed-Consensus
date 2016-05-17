@@ -50,9 +50,9 @@
   \makeatother%
   \begin{picture}(1,0.87044534)%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{legend.pdf}}%
-    \put(0.06680162,0.14463158){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{Execute}}}}%
+    \put(0.06680162,0.14463157){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{Execute}}}}%
     \put(0.62348178,0.76001619){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{DCR Event}}}}%
-    \put(0.62348178,0.45232389){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{Action}}}}%
-    \put(0.62348178,0.14463158){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{Execution}}}}%
+    \put(0.62348178,0.45232388){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{Action}}}}%
+    \put(0.62348178,0.14463157){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textbf{Execution}}}}%
   \end{picture}%
 \endgroup%
