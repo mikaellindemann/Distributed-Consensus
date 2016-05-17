@@ -116,6 +116,11 @@
     <Compile Include="Logic\ServerLogic.cs" />
     <Compile Include="Exceptions\WorkflowAlreadyExistsException.cs" />
     <Compile Include="Logic\WorkflowHistoryLogic.cs" />
+    <Compile Include="Migrations\201605101335156_InitialCreate.cs" />
+    <Compile Include="Migrations\201605101335156_InitialCreate.Designer.cs">
+      <DependentUpon>201605101335156_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\ServerEventModel.cs" />
     <Compile Include="Models\ServerRoleModel.cs" />
@@ -137,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\ficserver - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\flowIT.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -153,6 +159,11 @@
       <Project>{A67E92FE-E12C-4F15-9EB1-750EF642406D}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201605101335156_InitialCreate.resx">
+      <DependentUpon>201605101335156_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
