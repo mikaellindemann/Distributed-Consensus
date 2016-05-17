@@ -126,7 +126,7 @@
 		\label{rule:total-order-counterpart-timestamps}
 	\end{ruledef}
 	
-	\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. \todo{Husk at skrive dette!} If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
+	\noindent A validation of this kind of inconsistency can be done on each single event. Since each incoming and outgoing action must have a counterpart, it is possible to keep a mapping between counterparts and the last timestamp that counterpart had. Recall that the implementation requires that all correct processes only accept higher timestamps for a counterpart, than any timestamp seen from that counterpart before. If a new timestamp for a counterpart is lower than the previous, then the event must be malicious.
 	
 	\begin{figure}[H]
 		\centering
