@@ -9,7 +9,7 @@ By clicking "History", a window where the user can produce and view produced his
 
 The triggers in this window enable and disable the different steps of the production of an order of execution described in the report. 
 
-(Note that because Azure hibernates VMs that are not in use, a delay might occur before the events respond with history on the first run.)
+Note that because Azure hibernates VMs that are not in use, a delay might occur before the events respond with history on the first run.
 
 The problem has been tested on Windows 10, but *should* also run on Windows 8, 8.1 and 7. 
 
