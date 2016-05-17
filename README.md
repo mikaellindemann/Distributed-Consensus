@@ -1,37 +1,21 @@
 # Bachelor Thesis - Consensus of History in Distributed DCR Graphs
 The repository for our bachelor project concerning creating a valid history of events in a distributed system.
 
-## Project Description
+## Project Definition
+_Given an execution of a distributed DCR graph, the purpose of this project is to find an algorithm which uses the local orders of execution of the individual events to find a global order of execution with the least amount of concurrency, where the local orders are preserved in the global order. Furthermore, the algorithm should be able to observe and if possible, identify which events in the workflow are part of malicious behaviour, where malicious behaviour is the act of disobeying the rules of the workflow or reporting false information. Finally the algorithm should establish distributed consensus on the order of execution among the events._
 
-Dynamic Condition Response Graphs (“DCR Graphs”) are developed principally by Thomas Hildebrandt at the IT University of Copenhagen, in collaboration with ResultMaker and later Exformatics A/S. They are used to represent workflows, where nodes represents an activity, and edges between these nodes represent one of four different relations: condition, response, inclusion and exclusion. 
+### Project Introduction
 
-In a distributed DCR graph finding a history or log of a given order of execution can be difficult, due to the fact that no single node has the overview of the entire workflow. Logs can be split among several nodes, timestamps of logs do not necessarily correspond among nodes and nodes can emit erroneous logs. The nodes have to reach consensus on the history given these challenges. 
+Dynamic Condition Response Graphs (DCR graphs) are developed principally by Thomas Hildebrandt at the IT University of Copenhagen, in collaboration with ResultMaker and later Exformatics A/S. DCR graphs are used to model workflows which represents work processes.
 
-Given a distributed implementation of DCR Graphs, we would like to develop an algorithm that can exploit the rules of DCR Graphs, in order to put together which events have been executed and in what order. We will explore theoretical limits and practical implementation(s). 
+DCR graphs are used by companies to ensure that business procedures are executed according to business rules. At a given time a business might want to see in which order events in a given DCR graph have executed, a so called _order of execution_. The order of execution can contain interesting information for the business, as it reveals which events have been executed to lead to the current state of the workflow. Furthermore, if a DCR graph is used to represent a case of a customer, and if multiple case workers are working on that case, and do not have a total overview of it, an order of execution can provide that overview.
 
-By researching and applying distributed system theories and algorithms, as well as the rules of DCR Graphs, we will try to solve the problem of generating the history. 
+Since DCR graphs allow infinite behaviour, the workflow can be in the same state multiple times. This leaves the case worker guessing how many times the workflow has been in the current state. Finally, for DCR graphs shared between two or more companies, one of the participating companies might want to check retroactively whether the other companies have followed the rules of the workflow.
 
-The result will be evaluated comparing the generated history of the implementation and the actual history, while taking into account the amount of erroneous logs in the system. 
+The events of a DCR graph can be distributed on a number of processes over a network allowing better scalability, reliability as well as allowing multiple companies to work together, by hosting and handling different events themselves.
 
-An implementation and description of the found solution, including a description of the problem domain, the solution to the problem and the final implementation, will be the final product of the project. 
+In a distributed DCR graph finding an order of execution can be difficult, because no single pro- cess has an overview over the entire workflow. Information about what has happened can be split among several processes, the clocks of processes are not necessarily synchronised, and processes may act maliciously, that is they may not follow the rules of the workflow or they may emit erroneous information. Even though there are challenges, DCR graphs provide information that can be used to relate executions with one another, which is especially helpful when information of two or more events need to be combined into an order of execution.
 
-A successful solution to the problem will include developing and analysing algorithms where: 
-- a central node produces history locally
-- neighboring nodes cooperate to produce history locally
-- nodes in the graph cooperate to produce history globally
-Each step should include an analysis of performance, an analysis of the impact of having malicious nodes in the graph, and an analysis of whether knowledge of the structure of the graph helps produce history. 
+Any malicious activity should be observable and if possible the events that are behind this activity should be identified. Handling message tampering, that is altering, replaying and with- holding messages before sending them to the intended recipient as described in and processes crashing while carrying out a task, are out of scope for this project.
 
-If time permits, the theoretical bounds of the possibility of producing history of a given graph can be explored.
-
-
-## Prerequisites
-Knowledge of object oriented and functional programming paradigms as well as knowledge in the area of distributed systems, algorithms and data structures. 
-
-Furthermore, an understanding of DCR Graphs and their implementation as distributed systems. 
-
-These prerequisites have been fulfilled by taking the following courses: 
-- Algorithms and Data Structures
-- Mobile and Distributed Systems
-- Analysis, Design and Software Architecture
-- Second Year Project: Functional Programming
-- Second Year Project: Software Development in Large Teams with International Collaboration (Spring 2015 focused on DCR Graphs) 
+By researching and applying distributed system theories and algorithms, as well as the rules of DCR graphs, we will try to solve the problem of generating and reaching consensus of histories of DCR graphs.
