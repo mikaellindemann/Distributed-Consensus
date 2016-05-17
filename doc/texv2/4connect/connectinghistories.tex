@@ -17,8 +17,6 @@
 
     \newpar Given valid local histories of several events, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions using happens before relations. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
     
-    \newpar We will use the local histories in \todo[backgroundcolor=green]{Indsæt figur som er input til merge algoritmen.} as an example for the remainder of this section.
-    
     \newpar The concept of happens before relations, as described in \autoref{subsec:orderingofevents} helps determining which actions have happened before others across events. For each outgoing action in a history, there must be another incoming action, because these actions are the two sides of the same effect. Therefore, each outgoing action type corresponds to an incoming action type by the following definition:
 	
 	\begin{definition}
