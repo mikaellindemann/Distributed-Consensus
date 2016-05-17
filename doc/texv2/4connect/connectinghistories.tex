@@ -1,12 +1,12 @@
 % !TeX root = DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Connecting Histories}\label{chap:connecting-histories}
-	In this chapter the representation of histories is used to combine multiple local histories into one global history using the information of actions. Furthermore two approaches to gather histories from the events are described.
+	In this chapter, the representation of histories is used to combine multiple local histories into one global history using the information of actions. Furthermore two approaches to gather histories from the events are described.
     
     \section{Merging Histories}\label{sec:connecting:merge}
     Given the representation of a history, and because the actions of executions are distributed among several events, we need a way to connect the actions by happens-before relations.
 
-	\newpar In order to simplify this problem it is assumed that all local histories are \textit{\textbf{valid}}. That is:
+	\newpar In order to simplify this problem, it is assumed that all local histories are \textit{\textbf{valid}}. That is:
     
     \begin{definition}
     A \textit{\textbf{valid history}} is a history, where all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. Also, a valid history \textbf{must} contain exactly the actions that \textbf{did} happen in the execution of events.

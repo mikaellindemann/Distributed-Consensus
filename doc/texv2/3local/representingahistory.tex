@@ -16,9 +16,9 @@
 		In a given effect where two events A and B are part of the effect, event B is \textbf{\textit{counterpart}} of event A and event A is \textbf{\textit{counterpart}} of event B.
 	\end{definition}
 	
-	\noindent To distinguish between the two events which takes part in the effect, it is necessary to use the IDs of both. Furthermore to distinguish effects from each other an effect type is necessary. Since an execution can happen multiple times and therefore affect the same counterpart multiple times, the counterpart timestamp is also required to distinguish different effects on the counterpart from each other. To distinguish multiple executions from each other an execution must have a start time and end time.
+	\noindent To distinguish between the two events which takes part in the effect, it is necessary to use the IDs of both. Furthermore, to distinguish effects from each other an effect type is necessary. Since an execution can happen multiple times and therefore affect the same counterpart multiple times, the counterpart timestamp is also required to distinguish different effects on the counterpart from each other. To distinguish multiple executions from each other, an execution must have a start time and end time.
 	
-	\newpar For an event to know that something has happened it is necessary to store it for later retrieval. This must be done for all effects on both sides of the effect.
+	\newpar For an event to know that something has happened, it is necessary to store it for later retrieval. This must be done for all effects on both sides of the effect.
 	
 	\newpar To make a common representation for what is stored, when an effect happens or the execution starts and finishes, the \textbf{\textit{action}} is introduced:
 	
@@ -89,14 +89,14 @@
     \begin{figure}[H]
 		\centering
 		\includegraphics[height=0.35\textheight]{3local/images/execution.pdf}
-		\caption{Actions that are part of an execution, where an ingoing action is stored on another event.}
+		\caption{Actions that are part of an execution where an ingoing action is stored on another event.}
 		\label{fig:representing:execution}
 	\end{figure}
 
     \section{Representation of a History}\label{sec:rep:hist}
 	Now that a representation of an execution and its actions has been defined, it is necessary to find a way to connect and order these actions.
     
-    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution $A$ must either happen before or after all actions in execution $B$ if the two executions are executions of the same event. Therefore, executions, and their actions, happening on the same event are in  \textit{strict total order}. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents}. Therefore it is necessary to describe an invariant for executions of multiple events in a workflow:
+    \newpar When looking solely at the actions of a single event, we can compare each action with any other action and see which happened first by comparing their timestamps. For an action to be part of an execution, it has to happen after an \textit{Execute start} and before an \textit{Execute finish}. Due to the requirement of DCR graphs that executions in an implementation must happen in a serially equivalent manner, all actions in execution $A$ must either happen before or after all actions in execution $B$ if the two executions are executions of the same event. Therefore, executions and their actions happening on the same event are in  \textit{strict total order}. Recall that Lamport states that it is not always possible to establish a strict total order of events in a distributed system, as described in \autoref{subsec:orderingofevents}. Therefore it is necessary to describe an invariant for executions of multiple events in a workflow:
 	
 	\begin{invariant}
 		\begin{align*}
@@ -127,7 +127,7 @@
 	
     \noindent A \textit{global history} is the strict partial order of the actions of all events in the workflow. A \textit{local history} is a strict total order of the actions that have happened on a single event.
     
-    \newpar Since a finite strict partial order can be represented as a directed acyclic graph the history can therefore also be represented as such, where actions are nodes and the order in which the actions have happened is represented as edges.
+    \newpar Since a finite strict partial order can be represented as a directed acyclic graph, the history can therefore also be represented as such, where actions are nodes and the order in which the actions have happened is represented as edges.
 
 	
 %	\begin{figure}
