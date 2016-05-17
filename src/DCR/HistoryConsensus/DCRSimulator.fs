@@ -86,7 +86,7 @@ module DCRSimulator =
             (Graph.getNode history actionId).Edges
 
 
-    let simulate (history : Graph) (initialState : DCRState) (rules : DCRRules) : Result<Graph, ActionId> =
+    let simulate (history : Graph) (initialState : DCRState) (rules : DCRRules) : Result<Graph, Graph> =
         let initialCounterMap = buildCounterMap history
         
         let rec simulateExecution state counterMap : Result<Graph, ActionId> =
@@ -105,4 +105,8 @@ module DCRSimulator =
                 | Success state' -> 
                     simulateExecution state' counterMap' // Recursive step
 
-        simulateExecution initialState initialCounterMap
+        match simulateExecution initialState initialCounterMap with
+        | Failure actionId ->
+            let oldAction = getNode history actionId
+            Failure (addNode { oldAction with FailureTypes = Set.add ExecutedWithoutProperState oldAction.FailureTypes } history)
+        | _ -> Success history
