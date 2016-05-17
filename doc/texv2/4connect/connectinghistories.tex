@@ -1,12 +1,12 @@
 % !TeX root = DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Connecting Histories}\label{chap:connecting-histories}
-	In this chapter the representation of histories is used to combine multiple local histories into one global history using the information of actions. Furthermore two approaches to gather histories from the events are described.
+	In this chapter, the representation of histories is used to combine multiple local histories into one global history using the information of actions. Furthermore two approaches to gather histories from the events are described.
     
     \section{Merging Histories}\label{sec:connecting:merge}
     Given the representation of a history, and because the actions of executions are distributed among several events, we need a way to connect the actions by happens-before relations.
 
-	\newpar In order to simplify this problem it is assumed that all local histories are \textit{\textbf{valid}}. That is:
+	\newpar In order to simplify this problem, it is assumed that all local histories are \textit{\textbf{valid}}. That is:
     
     \begin{definition}
     A \textit{\textbf{valid history}} is a history, where all actions happen according to the rules of the DCR graph, abiding serial equivalence and being in strict partial order. Also, a valid history \textbf{must} contain exactly the actions that \textbf{did} happen in the execution of events.
@@ -124,7 +124,7 @@
 	
 	This is accomplished by recursively requesting the histories of neighbouring events and afterwards merging these histories with its own. To handle cycles, the use of a \textit{request trace} of previously contacted events is sent from each event to the next.
 	
-	\newpar When an event receives a request for its history, it subtracts all the events of the \texttt{request trace} from the set of the neighbours of the event. The result is the set of events to request history from. If this set is empty, the history of the event itself is returned. If the set is not empty the event sends requests to all of the events with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce} and a run of the algorithm is illustrated in \autoref{fig:connecting:recursive}.
+	\newpar When an event receives a request for its history, it subtracts all the events of the \texttt{request trace} from the set of the neighbours of the event. The result is the set of events to request history from. If this set is empty, the history of the event itself is returned. If the set is not empty, the event sends requests to all of the events with its own ID appended to the \texttt{request trace}. When the event receives histories from its neighbours, it merges the histories and returns the merged history to the requester. The algorithm can be seen in \autoref{alg:produce} and a run of the algorithm is illustrated in \autoref{fig:connecting:recursive}.
 	
 	\begin{algorithm}[H]
 		\begin{algorithmic}
@@ -164,14 +164,14 @@
 		\label{fig:connecting:dcr-graph-cycle}
 	\end{figure}
 		
-	\newpar This algorithm is in fact a modified version of the \textit{flooding search algorithm}, described in \cite{Coulouris:2011:DSC:2029110:chapter6}, for searching in unstructured peer-to-peer networks. Contrary to flooding, the produce algorithm not only returns the value at the searched for node, but returns every value at every reachable node. The flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more efficiently in the produce algorithm. Furthermore in the produce algorithm, every path to a node returns the value of that node.
+	\newpar This algorithm is in fact a modified version of the \textit{flooding search algorithm}, described in \cite{Coulouris:2011:DSC:2029110:chapter6}, for searching in unstructured peer-to-peer networks. Contrary to flooding, the produce algorithm not only returns the value at the searched for node, but returns every value at every reachable node. The flooding algorithm is often implemented with a time limit on the search and therefore does not care about cycles, which is handled more efficiently in the produce algorithm. Furthermore, in the produce algorithm, every path to a node returns the value of that node.
 	
-	\newpar To argue that the produce algorithm correctly gathers all the local histories in the workflow we must show that every event is contacted. Since the algorithm contacts the neighbour of every contacted event, and the beginning event has a reachability of every event in the workflow, the set of contacted events must be all events in the workflow. If it is assumed that every event returns their history, as well as any recursively contacted event, then every history of the workflow must be returned to the beginning event. 
+	\newpar To argue that the produce algorithm correctly gathers all the local histories in the workflow, we must show that every event is contacted. Since the algorithm contacts the neighbour of every contacted event, and the beginning event has a reachability of every event in the workflow, the set of contacted events must be all events in the workflow. If it is assumed that every event returns their history, as well as any recursively contacted event, then every history of the workflow must be returned to the beginning event. 
 	
-	The assumption that every event returns the history of every recursively contacted event, is unsafe when malicious processes exist in systems, which constitutes the second drawback of the produce algorithm.
+	The assumption that every event returns the history of every recursively contacted event is unsafe when malicious processes exist in systems, which constitutes the second drawback of the produce algorithm.
 	
 	\subsubsection*{Issues with the Produce Algorithm}
-	If malicious processes are introduced in the DCR graph, the problem similar to not having full reachability from the beginning event arise. If the path to a given event, goes through an event on a malicious process, then that malicious process can either add, remove or change the history. That implies that any history retrieved from that event, might not be valid. The effects of this malicious behavior is worsened if the path to a great number of events goes through a malicious process. An illustration of this effect is shown in \autoref{fig:connecting:recursive-evil-node}. If there exists no path to an event that does not go through a malicious process, then the beginning node will potentially not have any valid version of that history. Even if it is possible to assert that the history is invalid, it is not possible to identify which event along the path has acted maliciously.
+	If malicious processes are introduced in the DCR graph, a problem similar to not having full reachability from the beginning event arises. If the path to a given event, goes through an event on a malicious process, then that malicious process can either add, remove or change the history. That implies that any history retrieved from that event, might not be valid. The effects of this malicious behavior is worsened if the path to a great number of events goes through a malicious process. An illustration of this effect is shown in \autoref{fig:connecting:recursive-evil-node}. If there exists no path to an event that does not go through a malicious process, then the beginning node will potentially not have any valid version of that history. Even if it is possible to assert that the history is invalid, it is not possible to identify which event along the path has acted maliciously.
 	
 	\newpar Furthermore, this uncertainty is amplified because for each contacted event with lacking information, it is possible to tamper with the history of the recursively called events, or even add history of non existing events. Therefore some action must be taken to handle these pitfalls.
 	
