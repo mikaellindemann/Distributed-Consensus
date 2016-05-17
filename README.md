@@ -1,7 +1,7 @@
 # Bachelor Thesis - Consensus of History in Distributed DCR Graphs
 
 ## Installing
-The client that contacts the server and events that are hosted on Microsoft Azure is installed using the installer 'setup.exe'. 
+The client that contacts the server and events, that are hosted on Microsoft Azure, is installed using the installer 'setup.exe'. 
 The installer creates a shortcut on the desktop that will launch the program. 
 
 In order to log in to the client, the login "admin" and password "bachelor" should be used.
