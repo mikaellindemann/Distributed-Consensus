@@ -1,7 +1,7 @@
 % !TeX root = ../DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \section{Problem Definition}
-	\textit{Given an execution of a distributed DCR graph, the purpose of this project is to find an algorithm which uses the local orders of execution of the individual events to find a global order of execution with the least amount of concurrency, where the local orders are preserved in the global order. Furthermore, the algorithm should be able to observe and if possible, identify which events in the workflow are part of malicious behaviour, where malicious behaviour is the act of disobeying the rules of the workflow or reporting false information. Finally the algorithm should establish distributed consensus on the order of execution among the events.}
+	\textit{Given an execution of a distributed DCR graph, the purpose of this project is to find an algorithm which uses the local orders of execution of the individual events to find a global order of execution with the least amount of concurrency, where the local orders are preserved in the global order. Furthermore, the algorithm should be able to observe and if possible, identify which events in the workflow are part of malicious behaviour, where malicious behaviour is the act of disobeying the rules of the workflow or reporting false information. Finally, the algorithm should establish distributed consensus on the order of execution among the events.}
 	
 	\vspace{0.4cm}
 	
@@ -16,9 +16,9 @@
 	Furthermore, it examines why a local history of a single event must be in a strict total order and why this property is necessary when finding ordered history of multiple events. 
 		
 	\newpar
-	Chapter \ref{chap:connecting-histories} examines how it is possible to exploit the rules of DCR graphs when merging histories of multiple events into a single history and explains why the result is in strict partial order. In this chapter it is assumed that all histories adhere to the rules of the given workflow.
+	Chapter \ref{chap:connecting-histories} examines how it is possible to exploit the rules of DCR graphs when merging histories of multiple events into a single history and explains why the result is in strict partial order. In this chapter, it is assumed that all histories adhere to the rules of the given workflow.
 	
     \newpar
     Chapter \ref{chap:order-of-execution} examines how it is possible to find an order of execution from a global history, and to prove the correctness of that order of execution it is shown that the participating events of the history can agree on the result.
 		
-	\newpar	Chapter \ref{chap:validation} introduces malicious processes in the implementation of DCR graphs and what such processes can do to a history. Furthermore it defines a valid history and describes how it is possible, both locally and globally, to validate histories using serial equivalence, ordering of events, and the constraints of DCR graphs.
+	\newpar	Chapter \ref{chap:validation} introduces malicious processes in the implementation of DCR graphs and what such processes can do to a history. Furthermore, it defines a valid history and describes how it is possible, both locally and globally, to validate histories using serial equivalence, ordering of events, and the constraints of DCR graphs.
