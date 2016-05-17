@@ -143,70 +143,47 @@
 		\label{fig:orderofexecution:reduce-before-after}
 	\end{figure}
 
-% Synes ikke det hører til her	
-%	\newpar These algorithms do not provide a way to ensure that malicious nodes cannot tamper with the history. As in the case where one event represented the workflow, there is no way of making sure that the event creating the history will not tamper with the history. It would be possible to pinpoint which neighbouring events are malicious if enough of the neighbours have relations to each other. 
+	\noindent As with the input to the merge algorithm presented in \autoref{chap:connecting-histories}, the input of the collapse algorithm must be a valid global history for the algorithm to produce a valid order of execution. If the global history is not valid, then the validity of the order of execution cannot be guaranteed. As the transitive reduction algorithm only remove redundant information from an order of execution, the same problem arises.
+	
+	We will see in \autoref{chap:validation} that an order of execution can be used to validate certain kinds of cheating.
 
+	\section{Election}
+	Assuming that the found order of execution is valid, we want to know if the processes hosting the events of the workflow can reach consensus on this order of execution.
+	
+	Recall the three requirements for a consensus algorithm: Termination, agreement, and integrity. We want to make an election that fulfils these requirements.
+	
+	\newpar For this consensus problem, the proposed value is the global order of execution and for a process hosting an event to accept a proposed global order of execution, it must be able to map all the actions of its local history onto the executions in the global order of execution.
+	
+	\newpar To map actions in the local history to an order of execution the following procedure is followed:
 
-	\section{Election} 
-	As we have now found an order of execution where (potentially) malicious events have been identified, we want to know if the remaining events can agree upon the rest of order of execution.
-	
-	\newpar As stated in the problem definition, it is desired to reach consensus on the resulting order of execution, but since no process in the system knows the entire state of a workflow, it is not possible for the events to suggest an order of execution without completing steps alike with the ones described in this report.
-	
-	\newpar Because we have chosen to let the client know all events in order to retrieve their histories, it is also easy for us to send the resulting order of execution back to them, in order to find out whether or not they can agree to this order.
-	
-	\newpar When any event receives this order of execution, it can look at its own history and at the received order. The local history can contain executions with outgoing actions between execute start and execute finish actions. Furthermore ingoing relations can be identified as executions of other events from the following rules:
-	
 	\begin{itemize}
-		\item Each counterpart present in actions with ingoing action types must have executed at least once, in order to contact the local event.
-		\item If two actions with the same ingoing action type and counterpart are present after each other, this denotes two separate executions of the counterpart event, because each executing event only contacts another event once per relation when executing.
+		\item If an action has the type \textit{Execute start}, then all consecutive actions until an action of type \textit{Execute finish} is found are part of the same execution of the event itself.
+		\item If an incoming action is found, then all following actions with the same counterpart ID but distinct action types represent an execution of the counterpart event.
+		\begin{itemize}
+			\item This implies that if a new action with the same counterpart ID and an action type not distinct from the ones before it, it must represent the beginning of a new execution of the counterpart event.
+			\item It also implies that if an incoming action with another counterpart ID is found, then this is the beginning of an execution of the event with the new counterpart ID.
+		\end{itemize}
 	\end{itemize}
 	
-	%\newpar Furthermore if an event has sent multiple ingoing requests as part of a single execution, then each of the relations that these actions represent must be present every time that execution has happened.
-	%Ovenstående er udkommenteret fordi det relaterer mere til validation end election.
+	\noindent Because the mapping is created consecutively and because the local history is in total order, the mapped executions must have the same happens before relations as the order in which they are found. Furthermore, if an execution of an event exists in the mapping of the local history, then all executions of that event must be represented in the local history. Therefore the first mapping of an execution in the local history must be the execution of the specified event that  happens before any other execution of that event in the global history.
 	
-	\newpar	Given these rules, the local history can be turned into a "local order of execution".
-	\figuretodo{Tilføj figur der viser hvordan en lokal historik kan omdannes til en order of execution der kan bruges til afstemning.}
+	An example of mapping actions of local histories to executions are shown in \autoref{fig:orderofexecution:localmapping}. In the figure it is seen that pairs of actions with types \textit{Execute start} and \textit{Execute finish} represent executions of the local event. Furthermore, because event $A$ included event $B$ twice, two executions of $A$ must have happened. Also note that the order of the actions are preserved in the local order of execution.
 	
-	\newpar Now that the event has created a local order of execution, this order can be used to decide whether or not the event can agree on the global order of execution. If there exists a path from one execution to another in the local order of execution, there must also exist a path between these executions in the global order of execution for the event to agree. Because the local history is totally ordered, the local order of execution must also be totally ordered.\todo[inline]{proof?}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.4\textwidth]{5orderofexecution/images/election-mapping.pdf}
+		\caption{An example of mapping actions of local histories to executions}
+		\label{fig:orderofexecution:localmapping}
+	\end{figure}
 	
-	With this property the event can find the local order of execution in the global order. \todo[inline]{The following algorithm assumes that an execution can be found across local and global orders of execution.}Algorithm \ref{alg:vote} outlines how this can be done.
+	\newpar From any mapping of an execution found in the global order of execution it should be possible to find the next mapping of an execution only by traversing edges in the global order of execution.
 	
-	\begin{algorithm}
-		\begin{algorithmic}
-			\Function{Vote}{localHistory, globalOrderOfExecution}
-				\State\hspace{2em}\textbf{returns} \texttt{True} if the paths between executions in the local history are present in the
-				\State\hspace{6em}global history. \texttt{False} otherwise.
-				\State localOrderOfExecution $\leftarrow$ \Call{MakeLocalOrderOfExecution}{localHistory}
-				\State localExecution $\leftarrow$ execution in localHistory with lowest local timestamp
-				\While{\Call{IsNotNull}{currentLocalExecution}}
-					\If{\Call{IsEmpty}{currentLocalExecution.Edges}}
-						\State \Return \texttt{True}
-					\EndIf
-					\State globalExecution $\leftarrow$ find localExecution in globalOrderOfExecution
-					\State nextGlobalExecution $\leftarrow$ find next local execution in globalOrderOfExecution
-					\If{\Call{HasPath}{globalExecution, nextGlobalExecution, globalOrderOfExecution}}
-						\State\Return \texttt{False}
-					\EndIf
-					
-					\State localExecution $\leftarrow$ \Call{SingleOrNull}{localExecution.Edges}
-				\EndWhile
-			\EndFunction
-		\end{algorithmic}
-		\caption{The \textit{\textbf{Vote}} algorithm}
-		\label{alg:vote}
-	\end{algorithm}
+	If the local history matches the global order of execution, then the process hosting the event accepts the proposed value.
 	
-	If the history is correct, and the nodes are correct, then the nodes will vote in favour of the history.
+	\newpar We have now described how a proposed value can be voted on. It still needs to be discussed how an election is initiated.
 	
-	It is possible to decide a threshold for the ratio between the number of good nodes and the number of malicious nodes. If the result of the election is better than the threshold, then distributed consensus between the nodes exists for the history. In distributed systems this threshold is normally set to the majority of the participating nodes, which means at least one more than half the amount of nodes.\todo[inline]{Find a source.}
+	\newpar As described in \autoref{chap:connecting-histories}, the client retrieves all local histories of a workflow, then it merges, collapses, and reduces the histories into an global order of execution. Therefore the client is the only process able to propose a value that all processes hosting events can reach consensus on. Because the client already knows all events in order to retrieve their histories, it can propose the global order of execution to each of them and await their answers.
 	
-	\newpar Election is not an actual vote on the result of the resulting order of execution. Election is instead a confirmation that the algorithm has produced the correct result.
+	\newpar If the local histories are valid, and all of the presented algorithms are correct, then all processes hosting events will reach consensus on the proposed global order of execution, because the local orders of execution are preserved in the global. Therefore both the agreement and integrity requirement of the election is fulfilled. Because we do not allow processes to crash while carrying out a task, every process must at some point respond to the proposal thereby setting its decided value. Therefore the termination requirements is fulfilled.
 	
-	\todo[inline]{Tilføj correctness proof/paragraph. "There should be a theorem or something clearly stating that this algorithm solves the original problem." WIND: i dont know if this was it but i tried PIL NED}
-	
-	If the algorithm has found the correct solution then correctly functioning events must be decide to accept the result. By proof of contradiction if the correctly functioning events do not vote for the history then that implies that happens before relations are missing from the global history, which would then imply that the proposed global order was incorrect and therefore that the proposer is malicious.
-	
-	This algorithm solves the initial problem which was to achieve distributed consensus on the order of execution. It does so because each individual event can accept a proposed value by the commander, and if the commander is correct then all the events will have decided the same value, and distributed consensus is hereby achieved.
-	
-	
-	\figuretodo{Tilføj figur: Kan vi på nogen måde vise resultatet af election? FISK: Tror det bliver lidt svært. }
+	\newpar If any process does not vote in favour of the order of execution it implies that either a local history was invalid, the proposer created an incorrect order of execution, or the process incorrectly voted against the proposed value. In either of the cases, a malicious process must exist in the system, and therefore if no process votes against the proposed value, we have solved the problem of reaching consensus on an order of execution of an execution of a distributed DCR graph when no malicious processes are present in the system.
