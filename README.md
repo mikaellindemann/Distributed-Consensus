@@ -15,3 +15,4 @@ The program has been tested on Windows 10, and *should* run without issues on Wi
 
 ## Source
 If the source code for the implementation is opened and run in the ```Debug``` configuration of Visual Studio, the services have been set up to run on the local machine instead of on Microsoft Azure. 
+```Graphviz``` needs to be installed, and the ```/bin``` directory in the directory where Graphviz is installed should be added to the ```PATH``` of the machine in order to run the code locally. An installer for ```Graphviz``` has been provided with the source code. 
