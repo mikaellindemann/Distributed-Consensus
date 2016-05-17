@@ -12,6 +12,15 @@
 	
 	Since every execution has actions of types \textit{Execute start} and \textit{Execute finish}, choosing one of these as the representative seems like a sensible choice. For any execution in a history, an action of type \textit{Execute start} always has a path to an action of type \textit{Execute finish}. Therefore the transitive property of directed acyclic graphs, states that in an execution the reachability of an action of type \textit{Execute start} is a superset of the reachability of the action of type \textit{Execute finish}, and therefore it contains more information about happens before relations. To conclude, actions of type \textit{Execute start} are the most sensible choice of these two types.
 	
+	\newpar We now extend the legend from \autoref{fig:representing:legend} with the following illustration types:
+    
+    \begin{figure}[H]
+		\centering
+		\includegraphics[height=0.25\textheight]{6validation/images/legend-extended.pdf}
+		\caption{A legend showing what the different figures mean in the following sections.}
+		\label{fig:representing:legend-extended}
+	\end{figure}
+	
 	A situation where actions of type \textit{Execute start} is chosen as representatives is shown in \autoref{fig:problem:trans}. What becomes apparent in this figure, is that the first execution of event $A$ must happen before the first execution of event $B$. This is because two events that have a happen before relation must have any kind of relation in the workflow. If the events have a relation in the workflow, then they must execute serially equivalent. This ensures that an execution of one of the events must happen either before, or after an execution of the other. Therefore another approach must be taken.
 	
 	\newpar In \cite{sedgewick2011algorithms}, Sedgewick et. al. describes an implementation of transitive closure, which has a time complexity of $\mathcal{O}(V * (V + E))$ where V is the number of nodes and E is the number of edges in the graph.
