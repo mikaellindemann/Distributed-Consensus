@@ -95,7 +95,7 @@
         \noindent If no relation exists between any event $a$ and $b$, the events are \textit{concurrent} and logically occur at the same time, even though this might not be the case physically. Lamport therefore argues that it is only possible to find a strict partial order of events in distributed systems.
 		
 		\subsection{Consensus}
-		Traditionally consensus in distributed systems is the activity of reaching agreement among the participants in the system on a proposed value. The consensus problem has the following three requirements\todo{distributed systems bog side 669 kapitel 15}:
+		Traditionally consensus in distributed systems is the activity of reaching agreement among the participants in the system on a proposed value. The consensus problem has the following three requirements as stated in \cite{Coulouris:2011:DSC:2029110:chapter15}:
 		\begin{itemize}
 			\item Termination: Eventually each correct process sets its decision variable.
 			\item Agreement: The decision values of all correct processes are the same.
@@ -109,15 +109,13 @@
 		In our problem domain processes may operate at an arbitrary speed and \textit{may} collude, lie or attempt to subvert the protocol; Byzantine failures \textit{do} occur. Therefore it is not possible to use Paxos or Raft for this project. 
 		 
 		\newpar The \textit{Byzantine generals problem} is a case of the consensus problem. Instead of having multiple proposers, the commander is introduced. Byzantine failures are allowed and handled by signing messages. Also, each process needs to be connected to all other processes and there is a limit of a third malicious processes that can exist in the system. It has been proven that the Byzantine generals problem cannot be solved for a system with only two processes. \cite{Lamport:1982:BGP:357172.357176}
-		
-		\todo[inline]{Describe other kinds of consensus algorithms, not just election-based kinds. Describe blockchain algorithm, and how it solves a different problem than the one we have.}
         
 	\section{Directed Graphs}
 		A \textit{directed graph} is a data structure, which consists of \textit{nodes} connected by \textit{edges}. In directed graphs an edge is an ordered pair of nodes, where the first element is the start node and the second is the end node. When traversing the graph it is only possible to traverse edges from their start node to their end node. There exists a \textit{path} from a node to another if it is possible through one or more edges in succession to get from the first to the second node.
 	
 		For a given node the \textit{reachability} is the set of all the nodes there exists a path to. For a graph to be \textit{acyclic} any node in the graph, must not have a path to itself. 
 	
-		The subgraph of a given graph with the same reachability of each node, but with as few edges as possible, is called the \textit{minimum equivalent graph}.\todo[inline]{Udvid gerne med en sætning der siger hvorfor det er nice at have en sådan graf. Mest for at bryde flowet lidt mere op, og hjælpe læseren.}
+		The subgraph of a given graph with the same reachability of each node, but with as few edges as possible, is called the \textit{minimum equivalent graph}.
 	
 		A \textit{topological order} of a directed graph is a total ordering of the nodes, such that for every edge $a,b$ from node $a$ to $b$, $a$ comes before $b$.
 		
