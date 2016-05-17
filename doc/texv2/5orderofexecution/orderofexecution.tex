@@ -166,15 +166,15 @@
 	\newpar To map actions in the local history to an order of execution the following procedure is followed:
 
 	\begin{itemize}
-		\item If an action has the type \textit{Execute start}, then all consecutive actions until an action of type \textit{Execute finish} is found are part of the same execution of the event itself.
+		\item If an action has the type \textit{Execute start}, then all consecutive actions until an action of type \textit{Execute finish} is found, are part of the same execution of the event itself.
 		\item If an incoming action is found, then all following actions with the same counterpart ID but distinct action types represent an execution of the counterpart event.
 		\begin{itemize}
-			\item This implies that if a new action with the same counterpart ID and an action type not distinct from the ones before it, it must represent the beginning of a new execution of the counterpart event.
+			\item This implies that if a new action with the same counterpart ID and an action type not distinct from the ones before it, the action must represent the beginning of a new execution of the counterpart event.
 			\item It also implies that if an incoming action with another counterpart ID is found, then this is the beginning of an execution of the event with the new counterpart ID.
 		\end{itemize}
 	\end{itemize}
 	
-	\noindent Because the mapping is created consecutively and because the local history is in total order, the mapped executions must have the same happens before relations as the order in which they are found. Furthermore, if an execution of an event exists in the mapping of the local history, then all executions of that event must be represented in the local history. Therefore the first mapping of an execution in the local history must be the execution of the specified event that  happens before any other execution of that event in the global history.
+	\noindent Because the mapping is created consecutively and because the local history is in total order, the mapped executions must have the same happens before relations as the order in which they are found. Furthermore, if one execution of an event exists in the mapping of the local history, then all executions of that event must be represented in the local history. Therefore the first mapping of an execution in the local history must be the execution of the specified event that  happens before any other execution of that event in the global history.
 	
 	An example of mapping actions of local histories to executions are shown in \autoref{fig:orderofexecution:localmapping}. In the figure it is seen that pairs of actions with types \textit{Execute start} and \textit{Execute finish} represent executions of the local event. Furthermore, because event $A$ included event $B$ twice, two executions of $A$ must have happened. Also note that the order of the actions are preserved in the local order of execution.
 	
@@ -193,6 +193,6 @@
 	
 	\newpar As described in \autoref{chap:connecting-histories}, the client retrieves all local histories of a workflow and then it merges, collapses, and reduces the histories into an global order of execution. Therefore the client is the only process able to propose a value that all processes hosting events can reach consensus on. Because the client already knows all events in order to retrieve their histories, it can propose the global order of execution to each of them and await their answers.
 	
-	\newpar If the local histories are valid and all of the presented algorithms are correct, then all processes hosting events will reach consensus on the proposed global order of execution, since the local orders of execution are preserved in the global. Therefore both the agreement and integrity requirement of the election is fulfilled. Because we do not allow processes to crash while carrying out a task, every process must at some point respond to the proposal thereby setting its decided value. Therefore the termination requirements is fulfilled.
+	\newpar If the local histories are valid and all of the presented algorithms are correct, then all processes hosting events will reach consensus on the proposed global order of execution, since the local orders of execution are preserved in the global. Therefore both the agreement and integrity requirement of the election is fulfilled. Because we do not allow processes to crash while carrying out a task, every process must at some point respond to the proposal thereby setting its decided value. Therefore the termination requirement is fulfilled.
 	
 	\newpar If any process does not vote in favour of the order of execution, it implies that either a local history was invalid, the proposer created an incorrect order of execution, or that the process incorrectly voted against the proposed value. In either of the cases, a malicious process must exist in the system, and therefore if no process votes against the proposed value, we have solved the problem of reaching consensus on an order of execution of an execution of a distributed DCR graph when no malicious processes are present in the system.
