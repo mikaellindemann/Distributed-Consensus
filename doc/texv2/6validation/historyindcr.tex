@@ -53,7 +53,7 @@
 		\label{fig:validation:only-specified-relations}
 	\end{figure}
 	
-	\noindent It can be validated that local histories adhere to \autoref{rule:validrelations} by examining every action, and for each outgoing and incoming action, the event, its counterpart, and action type must be present in the rules of the workflow.
+	\noindent It can be validated that local histories adhere to \autoref{rule:validrelations} by examining every action, and for each outgoing and incoming action, the event, its counterpart, and action type must be present in the rules of the workflow. If an invalid relation is present then either the event or the counterpart of the relation must be hosted on malicious processes. Therefore this kind of cheating is observable but not identifiable.
 	
 	\begin{ruledef}
 		\textbf{Only complete executions}: A given event, $E$, must have actions for each of its outgoing relations when executing. Each of the counterparts of these actions must have a corresponding action in their history after $E$ has executed. For any execution there must be exactly one action of type \textup{Execute start} happening before a single action of type \textup{Execute finish}.
@@ -76,6 +76,8 @@
 	Each consecutive action in the history, must be one of the actions in the set. The action is then removed from the set. When the set is empty, the next action in the history must have type \textit{Execute finish}.
 	
 	\newpar In order to validate \autoref{rule:completeexecutions} for incoming relations where the counterpart is not the event iself the following approach is taken: When an incoming action from an event $A$ is found, all actions corresponding to the remaining rules that specify that $A$ has a relation to the current event is added. While the set is not empty the consecutive actions in the history must exist in the set. An action is removed from the set when it is encountered.
+	
+	\newpar Violation of this rule is observable but not identifiable since an event does not know what relations other events has to it. Therefore a malicious process could only effects some of its relations but add actions as if it had done it, making it impossible to identify which of the processes are malicious.
 
 	\begin{ruledef}
 		\textbf{Executions only in Valid States}: The history of an event must only contain executions when the event is executable. This implies that the entirety of the history must match a run of the DCR graph it represents.
