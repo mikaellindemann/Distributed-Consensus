@@ -15,9 +15,9 @@
 
 	\noindent The observation and identification of invalid histories are described in \autoref{chap:validation}. Why it is necessary to have this assumption is discussed in the end of this section.
 
-    \newpar Given valid local histories of several events, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions using happens before relations. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
+    \newpar Given valid local histories of several events, we want to connect the actions of the histories such that the result has the fewest possible concurrent actions using happens-before relations. Furthermore, given a global history $A$ and every local history $B$ used for the creation of $A$, for every path from action $x$ to another action $y$ in $B$, there must also exist a path from $x$ to $y$ in $A$.
     
-    \newpar The concept of happens before relations, as described in \autoref{subsec:orderingofevents} helps determining which actions have happened before others across events. For each outgoing action in a history, there must be another incoming action, because these actions are the two sides of the same effect. Therefore, each outgoing action type corresponds to an incoming action type by the following definition:
+    \newpar The concept of happens-before relations, as described in \autoref{subsec:orderingofevents} helps determining which actions have happened before others across events. For each outgoing action in a history, there must be another incoming action, because these actions are the two sides of the same effect. Therefore, each outgoing action type corresponds to an incoming action type by the following definition:
 	
 	\begin{definition}
 		\label{def:happensbeforeaction}
@@ -56,11 +56,11 @@
 		\end{minipage}
     \end{figure}
         
-    \noindent An outgoing action must happen before its incoming counterpart, because together they represent a message exchange between to processes. A happens before relation is established between the matching actions. Therefore an edge can be added from the outgoing action to the incoming action in a history.
+    \noindent An outgoing action must happen before its incoming counterpart, because together they represent a message exchange between to processes. A happens-before relation is established between the matching actions represented by adding an edge from the outgoing action to the incoming action in the history.
 
-	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined history. Whenever a pair of matching actions are found, the edge is added from the outgoing action to the incoming action. With this algorithm a set of histories can then be merged together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
+	\newpar To create a history of the entire set of events, every action of every local history needs to be added to a joined global history. Therefore the algorithm must take a set of local histories and merge them together, two at a time, until one final combined history remains. The \textit{Merge} algorithm is outlined in \autoref{alg:merge}.
 	
-	\begin{algorithm}
+	\begin{algorithm}[H]
 		\begin{algorithmic}
 			\Function{Merge}{history1, history2} \textbf{returns} \textit{a merged history}
 			\State combinedHistory $\leftarrow$ \Call{UnionNodesAndEdges}{history1, history2}
