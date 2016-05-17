@@ -3,7 +3,7 @@
 \chapter{Introduction}
 	Dynamic Condition Response Graphs (DCR graphs, see \cite{hildebrandt2011declarative}) are developed principally by Thomas Hildebrandt at the IT University of Copenhagen, in collaboration with ResultMaker\footnote{\url{http://www.resultmaker.com}} and later Exformatics A/S\footnote{\url{http://www.exformatics.dk}}. DCR graphs are used to model workflows which represents work processes.
 	
-	\newpar DCR graphs are used by companies to ensure that business procedures are executed according to business rules. At a given time a business might want to see in which order events in a given DCR graph have executed, a so called \textit{order of execution}. The order of execution can contain interesting information for the business, as it reveals which events have been executed to lead to the current state of the workflow. Furthermore, if a DCR graph is used to represent a case of a customer, and if multiple case workers are working on that case, and do not have a total overview of it, an order of execution can provide that overview.
+	\newpar DCR graphs are used by companies to ensure that business procedures are executed according to business rules. At a given time, a business might want to see in which order events in a given DCR graph have executed, a so called \textit{order of execution}. The order of execution can contain interesting information for the business, as it reveals which events have been executed to lead to the current state of the workflow. Furthermore, if a DCR graph is used to represent a case of a customer, and if multiple case workers are working on that case, and do not have a total overview of it, an order of execution can provide that overview.
 	
 	Since DCR graphs allow infinite behaviour, the workflow can be in the same state multiple times. This leaves the case worker guessing how many times the workflow has been in the current state. Finally, for DCR graphs shared between two or more companies, one of the participating companies might want to check retroactively whether the other companies have followed the rules of the workflow.
 	
@@ -13,6 +13,6 @@
 	
 	\newpar Because there exists no central source of truth in a non-centralized distributed system, the processes must reach consensus on the work they have done together, for anyone to believe that the work is correct.
 	
-	Any malicious activity should be observable and if possible the events that are behind this activity should be identified. Handling message tampering, that is altering, replaying and withholding messages before sending them to the intended recipient as described in \cite{Coulouris:2011:DSC:2029110:chapter2} and processes crashing while carrying out a task, are out of scope for this project.
+	Any malicious activity should be observable and if possible the events that are behind this activity should be identified. Handling message tampering, that is altering, replaying and withholding messages before sending them to the intended recipient as described in \cite{Coulouris:2011:DSC:2029110:chapter2}, and processes crashing while carrying out a task, are out of scope for this project.
 
 	\newpar By researching and applying distributed system theories and algorithms, as well as the rules of DCR graphs, we will try to solve the problem of generating and reaching consensus of histories of DCR graphs.
