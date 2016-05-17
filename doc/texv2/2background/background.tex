@@ -21,10 +21,10 @@
 	Furthermore the article defines a distributed DCR graph as a DCR graph with a set of roles, a set of principals, and a mapping function that assigns roles to principals and actions. This assignment means that if principal $P$ is assigned role $R$, and action $A$ is assigned $R$, then $P$ can execute $A$.
 		
 	\newpar
-	Events can be safely distributed by defining \textit{projections} and \textit{compositions} of DCR graphs. This is described in \cite{hildebrandt2011safe}. This idea of distributing events between multiple processes in a distributed system, is used in the DCR graph implementation used for this project. This implementation is further described in \autoref{sec:background:implementation}. 
+	Events can be safely distributed by defining \textit{projections} and \textit{compositions} of DCR graphs. This is described in \cite{hildebrandt2011safe}. This idea of distributing events between multiple processes in a distributed system is used in the DCR graph implementation used for this project. This implementation is further described in \autoref{sec:background:implementation}. 
     
 	\newpar 
-	In \cite{debois2015concurrency} Debois et al. describes the procedure for executing distributed events using a locking mechanism to ensure serial equivalence:
+	In \cite{debois2015concurrency}, Debois et al. describes the procedure for executing distributed events using a locking mechanism to ensure serial equivalence:
 	
 	\begin{quotation}
 		``\textit{The procedure for executing an event, in detail, is as follows. A component
@@ -35,7 +35,7 @@
 		to change state accordingly. Finally, it releases all locks.}''
 	\end{quotation}
 	
-	 \noindent Furthermore Debois et al. states in \cite{debois2015concurrency} that for two events to have concurrent executions the events must be independent, that is the events must be effect and cause-orthogonal. In the article effect-orthogonality is described as
+	 \noindent Furthermore, Debois et al. states in \cite{debois2015concurrency} that for two events to have concurrent executions the events must be independent, that is the events must be effect and cause-orthogonal. In the article effect-orthogonality is described as
 	\begin{itemize}
 		\item ``no event included by $e$ is excluded by $f$ and vice versa, and''
 		\item ``$e$ requires a response from some $g$ $iff$ $f$ does.''
@@ -84,7 +84,7 @@
 		\end{minipage}
 		\end{figure}
 		
-		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps, that enable determining the order of events in a distributed system. The clocks are \textit{logical} because they do not represent \textit{physical} time, since synchronising physical time in a distributed system is a non-trivial task. A logical clock is a simple counter, that is incremented for each event happening in a process. 
+		\newpar Lamport introduces so-called \textit{logical clocks}, which are simple timestamps that enable determining the order of events in a distributed system. The clocks are \textit{logical} because they do not represent \textit{physical} time, since synchronising physical time in a distributed system is a non-trivial task. A logical clock is a simple counter that is incremented for each event happening in a process. 
 		
 		When a process receives a message, the counter must be set to a higher value than both the received timestamp, as well as the local clock. This also implies that each message must include the timestamp of the sending event. This is illustrated in \autoref{fig:background:lamport-timestamps}
 		
@@ -95,7 +95,7 @@
 		\label{fig:background:lamport-timestamps}
 		\end{figure}
 		
-		\newpar Lamport argues that if a given system is not distributed, it is possible to create a history of events where the ordering is total, since it is possible for one process to use a logical clock to find out which event happened before another. In a distributed system however, this global ordering is not possible, since events have independent locical clocks that are set to the same timestamp.
+		\newpar Lamport argues that if a given system is not distributed it is possible to create a history of events where the ordering is total, since it is possible for one process to use a logical clock to find out which event happened before another. In a distributed system however, this global ordering is not possible since events have independent locical clocks that are set to the same timestamp.
 		
 		\newpar Lamport describes these relations between events with the symbol $\rightarrow$ such that if $event$ $a$ happens before $event$ $b$ then $a \rightarrow b$. These relations can be created based on three cases:
         
