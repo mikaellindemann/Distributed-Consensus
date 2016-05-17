@@ -18,4 +18,4 @@ module DCRSimulator =
     /// If, for some reason an event is not executable in the given total order, this means that the history has
     /// invalid information. Therefore a fail is returned.
     /// If everything is alright, the initial collapsed history is returned.
-    val simulate : Graph -> DCRState -> DCRRules -> Result<Graph, Graph> // History -> Initial State -> DCR Graph -> Result
+    val simulate : Graph -> DCRState -> DCRRules -> Result<Graph, ActionId> // History -> Initial State -> DCR Graph -> Result
