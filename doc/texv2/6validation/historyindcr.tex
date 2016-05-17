@@ -145,7 +145,7 @@
 		\item In a local history an action of type \textit{Execute start} has a path to another action of type \textit{Execute start} in which no action of type \textit{Execute finish} exists. This case can be found by applying \autoref{rule:non-disruptedexecutions}.
 	\end{itemize}
 	
-	\noindent Together these three ways of violating serial equivalence cover all cases of an event being affected while being locked. There is a case where two processes can participate in the creation of a history where each of the local histories are serially equivalent, but when the actions of the executions are connected, serial equivalence is violated because message exchanging was not done synchronously. Figure \ref{fig:validation:synchronous-execution} illustrates a history and how it would look like if message confirmations were stored as part of synchronous message exchanges. This also explains why the situation in \autoref{fig:validation:total-order-of-counterpart-timestamps} is not valid, because a cycle would be present if message confirmations were explicit as seen in \autoref{fig:validation:explicit-message-confirmations}. Because of this, it can be concluded that both the execution of event $A$ and $B$, happens before each other. Serial equivalence requires that the interleaving is equivalent to the execution of one of the events first followed by the other, it can be concluded that this interleaving is not serially equivalent. This last form of serially equivalence violation is covered by \autoref{rule:total-order-counterpart-timestamps}.
+	\noindent Together, these three ways of violating serial equivalence cover all cases of an event being affected while being locked. There is a case where two processes can participate in the creation of a history where each of the local histories are serially equivalent, but when the actions of the executions are connected, serial equivalence is violated because message exchanging was not done synchronously. Figure \ref{fig:validation:synchronous-execution} illustrates a history and how it would look like if message confirmations were stored as part of synchronous message exchanges. This also explains why the situation in \autoref{fig:validation:total-order-of-counterpart-timestamps} is not valid, because a cycle would be present if message confirmations were explicit as seen in \autoref{fig:validation:explicit-message-confirmations}. Because of this, it can be concluded that both the execution of event $A$ and $B$, happens before each other. Serial equivalence requires that the interleaving is equivalent to the execution of one of the events, followed by the other, it can be concluded that this interleaving is not serially equivalent. This last form of serially equivalence violation is covered by \autoref{rule:total-order-counterpart-timestamps}.
 	
 	\begin{figure}[H]
 		\centering
@@ -176,7 +176,7 @@
 		\label{rule:message-exchange-timestamp-order}
 	\end{ruledef}
 	
-	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
+	\noindent A validation of this kind of inconsistency can be done on the history of each event. If the counterpart timestamps of the outgoing actions are not larger than the timestamps, then the event is malicious. For incoming actions the counterpart timestamp must be less than the timestamp.
 	
 	\newpar Because histories are represented as directed acyclic graphs, cycles must not exist. Rule \ref{rule:total-order-timestamps} and \ref{rule:message-exchange-timestamp-order} makes it possible to observe cycles and identify the local histories from where the cycles originate.
 	
@@ -225,7 +225,7 @@
 	\noindent Table \ref{table:inconsistent-cheating-properties} summarises the observability and identifiability of violations of each of the rules \ref{rule:validrelations} through \ref{rule:message-exchange-timestamp-order}. We will see in \autoref{sec:validation:simulation} why \autoref{rule:executionvalidstate} is observable but not identifiable. In the table it becomes apparent that in most cases it is possible to identify the single process that cheats, but in the cases where the violated rules regards the rules of the workflow, it is only possible to observe inconsistent cheating.
 	
 	\section{Consistent Cheating}
-	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat consistently. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
+	Until now we have examined inconsistent cheating, but malicious processes are also able to cheat \textit{consistently}. Recall that consistent cheating is the act of creating histories which \textit{could} have happened but did not. In this section \textit{original} actions and timestamps are actions and timestamps that did happen in the execution of the workflow. 
 
 	\newpar Consistent cheating is present if one of the following rules are violated:
 
