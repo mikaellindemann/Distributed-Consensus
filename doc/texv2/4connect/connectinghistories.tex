@@ -1,10 +1,10 @@
 % !TeX root = DistributedConsensus.tex
 % !TeX spellcheck = en_GB
 \chapter{Connecting Histories}\label{chap:connecting-histories}
-	After determining how to represent histories, we want to combine multiple histories into one history using the information of actions.
+	In this chapter the representation of histories is used to combine multiple local histories into one global history using the information of actions. Furthermore two approaches to gather histories from the events are described.
     
     \section{Merging Histories}\label{sec:connecting:merge}
-    Having defined the representation of history, and the fact that the actions of executions are distributed among several events, we need a way to connect the actions by happens before relations.
+    Given the representation of a history, and because the actions of executions are distributed among several events, we need a way to connect the actions by happens-before relations.
 
 	\newpar In order to simplify this problem it is assumed that all local histories are \textit{\textbf{valid}}. That is:
     
@@ -31,7 +31,7 @@
 	\end{definition}
 	
 	\noindent For any outgoing or incoming action on an event, there might exist any number of actions with corresponding action types. Actions should therefore be matched on more than just their corresponding action type. An action includes the ID and timestamp of both the executing and counterpart event to ensure that matches are unique.
-    Pairs of actions \textbf{\textit{match}} if they share a corresponding type, while the ID and timestamp of either action matches the counterpart ID and timestamp of the other.
+	This brings us to the definition of a \textbf{match}:
     
     \begin{definition}
     	\label{def:action:matching}
