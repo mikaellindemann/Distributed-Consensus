@@ -333,7 +333,7 @@
 	\begin{case}
 		In this case, the workflow contains an event on a malicious process with a relation to another event on a malicious process as shown in \autoref{fig:consensus:single-malicious-with-twoway-malicious-relation}. The two processes can work in collaboration to manipulate the histories of the two events. 
 		
-		If it is assumed that they work in collaboration, then they are able to change timestamps and the amount of executions in such a way that it is not observable because it is present in both the histories. However, if they do not change the timestamps or the amount of executions in collaboration, then they will disagree on the values and it is possible to observe that at least one of the processes are malicious.
+		If it is assumed that they work in collaboration, then they are able to change timestamps and the amount of executions in such a way that it is not observable because it is present in both the histories. However, if they do not change the timestamps or the amount of executions in collaboration, then they will disagree on the values and it is possible to observe that at least one of the processes are malicious. Because we assume the worst, it cannot be concluded that cheating is observable in this case.
 		\label{case:malicious-to-malicious}
 	\end{case}
 	
@@ -366,7 +366,7 @@
 	
 	As described in the example, it would be possible for the malicious process to trick an election into not having a majority against it. Therefore an election cannot conclude that a process \textit{is} correct, which leaves the situation no better than the initial situation, where it was only possible to detect that at least one of the processes were malicious.
 	
-	\newpar Another approach is to apply the solution to the Byzantine generals problem. Imagine that events are generals and their message exchanges are the decision value, then because at most two events know about a message exchange between them, it contradicts the proven theorem that the Byzantine generals problem cannot be solved for systems with two processes.
+	\newpar Another approach is to apply the solution to the Byzantine generals problem. Imagine that events are generals and their message exchanges are the decision value, then because at only two events know about a message exchange between them, using this approach contradicts the proven theorem that the Byzantine generals problem cannot be solved for systems with two processes.
 	
 	\begin{table}[H]
 		\centering
