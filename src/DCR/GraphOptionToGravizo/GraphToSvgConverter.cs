@@ -109,13 +109,13 @@ namespace GraphOptionToSvg
         private void WriteGraphToDotFile(Graph.Graph graph, TextWriter writer)
         {
             var map = graph.Nodes;
-            var isExecution = map.All(pair => pair.Value.Type.IsExecuteFinish) ? "shape=box," : "";
+            var isExecution = map.All(pair => pair.Value.Type.IsExecuteFinish) ? "[shape=box,label=\"Execute {0}\", {2}]" : "[label=\"{0}, {1}\", {2}]";
             var gravizoGraph = map.Select(kvPair => kvPair.Value)
                 .Select(
                     action =>
                         new
                         {
-                            ActionString = $"{action.Id.Item1 + action.Id.Item2}[{isExecution}label=\"{action.Id.Item1}, {ActionToString(action.Type)}, {FailureTypeToDotStyle(action.FailureTypes)}];",
+                            ActionString = $"{action.Id.Item1 + action.Id.Item2}" + string.Format(isExecution, action.Id.Item1, ActionToString(action.Type), FailureTypeToDotStyle(action.FailureTypes)),
                             EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item1 + action.Id.Item2}->{edge.Item1 + edge.Item2};")
                         });
 
@@ -200,18 +200,18 @@ namespace GraphOptionToSvg
 
         private static string ActionToString(Action.ActionType type)
         {
-            if (type.IsCheckedConditionBy) return "CheckedConditionBy\"";
-            if (type.IsChecksCondition) return "ChecksCondition\"";
-            if (type.IsCheckedMilestoneBy) return "CheckedMilestoneBy\"";
-            if (type.IsChecksMilestone) return "ChecksMilestone\"";
-            if (type.IsExcludedBy) return "ExcludedBy\"";
-            if (type.IsExcludes) return "Excludes\"";
-            if (type.IsExecuteFinish) return "ExecuteFinish\"";
-            if (type.IsExecuteStart) return "ExecuteStart\"";
-            if (type.IsIncludedBy) return "IncludedBy\"";
-            if (type.IsIncludes) return "Includes\"";
-            if (type.IsSetPendingBy) return "SetPendingBy\"";
-            if (type.IsSetsPending) return "SetsPending\"";
+            if (type.IsCheckedConditionBy) return "CheckedConditionBy";
+            if (type.IsChecksCondition) return "ChecksCondition";
+            if (type.IsCheckedMilestoneBy) return "CheckedMilestoneBy";
+            if (type.IsChecksMilestone) return "ChecksMilestone";
+            if (type.IsExcludedBy) return "ExcludedBy";
+            if (type.IsExcludes) return "Excludes";
+            if (type.IsExecuteFinish) return "ExecuteFinish";
+            if (type.IsExecuteStart) return "ExecuteStart";
+            if (type.IsIncludedBy) return "IncludedBy";
+            if (type.IsIncludes) return "Includes";
+            if (type.IsSetPendingBy) return "SetPendingBy";
+            if (type.IsSetsPending) return "SetsPending";
 
             throw new ArgumentException("Unknown type", nameof(type));
         }
