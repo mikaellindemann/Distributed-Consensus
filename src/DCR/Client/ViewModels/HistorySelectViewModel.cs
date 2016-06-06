@@ -15,9 +15,7 @@ using GraphOptionToSvg;
 using HistoryConsensus;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
-using Newtonsoft.Json;
 using Action = HistoryConsensus.Action;
-using Common.DTO.History;
 
 namespace Client.ViewModels
 {
@@ -35,12 +33,12 @@ namespace Client.ViewModels
         private bool _useDummyConnection;
 
         private bool
-            _shouldValidate = true,
-            _shouldFilter = true,
-            _shouldMerge = true,
-            _shouldCollapse = true,
-            _shouldReduce = true,
-            _shouldSimulate = true;
+            _shouldValidate,
+            _shouldFilter,
+            _shouldMerge,
+            _shouldCollapse,
+            _shouldReduce,
+            _shouldSimulate;
             
 
         private string _executionTime;
@@ -108,8 +106,8 @@ namespace Client.ViewModels
                 _useDummyConnection = value;
                 if (_useDummyConnection)
                 {
-                    _eventConnection = (IEventConnection)_dummyConnection;
-                    _serverConnection = (IServerConnection)_dummyConnection;
+                    _eventConnection = _dummyConnection;
+                    _serverConnection = _dummyConnection;
                     Workflows = new ObservableCollection<WorkflowDto>(_dummyConnection.WorkflowDtos);
                 }
                 else
@@ -168,6 +166,8 @@ namespace Client.ViewModels
                 if (_shouldMerge == value) return;
                 _shouldMerge = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShouldSimulate));
+                NotifyPropertyChanged(nameof(CanSimulate));
             }
         }
 
@@ -181,6 +181,7 @@ namespace Client.ViewModels
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(ShouldSimulate));
                 NotifyPropertyChanged(nameof(ShouldReduce));
+                NotifyPropertyChanged(nameof(CanSimulate));
             }
         }
 
@@ -195,9 +196,11 @@ namespace Client.ViewModels
             }
         }
 
+        public bool CanSimulate => ShouldMerge && ShouldCollapse;
+
         public bool ShouldSimulate
         {
-            get { return _shouldSimulate && ShouldCollapse; }
+            get { return _shouldSimulate && ShouldMerge && ShouldCollapse; }
             set
             {
                 if (_shouldSimulate == value) return;
