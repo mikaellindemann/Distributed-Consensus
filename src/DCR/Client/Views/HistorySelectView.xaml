@@ -101,7 +101,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="10">
                         <Label Content="Simulation" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldSimulate, Mode=TwoWay}" IsEnabled="{Binding ShouldCollapse}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldSimulate, Mode=TwoWay}" IsEnabled="{Binding CanSimulate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

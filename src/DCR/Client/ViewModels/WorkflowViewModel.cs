@@ -107,7 +107,7 @@ namespace Client.ViewModels
             if (EventList != null && EventList.Count != 0)
             {
                 var history = new HistorySelectView(new HistorySelectViewModel(this, _serverConnection, _eventConnection));
-                history.ShowDialog();
+                history.Show();
                 //var historyView = new HistoryView(new HistoryListViewModel(WorkflowId));
                 //historyView.Show();
             }
