@@ -295,6 +295,12 @@ namespace Client.ViewModels
             }
         }
 
+        public void ResetSVG()
+        {
+            SvgPath = null;
+        }
+
+
         private void CreateSVG(Graph.Graph mergedGraph, HashSet<Tuple<string, FailureTypes.FailureType>> wrongHistories)
         {
             //new GraphToSvgConverter().ConvertAndShow(mergedGraph);
