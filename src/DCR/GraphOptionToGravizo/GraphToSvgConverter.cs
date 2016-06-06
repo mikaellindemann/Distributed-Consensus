@@ -109,13 +109,17 @@ namespace GraphOptionToSvg
         private void WriteGraphToDotFile(Graph.Graph graph, TextWriter writer)
         {
             var map = graph.Nodes;
-            var isExecution = map.All(pair => pair.Value.Type.IsExecuteFinish) ? "[shape=box,label=\"Execute {0}\", {2}]" : "[label=\"{0}, {1}\", {2}]";
+            var isExecution = map.All(pair => pair.Value.Type.IsExecuteFinish) ? "[shape=box,label=\"Execute {0}\", {3}]" : "[label=\"{0}, {1}{2}\", {3}]";
             var gravizoGraph = map.Select(kvPair => kvPair.Value)
                 .Select(
                     action =>
                         new
                         {
-                            ActionString = $"{action.Id.Item1 + action.Id.Item2}" + string.Format(isExecution, action.Id.Item1, ActionToString(action.Type), FailureTypeToDotStyle(action.FailureTypes)),
+                            ActionString = $"{action.Id.Item1 + action.Id.Item2}" + string.Format(isExecution, 
+                                action.Id.Item1, 
+                                ActionToString(action.Type), 
+                                string.IsNullOrWhiteSpace(action.CounterpartId?.Item1) ? "" : $", {action.CounterpartId.Item1}",
+                                FailureTypeToDotStyle(action.FailureTypes)),
                             EdgesStrings = action.Edges.Select(edge => $"{action.Id.Item1 + action.Id.Item2}->{edge.Item1 + edge.Item2};")
                         });
 
