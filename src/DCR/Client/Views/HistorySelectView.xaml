@@ -39,7 +39,7 @@
                 DockPanel.Dock="Right" 
                 Margin="5,0" 
                 TextAlignment="Right" 
-                TextWrapping="Wrap" 
+                TextWrapping="WrapWithOverflow" 
                 Foreground="Red" 
                 FontSize="16" ><Run Text="{Binding Status}"/><InlineUIContainer>
             		
@@ -61,12 +61,12 @@
         <DockPanel>
             <StackPanel 
                 DockPanel.Dock="Top"
-            Margin="10"
+            Margin="5"
         		Orientation="Vertical" 
         		VerticalAlignment="Top">
                 <Button 
         			Content="Generate History" 
-        			Margin="10" 
+        			Margin="5" 
         			Style="{StaticResource ButtonDefaultStyle}" 
         			IsEnabled="{Binding CanPressButtons}">
                     <i:Interaction.Triggers>
@@ -78,32 +78,32 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Button>
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical" Margin="10">
+                <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical" Margin="5,0">
                         <Label Content="Validation" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldValidate, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <toggleSwitch:HorizontalToggleSwitch  IsChecked="{Binding ShouldValidate, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="75" />
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <Label Content="Filter malicious Events" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" IsEnabled="{Binding ShouldValidate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+                    <StackPanel Orientation="Vertical" Margin="5,0">
+                        <Label Content="Filtering" HorizontalAlignment="Center"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldFilter, Mode=TwoWay}" IsEnabled="{Binding ShouldValidate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="75"/>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="10">
+                    <StackPanel Orientation="Vertical" Margin="5,0">
                         <Label Content="Merging" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldMerge, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldMerge, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="75"/>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="10">
+                    <StackPanel Orientation="Vertical" Margin="5,0">
                         <Label Content="Collapsing" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldCollapse, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldCollapse, Mode=TwoWay}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="75" />
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="10">
+                    <StackPanel Orientation="Vertical" Margin="5,0">
                         <Label Content="Reduction" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldReduce, Mode=TwoWay}" IsEnabled="{Binding ShouldCollapse}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldReduce, Mode=TwoWay}" IsEnabled="{Binding ShouldCollapse}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="75" />
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="10">
+                    <StackPanel Orientation="Vertical" Margin="5,0">
                         <Label Content="Simulation" HorizontalAlignment="Center"/>
-                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldSimulate, Mode=TwoWay}" IsEnabled="{Binding CanSimulate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <toggleSwitch:HorizontalToggleSwitch IsChecked="{Binding ShouldSimulate, Mode=TwoWay}" IsEnabled="{Binding CanSimulate}" UncheckedBackground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" CheckedBackground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="75" />
                     </StackPanel>
-                </StackPanel>
+                </WrapPanel>
             </StackPanel>
             <Grid
                 Height="{Binding Height, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}"
@@ -128,7 +128,7 @@
                 		    Margin="10"
                 		    Style="{StaticResource ButtonDefaultStyle}" 
                 		    FontSize="18"
-                		    IsEnabled="{Binding CanPressButtons}" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}">
+                		    IsEnabled="{Binding CanPressButtons}" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="Transparent">
                         <i:Interaction.Triggers>
                             <i:EventTrigger 
                 				    EventName="Click">

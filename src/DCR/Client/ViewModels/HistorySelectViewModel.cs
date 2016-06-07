@@ -230,7 +230,7 @@ namespace Client.ViewModels
         #region Actions
         public async void GenerateHistory()
         {
-            Status = "Attempting to generate history with the given parameters";
+            Status = "Generating history with the given parameters";
             var tokenSource = new CancellationTokenSource();
             CanPressButtons = false;
 
