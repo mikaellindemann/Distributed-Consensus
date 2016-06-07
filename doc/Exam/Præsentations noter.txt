@@ -1,0 +1,11 @@
+Hvad er problemet og hvorfor er det vigtigt
+Mere fokus på hvad målet med systemet er, før vi begynder at vise det.
+Gør det klart at vi snakker uden snyd først og med snyd senere.
+Vi skal huske at overbevise Søren og censor om at vi har løst problemet fra første slide.
+
+Nogle punkter vi måske gerne ville opfylde:
+* Kan man opdage et problem
+* Hvad skete der rent faktisk i nogle tilfælde
+
+Måske skal vi udtrykke specifikt hvorfor vi ikke kan anvende eksisterende teori til at løse problemet.
+Køretider: De kan godt finde på at stikke i det. Det er også fint hvis vi i et vist omfang kan gøre rede for forbedringer.
