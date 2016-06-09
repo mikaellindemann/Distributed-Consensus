@@ -9,3 +9,5 @@ Nogle punkter vi måske gerne ville opfylde:
 
 Måske skal vi udtrykke specifikt hvorfor vi ikke kan anvende eksisterende teori til at løse problemet.
 Køretider: De kan godt finde på at stikke i det. Det er også fint hvis vi i et vist omfang kan gøre rede for forbedringer.
+
+Evt. Introduktion til DCR Grafer
